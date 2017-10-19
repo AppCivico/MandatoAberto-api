@@ -117,6 +117,21 @@ __PACKAGE__->add_unique_constraint("user_email_key", ["email"]);
 
 =head1 RELATIONS
 
+=head2 politians
+
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::Politian>
+
+=cut
+
+__PACKAGE__->has_many(
+  "politians",
+  "MandatoAberto::Schema::Result::Politian",
+  { "foreign.user_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 user_roles
 
 Type: has_many
@@ -143,8 +158,8 @@ Composing rels: L</user_roles> -> role
 __PACKAGE__->many_to_many("roles", "user_roles", "role");
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2017-10-18 11:01:51
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:dSB8NLq8gfxmjHgTM0Hc+Q
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2017-10-19 13:26:52
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:adFL8Qn/UNMBvC5es9wXPw
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
