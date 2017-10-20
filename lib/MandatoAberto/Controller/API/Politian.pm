@@ -44,7 +44,7 @@ sub result_GET {
     return $self->status_ok(
         $c,
         entity => {
-            ( map { $_ => $c->stash->{politian}->$_ } qw/name address_city approved approved_at/ ),
+            ( map { $_ => $c->stash->{politian}->$_ } qw/name address_city address_state approved approved_at/ ),
 
             ( map { $_ => $c->stash->{politian}->user->$_ } qw/id email created_at/ ),
 

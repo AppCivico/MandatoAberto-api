@@ -105,8 +105,27 @@ sub api_auth_as {
     $obj->fixed_headers([ 'x-api-key' => $auth_user->{api_key} ]);
 }
 
-sub create_user {
-    # body...
+sub create_politian {
+    my (%opts) = @_;
+
+    my %params = (
+        email         => fake_email()->(),
+        password      => 'foobarpass',
+        name          => fake_name()->(),
+        address_state => 'SP',
+        address_city  => 'São Paulo',
+        party_id      => fake_int(1, 35)->(),
+        office_id     => fake_int(1, 8)->(),
+        %opts
+    );
+
+    return $obj->rest_post(
+        '/api/register',
+        name    => 'add politian',
+        automatic_load_item => 0,
+        stash   => 'politian',
+        [ %params ],
+    );
 }
 
 1;
