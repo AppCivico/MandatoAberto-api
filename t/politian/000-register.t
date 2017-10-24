@@ -9,7 +9,7 @@ my $schema = MandatoAberto->model("DB");
 db_transaction {
     my $email = fake_email()->();
 
-    rest_post "/api/register",
+    rest_post "/api/politian/register",
         name                => "Sucessful politian creation",
         stash               => "d1",
         automatic_load_item => 0,
@@ -30,7 +30,7 @@ db_transaction {
         "created user and donor",
     );
 
-    rest_post "/api/register",
+    rest_post "/api/politian/register",
         name    => "Politian without email",
         is_fail => 1,
         [
@@ -43,7 +43,7 @@ db_transaction {
         ]
     ;
 
-    rest_post "/api/register",
+    rest_post "/api/politian/register",
         name    => "Politian without name",
         is_fail => 1,
         [
@@ -56,7 +56,7 @@ db_transaction {
         ]
     ;
 
-    rest_post "/api/register",
+    rest_post "/api/politian/register",
         name    => "Politian without address data",
         is_fail => 1,
         [
@@ -68,7 +68,7 @@ db_transaction {
         ]
     ;
 
-    rest_post "/api/register",
+    rest_post "/api/politian/register",
         name    => "Politian with invalid address_state",
         is_fail => 1,
         [
@@ -82,7 +82,7 @@ db_transaction {
         ]
     ;
 
-    rest_post "/api/register",
+    rest_post "/api/politian/register",
         name    => "Politian with invalid address_city",
         is_fail => 1,
         [
@@ -96,7 +96,7 @@ db_transaction {
         ]
     ;
 
-    rest_post "/api/register",
+    rest_post "/api/politian/register",
         name    => "Politian without party",
         is_fail => 1,
         [
@@ -109,7 +109,7 @@ db_transaction {
         ]
     ;
 
-    rest_post "/api/register",
+    rest_post "/api/politian/register",
         name    => "Politian without office",
         is_fail => 1,
         [
@@ -123,7 +123,7 @@ db_transaction {
     ;
 
     # Partido e cargo devem ser integers
-    rest_post "/api/register",
+    rest_post "/api/politian/register",
         name    => "Politian with invalid party",
         is_fail => 1,
         [
@@ -138,7 +138,7 @@ db_transaction {
     ;
 
     # Partido e cargo devem ser integers
-    rest_post "/api/register",
+    rest_post "/api/politian/register",
         name    => "Politian with invalid party",
         is_fail => 1,
         [

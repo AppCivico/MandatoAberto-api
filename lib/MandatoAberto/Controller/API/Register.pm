@@ -14,9 +14,9 @@ __PACKAGE__->config(
 
 sub root :Chained('/api/root') :PathPart('') :CaptureArgs(0) { }
 
-sub base :Chained('root') :PathPart('register') :CaptureArgs(0) { }
+sub base :Chained('root') :PathPart('politian') :CaptureArgs(0) { }
 
-sub create : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }
+sub create : Chained('base') : PathPart('register') : Args(0) : ActionClass('REST') { }
 
 sub create_POST {
     my ($self, $c) = @_;
