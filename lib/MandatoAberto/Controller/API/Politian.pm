@@ -44,7 +44,10 @@ sub result_GET {
     return $self->status_ok(
         $c,
         entity => {
-            ( map { $_ => $c->stash->{politian}->$_ } qw/name address_city address_state approved approved_at/ ),
+            ( map { $_ => $c->stash->{politian}->$_ } qw/
+                name address_city address_state approved
+                party_id office_id fb_page_id fb_app_id
+                fb_app_secret fb_page_acess_token/ ),
 
             ( map { $_ => $c->stash->{politian}->user->$_ } qw/id email created_at/ ),
 

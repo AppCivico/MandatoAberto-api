@@ -42,13 +42,6 @@ __PACKAGE__->table("politian");
 
 =head1 ACCESSORS
 
-=head2 id
-
-  data_type: 'integer'
-  is_auto_increment: 1
-  is_nullable: 0
-  sequence: 'politian_id_seq'
-
 =head2 user_id
 
   data_type: 'integer'
@@ -116,13 +109,6 @@ __PACKAGE__->table("politian");
 =cut
 
 __PACKAGE__->add_columns(
-  "id",
-  {
-    data_type         => "integer",
-    is_auto_increment => 1,
-    is_nullable       => 0,
-    sequence          => "politian_id_seq",
-  },
   "user_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "name",
@@ -153,13 +139,13 @@ __PACKAGE__->add_columns(
 
 =over 4
 
-=item * L</id>
+=item * L</user_id>
 
 =back
 
 =cut
 
-__PACKAGE__->set_primary_key("id");
+__PACKAGE__->set_primary_key("user_id");
 
 =head1 RELATIONS
 
@@ -209,10 +195,130 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2017-10-19 16:46:29
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:L91M+3Ncs1kCOdAFReGL9g
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2017-10-24 15:01:20
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:eiahZKfJ4Dw0+qXJbkW+zw
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
+
+with 'MandatoAberto::Role::Verification';
+with 'MandatoAberto::Role::Verification::TransactionalActions::DBIC';
+
+sub verifiers_specs {
+    my $self = shift;
+
+    return {
+        update => Data::Verifier->new(
+            filters => [qw(trim)],
+            profile => {
+                name => {
+                    required => 0,
+                    type     => "Str",
+                },
+                address_state => {
+                    required   => 0,
+                    type       => "Str",
+                    post_check => sub {
+                        my $address_state = $_[0]->get_value('address_state');
+                        $self->result_source->schema->resultset("State")->search({ code => $address_state })->count;
+                    },
+                },
+                address_city => {
+                    required   => 0,
+                    type       => "Str",
+                    post_check => sub {
+                        my $address_city = $_[0]->get_value('address_city');
+                        $self->result_source->schema->resultset("City")->search({ name => $address_city })->count;
+                    },
+                },
+                party_id => {
+                    required   => 0,
+                    type       => "Int",
+                    post_check => sub {
+                        my $party_id = $_[0]->get_value('party_id');
+                        $self->result_source->schema->resultset("Party")->search({ id => $party_id })->count;
+                    }
+                },
+                office_id => {
+                    required   => 0,
+                    type       => "Int",
+                    post_check => sub {
+                        my $office_id = $_[0]->get_value('office_id');
+                        $self->result_source->schema->resultset("Office")->search({ id => $office_id })->count;
+                    }
+                },
+                fb_page_id => {
+                    required   => 0,
+                    type       => "Str",
+                    post_check => sub {
+                        my $r = shift;
+
+                        $self->search({
+                            fb_page_id => $r->get_value('fb_page_id'),
+                        })->count and die \["fb_page_id", "alredy exists"];
+
+                        return 1;
+                    },
+                },
+                fb_app_id => {
+                    required   => 0,
+                    type       => "Str",
+                    post_check => sub {
+                        my $r = shift;
+
+                        $self->search({
+                            fb_app_id => $r->get_value('fb_app_id'),
+                        })->count and die \["fb_app_id", "alredy exists"];
+
+                        return 1;
+                    },
+                },
+                fb_app_secret => {
+                    required   => 0,
+                    type       => "Str",
+                    post_check => sub {
+                        my $r = shift;
+
+                        $self->search({
+                            fb_app_secret => $r->get_value('fb_app_secret'),
+                        })->count and die \["fb_app_secret", "alredy exists"];
+
+                        return 1;
+                    },
+                },
+                fb_page_acess_token => {
+                    required   => 0,
+                    type       => "Str",
+                    post_check => sub {
+                        my $r = shift;
+
+                        $self->search({
+                            fb_page_acess_token => $r->get_value('fb_page_acess_token'),
+                        })->count and die \["fb_page_acess_token", "alredy exists"];
+
+                        return 1;
+                    },
+                },
+
+            }
+        ),
+    };
+}
+
+sub action_specs {
+    my ($self) = @_;
+
+    return {
+        update => sub {
+            my $r = shift;
+
+            my %values = $r->valid_values;
+            not defined $values{$_} and delete $values{$_} for keys %values;
+
+            $self->update(\%values);
+        }
+    };
+}
+
 __PACKAGE__->meta->make_immutable;
 1;

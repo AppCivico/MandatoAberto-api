@@ -29,7 +29,7 @@ db_transaction {
         $email,
         "created user and donor",
     );
-    
+
     rest_post "/api/register",
         name    => "Politian without email",
         is_fail => 1,

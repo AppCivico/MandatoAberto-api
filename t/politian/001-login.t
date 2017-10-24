@@ -16,6 +16,15 @@ db_transaction {
     );
 
     rest_post "/api/login",
+        name    => "wrong login",
+        is_fail => 1,
+        [
+            email    => $email,
+            password => "ALL YOUR BASE ARE BELONG TO US",
+        ],
+    ;
+
+    rest_post "/api/login",
         name  => "login",
         code  => 200,
         stash => "l1",
@@ -24,6 +33,27 @@ db_transaction {
             password => $password,
         ],
     ;
+
+    ok (
+        my $user_session = $schema->resultset("UserSession")->search(
+            {
+                "user.id"   => stash "politian.id",
+                # valid_until => { ">=" => \"NOW()" }
+            },
+            { join => "user" },
+        )->next,
+        "created user session",
+    );
+
+    # A resposta foi a esperada?
+    is_deeply(
+        stash "l1",
+        {
+            api_key => $user_session->api_key,
+            roles   => ["politian"],
+            user_id => $user_session->user->id,
+        },
+    );
 };
 
 done_testing();

@@ -61,8 +61,7 @@ INSERT INTO office (name) VALUES
 
 CREATE TABLE politian
 (
-    id                  SERIAL  PRIMARY KEY,
-    user_id             INTEGER NOT NULL REFERENCES "user"(id),
+    user_id             INTEGER NOT NULL PRIMARY KEY REFERENCES "user"(id),
     name                TEXT    NOT NULL,
     address_state       TEXT    NOT NULL,
     address_city        TEXT    NOT NULL,

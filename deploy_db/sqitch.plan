@@ -5,3 +5,4 @@
 0001-politian-party-office-tables [0000-appschema] 2017-10-19T15:24:45Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the following tables: politian, office and party
 0002-state-and-city [0001-politian-party-office-tables] 2017-10-19T18:28:50Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the state and city tables
 0003-user_session [0002-state-and-city] 2017-10-24T16:28:44Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the user_session table
+0004-forgot-password [0003-user_session] 2017-10-24T17:13:07Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the forgot password table
