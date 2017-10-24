@@ -147,6 +147,21 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 user_sessions
+
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::UserSession>
+
+=cut
+
+__PACKAGE__->has_many(
+  "user_sessions",
+  "MandatoAberto::Schema::Result::UserSession",
+  { "foreign.user_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 roles
 
 Type: many_to_many
@@ -158,8 +173,8 @@ Composing rels: L</user_roles> -> role
 __PACKAGE__->many_to_many("roles", "user_roles", "role");
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2017-10-19 13:26:52
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:adFL8Qn/UNMBvC5es9wXPw
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2017-10-24 14:32:41
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:/2a+nvtMu2H7ey60yKUljw
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
@@ -177,6 +192,33 @@ __PACKAGE__->add_column(
         is_nullable             => 0,
     },
 );
+
+use MandatoAberto::Utils;
+
+sub new_session {
+    my ($self) = @_;
+
+    my $schema = $self->result_source->schema;
+
+    my $session = $schema->resultset('UserSession')->search({
+        user_id      => $self->id,
+        valid_until  => { '>=' => \"NOW()" },
+    })->next;
+
+    if (!defined($session)) {
+        $session = $self->user_sessions->create({
+            api_key      => random_string(128),
+            valid_until  => \"(NOW() + '1 days'::interval)",
+        });
+    }
+
+    return {
+        user_id => $self->id,
+        roles   => [ map { $_->name } $self->roles ],
+        api_key => $session->api_key,
+    };
+}
+
 
 __PACKAGE__->meta->make_immutable;
 1;
