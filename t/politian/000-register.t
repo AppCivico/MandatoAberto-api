@@ -7,13 +7,14 @@ use MandatoAberto::Test::Further;
 my $schema = MandatoAberto->model("DB");
 
 db_transaction {
+    my $email = fake_email()->();
 
     rest_post "/api/register",
         name                => "Sucessful politian creation",
         stash               => "d1",
         automatic_load_item => 0,
         [
-            email         => fake_email()->(),
+            email         => $email,
             password      => '1234567',
             name          => 'Lucas Ansei',
             address_state => 'SP',
@@ -22,6 +23,12 @@ db_transaction {
             office_id     => fake_int(1, 8)->(),
         ]
     ;
+
+    is (
+        $schema->resultset("Politian")->find(stash "d1.id")->user->email,
+        $email,
+        "created user and donor",
+    );
     
     rest_post "/api/register",
         name    => "Politian without email",
