@@ -120,7 +120,7 @@ sub create_politian {
     );
 
     return $obj->rest_post(
-        '/api/politian/register',
+        '/api/register/politian',
         name                => 'add politian',
         automatic_load_item => 0,
         stash               => "politian",
