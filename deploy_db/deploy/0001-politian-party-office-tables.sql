@@ -3,7 +3,7 @@
 
 BEGIN;
 
-UPDATE role SET name = 'politian' WHERE ID = 2;
+UPDATE role SET name = 'politician' WHERE ID = 2;
 
 CREATE TABLE party
 (
@@ -59,7 +59,7 @@ INSERT INTO office (name) VALUES
     ('Deputado Federal'), ('Deputado Estadual'), ('Vereador'), ('Candidato');
 
 
-CREATE TABLE politian
+CREATE TABLE politician
 (
     user_id             INTEGER NOT NULL PRIMARY KEY REFERENCES "user"(id),
     name                TEXT    NOT NULL,

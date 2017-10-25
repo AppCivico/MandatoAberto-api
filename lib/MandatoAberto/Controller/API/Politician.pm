@@ -1,4 +1,4 @@
-package MandatoAberto::Controller::API::Politian;
+package MandatoAberto::Controller::API::Politician;
 use common::sense;
 use Moose;
 use namespace::autoclean;
@@ -10,16 +10,16 @@ with "CatalystX::Eta::Controller::AutoResultPUT";
 
 __PACKAGE__->config(
     # AutoBase.
-    result => "DB::Politian",
+    result => "DB::Politician",
 
     # AutoResultPUT.
-    object_key     => "politian",
+    object_key     => "politician",
     result_put_for => "update",
 );
 
 sub root : Chained('/api/logged') : PathPart('') : CaptureArgs(0) { }
 
-sub base : Chained('root') : PathPart('politian') : CaptureArgs(0) { }
+sub base : Chained('root') : PathPart('politician') : CaptureArgs(0) { }
 
 sub object : Chained('base') : PathPart('') : CaptureArgs(1) {
     my ($self, $c, $user_id) = @_;
@@ -30,7 +30,7 @@ sub object : Chained('base') : PathPart('') : CaptureArgs(1) {
     $c->detach("/error_404") unless ref $user;
 
     $c->stash->{is_me}    = int($c->user->id == $user->id);
-    $c->stash->{politian} = $user;
+    $c->stash->{politician} = $user;
 
     $c->detach("/api/forbidden") unless $c->stash->{is_me};
 }
@@ -44,12 +44,12 @@ sub result_GET {
     return $self->status_ok(
         $c,
         entity => {
-            ( map { $_ => $c->stash->{politian}->$_ } qw/
+            ( map { $_ => $c->stash->{politician}->$_ } qw/
                 name address_city address_state approved
                 party_id office_id fb_page_id fb_app_id
                 fb_app_secret fb_page_acess_token/ ),
 
-            ( map { $_ => $c->stash->{politian}->user->$_ } qw/id email created_at/ ),
+            ( map { $_ => $c->stash->{politician}->user->$_ } qw/id email created_at/ ),
 
         }
     );

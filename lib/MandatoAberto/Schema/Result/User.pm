@@ -117,17 +117,17 @@ __PACKAGE__->add_unique_constraint("user_email_key", ["email"]);
 
 =head1 RELATIONS
 
-=head2 politian
+=head2 politician
 
 Type: might_have
 
-Related object: L<MandatoAberto::Schema::Result::Politian>
+Related object: L<MandatoAberto::Schema::Result::Politician>
 
 =cut
 
 __PACKAGE__->might_have(
-  "politian",
-  "MandatoAberto::Schema::Result::Politian",
+  "politician",
+  "MandatoAberto::Schema::Result::Politician",
   { "foreign.user_id" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
@@ -188,8 +188,8 @@ Composing rels: L</user_roles> -> role
 __PACKAGE__->many_to_many("roles", "user_roles", "role");
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2017-10-24 15:18:11
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Fa/mJx9y7leWY8kfdjngiw
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2017-10-25 17:13:27
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:y+cMLhcJ09wUpf2uezW3EA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

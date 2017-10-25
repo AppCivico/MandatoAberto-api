@@ -105,7 +105,7 @@ sub api_auth_as {
     $obj->fixed_headers([ 'x-api-key' => $auth_user->{api_key} ]);
 }
 
-sub create_politian {
+sub create_politician {
     my (%opts) = @_;
 
     my %params = (
@@ -120,10 +120,10 @@ sub create_politian {
     );
 
     return $obj->rest_post(
-        '/api/register/politian',
-        name                => 'add politian',
+        '/api/register/politician',
+        name                => 'add politician',
         automatic_load_item => 0,
-        stash               => "politian",
+        stash               => "politician",
         [ %params ],
     );
 }

@@ -10,7 +10,7 @@ db_transaction {
     my $party  = fake_int(1, 35)->();
     my $office = fake_int(1, 8)->();
 
-    create_politian(
+    create_politician(
         name                => "Lucas Ansei",
         address_state       => 'SP',
         address_city        => 'São Paulo',
@@ -22,25 +22,25 @@ db_transaction {
         fb_page_acess_token => "FOOBAR"
     );
 
-    my $politian_id = stash "politian.id";
+    my $politician_id = stash "politician.id";
 
-    rest_get "/api/politian/$politian_id",
+    rest_get "/api/politician/$politician_id",
         name    => "get when logged off --fail",
         is_fail => 1,
         code    => 403,
     ;
 
-    api_auth_as user_id => $politian_id;
-    rest_get "/api/politian/$politian_id",
-        name  => "get politian",
+    api_auth_as user_id => $politician_id;
+    rest_get "/api/politician/$politician_id",
+        name  => "get politician",
         list  => 1,
-        stash => "get_politian"
+        stash => "get_politician"
     ;
 
-    stash_test "get_politian" => sub {
+    stash_test "get_politician" => sub {
         my $res = shift;
 
-        is ($res->{id}, $politian_id,  'id');
+        is ($res->{id}, $politician_id,  'id');
         is ($res->{name}, "Lucas Ansei", 'name');
         is ($res->{address_state}, "SP" , 'address_state');
         is ($res->{address_city}, "São Paulo" , 'address_city');
@@ -52,27 +52,27 @@ db_transaction {
         is ($res->{fb_page_acess_token}, "FOOBAR" , 'fb_page_acess_token');
     };
 
-    rest_put "/api/politian/$politian_id",
-        name => "update politian",
+    rest_put "/api/politician/$politician_id",
+        name => "update politician",
         [
             name         => "Ansei Lucas",
             address_city => "Ubatuba"
         ]
     ;
 
-    rest_reload_list "get_politian";
+    rest_reload_list "get_politician";
 
-    stash_test "get_politian.list" => sub {
+    stash_test "get_politician.list" => sub {
         my $res = shift;
 
         is($res->{name},      "Ansei Lucas", "name updated");
         is($res->{address_city}, "Ubatuba",   "city updated");
     };
 
-    create_politian;
-    rest_get [ "api", "politian", stash "politian.id" ], name => "can't get other politian", is_fail => 1, code => 403;
-    rest_put [ "api", "politian", stash "politian.id" ],
-        name    => "can't put other politian",
+    create_politician;
+    rest_get [ "api", "politician", stash "politician.id" ], name => "can't get other politician", is_fail => 1, code => 403;
+    rest_put [ "api", "politician", stash "politician.id" ],
+        name    => "can't put other politician",
         is_fail => 1,
         code    => 403,
         [ name => fake_name()->() ]

@@ -9,8 +9,8 @@ my $schema = MandatoAberto->model("DB");
 db_transaction {
     my $email = fake_email()->();
 
-    rest_post "/api/register/politian",
-        name                => "Sucessful politian creation",
+    rest_post "/api/register/politician",
+        name                => "Sucessful politician creation",
         stash               => "d1",
         automatic_load_item => 0,
         [
@@ -25,13 +25,13 @@ db_transaction {
     ;
 
     is (
-        $schema->resultset("Politian")->find(stash "d1.id")->user->email,
+        $schema->resultset("Politician")->find(stash "d1.id")->user->email,
         $email,
-        "created user and donor",
+        "created user and politician",
     );
 
-    rest_post "/api/register/politian",
-        name    => "Politian without email",
+    rest_post "/api/register/politician",
+        name    => "politician without email",
         is_fail => 1,
         [
             password      => '1234567',
@@ -43,8 +43,8 @@ db_transaction {
         ]
     ;
 
-    rest_post "/api/register/politian",
-        name    => "Politian without name",
+    rest_post "/api/register/politician",
+        name    => "politician without name",
         is_fail => 1,
         [
             email         => fake_email()->(),
@@ -56,8 +56,8 @@ db_transaction {
         ]
     ;
 
-    rest_post "/api/register/politian",
-        name    => "Politian without address data",
+    rest_post "/api/register/politician",
+        name    => "politician without address data",
         is_fail => 1,
         [
             email         => fake_email()->(),
@@ -68,8 +68,8 @@ db_transaction {
         ]
     ;
 
-    rest_post "/api/register/politian",
-        name    => "Politian with invalid address_state",
+    rest_post "/api/register/politician",
+        name    => "politician with invalid address_state",
         is_fail => 1,
         [
             email         => fake_email()->(),
@@ -82,8 +82,8 @@ db_transaction {
         ]
     ;
 
-    rest_post "/api/register/politian",
-        name    => "Politian with invalid address_city",
+    rest_post "/api/register/politician",
+        name    => "politician with invalid address_city",
         is_fail => 1,
         [
             email         => fake_email()->(),
@@ -96,8 +96,8 @@ db_transaction {
         ]
     ;
 
-    rest_post "/api/register/politian",
-        name    => "Politian without party",
+    rest_post "/api/register/politician",
+        name    => "politician without party",
         is_fail => 1,
         [
             email         => fake_email()->(),
@@ -109,8 +109,8 @@ db_transaction {
         ]
     ;
 
-    rest_post "/api/register/politian",
-        name    => "Politian without office",
+    rest_post "/api/register/politician",
+        name    => "politician without office",
         is_fail => 1,
         [
             email         => fake_email()->(),
@@ -123,8 +123,8 @@ db_transaction {
     ;
 
     # Partido e cargo devem ser integers
-    rest_post "/api/register/politian",
-        name    => "Politian with invalid party",
+    rest_post "/api/register/politician",
+        name    => "politician with invalid party",
         is_fail => 1,
         [
             email         => fake_email()->(),
@@ -138,8 +138,8 @@ db_transaction {
     ;
 
     # Partido e cargo devem ser integers
-    rest_post "/api/register/politian",
-        name    => "Politian with invalid party",
+    rest_post "/api/register/politician",
+        name    => "politician with invalid party",
         is_fail => 1,
         [
             email         => fake_email()->(),

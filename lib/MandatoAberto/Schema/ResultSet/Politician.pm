@@ -1,4 +1,4 @@
-package MandatoAberto::Schema::ResultSet::Politian;
+package MandatoAberto::Schema::ResultSet::Politician;
 use common::sense;
 use Moose;
 use namespace::autoclean;
@@ -145,7 +145,7 @@ sub action_specs {
 
             $user->add_to_roles( { id => 2 } );
 
-            my $politian = $self->create(
+            my $politician = $self->create(
                 {
                     (
                         map { $_ => $values{$_} } qw(
@@ -158,7 +158,7 @@ sub action_specs {
                 }
             );
 
-            return $politian
+            return $politician
         }
     }
 }

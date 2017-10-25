@@ -10,7 +10,7 @@ db_transaction {
     my $email    = fake_email()->();
     my $password = "foobarquux1";
 
-    create_politian(
+    create_politician(
         email    => $email,
         password => $password
     );
@@ -37,7 +37,7 @@ db_transaction {
     ok (
         my $user_session = $schema->resultset("UserSession")->search(
             {
-                "user.id"   => stash "politian.id",
+                "user.id"   => stash "politician.id",
                 # valid_until => { ">=" => \"NOW()" }
             },
             { join => "user" },
@@ -50,7 +50,7 @@ db_transaction {
         stash "l1",
         {
             api_key => $user_session->api_key,
-            roles   => ["politian"],
+            roles   => ["politician"],
             user_id => $user_session->user->id,
         },
     );

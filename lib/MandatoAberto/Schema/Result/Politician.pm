@@ -1,12 +1,12 @@
 use utf8;
-package MandatoAberto::Schema::Result::Politian;
+package MandatoAberto::Schema::Result::Politician;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
 
 =head1 NAME
 
-MandatoAberto::Schema::Result::Politian
+MandatoAberto::Schema::Result::Politician
 
 =cut
 
@@ -34,11 +34,11 @@ extends 'DBIx::Class::Core';
 
 __PACKAGE__->load_components("InflateColumn::DateTime", "TimeStamp", "PassphraseColumn");
 
-=head1 TABLE: C<politian>
+=head1 TABLE: C<politician>
 
 =cut
 
-__PACKAGE__->table("politian");
+__PACKAGE__->table("politician");
 
 =head1 ACCESSORS
 
@@ -195,8 +195,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2017-10-24 15:01:20
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:eiahZKfJ4Dw0+qXJbkW+zw
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2017-10-25 17:13:27
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:4MCdoJsx6mpkru5xhqiM/A
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
