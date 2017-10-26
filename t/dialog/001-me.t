@@ -28,7 +28,7 @@ db_transaction {
 
         is_deeply(
             $res,
-            { 
+            {
                 dialog => [
                     {
                         id   => $first_dialog_id,
@@ -79,7 +79,7 @@ db_transaction {
 
         is_deeply(
             $res,
-            { 
+            {
                 dialog => [
                     {
                         id   => $first_dialog_id,
