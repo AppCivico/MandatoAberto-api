@@ -120,7 +120,6 @@ sub verifiers_specs {
                     required => 0,
                     type     => "Str",
                     post_check => sub {
-                        # my $name = $_[0]->get_value('name');
                         my $r = shift;
 
                         $self->result_source->schema->resultset('Dialog')
