@@ -5,7 +5,8 @@ use namespace::autoclean;
 BEGIN { extends "CatalystX::Eta::Controller::REST" }
 
 with "CatalystX::Eta::Controller::AutoBase";
-# with "CatalystX::Eta::Controller::AutoResultPUT";
+with "CatalystX::Eta::Controller::AutoListGET";
+with "CatalystX::Eta::Controller::AutoResultPUT";
 
 __PACKAGE__->config(
     # AutoBase.
@@ -14,6 +15,12 @@ __PACKAGE__->config(
     # AutoResultPUT.
     object_key     => "dialog",
     result_put_for => "update",
+
+    # AutoListGET
+    list_key => "dialog",
+    build_row  => sub {
+        return { $_[0]->get_columns() };
+    }
 );
 
 sub root : Chained('/api/logged') : PathPart('') : CaptureArgs(0) { }
@@ -26,11 +33,13 @@ sub object : Chained('base') : PathPart('') : CaptureArgs(1) {
     $c->stash->{collection} = $c->stash->{collection}->search( { id => $dialog_id } );
 }
 
-sub result : Chained('object') : PathPart('') : Args(0) : ActionClass('REST') { }
+sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }
 
-sub result_GET {
-    
-}
+sub list_GET { }
+
+sub result : Chained('object') : PathPart('') :Args(0) : ActionClass('REST') { }
+
+sub result_PUT { }
 
 __PACKAGE__->meta->make_immutable;
 
