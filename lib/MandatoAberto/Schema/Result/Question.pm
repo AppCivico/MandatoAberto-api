@@ -60,6 +60,11 @@ __PACKAGE__->table("question");
   data_type: 'text'
   is_nullable: 0
 
+=head2 content
+
+  data_type: 'text'
+  is_nullable: 0
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -73,6 +78,8 @@ __PACKAGE__->add_columns(
   "dialog_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "name",
+  { data_type => "text", is_nullable => 0 },
+  "content",
   { data_type => "text", is_nullable => 0 },
 );
 
@@ -106,10 +113,65 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2017-10-26 15:06:05
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:lLvyX4ITK8BYVQD7iIstvw
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2017-10-26 16:16:49
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:UdH6aCfqZk5nCVgnu7VQfA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
+
+use MandatoAberto::Utils;
+
+with 'MandatoAberto::Role::Verification';
+with 'MandatoAberto::Role::Verification::TransactionalActions::DBIC';
+
+sub verifiers_specs {
+    my $self = shift;
+
+    return {
+        update => Data::Verifier->new(
+            filters => [ qw(trim) ],
+            profile => {
+                name => {
+                    required => 0,
+                    type     => "Str",
+                    post_check => sub {
+                        my $r = shift;
+
+                        $self->result_source->schema->resultset('Dialog')
+                            ->search({ name => $r->get_value('name') })
+                            ->count and die \["name", "alredy exists"];
+
+                        return 1;
+                    }
+                },
+                dialog_id => {
+                    required   => 0,
+                    type       => "Int",
+                    post_check => sub {
+                        my $r = shift;
+
+                        $self->result_source
+                    }
+                }
+            },
+        ),
+    };
+}
+
+sub action_specs {
+    my ($self) = @_;
+
+    return {
+        update => sub {
+            my $r = shift;
+
+            my %values = $r->valid_values;
+            not defined $values{$_} and delete $values{$_} for keys %values;
+
+            $self->update(\%values);
+        }
+    };
+}
+
 __PACKAGE__->meta->make_immutable;
 1;

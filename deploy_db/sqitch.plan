@@ -8,3 +8,4 @@
 0004-forgot-password [0003-user_session] 2017-10-24T17:13:07Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the forgot password table
 0005-dialog [0004-forgot-password] 2017-10-24T19:57:15Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Creating the dialog table
 0006-question [0005-dialog] 2017-10-26T17:05:11Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the question table
+0007-question-content [0006-question] 2017-10-26T18:16:10Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the content field to the question table
