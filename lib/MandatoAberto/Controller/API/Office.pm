@@ -12,7 +12,7 @@ __PACKAGE__->config(
     # AutoBase.
     result     => "DB::Office",
 
-    object_key => "office",
+    list_key => "office",
     build_row  => sub {
         return { $_[0]->get_columns() };
     }

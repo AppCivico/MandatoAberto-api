@@ -12,7 +12,7 @@ __PACKAGE__->config(
     # AutoBase.
     result     => "DB::Party",
 
-    object_key => "party",
+    list_key => "party",
     build_row  => sub {
         return { $_[0]->get_columns() };
     }
