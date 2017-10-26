@@ -87,27 +87,33 @@ __PACKAGE__->set_primary_key("id");
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
 
+use MandatoAberto::Utils;
+
+with 'MandatoAberto::Role::Verification';
+with 'MandatoAberto::Role::Verification::TransactionalActions::DBIC';
+
 sub verifiers_specs {
     my $self = shift;
 
     return {
         update => Data::Verifier->new(
-            filters => [qw(trim)],
+            filters => [ qw(trim) ],
             profile => {
                 name => {
-                    required   => 0,
-                    type       => "Str",
+                    required => 0,
+                    type     => "Str",
                     post_check => sub {
+                        # my $name = $_[0]->get_value('name');
                         my $r = shift;
 
-                        $self->search({
-                            name => $r->get_value('name'),
-                        })->count and die \["name", "alredy exists"];
+                        $self->result_source->schema->resultset('Dialog')
+                            ->search({ name => $r->get_value('name') })
+                            ->count and die \["name", "alredy exists"];
 
                         return 1;
                     }
-                }
-            }
+                },
+            },
         ),
     };
 }

@@ -42,8 +42,58 @@ db_transaction {
             },
             'get_dialog expected response'
         );
-    }
+    };
 
+    rest_put "/api/dialog/$first_dialog_id",
+        name    => "PUT first dialog with same name",
+        is_fail => 1,
+        code    => 400,
+        [name => "Dialogo foo"]
+    ;
+
+    rest_put "/api/dialog/$second_dialog_id",
+        name => "PUT second dialog with same name",
+        is_fail => 1,
+        code    => 400,
+        [name => "Dialogo bar"]
+    ;
+
+    rest_put "/api/dialog/$first_dialog_id",
+        name => "PUT first dialog",
+        [name => "foobar"]
+    ;
+
+    rest_put "/api/dialog/$second_dialog_id",
+        name => "PUT second dialog",
+        [name => "FOOBAR"]
+    ;
+
+    rest_get "/api/dialog/",
+        name  => "get dialog",
+        list  => 1,
+        stash => "get_updated_dialogs",
+    ;
+
+    stash_test "get_updated_dialogs" => sub {
+        my $res = shift;
+
+        is_deeply(
+            $res,
+            { 
+                dialog => [
+                    {
+                        id   => $first_dialog_id,
+                        name => "foobar"
+                    },
+                    {
+                        id   => $second_dialog_id,
+                        name => "FOOBAR"
+                    }
+                ]
+            },
+            'get_updated_dialog expected response'
+        );
+    };
 };
 
 done_testing();

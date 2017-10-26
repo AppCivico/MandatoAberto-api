@@ -31,6 +31,11 @@ sub object : Chained('base') : PathPart('') : CaptureArgs(1) {
     my ($self, $c, $dialog_id) = @_;
 
     $c->stash->{collection} = $c->stash->{collection}->search( { id => $dialog_id } );
+
+    my $dialog = $c->stash->{collection}->find($dialog_id);
+    $c->detach("/error_404") unless ref $dialog;
+
+    $c->stash->{dialog} = $dialog;
 }
 
 sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }
