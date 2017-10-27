@@ -42,13 +42,27 @@ sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }
 
 sub list_GET {
     my ($self, $c) = @_;
-    use DDP; p $c->stash;
-    # return $self->status_ok(
-    #     $c,
-    #     entity => {
 
-    #     }
-    # );
+    return $self->status_ok(
+        $c,
+        entity => {
+            questions => [
+                map {
+                    my $q = $_;
+                    +{
+                        id      => $q->get_column('id'),
+                        name    => $q->get_column('name'),
+                        content => $q->get_column('content'),
+
+                        dialog => +{
+                            id   => $q->dialog->get_column('id'),
+                            name => $q->dialog->get_column('name'),
+                        },
+                    }
+                } $c->stash->{collection}->search({}, { prefetch => [ qw/ dialog / ] })->all()
+            ],
+        }
+    );
 }
 
 sub result : Chained('object') : PathPart('') :Args(0) : ActionClass('REST') { }
