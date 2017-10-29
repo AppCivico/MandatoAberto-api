@@ -128,26 +128,10 @@ sub create_politician {
     );
 }
 
-sub create_admin_and_auth_as {
-    my $schema = MandatoAberto->model('DB');
-
-    my $user = $schema->resultset("User")->create({
-        email    => fake_email()->(),
-        password => "foobar"
-    });
-
-    $schema->resultset("UserRole")->create({
-        user_id => $user->id,
-        role_id => 1
-    });
-
-    api_auth_as user_id => $user->id;
-}
-
 sub create_dialog {
     my (%opts) = @_;
 
-    create_admin_and_auth_as;
+    api_auth_as user_id => 1;
 
     my %params = (
         name => "Foobar",
@@ -159,30 +143,6 @@ sub create_dialog {
         name                => 'add dialog',
         automatic_load_item => 0,
         stash               => "dialog",
-        [ %params ]
-    );
-}
-
-sub create_question {
-    my (%opts) = @_;
-
-    create_admin_and_auth_as;
-    create_dialog;
-
-    my $dialog_id = stash "dialog.id";
-
-    my %params = (
-        dialog_id => $dialog_id,
-        name      => "Foobar",
-        content   => "foobar",
-        %opts
-    );
-
-    return $obj->rest_post(
-        "/api/register/question",
-        name                => 'add question',
-        automatic_load_item => 0,
-        stash               => "question",
         [ %params ]
     );
 }
