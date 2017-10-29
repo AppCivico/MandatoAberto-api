@@ -30,9 +30,6 @@ sub verifiers_specs {
                     type       => "Str",
                     post_check => sub {
                         my $name = $_[0]->get_value("name");
-                        # $self->result_source->schema->resultset("Question")->search(
-                        #     { name => $name }
-                        # )->count and die \["name", "alredy exists"];
 
                         $self->search({
                             name => $name,
@@ -67,24 +64,6 @@ sub action_specs {
             return $dialog;
         }
     };
-}
-
-sub get_questions_by_dialog {
-    my ($self) = @_;
-
-    my $v = $self->search(
-        { },
-        {
-            '+select'    => ['dialog.name', 'id', 'name', 'content' ],
-            '-as'        => ['dialog_name'],
-            join         => 'dialog',
-            result_class => "DBIx::Class::ResultClass::HashRefInflator"
-        }
-    )->next();
-
-    # use DDP; p $v;
-
-    return $v;
 }
 
 1;
