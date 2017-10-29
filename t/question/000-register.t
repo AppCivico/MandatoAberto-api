@@ -23,7 +23,7 @@ db_transaction {
         code    => 403
     ;
 
-    create_admin_and_auth_as;
+    api_auth_as user_id => 1;
 
     my $question_name = "Foobar";
 
