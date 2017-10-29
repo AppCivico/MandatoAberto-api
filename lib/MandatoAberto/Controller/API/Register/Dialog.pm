@@ -37,7 +37,10 @@ sub create_POST {
     $self->status_created(
         $c,
         location => $c->uri_for($c->controller("API::Dialog")->action_for('result'), [ $dialog->id ]),
-        entity   => { id => $dialog->id }
+        entity   => {
+            id   => $dialog->id,
+            name => $dialog->name
+        }
     );
 }
 
