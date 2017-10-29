@@ -152,6 +152,10 @@ sub verifiers_specs {
 
                         $self->result_source
                     }
+                },
+                content => {
+                    required => 0,
+                    type     => "Str",
                 }
             },
         ),
