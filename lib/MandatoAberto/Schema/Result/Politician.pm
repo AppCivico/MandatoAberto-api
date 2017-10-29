@@ -149,6 +149,21 @@ __PACKAGE__->set_primary_key("user_id");
 
 =head1 RELATIONS
 
+=head2 answers
+
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::Answer>
+
+=cut
+
+__PACKAGE__->has_many(
+  "answers",
+  "MandatoAberto::Schema::Result::Answer",
+  { "foreign.politician_id" => "self.user_id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 office
 
 Type: belongs_to
@@ -195,8 +210,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2017-10-25 17:13:27
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:4MCdoJsx6mpkru5xhqiM/A
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2017-10-29 15:22:54
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Rcfxi4MOdTHjsSbv1Fs9fw
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

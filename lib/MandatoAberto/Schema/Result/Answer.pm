@@ -60,6 +60,12 @@ __PACKAGE__->table("answers");
   data_type: 'text'
   is_nullable: 0
 
+=head2 politician_id
+
+  data_type: 'integer'
+  is_foreign_key: 1
+  is_nullable: 0
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -74,6 +80,8 @@ __PACKAGE__->add_columns(
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "content",
   { data_type => "text", is_nullable => 0 },
+  "politician_id",
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
 );
 
 =head1 PRIMARY KEY
@@ -89,6 +97,21 @@ __PACKAGE__->add_columns(
 __PACKAGE__->set_primary_key("id");
 
 =head1 RELATIONS
+
+=head2 politician
+
+Type: belongs_to
+
+Related object: L<MandatoAberto::Schema::Result::Politician>
+
+=cut
+
+__PACKAGE__->belongs_to(
+  "politician",
+  "MandatoAberto::Schema::Result::Politician",
+  { user_id => "politician_id" },
+  { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
+);
 
 =head2 question
 
@@ -106,8 +129,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2017-10-29 15:16:01
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:c27QeOrHPzQeKEUl/eGSFA
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2017-10-29 15:22:54
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:4g4rxZV4q5+g2nqVbrLm7g
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

@@ -11,3 +11,4 @@
 0007-question-content [0006-question] 2017-10-26T18:16:10Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the content field to the question table
 0008-politician_answers [0007-question-content] 2017-10-29T15:58:58Z Lucas Ansei,,, <lucas@lucas-G750JX> # Adding the politician_answers table
 0009-answers [0008-politician_answers] 2017-10-29T17:15:25Z Lucas Ansei,,, <lucas@lucas-G750JX> # Changing politician_answers to answers
+0010-politician_id-answers [0009-answers] 2017-10-29T17:22:19Z Lucas Ansei,,, <lucas@lucas-G750JX> # Adding the politician_id column to the answers table
