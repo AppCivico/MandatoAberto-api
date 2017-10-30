@@ -99,7 +99,7 @@ db_transaction {
     ;
 
     rest_reload_list "get_politician_answers";
-    
+
     stash_test "get_politician_answers.list" => sub {
         my $res = shift;
 
