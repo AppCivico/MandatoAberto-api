@@ -98,7 +98,28 @@ db_transaction {
         [ content => "Foobar" ]
     ;
 
+    rest_reload_list "get_politician_answers";
     
+    stash_test "get_politician_answers.list" => sub {
+        my $res = shift;
+
+        is_deeply(
+            $res,
+            {
+                answers => [
+                    {
+                        question_id => $second_question_id,
+                        content     => $second_question_content
+                    },
+                    {
+                        question_id => $first_question_id,
+                        content     => "Foobar"
+                    },
+                ]
+            },
+            'Get updated politician answers expected response'
+        );
+    };
 };
 
 done_testing();

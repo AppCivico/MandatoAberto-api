@@ -68,7 +68,22 @@ sub result : Chained('object') : PathPart('') : Args(0) : ActionClass('REST') {
     $c->detach("/api/forbidden") unless $c->stash->{is_me};
 }
 
-sub result_PUT { }
+sub result_PUT {
+    my ($self, $c) = @_;
+
+    $c->stash->{answer}->execute(
+        $c,
+        for  => "update",
+        with => {
+            %{ $c->req->params },
+        },
+    );
+
+    return $self->status_accepted(
+        $c,
+        entity => { id => $c->stash->{answer}->id }
+    );
+}
 
 __PACKAGE__->meta->make_immutable;
 
