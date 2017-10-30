@@ -86,7 +86,6 @@ db_transaction {
 
     rest_put "/api/question/$first_question_id",
         name => "PUT first question",
-        stash => "test",
         [
             name    => "Foo",
             content => "Bar"
