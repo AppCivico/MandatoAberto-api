@@ -23,9 +23,9 @@ up_server (){
     WORKERS="$3"
 
     PREFIX=$( echo $SQITCH_DEPLOY | tr '[:upper:]' '[:lower:]' )
-    ERROR_LOG="/tmp/donm.$PREFIX.error.log"
-    STATUS="/tmp/donm.$PREFIX.start_server.status"
-    PIDFILE="/tmp/donm.$PREFIX.start_server.pid"
+    ERROR_LOG="/tmp/mandato-aberto.$PREFIX.error.log"
+    STATUS="/tmp/mandato-aberto.$PREFIX.start_server.status"
+    PIDFILE="/tmp/mandato-aberto.$PREFIX.start_server.pid"
 
     touch $ERROR_LOG
     touch $PIDFILE
@@ -59,6 +59,6 @@ sqitch deploy -t $SQITCH_DEPLOY
 export DBIC_TRACE=0
 
 echo STDERR "Restaring server...";
-up_server "donm.psgi" $API_PORT $API_WORKERS
+up_server "mandato-aberto.psgi" $API_PORT $API_WORKERS
 
 line
