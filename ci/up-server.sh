@@ -59,6 +59,6 @@ sqitch deploy -t $SQITCH_DEPLOY
 export DBIC_TRACE=0
 
 echo STDERR "Restaring server...";
-up_server "mandato-aberto.psgi" $API_PORT $API_WORKERS
+up_server "mandatoaberto.psgi" $API_PORT $API_WORKERS
 
 line
