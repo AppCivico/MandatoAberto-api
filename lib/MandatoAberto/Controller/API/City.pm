@@ -31,16 +31,18 @@ sub list_GET {
 
     return $self->status_ok(
         $c,
-        entity => [
-            map {
-                my $c = $_;
-                +{
-                    id      => $c->get_column('id'),
-                    name    => $c->get_column('name'),
-                    cep     => $c->get_column('cep'),
-                }
-            } $c->stash->{collection}->search( { state_id => $state_id } )->all()
-        ]
+        entity => {
+            city => [
+                map {
+                    my $c = $_;
+                    +{
+                        id      => $c->get_column('id'),
+                        name    => $c->get_column('name'),
+                        cep     => $c->get_column('cep'),
+                    }
+                } $c->stash->{collection}->search( { state_id => $state_id } )->all()
+            ]
+        }
     );
 }
 
