@@ -106,6 +106,11 @@ __PACKAGE__->table("politician");
   data_type: 'timestamp'
   is_nullable: 1
 
+=head2 gender
+
+  data_type: 'text'
+  is_nullable: 0
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -133,6 +138,8 @@ __PACKAGE__->add_columns(
   { data_type => "boolean", default_value => \"false", is_nullable => 0 },
   "approved_at",
   { data_type => "timestamp", is_nullable => 1 },
+  "gender",
+  { data_type => "text", is_nullable => 0 },
 );
 
 =head1 PRIMARY KEY
@@ -210,8 +217,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2017-10-29 15:22:54
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Rcfxi4MOdTHjsSbv1Fs9fw
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2017-11-06 13:23:52
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:5IS/ij5Nz3iX1rB+MLuX0A
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

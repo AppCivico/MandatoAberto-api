@@ -21,6 +21,7 @@ db_transaction {
             address_city  => 'São Paulo',
             party_id      => fake_int(1, 35)->(),
             office_id     => fake_int(1, 8)->(),
+            gender        => fake_pick(qw/F M/)->(),
         ]
     ;
 
@@ -40,6 +41,7 @@ db_transaction {
             address_city  => 'São Paulo',
             party_id      => fake_int(1, 35)->(),
             office_id     => fake_int(1, 8)->(),
+            gender        => fake_pick(qw/F M/)->(),
         ]
     ;
 
@@ -53,6 +55,7 @@ db_transaction {
             address_city  => 'São Paulo',
             party_id      => fake_int(1, 35)->(),
             office_id     => fake_int(1, 8)->(),
+            gender        => fake_pick(qw/F M/)->(),
         ]
     ;
 
@@ -65,6 +68,7 @@ db_transaction {
             name          => 'Lucas Ansei',
             party_id      => fake_int(1, 35)->(),
             office_id     => fake_int(1, 8)->(),
+            gender        => fake_pick(qw/F M/)->(),
         ]
     ;
 
@@ -79,6 +83,7 @@ db_transaction {
             address_city  => 'São Paulo',
             party_id      => fake_int(1, 35)->(),
             office_id     => fake_int(1, 8)->(),
+            gender        => fake_pick(qw/F M/)->(),
         ]
     ;
 
@@ -93,6 +98,7 @@ db_transaction {
             address_city  => 'Rapture',
             party_id      => fake_int(1, 35)->(),
             office_id     => fake_int(1, 8)->(),
+            gender        => fake_pick(qw/F M/)->(),
         ]
     ;
 
@@ -106,6 +112,7 @@ db_transaction {
             address_state => 'SP',
             address_city  => 'São Paulo',
             office_id     => fake_int(1, 8)->(),
+            gender        => fake_pick(qw/F M/)->(),
         ]
     ;
 
@@ -119,6 +126,7 @@ db_transaction {
             address_state => 'SP',
             address_city  => 'São Paulo',
             party_id      => fake_int(1, 35)->(),
+            gender        => fake_pick(qw/F M/)->(),
         ]
     ;
 
@@ -134,6 +142,7 @@ db_transaction {
             address_city  => 'São Paulo',
             party_id      => 'AppCivico',
             office_id     => fake_int(1, 8)->(),
+            gender        => fake_pick(qw/F M/)->(),
         ]
     ;
 
@@ -149,6 +158,36 @@ db_transaction {
             address_city  => 'São Paulo',
             party_id      => fake_int(1, 35)->(),
             office_id     => 'Developer',
+            gender        => fake_pick(qw/F M/)->(),
+        ]
+    ;
+
+    rest_post "/api/register/politician",
+        name    => "politician without gender",
+        is_fail => 1,
+        [
+            email         => fake_email()->(),
+            password      => '1234567',
+            name          => 'Lucas Ansei',
+            address_state => 'SP',
+            address_city  => 'São Paulo',
+            party_id      => fake_int(1, 35)->(),
+            office_id     => fake_int(1, 8)->(),
+        ]
+    ;
+
+    rest_post "/api/register/politician",
+        name    => "politician with invalid gender",
+        is_fail => 1,
+        [
+            email         => fake_email()->(),
+            password      => '1234567',
+            name          => 'Lucas Ansei',
+            address_state => 'SP',
+            address_city  => 'São Paulo',
+            party_id      => fake_int(1, 35)->(),
+            office_id     => fake_int(1, 8)->(),
+            gender        => "A",
         ]
     ;
 };

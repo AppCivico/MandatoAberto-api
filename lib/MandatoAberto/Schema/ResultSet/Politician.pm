@@ -119,7 +119,10 @@ sub verifiers_specs {
                         return 1;
                     },
                 },
-
+                gender => {
+                    required => 1,
+                    type     => "Str"
+                }
             }
         ),
     };
@@ -139,6 +142,10 @@ sub action_specs {
                 die \["password", "must have at least 6 characters"];
             }
 
+            if (length $values{gender} > 1 || !($values{gender} eq "F" || $values{gender} eq "M" ) ) {
+                die \["gender", "must be F or M"];
+            }
+
             my $user = $self->result_source->schema->resultset("User")->create(
                 { ( map { $_ => $values{$_} } qw(email password) ) }
             );
@@ -151,7 +158,7 @@ sub action_specs {
                         map { $_ => $values{$_} } qw(
                             name address_state address_city party_id
                             office_id fb_page_id fb_app_id fb_app_secret
-                            fb_page_acess_token
+                            fb_page_acess_token gender
                         )
                     ),
                     user_id => $user->id,

@@ -9,6 +9,7 @@ my $schema = MandatoAberto->model("DB");
 db_transaction {
     my $party  = fake_int(1, 35)->();
     my $office = fake_int(1, 8)->();
+    my $gender = fake_pick(qw/F M/)->();
 
     create_politician(
         name                => "Lucas Ansei",
@@ -19,7 +20,8 @@ db_transaction {
         fb_page_id          => "FOO",
         fb_app_id           => "BAR",
         fb_app_secret       => "foobar",
-        fb_page_acess_token => "FOOBAR"
+        fb_page_acess_token => "FOOBAR",
+        gender              => $gender,
     );
 
     my $politician_id = stash "politician.id";
@@ -50,6 +52,7 @@ db_transaction {
         is ($res->{fb_app_id}, "BAR" , 'fb_app_id');
         is ($res->{fb_app_secret}, "foobar" , 'fb_app_secret');
         is ($res->{fb_page_acess_token}, "FOOBAR" , 'fb_page_acess_token');
+        is ($res->{gender}, $gender , 'gender');
     };
 
     rest_put "/api/politician/$politician_id",
