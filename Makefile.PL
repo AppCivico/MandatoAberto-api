@@ -95,10 +95,9 @@ my %WriteMakefileArgs = (
     "IPC::Open3" => 0,
     "JSON::MaybeXS" => 0,
     "Test::More" => 0,
-    "blib" => "1.01",
     "lib" => 0
   },
-  "VERSION" => 20171030,
+  "VERSION" => 20171107,
   "test" => {
     "TESTS" => "t/*.t t/answer/*.t t/dialog/*.t t/politician/*.t t/question/*.t"
   }
@@ -176,7 +175,6 @@ my %FallbackPrereqs = (
   "Test::More" => 0,
   "Time::HiRes" => 0,
   "base" => 0,
-  "blib" => "1.01",
   "common::sense" => 0,
   "lib" => 0,
   "namespace::autoclean" => 0,

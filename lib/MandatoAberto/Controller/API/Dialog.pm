@@ -40,7 +40,32 @@ sub object : Chained('base') : PathPart('') : CaptureArgs(1) {
 
 sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }
 
-sub list_GET { }
+sub list_GET {
+    my ($self, $c) = @_;
+
+    return $self->status_ok(
+        $c,
+        entity => {
+            dialogs => [
+                map {
+                    my $d = $_;
+                    +{
+                        id      => $d->get_column('id'),
+                        name    => $d->get_column('name'),
+
+                        questions => +[
+                            {
+                                id      => $d->questions->get_column('id'),
+                                name    => $d->questions->get_column('name'),
+                                content => $d->questions->get_column('content')
+                            }
+                        ],
+                    }
+                } $c->stash->{collection}->search({}, { prefetch => [ qw/ questions / ] })->all()
+            ],
+        }
+    );
+}
 
 sub result : Chained('object') : PathPart('') :Args(0) : ActionClass('REST') { }
 

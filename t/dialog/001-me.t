@@ -10,12 +10,7 @@ db_transaction {
     create_dialog(
         name => "Dialogo foo"
     );
-    my $first_dialog_id = stash "dialog.id";
-
-    create_dialog(
-        name => "Dialogo bar"
-    );
-    my $second_dialog_id = stash "dialog.id";
+    my $dialog_id = stash "dialog.id";
 
     rest_get "/api/dialog/",
         name  => "get dialog",
@@ -26,17 +21,21 @@ db_transaction {
     stash_test "get_dialog" => sub {
         my $res = shift;
 
+        # Dialogs without questions
         is_deeply(
             $res,
             {
-                dialog => [
+                dialogs => [
                     {
-                        id   => $first_dialog_id,
-                        name => "Dialogo foo"
-                    },
-                    {
-                        id   => $second_dialog_id,
-                        name => "Dialogo bar"
+                        id        => $dialog_id,
+                        name      => "Dialogo foo",
+                        questions => [
+                            {
+                                name    => undef,
+                                id      => undef,
+                                content => undef
+                            }
+                        ]
                     }
                 ]
             },
@@ -44,28 +43,16 @@ db_transaction {
         );
     };
 
-    rest_put "/api/dialog/$first_dialog_id",
+    rest_put "/api/dialog/$dialog_id",
         name    => "PUT first dialog with same name",
         is_fail => 1,
         code    => 400,
         [name => "Dialogo foo"]
     ;
 
-    rest_put "/api/dialog/$second_dialog_id",
-        name => "PUT second dialog with same name",
-        is_fail => 1,
-        code    => 400,
-        [name => "Dialogo bar"]
-    ;
-
-    rest_put "/api/dialog/$first_dialog_id",
+    rest_put "/api/dialog/$dialog_id",
         name => "PUT first dialog",
         [name => "foobar"]
-    ;
-
-    rest_put "/api/dialog/$second_dialog_id",
-        name => "PUT second dialog",
-        [name => "FOOBAR"]
     ;
 
     rest_get "/api/dialog/",
@@ -80,15 +67,18 @@ db_transaction {
         is_deeply(
             $res,
             {
-                dialog => [
+                dialogs => [
                     {
-                        id   => $first_dialog_id,
-                        name => "foobar"
+                        id   => $dialog_id,
+                        name => "foobar",
+                        questions => [
+                            {
+                                name    => undef,
+                                id      => undef,
+                                content => undef
+                            }
+                        ]
                     },
-                    {
-                        id   => $second_dialog_id,
-                        name => "FOOBAR"
-                    }
                 ]
             },
             'get_updated_dialog expected response'
