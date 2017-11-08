@@ -34,7 +34,11 @@ sub create_POST {
         with => { politician_id => $c->user->id }
     );
 
-    return $self->status_ok($c, entity => { id => $poll->id });
+    return $self->status_created(
+        $c,
+        location => $c->uri_for($c->controller("API::Poll")->action_for('result'), [ $poll->id ]),
+        entity   => { id => $poll->id }
+    );
 }
 
 __PACKAGE__->meta->make_immutable;

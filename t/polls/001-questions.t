@@ -11,35 +11,34 @@ db_transaction {
     api_auth_as user_id => stash "politician.id";
 
     rest_post "/api/register/poll",
-        name  => "Sucessful poll creation",
-        stash => "p1",
-        code  => 200
+        name                => "Sucessful poll creation",
+        automatic_load_item => 0,
+        stash               => "p1",
     ;
 
-    my $poll = stash "p1";
+    my $poll_id = stash "p1.id";
 
-    rest_post "/api/register/poll-question",
-        name    => "Poll question without poll id",
-        is_fail => 1,
-        code    => 400,
+    # rest_post "/api/poll/$poll_id/question",
+    #     name    => "Poll question without content",
+    #     is_fail => 1,
+    #     code    => 400,
+    # ;
+
+    rest_post "/api/poll/$poll_id/question",
+        name                => "Sucessful question creation",
+        automatic_load_item => 0,
+        stash               => "q1",
         [ content => "Foobar" ]
     ;
 
-    rest_post "/api/register/poll-question",
-        name    => "Poll question without content",
-        is_fail => 1,
-        code    => 400,
-        [ poll_id => $poll->{id} ]
-    ;
+    # my $question_id = stash "q1.id";
 
-    rest_post "/api/register/poll-question",
-        name  => "Sucessful poll question creation",
-        stash => "pq1",
-        [
-            poll_id => $poll->{id},
-            content => "Foobar"
-        ]
-    ;
+    # rest_get "/api/poll/$poll_id/question/$question_id",
+    #     name => "List question",
+    #     list => 1,
+    #     stash => "get_question"
+    # ;
+
 };
 
 done_testing();

@@ -16,9 +16,11 @@ db_transaction {
 
     create_politician;
     api_auth_as user_id => stash "politician.id";
+
     rest_post "/api/register/poll",
-        name => "Sucessful poll creation",
-        code => 200
+        name                => "Sucessful poll creation",
+        automatic_load_item => 0,
+        stash               => "p1"
     ;
 };
 

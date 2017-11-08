@@ -6,11 +6,15 @@ BEGIN { extends "CatalystX::Eta::Controller::REST" }
 
 with "CatalystX::Eta::Controller::AutoBase";
 with "CatalystX::Eta::Controller::AutoListGET";
+with "CatalystX::Eta::Controller::AutoResultPUT";
 
 __PACKAGE__->config(
     # AutoBase.
     result => "DB::Poll",
 
+    # AutoResultPUT.
+    object_key     => "poll",
+    result_put_for => "update",
 
     # AutoListGET
     list_key => "poll",
@@ -31,8 +35,7 @@ sub object : Chained('base') : PathPart('') : CaptureArgs(1) {
     my $poll = $c->stash->{collection}->find($poll_id);
     $c->detach("/error_404") unless ref $poll;
 
-    $c->stash->{is_me}  = int($c->user->id == $poll->politician_id);
-    $c->stash->{poll} = $poll;
+    $c->stash->{poll}  = $poll;
 }
 
 sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }
@@ -40,6 +43,8 @@ sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }
 sub list_GET { }
 
 sub result : Chained('object') : PathPart('') : Args(0) : ActionClass('REST') { }
+
+sub result_PUT { }
 
 __PACKAGE__->meta->make_immutable;
 
