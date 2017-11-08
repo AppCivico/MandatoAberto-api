@@ -17,8 +17,8 @@ db_transaction {
     create_politician;
     api_auth_as user_id => stash "politician.id";
     rest_post "/api/register/poll",
-        name    => "Create poll as an admin",
-        code    => 201
+        name => "Sucessful poll creation",
+        code => 200
     ;
 };
 
