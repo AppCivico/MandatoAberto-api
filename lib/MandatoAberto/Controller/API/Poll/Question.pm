@@ -5,19 +5,19 @@ use namespace::autoclean;
 BEGIN { extends "CatalystX::Eta::Controller::REST" }
 
 with "CatalystX::Eta::Controller::AutoBase";
-with "CatalystX::Eta::Controller::AutoListGET";
+with "CatalystX::Eta::Controller::AutoResultGET";
 with "CatalystX::Eta::Controller::AutoResultPUT";
 
 __PACKAGE__->config(
     # AutoBase.
     result => "DB::PollQuestion",
+    no_user => 1,
 
     # AutoResultPUT.
     object_key     => "poll_questions",
     result_put_for => "update",
 
-    # AutoListGET
-    list_key => "poll_questions",
+    # AutoResultGET
     build_row  => sub {
         return { $_[0]->get_columns() };
     }
@@ -29,7 +29,7 @@ sub base : Chained('root') : PathPart('question') : CaptureArgs(0) { }
 
 sub object : Chained('base') : PathPart('') : CaptureArgs(1) {
     my ($self, $c, $question_id) = @_;
-
+    use DDP;
     $c->stash->{collection} = $c->stash->{collection}->search( { id => $question_id } );
 
     my $question = $c->stash->{collection}->find($question_id);
@@ -43,9 +43,7 @@ sub result : Chained('object') : PathPart('') : Args(0) : ActionClass('REST') { 
 
 sub result_PUT { }
 
-sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }
-
-sub list_GET { }
+sub result_GET { }
 
 sub create : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }
 
