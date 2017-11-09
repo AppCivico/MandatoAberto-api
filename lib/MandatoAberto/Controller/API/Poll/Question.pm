@@ -5,20 +5,19 @@ use namespace::autoclean;
 BEGIN { extends "CatalystX::Eta::Controller::REST" }
 
 with "CatalystX::Eta::Controller::AutoBase";
-with "CatalystX::Eta::Controller::AutoResultGET";
+with "CatalystX::Eta::Controller::AutoListGET";
 with "CatalystX::Eta::Controller::AutoResultPUT";
 
 __PACKAGE__->config(
     # AutoBase.
     result => "DB::PollQuestion",
-    # no_user => 1,
 
     # AutoResultPUT.
     object_key     => "poll_questions",
     result_put_for => "update",
 
-    # AutoResultGET
-    objecy_key => "poll_questions",
+    # AutoListGET
+    list_key => "poll_questions",
     build_row  => sub {
         return { $_[0]->get_columns() };
     }
@@ -44,7 +43,9 @@ sub result : Chained('object') : PathPart('') : Args(0) : ActionClass('REST') { 
 
 sub result_PUT { }
 
-sub result_GET { }
+sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }
+
+sub list_GET { }
 
 sub create : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }
 
@@ -59,7 +60,7 @@ sub create_POST {
             poll_id => $c->stash->{poll}->id
         },
     );
-    use DDP; my $v = $c->controller("API::Poll::Question")->action_for('result');
+
     return $self->status_created(
         $c,
         location => $c->uri_for($self->action_for('result'), [ $question->id ]),

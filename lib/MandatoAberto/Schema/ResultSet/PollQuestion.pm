@@ -44,11 +44,11 @@ sub action_specs {
             my %values = $r->valid_values;
             not defined $values{$_} and delete $values{$_} for keys %values;
 
-            my $poll = $self->create(
+            my $poll_question = $self->create(
                 { ( map { $_ => $values{$_} } qw(poll_id content) ) }
             );
 
-            return $poll;
+            return $poll_question;
         }
     };
 }
