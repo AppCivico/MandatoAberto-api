@@ -25,7 +25,14 @@ __PACKAGE__->config(
 
 sub root : Chained('/api/logged') : PathPart('') : CaptureArgs(0) { }
 
-sub base : Chained('root') : PathPart('poll') : CaptureArgs(0) { }
+sub base : Chained('root') : PathPart('poll') : CaptureArgs(0) {
+    my ($self, $c) = @_;
+
+    eval { $c->assert_user_roles(qw/politician/) };
+    if ($@) {
+        $c->forward("/api/forbidden");
+    }
+}
 
 sub object : Chained('base') : PathPart('') : CaptureArgs(1) {
     my ($self, $c, $poll_id) = @_;
@@ -35,12 +42,55 @@ sub object : Chained('base') : PathPart('') : CaptureArgs(1) {
     my $poll = $c->stash->{collection}->find($poll_id);
     $c->detach("/error_404") unless ref $poll;
 
+    $c->stash->{is_me} = int($c->user->id == $poll->politician_id);
     $c->stash->{poll}  = $poll;
+
+    $c->detach("/api/forbidden") unless $c->stash->{is_me};
 }
 
 sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }
 
-sub list_GET { }
+sub list_GET {
+    my ($self, $c) = @_;
+
+    my $politician_id = $c->user->id;
+
+    return $self->status_ok(
+        $c,
+        entity => {
+            polls => [
+                map {
+                    my $p = $_;
+                    use DDP; p $p->poll_questions;
+                    +{
+                        id => $p->get_column('id'),
+
+                        questions => [
+                            map {
+                                my $pq = $_;
+
+                                id      => $pq->get_column('id'),
+                                content => $pq->get_column('content'),
+
+                                options => [
+                                    # map {
+                                    #     my $qo = $_;
+
+                                    #     id      => $qo->get_column('id'),
+                                    #     content => $qo->get_column('content')
+                                    # } $p->poll_questions->question_options->all()
+                                ]
+
+                            } $p->poll_questions->all()
+                        ]
+                    }
+                } $c->stash->{collection}->search(
+                    { politician_id => $politician_id },
+                    { prefetch => [ 'poll_questions' , { poll_questions => "question_options" } ] } )->all()
+            ],
+        }
+    );
+}
 
 sub result : Chained('object') : PathPart('') : Args(0) : ActionClass('REST') { }
 
