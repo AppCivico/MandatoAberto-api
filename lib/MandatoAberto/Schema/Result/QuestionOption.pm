@@ -111,5 +111,41 @@ __PACKAGE__->belongs_to(
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
+use MandatoAberto::Utils;
+
+with 'MandatoAberto::Role::Verification';
+with 'MandatoAberto::Role::Verification::TransactionalActions::DBIC';
+
+sub verifiers_specs {
+    my $self = shift;
+
+    return {
+        update => Data::Verifier->new(
+            filters => [ qw(trim) ],
+            profile => {
+                content => {
+                    required => 0,
+                    type     => "Str"
+                }
+            }
+        )
+    };
+}
+
+sub action_specs {
+    my ($self) = @_;
+
+    return {
+        update => sub {
+            my $r = shift;
+
+            my %values = $r->valid_values;
+            not defined $values{$_} and delete $values{$_} for keys %values;
+
+            $self->update(\%values);
+        }
+    };
+}
+
 __PACKAGE__->meta->make_immutable;
 1;

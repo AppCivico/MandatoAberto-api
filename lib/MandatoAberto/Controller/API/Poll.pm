@@ -61,32 +61,34 @@ sub list_GET {
             polls => [
                 map {
                     my $p = $_;
-                    use DDP; p $p->poll_questions;
                     +{
                         id => $p->get_column('id'),
 
                         questions => [
                             map {
                                 my $pq = $_;
+                                +{
+                                    id      => $pq->get_column('id'),
+                                    content => $pq->get_column('content'),
 
-                                id      => $pq->get_column('id'),
-                                content => $pq->get_column('content'),
+                                    options => [
+                                        map {
+                                            my $qo = $_;
 
-                                options => [
-                                    # map {
-                                    #     my $qo = $_;
-
-                                    #     id      => $qo->get_column('id'),
-                                    #     content => $qo->get_column('content')
-                                    # } $p->poll_questions->question_options->all()
-                                ]
+                                            +{
+                                                id      => $qo->get_column('id'),
+                                                content => $qo->get_column('content')
+                                            }
+                                        } $pq->question_options->all()
+                                    ]
+                                }
 
                             } $p->poll_questions->all()
                         ]
                     }
                 } $c->stash->{collection}->search(
                     { politician_id => $politician_id },
-                    { prefetch => [ 'poll_questions' , { poll_questions => "question_options" } ] } )->all()
+                    { prefetch => [ 'poll_questions' , { 'poll_questions' => "question_options" } ] } )->all()
             ],
         }
     );

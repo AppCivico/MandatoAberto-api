@@ -57,6 +57,38 @@ db_transaction {
         stash               => "q1",
         [ content => "Foobar" ]
     ;
+
+    my $option_id = stash "q1.id";
+
+    rest_get "/api/poll/$poll_id/question/$question_id/option/$option_id",
+        name  => "get question option",
+        list  => 1,
+        stash => "get_question_option"
+    ;
+
+    stash_test "get_question_option" => sub {
+        my $res = shift;
+
+        is ($res->{id}, $option_id, 'option id');
+        is ($res->{question_id}, $question_id, 'question id');
+        is ($res->{content}, 'Foobar', 'option content');
+    };
+
+    rest_put "/api/poll/$poll_id/question/$question_id/option/$option_id",
+        name  => "put question option",
+        [ content => "Altered" ]
+    ;
+
+    rest_reload_list "get_question_option";
+
+    stash_test "get_question_option.list" => sub {
+        my $res = shift;
+
+        is ($res->{id}, $option_id, 'option id');
+        is ($res->{question_id}, $question_id, 'question id');
+        is ($res->{content}, 'Altered', 'option content');
+    };
+
 };
 
 done_testing();

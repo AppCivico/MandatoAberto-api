@@ -79,13 +79,21 @@ db_transaction {
         is ($res->{content}, "Altered", 'poll question content');
     };
 
-    rest_get "/api/poll/",
-        name     => "get poll question",
+    # Um politico não pode ver nem alterar os dados de enquete de outro
+    create_politician;
+    api_auth_as user_id => stash "politician.id";
+
+    rest_post "/api/poll/$poll_id/question",
+        name    => "Post to another politician's poll",
+        is_fail => 1,
+        code    => 403,
     ;
 
-    # Um politico não pode ver nem alterar os dados de enquete de outro
-    # create_politician;
-    # api_auth_as user_id => stash "politician.id";
+    rest_get "/api/poll/$poll_id/question/$question_id",
+        name    => "get another politician poll question",
+        is_fail => 1,
+        code    => 403
+    ;
 };
 
 done_testing();
