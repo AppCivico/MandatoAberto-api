@@ -46,8 +46,8 @@ db_transaction {
         is ($res->{name}, "Lucas Ansei", 'name');
         is ($res->{address_state}, "SP" , 'address_state');
         is ($res->{address_city}, "São Paulo" , 'address_city');
-        is ($res->{party_id}, $party , 'party');
-        is ($res->{office_id}, $office , 'office');
+        is ($res->{party}->{id}, $party , 'party');
+        is ($res->{office}->{id}, $office , 'office');
         is ($res->{fb_page_id}, "FOO" , 'fb_page_id');
         is ($res->{fb_app_id}, "BAR" , 'fb_app_id');
         is ($res->{fb_app_secret}, "foobar" , 'fb_app_secret');

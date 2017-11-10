@@ -40,14 +40,17 @@ sub result : Chained('object') : PathPart('') : Args(0) : ActionClass('REST') { 
 sub result_GET {
     my ($self, $c) = @_;
 
-    #TODO retornar nome do partido e cargo (party_id e office_id)
     return $self->status_ok(
         $c,
         entity => {
             ( map { $_ => $c->stash->{politician}->$_ } qw/
                 name address_city address_state approved
-                party_id office_id fb_page_id fb_app_id
-                fb_app_secret fb_page_acess_token gender/ ),
+                fb_page_id fb_app_id fb_app_secret
+                fb_page_acess_token gender/ ),
+
+            ( party => { map { $_ => $c->stash->{politician}->party->$_ } qw/acronym name id/ } ),
+
+            ( office => { map { $_ => $c->stash->{politician}->office->$_ } qw/id name/ } ),
 
             ( map { $_ => $c->stash->{politician}->user->$_ } qw/id email created_at/ ),
 
