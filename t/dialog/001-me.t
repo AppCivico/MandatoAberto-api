@@ -29,13 +29,7 @@ db_transaction {
                     {
                         id        => $dialog_id,
                         name      => "Dialogo foo",
-                        questions => [
-                            {
-                                name    => undef,
-                                id      => undef,
-                                content => undef
-                            }
-                        ]
+                        questions => [ ]
                     }
                 ]
             },
@@ -71,13 +65,7 @@ db_transaction {
                     {
                         id   => $dialog_id,
                         name => "foobar",
-                        questions => [
-                            {
-                                name    => undef,
-                                id      => undef,
-                                content => undef
-                            }
-                        ]
+                        questions => [ ]
                     },
                 ]
             },

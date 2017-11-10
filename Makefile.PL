@@ -101,7 +101,7 @@ my %WriteMakefileArgs = (
   },
   "VERSION" => 20171110,
   "test" => {
-    "TESTS" => "t/*.t t/answer/*.t t/dialog/*.t t/politician/*.t t/polls/*.t t/question/*.t"
+    "TESTS" => "t/*.t t/dialog/*.t t/politician/*.t t/polls/*.t"
   }
 );
 

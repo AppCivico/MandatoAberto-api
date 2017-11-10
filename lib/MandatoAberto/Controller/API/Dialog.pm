@@ -53,12 +53,16 @@ sub list_GET {
                         id      => $d->get_column('id'),
                         name    => $d->get_column('name'),
 
-                        questions => +[
-                            {
-                                id      => $d->questions->get_column('id'),
-                                name    => $d->questions->get_column('name'),
-                                content => $d->questions->get_column('content')
-                            }
+                        questions => [
+                            map {
+                                my $q = $_;
+
+                                +{
+                                    id      => $q->get_column('id'),
+                                    name    => $q->get_column('name'),
+                                    content => $q->get_column('content')
+                                }
+                            } $d->questions->all()
                         ],
                     }
                 } $c->stash->{collection}->search({}, { prefetch => [ qw/ questions / ] })->all()
