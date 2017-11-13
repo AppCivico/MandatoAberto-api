@@ -14,3 +14,5 @@
 0010-politician_id-answers [0009-answers] 2017-10-29T17:22:19Z Lucas Ansei,,, <lucas@lucas-G750JX> # Adding the politician_id column to the answers table
 0011-politician-gender [0010-politician_id-answers] 2017-11-06T15:23:15Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the gender column to the politician table
 0012-polls-questions-and-options [0011-politician-gender] 2017-11-07T19:44:50Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Creating the following tables: poll, poll_questions and question_options
+0013-politician_contact [0012-polls-questions-and-options] 2017-11-12T16:41:21Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Creating the politician_contact table
+0014-poll_name [0013-politician_contact] 2017-11-13T12:13:20Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the name column to the poll table
