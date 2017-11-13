@@ -201,6 +201,21 @@ __PACKAGE__->belongs_to(
   { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
 );
 
+=head2 politician_contacts
+
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::PoliticianContact>
+
+=cut
+
+__PACKAGE__->has_many(
+  "politician_contacts",
+  "MandatoAberto::Schema::Result::PoliticianContact",
+  { "foreign.politician_id" => "self.user_id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 polls
 
 Type: has_many
@@ -232,8 +247,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2017-11-07 17:45:42
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:WOytOOxIUrqctj4j6Blnbw
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2017-11-12 14:41:09
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:rVSRSXSuq5lLBatq6/5e5g
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

@@ -1,12 +1,12 @@
 use utf8;
-package MandatoAberto::Schema::Result::Poll;
+package MandatoAberto::Schema::Result::PoliticianContact;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
 
 =head1 NAME
 
-MandatoAberto::Schema::Result::Poll
+MandatoAberto::Schema::Result::PoliticianContact
 
 =cut
 
@@ -34,11 +34,11 @@ extends 'DBIx::Class::Core';
 
 __PACKAGE__->load_components("InflateColumn::DateTime", "TimeStamp", "PassphraseColumn");
 
-=head1 TABLE: C<poll>
+=head1 TABLE: C<politician_contact>
 
 =cut
 
-__PACKAGE__->table("poll");
+__PACKAGE__->table("politician_contact");
 
 =head1 ACCESSORS
 
@@ -47,7 +47,7 @@ __PACKAGE__->table("poll");
   data_type: 'integer'
   is_auto_increment: 1
   is_nullable: 0
-  sequence: 'poll_id_seq'
+  sequence: 'politician_contact_id_seq'
 
 =head2 politician_id
 
@@ -55,10 +55,25 @@ __PACKAGE__->table("poll");
   is_foreign_key: 1
   is_nullable: 0
 
-=head2 name
+=head2 twitter
 
   data_type: 'text'
-  is_nullable: 0
+  is_nullable: 1
+
+=head2 facebook
+
+  data_type: 'text'
+  is_nullable: 1
+
+=head2 email
+
+  data_type: 'text'
+  is_nullable: 1
+
+=head2 cellphone
+
+  data_type: 'text'
+  is_nullable: 1
 
 =cut
 
@@ -68,12 +83,18 @@ __PACKAGE__->add_columns(
     data_type         => "integer",
     is_auto_increment => 1,
     is_nullable       => 0,
-    sequence          => "poll_id_seq",
+    sequence          => "politician_contact_id_seq",
   },
   "politician_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
-  "name",
-  { data_type => "text", is_nullable => 0 },
+  "twitter",
+  { data_type => "text", is_nullable => 1 },
+  "facebook",
+  { data_type => "text", is_nullable => 1 },
+  "email",
+  { data_type => "text", is_nullable => 1 },
+  "cellphone",
+  { data_type => "text", is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -105,24 +126,9 @@ __PACKAGE__->belongs_to(
   { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
 );
 
-=head2 poll_questions
 
-Type: has_many
-
-Related object: L<MandatoAberto::Schema::Result::PollQuestion>
-
-=cut
-
-__PACKAGE__->has_many(
-  "poll_questions",
-  "MandatoAberto::Schema::Result::PollQuestion",
-  { "foreign.poll_id" => "self.id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
-
-
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2017-11-13 10:17:56
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:P/O39zYKfJ58dyILyVBAWw
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2017-11-12 14:41:09
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:1Hnj/TVDL6o9QNp14MNhbg
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
