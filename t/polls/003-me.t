@@ -10,10 +10,13 @@ db_transaction {
     create_politician;
     api_auth_as user_id => stash "politician.id";
 
+    my $poll_name = fake_words(1)->();
+
     rest_post "/api/register/poll",
         name                => "Sucessful poll creation",
         automatic_load_item => 0,
         stash               => "p1",
+        [ name => $poll_name ]
     ;
 
     my $poll_id = stash "p1.id";
@@ -50,7 +53,8 @@ db_transaction {
             {
                 polls => [
                     {
-                        id => $poll_id,
+                        id   => $poll_id,
+                        name => $poll_name,
 
                         questions => [
                             {

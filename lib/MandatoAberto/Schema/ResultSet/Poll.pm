@@ -21,6 +21,14 @@ sub verifiers_specs {
                     required => 1,
                     type     => "Int"
                 },
+                name => {
+                    required   => 1,
+                    type       => "Str",
+                    post_check => sub {
+                        my $name = $_[0]->get_value("name");
+                        $self->result_source->schema->resultset("Poll")->search({ name => $name })->count == 0;
+                    }
+                }
             }
         ),
     };
@@ -37,7 +45,7 @@ sub action_specs {
             not defined $values{$_} and delete $values{$_} for keys %values;
 
             my $poll = $self->create(
-                { ( map { $_ => $values{$_} } qw(politician_id) ) }
+                { ( map { $_ => $values{$_} } qw(politician_id name) ) }
             );
 
             return $poll;

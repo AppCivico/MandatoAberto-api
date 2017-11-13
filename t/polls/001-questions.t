@@ -14,6 +14,7 @@ db_transaction {
         name                => "Sucessful poll creation",
         automatic_load_item => 0,
         stash               => "p1",
+        [ name => "Foobar" ]
     ;
 
     my $poll_id = stash "p1.id";

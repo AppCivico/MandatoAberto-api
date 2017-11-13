@@ -31,7 +31,10 @@ sub create_POST {
     my $poll = $c->stash->{collection}->execute(
         $c,
         for  => "create",
-        with => { politician_id => $c->user->id }
+        with => {
+            %{$c->req->params},
+            politician_id => $c->user->id
+        }
     );
 
     return $self->status_created(
