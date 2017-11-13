@@ -7,7 +7,7 @@ BEGIN { extends 'CatalystX::Eta::Controller::REST' }
 
 with "CatalystX::Eta::Controller::AutoBase";
 with "CatalystX::Eta::Controller::AutoResultPUT";
-with "CatalystX::Eta::Controller::AutoResultGET";
+with "CatalystX::Eta::Controller::AutoListGET";
 with "CatalystX::Eta::Controller::AutoListPOST";
 
 __PACKAGE__->config(
@@ -18,6 +18,7 @@ __PACKAGE__->config(
     object_key     => "politician_contact",
     result_put_for => "update",
 
+    list_key  => "politician_contact",
     build_row => sub {
         return { $_[0]->get_columns() };
     },
@@ -51,13 +52,35 @@ sub object : Chained('base') : PathPart('') : CaptureArgs(1) {
 
 sub result : Chained('object') : PathPart('') : Args(0) : ActionClass('REST') { }
 
-sub result_GET { }
-
 sub result_PUT { }
 
 sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }
 
 sub list_POST { }
+
+sub list_GET {
+    my ($self, $c) = @_;
+
+    my $politician_id = $c->user->id;
+
+    return $self->status_ok(
+        $c,
+        entity => {
+            politician_contact => {
+                politician_id => $politician_id,
+
+                map {
+                    my $c = $_;
+
+                    facebook  => $c->get_column('facebook'),
+                    twitter   => $c->get_column('twitter'),
+                    email     => $c->get_column('email'),
+                    cellphone => $c->get_column('cellphone'),
+                } $c->stash->{collection}->search( { politician_id => $politician_id } )->all()
+            }
+        }
+    );
+}
 
 __PACKAGE__->meta->make_immutable;
 
