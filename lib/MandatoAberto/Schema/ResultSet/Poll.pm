@@ -28,7 +28,11 @@ sub verifiers_specs {
                         my $name = $_[0]->get_value("name");
                         $self->result_source->schema->resultset("Poll")->search({ name => $name })->count == 0;
                     }
-                }
+                },
+                poll_questions => {
+                    required => 1,
+                    type     => "ArrayRef"
+                },
             }
         ),
     };
@@ -44,9 +48,7 @@ sub action_specs {
             my %values = $r->valid_values;
             not defined $values{$_} and delete $values{$_} for keys %values;
 
-            my $poll = $self->create(
-                { ( map { $_ => $values{$_} } qw(politician_id name) ) }
-            );
+            my $poll = $self->create(\%values);
 
             return $poll;
         }
