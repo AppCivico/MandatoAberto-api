@@ -17,11 +17,19 @@ db_transaction {
     create_politician;
     api_auth_as user_id => stash "politician.id";
 
-    # rest_post "/api/register/poll",
-    #     name    => "Poll without name",
-    #     is_fail => 1,
-    #     code    => 400
-    # ;
+    rest_post "/api/register/poll",
+        name    => "Poll without name",
+        is_fail => 1,
+        code    => 400,
+        [
+            'question[0][content]'            => 'alalala?',
+            'question[0][option][0][content]' => 'Sim',
+            'question[0][option][1][content]' => 'Não',
+            'question[1][content]'            => 'foobar?',
+            'question[1][option][0][content]' => 'foo',
+            'question[1][option][1][content]' => 'bar',
+        ]
+    ;
 
     my $poll_name = fake_words(1)->();
 
@@ -40,23 +48,20 @@ db_transaction {
         ]
     ;
 
-    #rest_post "/api/register/poll",
-    #    name    => "Poll with repeated name",
-    #    is_fail => 1,
-    #    code    => 400,
-    #    [
-    #        name => $poll_name,
-    #    ]
-    #;
-
-    use DDP;
-    my $v = $schema->resultset('PollQuestion')->search(
-        { poll_id => stash "p1.id" }
-    )->count; p $v;
-
-    p $schema->resultset('QuestionOption')->search(
-        undef,
-    )->count;
+    rest_post "/api/register/poll",
+       name    => "Poll with repeated name",
+       is_fail => 1,
+       code    => 400,
+       [
+            name => $poll_name,
+            'question[0][content]'            => 'alalala?',
+            'question[0][option][0][content]' => 'Sim',
+            'question[0][option][1][content]' => 'Não',
+            'question[1][content]'            => 'foobar?',
+            'question[1][option][0][content]' => 'foo',
+            'question[1][option][1][content]' => 'bar',
+       ]
+    ;
 
 };
 

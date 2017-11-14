@@ -29,29 +29,25 @@ sub create_POST {
     my ($self, $c) = @_;
 
     $c->req->params->{poll_questions} = [];
-    use DDP;
+
     for my $param (keys %{ $c->req->params } ) {
         if ($param =~ m{^question\[([0-9]+)\]\[([^\]]+)\](\[([0-9]+)\])?(\[([^\]]+)\])?$}) {
             $c->req->params->{poll_questions}->[$1] ||= {};
-            $c->req->params->{poll_questions}->[$1]->{$2} = delete $c->req->params->{$param} unless $2 eq 'option';
-            $c->req->params->{poll_questions}->[$1]->{question_options}->[$4]->{$6} = delete $c->req->params->{$param} unless $2 eq 'content';
+
+            if ($2 eq 'content') {
+                $c->req->params->{poll_questions}->[$1]->{$2} = delete $c->req->params->{$param};
+            }
+            elsif ($2 eq 'option') {
+                $c->req->params->{poll_questions}->[$1]->{question_options}->[$4]->{$6} = delete $c->req->params->{$param};
+            }
         }
     }
 
     $c->req->params->{poll_questions}   = [ grep defined, @{ $c->req->params->{poll_questions} } ];
-   
+
     die \['question[]', 'missing'] unless scalar(@{ $c->req->params->{poll_questions} }) >= 1;
 
-    for (my $i = 0; $i < scalar @{ $c->req->params->{poll_questions} }; $i++) {
-        my $questions = $c->req->params->{poll_questions}->[$i];
-
-        for my $k (keys %{ $questions } ) {
-            my $cons;
-            if ($k eq 'content')    { $cons = Moose::Util::TypeConstraints::find_or_parse_type_constraint("Str") }
-
-            die \["questions[$i][$k]", 'invalid'] if !ref($cons) || !$cons->check($questions->{$k});
-        }
-    }
+    # TODO validar campos de content
 
     my $poll = $c->stash->{collection}->execute(
         $c,

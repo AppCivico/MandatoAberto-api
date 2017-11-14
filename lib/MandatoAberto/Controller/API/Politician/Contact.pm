@@ -6,9 +6,9 @@ use namespace::autoclean;
 BEGIN { extends 'CatalystX::Eta::Controller::REST' }
 
 with "CatalystX::Eta::Controller::AutoBase";
-with "CatalystX::Eta::Controller::AutoResultPUT";
 with "CatalystX::Eta::Controller::AutoListGET";
 with "CatalystX::Eta::Controller::AutoListPOST";
+with "CatalystX::Eta::Controller::AutoResultPUT";
 
 __PACKAGE__->config(
     # AutoBase.
@@ -71,7 +71,7 @@ sub list_GET {
 
                 map {
                     my $c = $_;
-
+                    id        => $c->get_column('id'),
                     facebook  => $c->get_column('facebook'),
                     twitter   => $c->get_column('twitter'),
                     email     => $c->get_column('email'),

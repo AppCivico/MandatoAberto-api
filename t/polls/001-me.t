@@ -16,28 +16,17 @@ db_transaction {
         name                => "Sucessful poll creation",
         automatic_load_item => 0,
         stash               => "p1",
-        [ name => $poll_name ]
+        [
+            name => $poll_name,
+            'question[0][content]'            => 'Foobar',
+            'question[0][option][0][content]' => 'Foobar',
+        ]
     ;
 
     my $poll_id = stash "p1.id";
 
-    rest_post "/api/poll/$poll_id/question",
-        name                => "Sucessful question creation",
-        automatic_load_item => 0,
-        stash               => "q1",
-        [ content => "Foobar" ]
-    ;
-
-    my $question_id = stash "q1.id";
-
-    rest_post "/api/poll/$poll_id/question/$question_id/option",
-        name                => "Sucessful question creation",
-        automatic_load_item => 0,
-        stash               => "o1",
-        [ content => "Foobar" ]
-    ;
-
-    my $option_id = stash "o1.id";
+    my $question_id = $schema->resultset('PollQuestion')->search( { poll_id => $poll_id } )->next->id;
+    my $option_id     = $schema->resultset('QuestionOption')->search( { question_id => $question_id } )->next->id;
 
     rest_get "/api/poll",
         name  => "Get all poll data",
