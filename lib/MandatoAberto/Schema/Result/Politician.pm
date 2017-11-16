@@ -216,6 +216,21 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 politician_greetings
+
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::PoliticianGreeting>
+
+=cut
+
+__PACKAGE__->has_many(
+  "politician_greetings",
+  "MandatoAberto::Schema::Result::PoliticianGreeting",
+  { "foreign.politician_id" => "self.user_id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 polls
 
 Type: has_many
@@ -247,8 +262,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2017-11-12 14:41:09
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:rVSRSXSuq5lLBatq6/5e5g
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2017-11-16 13:45:13
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:njWHkArjF6xV78+0WRmrYA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
