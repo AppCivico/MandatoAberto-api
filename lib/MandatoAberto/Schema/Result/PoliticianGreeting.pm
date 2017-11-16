@@ -34,11 +34,11 @@ extends 'DBIx::Class::Core';
 
 __PACKAGE__->load_components("InflateColumn::DateTime", "TimeStamp", "PassphraseColumn");
 
-=head1 TABLE: C<politician_greetings>
+=head1 TABLE: C<politician_greeting>
 
 =cut
 
-__PACKAGE__->table("politician_greetings");
+__PACKAGE__->table("politician_greeting");
 
 =head1 ACCESSORS
 
@@ -106,8 +106,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2017-11-16 13:45:13
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:m4P795sWUeE+kJaFoL1u9Q
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2017-11-16 16:27:45
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:36Ka73CU31nQmcU1RIjqoA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
