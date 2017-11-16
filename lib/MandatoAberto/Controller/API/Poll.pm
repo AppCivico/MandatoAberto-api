@@ -62,8 +62,9 @@ sub list_GET {
                 map {
                     my $p = $_;
                     +{
-                        id   => $p->get_column('id'),
-                        name => $p->get_column('name'),
+                        id     => $p->get_column('id'),
+                        name   => $p->get_column('name'),
+                        active => $p->get_column('active'),
 
                         questions => [
                             map {

@@ -33,6 +33,10 @@ sub verifiers_specs {
                     required => 1,
                     type     => "ArrayRef"
                 },
+                active => {
+                    required   => 1,
+                    type       => "Bool",
+                }
             }
         ),
     };
@@ -47,6 +51,17 @@ sub action_specs {
 
             my %values = $r->valid_values;
             not defined $values{$_} and delete $values{$_} for keys %values;
+
+            my $active_poll = $self->result_source->schema->resultset("Poll")->search(
+                {
+                    politician_id => $values{politician_id},
+                    active        => 1
+                }
+            )->count;
+
+            if ($active_poll && $values{active} == 1) {
+                die \["active", "There must be only 1 poll active per time"];
+            }
 
             my $poll = $self->create(\%values);
 
