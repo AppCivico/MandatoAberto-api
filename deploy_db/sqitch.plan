@@ -17,3 +17,4 @@
 0013-politician_contact [0012-polls-questions-and-options] 2017-11-12T16:41:21Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Creating the politician_contact table
 0014-poll_name [0013-politician_contact] 2017-11-13T12:13:20Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the name column to the poll table
 0015-politician-greetings [0014-poll_name] 2017-11-16T15:35:12Z Jordan V. <jordan@eokoe.com> # Greetings table for each politician
+0016-poll-active-boolean [0015-politician-greetings] 2017-11-16T16:09:09Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the active boolean field to the poll table
