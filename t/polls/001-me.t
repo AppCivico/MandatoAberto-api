@@ -18,15 +18,15 @@ db_transaction {
         stash               => "p1",
         [
             name => $poll_name,
-            'question[0][content]'            => 'Foobar',
-            'question[0][option][0][content]' => 'Foobar',
+            'questions[0]'             => 'Foobar',
+            'questions[0][options][0]' => 'Foobar',
         ]
     ;
 
     my $poll_id = stash "p1.id";
 
     my $question_id = $schema->resultset('PollQuestion')->search( { poll_id => $poll_id } )->next->id;
-    my $option_id     = $schema->resultset('QuestionOption')->search( { question_id => $question_id } )->next->id;
+    my $option_id   = $schema->resultset('QuestionOption')->search( { question_id => $question_id } )->next->id;
 
     rest_get "/api/poll",
         name  => "Get all poll data",
