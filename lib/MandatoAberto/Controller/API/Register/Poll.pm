@@ -2,6 +2,9 @@ package MandatoAberto::Controller::API::Register::Poll;
 use common::sense;
 use Moose;
 use namespace::autoclean;
+use Moose::Util::TypeConstraints;
+
+use MandatoAberto::Utils;
 
 BEGIN { extends "CatalystX::Eta::Controller::REST" }
 
@@ -45,9 +48,28 @@ sub create_POST {
 
     $c->req->params->{poll_questions}   = [ grep defined, @{ $c->req->params->{poll_questions} } ];
 
-    die \['question[]', 'missing'] unless scalar(@{ $c->req->params->{poll_questions} }) >= 1;
+    die \['questions[]', 'missing'] unless scalar(@{ $c->req->params->{poll_questions} }) >= 1;
 
-    # TODO validar campos de content
+    for (my $i = 0; $i < scalar @{ $c->req->params->{poll_questions} } ; $i++) {
+        my $question = $c->req->params->{poll_questions}->[$i];
+
+        for my $k ( keys %{ $question } ) {
+            my $cons;
+
+            if ($k eq 'content') { $cons = Moose::Util::TypeConstraints::find_or_parse_type_constraint('Str') }
+            if ($k eq 'question_options') {
+                for (my $j = 0; $j < scalar @{ $question->{question_options} }; $j++) {
+                    my $question_option = $question->{question_options}->[$j];
+
+                    if (length $question_option->{content} > 20) {
+                        die \["questions[$i][options][$j]", "Options mustn't be longer than 20 characters"];
+                    }
+                }
+            }
+            use DDP; p $k;
+            die \["question[$i]", 'invalid'] if !ref($cons) || !$cons->check($question->{$k});
+        }
+    }
 
     my $poll = $c->stash->{collection}->execute(
         $c,

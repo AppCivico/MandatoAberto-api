@@ -49,6 +49,18 @@ db_transaction {
     my $poll_name = fake_words(1)->();
 
     rest_post "/api/register/poll",
+        name    => "Poll with invalid question format",
+        is_fail => 1,
+        code    => 400,
+        [
+            name                       => $poll_name,
+            active                     => 1,
+            'questions[0]'             => 1,
+            'questions[0][options][0]' => 'Sim',
+        ]
+    ;
+
+    rest_post "/api/register/poll",
         name                => "Sucessful poll creation",
         automatic_load_item => 0,
         stash               => "p1",
