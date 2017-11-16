@@ -31,14 +31,14 @@ sub create_POST {
     $c->req->params->{poll_questions} = [];
 
     for my $param (keys %{ $c->req->params } ) {
-        if ($param =~ m{^question\[([0-9]+)\]\[([^\]]+)\](\[([0-9]+)\])?(\[([^\]]+)\])?$}) {
+        if ($param =~ m{^questions\[([0-9]+)\](\[([^\]]+)\])?(\[([0-9]+)\])?(\[([^\]]+)\])?$}) {
             $c->req->params->{poll_questions}->[$1] ||= {};
 
-            if ($2 eq 'content') {
-                $c->req->params->{poll_questions}->[$1]->{$2} = delete $c->req->params->{$param};
+            if (!$2) {
+                $c->req->params->{poll_questions}->[$1]->{content} = delete $c->req->params->{$param};
             }
             elsif ($2 eq 'option') {
-                $c->req->params->{poll_questions}->[$1]->{question_options}->[$4]->{$6} = delete $c->req->params->{$param};
+                $c->req->params->{poll_questions}->[$1]->{question_options}->[$4]->{content} = delete $c->req->params->{$param};
             }
         }
     }

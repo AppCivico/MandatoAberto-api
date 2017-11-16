@@ -22,12 +22,12 @@ db_transaction {
         is_fail => 1,
         code    => 400,
         [
-            'question[0][content]'            => 'alalala?',
-            'question[0][option][0][content]' => 'Sim',
-            'question[0][option][1][content]' => 'Não',
-            'question[1][content]'            => 'foobar?',
-            'question[1][option][0][content]' => 'foo',
-            'question[1][option][1][content]' => 'bar',
+            'question[0]'            => 'alalala?',
+            'question[0][option][0]' => 'Sim',
+            'question[0][option][1]' => 'Não',
+            'question[1]'            => 'foobar?',
+            'question[1][option][0]' => 'foo',
+            'question[1][option][1]' => 'bar',
         ]
     ;
 
@@ -39,12 +39,13 @@ db_transaction {
         stash               => "p1",
         [
             name => $poll_name,
-            'question[0][content]'            => 'alalala?',
-            'question[0][option][0][content]' => 'Sim',
-            'question[0][option][1][content]' => 'Não',
-            'question[1][content]'            => 'foobar?',
-            'question[1][option][0][content]' => 'foo',
-            'question[1][option][1][content]' => 'bar',
+            'questions[0]'            => 'Você está bem?',
+            'questions[0][options][0]' => 'Sim',
+            'questions[0][options][1]' => 'Não',
+            'questions[1]'            => 'foobar?',
+            'questions[1][options][0]' => 'foo',
+            'questions[1][options][1]' => 'bar',
+            'questions[1][options][2]' => 'não',
         ]
     ;
 
@@ -54,12 +55,12 @@ db_transaction {
        code    => 400,
        [
             name => $poll_name,
-            'question[0][content]'            => 'alalala?',
-            'question[0][option][0][content]' => 'Sim',
-            'question[0][option][1][content]' => 'Não',
-            'question[1][content]'            => 'foobar?',
-            'question[1][option][0][content]' => 'foo',
-            'question[1][option][1][content]' => 'bar',
+            'question[0]'            => 'alalala?',
+            'question[0][option][0]' => 'Sim',
+            'question[0][option][1]' => 'Não',
+            'question[1]'            => 'foobar?',
+            'question[1][option][0]' => 'foo',
+            'question[1][option][1]' => 'bar',
        ]
     ;
 
