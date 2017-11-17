@@ -1,4 +1,4 @@
-package MandatoAberto::Schema::ResultSet::Greeting;
+package MandatoAberto::Schema::ResultSet::PoliticianGreeting;
 use common::sense;
 use Moose;
 use namespace::autoclean;
@@ -18,16 +18,13 @@ sub verifiers_specs {
             filters => [qw(trim)],
             profile => {
                 politician_id => {
-                    required   => 1,
-                    type       => "Int",
-                    post_check => sub {
-                        my $politician_id = $_[0]->get_value("user_id");
-                        $self->result_source->schema->resultset("Greetings")->search( { id => $politician_id } )->count;
-                    },
+                    required => 1,
+                    type     => "Int",
                 },
                 text => {
-                    required => 1,
-                    type     => "Str"
+                    required   => 1,
+                    type       => "Str",
+                    max_length => 250,
                 }
             }
         ),
@@ -42,11 +39,16 @@ sub action_specs {
             my $r = shift;
 
             my %values = $r->valid_values;
+
             not defined $values{$_} and delete $values{$_} for keys %values;
 
-            my $dialog = $self->create( { ( map { $_ => $values{$_} } qw(question_id politician_id content) ) } );
+            if ( !$values{text} ) {
+                die \[ "greeting", "Greent mustn't be empty" ];
+            }
 
-            return $dialog;
+            my $politician_greeting = $self->create( \%values );
+
+            return $politician_greeting;
         }
     };
 }

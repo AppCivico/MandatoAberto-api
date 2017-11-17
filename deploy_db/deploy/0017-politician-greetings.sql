@@ -4,4 +4,5 @@
 BEGIN;
 
 ALTER TABLE politician_greetings RENAME TO politician_greeting;
+
 COMMIT;
