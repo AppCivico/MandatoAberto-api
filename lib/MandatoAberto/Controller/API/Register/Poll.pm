@@ -5,6 +5,7 @@ use namespace::autoclean;
 use Moose::Util::TypeConstraints;
 
 use MandatoAberto::Utils;
+use Scalar::Util qw(looks_like_number);
 
 BEGIN { extends "CatalystX::Eta::Controller::REST" }
 
@@ -46,17 +47,22 @@ sub create_POST {
         }
     }
 
-    $c->req->params->{poll_questions}   = [ grep defined, @{ $c->req->params->{poll_questions} } ];
+    $c->req->params->{poll_questions} = [ grep defined, @{ $c->req->params->{poll_questions} } ];
 
     die \['questions[]', 'missing'] unless scalar(@{ $c->req->params->{poll_questions} }) >= 1;
 
     for (my $i = 0; $i < scalar @{ $c->req->params->{poll_questions} } ; $i++) {
         my $question = $c->req->params->{poll_questions}->[$i];
 
+        die \["questions[$i]", 'must have at least 2 options'] if scalar(@{ $question->{question_options} }) < 2;
+
         for my $k ( keys %{ $question } ) {
             my $cons;
 
-            if ($k eq 'content') { $cons = Moose::Util::TypeConstraints::find_or_parse_type_constraint('Str') }
+            if ($k eq 'content') {
+                $cons = Moose::Util::TypeConstraints::find_or_parse_type_constraint('Str');
+                die \["question[$i]", 'invalid'] if !ref($cons) || !$cons->check($question->{$k}) || looks_like_number($question->{$k});
+            }
             if ($k eq 'question_options') {
                 for (my $j = 0; $j < scalar @{ $question->{question_options} }; $j++) {
                     my $question_option = $question->{question_options}->[$j];
@@ -66,8 +72,6 @@ sub create_POST {
                     }
                 }
             }
-            use DDP; p $k;
-            die \["question[$i]", 'invalid'] if !ref($cons) || !$cons->check($question->{$k});
         }
     }
 

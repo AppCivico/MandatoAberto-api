@@ -12,6 +12,9 @@ db_transaction {
 
     my $poll_name = fake_words(1)->();
 
+    my $first_option_content  = fake_words(1)->();
+    my $second_option_content = fake_words(1)->();
+
     rest_post "/api/register/poll",
         name                => "Sucessful poll creation",
         automatic_load_item => 0,
@@ -20,14 +23,28 @@ db_transaction {
             name                       => $poll_name,
             active                     => 1,
             'questions[0]'             => 'Foobar',
-            'questions[0][options][0]' => 'Foobar',
+            'questions[0][options][0]' => $first_option_content,
+            'questions[0][options][1]' => $second_option_content,
         ]
     ;
 
     my $poll_id = stash "p1.id";
 
-    my $question_id = $schema->resultset('PollQuestion')->search( { poll_id => $poll_id } )->next->id;
-    my $option_id   = $schema->resultset('QuestionOption')->search( { question_id => $question_id } )->next->id;
+    my $question_id     = $schema->resultset('PollQuestion')->search( { poll_id => $poll_id } )->next->id;
+
+    my $first_option_id = $schema->resultset('QuestionOption')->search(
+        {
+            question_id => $question_id,
+            content     => $first_option_content
+        }
+    )->next->id;
+
+    my $second_option_id = $schema->resultset('QuestionOption')->search(
+        {
+            question_id => $question_id,
+            content     => $second_option_content
+        }
+    )->next->id;
 
     rest_get "/api/poll",
         name  => "Get all poll data",
@@ -54,8 +71,12 @@ db_transaction {
 
                                 options => [
                                     {
-                                        content => "Foobar",
-                                        id      => $option_id
+                                        content => $first_option_content,
+                                        id      => $first_option_id
+                                    },
+                                    {
+                                        content => $second_option_content,
+                                        id      => $second_option_id
                                     }
                                 ]
                             }
@@ -68,14 +89,15 @@ db_transaction {
     };
 
     rest_post "/api/register/poll",
-        name    => "Sucessful poll creation",
+        name    => "Creating poll with active flag when there is one alredy active",
         is_fail => 1,
         code    => 400,
         [
             name                       => 'foobar',
             active                     => 1,
             'questions[0]'             => 'Foobar',
-            'questions[0][options][0]' => 'Foobar',
+            'questions[0][options][0]' => $first_option_content,
+            'questions[0][options][1]' => $second_option_content,
         ]
     ;
 
@@ -106,8 +128,12 @@ db_transaction {
 
                                 options => [
                                     {
-                                        content => "Foobar",
-                                        id      => $option_id
+                                        content => $first_option_content,
+                                        id      => $first_option_id
+                                    },
+                                    {
+                                        content => $second_option_content,
+                                        id      => $second_option_id
                                     }
                                 ]
                             }
@@ -127,6 +153,7 @@ db_transaction {
             active                     => 1,
             'questions[0]'             => 'Foobar',
             'questions[0][options][0]' => 'Foobar',
+            'questions[0][options][1]' => 'foobar',
         ]
     ;
 };

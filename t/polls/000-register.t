@@ -36,7 +36,7 @@ db_transaction {
         is_fail => 1,
         code    => 400,
         [
-            active                     => 1,
+            name                       => 'foobar',
             'questions[0]'             => 'alalala?',
             'questions[0][options][0]' => 'Sim',
             'questions[0][options][1]' => 'Não',
@@ -57,8 +57,34 @@ db_transaction {
             active                     => 1,
             'questions[0]'             => 1,
             'questions[0][options][0]' => 'Sim',
+            'questions[0][options][0]' => 'Não',
         ]
     ;
+
+    rest_post "/api/register/poll",
+        name    => "Poll with question with only one option",
+        is_fail => 1,
+        code    => 400,
+        [
+            name                       => $poll_name,
+            active                     => 1,
+            'questions[0]'             => 'foobar',
+            'questions[0][options][0]' => 'Sim',
+        ]
+    ;
+
+    rest_post "/api/register/poll",
+        name    => "Poll with option with more than 20 characters",
+        is_fail => 1,
+        code    => 400,
+        [
+            name                       => $poll_name,
+            active                     => 1,
+            'questions[0]'             => 'foobar',
+            'questions[0][options][0]' => 'This is a string with more than 20 chars',
+        ]
+    ;
+
 
     rest_post "/api/register/poll",
         name                => "Sucessful poll creation",
