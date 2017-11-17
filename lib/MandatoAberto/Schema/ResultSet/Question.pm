@@ -57,11 +57,15 @@ sub action_specs {
             my %values = $r->valid_values;
             not defined $values{$_} and delete $values{$_} for keys %values;
 
-            my $dialog = $self->create(
+            if (length $values{content} > 640 ) {
+                die \["content", "Mustn't be longer than 640 chars"];
+            }
+
+            my $question = $self->create(
                 { ( map { $_ => $values{$_} } qw(name dialog_id content) ) }
             );
 
-            return $dialog;
+            return $question;
         }
     };
 }
