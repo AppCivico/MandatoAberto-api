@@ -9,7 +9,6 @@ with "MandatoAberto::Role::Verification";
 with 'MandatoAberto::Role::Verification::TransactionalActions::DBIC';
 
 use Data::Verifier;
-use DDP;
 
 sub verifiers_specs {
     my $self = shift;
@@ -29,7 +28,6 @@ sub verifiers_specs {
                 }
             }
         ),
-
     };
 }
 
