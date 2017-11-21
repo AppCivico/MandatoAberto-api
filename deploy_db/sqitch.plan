@@ -19,3 +19,4 @@
 0015-politician-greetings [0014-poll_name] 2017-11-16T15:35:12Z Jordan V. <jordan@eokoe.com> # Greetings table for each politician
 0016-poll-active-boolean [0015-politician-greetings] 2017-11-16T16:09:09Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the active boolean field to the poll table
 0017-politician-biography [0016-poll-active-boolean] 2017-11-17T18:27:25Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Creating the politician_biography table
+0018-email_queue [0017-politician-biography] 2017-11-21T12:46:16Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Creating the email queue table
