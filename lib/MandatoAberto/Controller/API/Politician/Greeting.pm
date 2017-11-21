@@ -67,9 +67,7 @@ sub list_POST {
         location =>
           $c->uri_for( $self->action_for('result'), [ $c->stash->{politician}->user_id, $politician_greeting->id ] ),
         entity => {
-            id            => $politician_greeting->id,
-            politician_id => $politician_greeting->politician_id,
-            text          => $politician_greeting->text
+            id => $politician_greeting->id
         },
     );
 }
@@ -82,16 +80,14 @@ sub list_GET {
     return $self->status_ok(
         $c,
         entity => {
-            politician_greeting => {
-                politician_id => $politician_id,
+            politician_id => $politician_id,
 
-                map {
-                    my $c = $_;
-                    id              => $c->get_column('id'),
-                      politician_id => $c->get_column('politician_id'),
-                      text          => $c->get_column('text'),
-                } $c->stash->{collection}->search( { politician_id => $politician_id } )->all()
-            }
+            map {
+                my $c = $_;
+                id              => $c->get_column('id'),
+                politician_id   => $c->get_column('politician_id'),
+                text            => $c->get_column('text'),
+            } $c->stash->{collection}->search( { politician_id => $politician_id } )->all()
         }
     );
 }

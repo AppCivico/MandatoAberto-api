@@ -13,14 +13,6 @@ db_transaction {
     api_auth_as user_id => $politician_id;
 
     rest_post "/api/politician/$politician_id/greeting",
-      name                => "greeting create",
-      code                => 201,
-      automatic_load_item => 0,
-      stash               => "c1",
-      [ text => "Hello. I'm the Mayor!" ],
-      ;
-
-    rest_post "/api/politician/$politician_id/greeting",
       name    => "greeting with empty text",
       is_fail => 1,
       code    => 400,
@@ -38,6 +30,14 @@ db_transaction {
       ],
       ;
 
+    rest_post "/api/politician/$politician_id/greeting",
+      name                => "greeting create",
+      code                => 201,
+      automatic_load_item => 0,
+      stash               => "c1",
+      [ text => "Hello. I'm the Mayor!" ],
+      ;
+
     my $greeting_id = stash "c1.id";
 
     rest_get "/api/politician/$politician_id/greeting",
@@ -48,9 +48,9 @@ db_transaction {
     stash_test "get_politician_greeting" => sub {
         my $res = shift;
 
-        is( $res->{politician_greeting}->{id},            $greeting_id,   'greeting_id ok' );
-        is( $res->{politician_greeting}->{politician_id}, $politician_id, 'politician_id ok' );
-        like( $res->{politician_greeting}->{text}, qr/Hello. I'm the Mayor!/, 'text ok' );
+        is( $res->{id},            $greeting_id,   'greeting_id ok' );
+        is( $res->{politician_id}, $politician_id, 'politician_id ok' );
+        like( $res->{text}, qr/Hello. I'm the Mayor!/, 'text ok' );
     };
 
     rest_put "/api/politician/$politician_id/greeting/$greeting_id",
@@ -67,9 +67,9 @@ db_transaction {
     stash_test "get_politician_greeting" => sub {
         my $res = shift;
 
-        is( $res->{politician_greeting}->{id},            $greeting_id,                        'greeting_id ok' );
-        is( $res->{politician_greeting}->{politician_id}, $politician_id,                      'politician_id ok' );
-        is( $res->{politician_greeting}->{text},          "Hello. I'm your soon-to-be Mayor!", 'text ok' );
+        is( $res->{id},            $greeting_id,                        'greeting_id ok' );
+        is( $res->{politician_id}, $politician_id,                      'politician_id ok' );
+        is( $res->{text},          "Hello. I'm your soon-to-be Mayor!", 'text ok' );
     };
 
     rest_put "/api/politician/$politician_id/greeting/$greeting_id",
@@ -92,9 +92,9 @@ db_transaction {
     stash_test "get_politician_greeting" => sub {
         my $res = shift;
 
-        is( $res->{politician_greeting}->{id},            $greeting_id,                       'greeting_id ok' );
-        is( $res->{politician_greeting}->{politician_id}, $politician_id,                     'politician_id ok' );
-        is( $res->{politician_greeting}->{text},          "Hi!. I'm not your Mayor anymore!", 'text ok' );
+        is( $res->{id},            $greeting_id,                       'greeting_id ok' );
+        is( $res->{politician_id}, $politician_id,                     'politician_id ok' );
+        is( $res->{text},          "Hi!. I'm not your Mayor anymore!", 'text ok' );
     };
 };
 
