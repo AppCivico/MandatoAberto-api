@@ -53,15 +53,49 @@ db_transaction {
         like( $res->{politician_greeting}->{text}, qr/Hello. I'm the Mayor!/, 'text ok' );
     };
 
-=put que não deu certo
     rest_put "/api/politician/$politician_id/greeting/$greeting_id",
-      name                => "PUT sucessfuly",
-      automatic_load_item => 0,
-      code                => 201,
-      stash               => "c1",
+      name  => "PUT sucessfuly",
+      code  => 200,
+      stash => "c1",
       [ text => "Hello. I'm your soon-to-be Mayor!" ];
-=cut
 
+    rest_get "/api/politician/$politician_id/greeting",
+      name  => "get politician greeting",
+      list  => 1,
+      stash => "get_politician_greeting";
+
+    stash_test "get_politician_greeting" => sub {
+        my $res = shift;
+
+        is( $res->{politician_greeting}->{id},            $greeting_id,                        'greeting_id ok' );
+        is( $res->{politician_greeting}->{politician_id}, $politician_id,                      'politician_id ok' );
+        is( $res->{politician_greeting}->{text},          "Hello. I'm your soon-to-be Mayor!", 'text ok' );
+    };
+
+    rest_put "/api/politician/$politician_id/greeting/$greeting_id",
+      name  => "PUT ok - empty text",
+      code  => 200,
+      stash => "c1",
+      [ text => "" ];
+
+    rest_put "/api/politician/$politician_id/greeting/$greeting_id",
+      name  => "PUT sucessfuly",
+      code  => 200,
+      stash => "c1",
+      [ text => "Hi!. I'm not your Mayor anymore!" ];
+
+    rest_get "/api/politician/$politician_id/greeting",
+      name  => "get politician greeting",
+      list  => 1,
+      stash => "get_politician_greeting";
+
+    stash_test "get_politician_greeting" => sub {
+        my $res = shift;
+
+        is( $res->{politician_greeting}->{id},            $greeting_id,                       'greeting_id ok' );
+        is( $res->{politician_greeting}->{politician_id}, $politician_id,                     'politician_id ok' );
+        is( $res->{politician_greeting}->{text},          "Hi!. I'm not your Mayor anymore!", 'text ok' );
+    };
 };
 
 done_testing();

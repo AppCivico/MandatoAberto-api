@@ -111,7 +111,7 @@ __PACKAGE__->belongs_to(
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
 
-use Data::Verifier;
+with "MandatoAberto::Role::Verification";
 
 sub verifiers_specs {
     my $self = shift;
@@ -120,12 +120,9 @@ sub verifiers_specs {
         update => Data::Verifier->new(
             filters => [qw(trim)],
             profile => {
-                politician_id => {
-                    required => 1,
-                    type     => "Int",
-                },
+
                 text => {
-                    required   => 1,
+                    required   => 0,
                     type       => "Str",
                     max_length => 250,
                 }
@@ -144,7 +141,9 @@ sub action_specs {
             my %values = $r->valid_values;
             not defined $values{$_} and delete $values{$_} for keys %values;
 
-            $self->update( \%values );
+            my $politician_greeting = $self->update( \%values );
+
+            return $politician_greeting;
         }
     };
 }

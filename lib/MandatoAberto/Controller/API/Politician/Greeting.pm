@@ -6,17 +6,11 @@ BEGIN { extends 'CatalystX::Eta::Controller::REST' }
 
 with "CatalystX::Eta::Controller::AutoBase";
 
-#with "CatalystX::Eta::Controller::AutoListGET";
+#with "CatalystX::Eta::Controller::AutoResultPUT";
 
 __PACKAGE__->config(
     result  => "DB::PoliticianGreeting",
     no_user => 1,
-
-    # AutoListGET
-    list_key  => "politician_greeting",
-    build_row => sub {
-        return { $_[0]->get_columns() };
-    }
 
 );
 
@@ -53,34 +47,6 @@ sub object : Chained('base') : PathPart('') : CaptureArgs(1) {
     $c->stash->{is_me} = int( $c->user->id == $politician_greeting->politician_id );
     $c->detach("/api/forbidden") unless $c->stash->{is_me};
 }
-
-sub result : Chained('object') : PathPart('') : Args(0) : ActionClass('REST') { }
-
-sub result_PUT { }
-
-=Put que deu errado
-sub result_PUT {
-    my ( $self, $c ) = @_;
-    use DDP;
-
-    p $c->stash->{politician_greeting};
-
-    my $politician_greeting = $c->stash->{politician}->execute(
-        $c,
-        for  => 'update',
-        with => $c->req->params
-    );
-
-    return $self->status_created(
-        $c,
-        entity => {
-            id            => $c->stash->{politician_greeting}->id,
-            politician_id => $c->stash->{politician_greeting}->politician_id,
-            text          => $c->stash->{politician_greeting}->$c->req->params
-        },
-    );
-}
-=cut
 
 sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }
 
@@ -129,6 +95,31 @@ sub list_GET {
         }
     );
 }
+
+sub result : Chained('object') : PathPart('') : Args(0) : ActionClass('REST') { }
+
+sub result_PUT {
+    my ( $self, $c ) = @_;
+
+    my $politician_greeting = $c->stash->{politician_greeting}->execute(
+        $c,
+        for  => "update",
+        with => { %{ $c->req->params }, }
+    );
+
+    return $self->status_ok(
+        $c,
+        entity => {
+
+            #  id => $c->stash->{politician_greeting}->id,
+
+            #  politician_id => $politician_greeting->id,
+            #  text          => $politician_greeting->text
+        },
+    );
+}
+
+=cut
 
 =encoding utf8
 

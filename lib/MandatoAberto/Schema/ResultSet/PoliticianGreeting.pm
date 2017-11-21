@@ -9,6 +9,7 @@ with "MandatoAberto::Role::Verification";
 with 'MandatoAberto::Role::Verification::TransactionalActions::DBIC';
 
 use Data::Verifier;
+use DDP;
 
 sub verifiers_specs {
     my $self = shift;
@@ -28,6 +29,7 @@ sub verifiers_specs {
                 }
             }
         ),
+
     };
 }
 
@@ -43,13 +45,14 @@ sub action_specs {
             not defined $values{$_} and delete $values{$_} for keys %values;
 
             if ( !$values{text} ) {
-                die \[ "greeting", "Greent mustn't be empty" ];
+                die \[ "greeting", "Text mustn't be empty" ];
             }
 
             my $politician_greeting = $self->create( \%values );
 
             return $politician_greeting;
-        }
+        },
+
     };
 }
 
