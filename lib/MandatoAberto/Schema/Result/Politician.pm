@@ -231,7 +231,7 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 politician_greetings
+=head2 politicians_greeting
 
 Type: has_many
 
@@ -240,7 +240,7 @@ Related object: L<MandatoAberto::Schema::Result::PoliticianGreeting>
 =cut
 
 __PACKAGE__->has_many(
-  "politician_greetings",
+  "politicians_greeting",
   "MandatoAberto::Schema::Result::PoliticianGreeting",
   { "foreign.politician_id" => "self.user_id" },
   { cascade_copy => 0, cascade_delete => 0 },
