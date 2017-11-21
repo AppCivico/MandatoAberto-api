@@ -56,10 +56,36 @@ db_transaction {
         is ($res->{content}, $biography_content, 'content');
     };
 
+    api_auth_as user_id => 1;
+
+    rest_put "/api/politician/$politician_id/biography/$biography_id",
+        name    => "PUT biography as admin",
+        is_fail => 1,
+        code    => 403,
+    ;
+
+    rest_get "/api/politician/$politician_id/biography",
+        name    => "GET biography as admin",
+        is_fail => 1,
+        code    => 403
+    ;
+
+    api_auth_as user_id => $politician_id;
+
     rest_put "/api/politician/$politician_id/biography/$biography_id",
         name => "PUT biography",
         [ content => "foobar" ]
     ;
+
+    rest_reload_list "get_biography";
+
+    stash_test "get_biography.list" => sub {
+        my $res = shift;
+
+        is ($res->{id}, $biography_id, 'biography id');
+        is ($res->{politician_id}, $politician_id, 'politician id');
+        is ($res->{content}, "foobar", 'biography content');
+    };
 };
 
 done_testing();

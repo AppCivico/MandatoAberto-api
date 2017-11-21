@@ -22,6 +22,15 @@ sub verifiers_specs {
                 politician_id => {
                     required => 1,
                     type     => "Int",
+                    post_check => sub {
+                        my $politician_id = $_[0]->get_value('politician_id');
+
+                        $self->search({
+                            politician_id => $politician_id
+                        })->count and die \["politician_id", "politician alredy has a contact entity"];
+
+                        return 1;
+                    }
                 },
                 twitter => {
                     required => 0,

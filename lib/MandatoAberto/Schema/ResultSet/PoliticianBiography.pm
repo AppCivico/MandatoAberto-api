@@ -20,8 +20,17 @@ sub verifiers_specs {
             filters => [qw(trim)],
             profile => {
                 politician_id => {
-                    required => 1,
-                    type     => "Int",
+                    required   => 1,
+                    type       => "Int",
+                    post_check => sub {
+                        my $politician_id = $_[0]->get_value('politician_id');
+
+                        $self->search({
+                            politician_id => $politician_id
+                        })->count and die \["politician_id", "politician alredy has a biography"];
+
+                        return 1;
+                    }
                 },
                 content => {
                     required => 1,

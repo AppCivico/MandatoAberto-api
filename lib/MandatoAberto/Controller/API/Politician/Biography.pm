@@ -43,7 +43,7 @@ sub object : Chained('base') : PathPart('') : CaptureArgs(1) {
     my $biography = $c->stash->{collection}->find($biography_id);
     $c->detach("/error_404") unless ref $biography;
 
-    $c->stash->{biography} = $biography;
+    $c->stash->{politician_biography} = $biography;
 
     $c->stash->{is_me} = int($c->user->id == $biography->politician_id);
     $c->detach("/api/forbidden") unless $c->stash->{is_me};
