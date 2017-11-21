@@ -69,7 +69,6 @@ my %WriteMakefileArgs = (
     "FindBin" => 0,
     "Log::Log4perl" => 0,
     "MIME::Lite" => 0,
-    "MandatoAberto::Worker" => 0,
     "Moose" => 0,
     "Moose::Role" => 0,
     "Moose::Util::TypeConstraints" => 0,
@@ -110,7 +109,7 @@ my %WriteMakefileArgs = (
   },
   "VERSION" => 20171121,
   "test" => {
-    "TESTS" => "t/*.t t/dialog/*.t t/politician/*.t t/polls/*.t"
+    "TESTS" => "t/*.t t/dialog/*.t t/politician/*.t t/polls/*.t t/worker/*.t"
   }
 );
 
@@ -177,7 +176,6 @@ my %FallbackPrereqs = (
   "JSON::MaybeXS" => 0,
   "Log::Log4perl" => 0,
   "MIME::Lite" => 0,
-  "MandatoAberto::Worker" => 0,
   "Moose" => 0,
   "Moose::Role" => 0,
   "Moose::Util::TypeConstraints" => 0,
