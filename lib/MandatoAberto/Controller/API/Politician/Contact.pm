@@ -11,6 +11,7 @@ with "CatalystX::Eta::Controller::AutoListPOST";
 with "CatalystX::Eta::Controller::AutoResultPUT";
 
 __PACKAGE__->config(
+
     # AutoBase.
     result => "DB::PoliticianContact",
 
@@ -24,7 +25,7 @@ __PACKAGE__->config(
     },
 
     prepare_params_for_create => sub {
-        my ($self, $c, $params) = @_;
+        my ( $self, $c, $params ) = @_;
 
         $params->{politician_id} = $c->user->id;
 
@@ -37,7 +38,7 @@ sub root : Chained('/api/politician/object') : PathPart('') : CaptureArgs(0) { }
 sub base : Chained('root') : PathPart('contact') : CaptureArgs(0) { }
 
 sub object : Chained('base') : PathPart('') : CaptureArgs(1) {
-    my ($self, $c, $politician_contact_id) = @_;
+    my ( $self, $c, $politician_contact_id ) = @_;
 
     $c->stash->{collection} = $c->stash->{collection}->search( { id => $politician_contact_id } );
 
@@ -46,7 +47,7 @@ sub object : Chained('base') : PathPart('') : CaptureArgs(1) {
 
     $c->stash->{politician_contact} = $politician_contact;
 
-    $c->stash->{is_me} = int($c->user->id == $politician_contact->politician_id);
+    $c->stash->{is_me} = int( $c->user->id == $politician_contact->politician_id );
     $c->detach("/api/forbidden") unless $c->stash->{is_me};
 }
 
@@ -59,7 +60,7 @@ sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }
 sub list_POST { }
 
 sub list_GET {
-    my ($self, $c) = @_;
+    my ( $self, $c ) = @_;
 
     my $politician_id = $c->user->id;
 
@@ -71,11 +72,11 @@ sub list_GET {
 
                 map {
                     my $c = $_;
-                    id        => $c->get_column('id'),
-                    facebook  => $c->get_column('facebook'),
-                    twitter   => $c->get_column('twitter'),
-                    email     => $c->get_column('email'),
-                    cellphone => $c->get_column('cellphone'),
+                    id          => $c->get_column('id'),
+                      facebook  => $c->get_column('facebook'),
+                      twitter   => $c->get_column('twitter'),
+                      email     => $c->get_column('email'),
+                      cellphone => $c->get_column('cellphone'),
                 } $c->stash->{collection}->search( { politician_id => $politician_id } )->all()
             }
         }

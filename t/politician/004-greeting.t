@@ -16,7 +16,7 @@ db_transaction {
       name                => "greeting create",
       code                => 201,
       automatic_load_item => 0,
-      stash               => "greet",
+      stash               => "c1",
       [ text => "Hello. I'm the Mayor!" ],
       ;
 
@@ -37,6 +37,30 @@ db_transaction {
 "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
       ],
       ;
+
+    my $greeting_id = stash "c1.id";
+
+    rest_get "/api/politician/$politician_id/greeting",
+      name  => "get politician greeting",
+      list  => 1,
+      stash => "get_politician_greeting";
+
+    stash_test "get_politician_greeting" => sub {
+        my $res = shift;
+
+        is( $res->{politician_greeting}->{id},            $greeting_id,   'greeting_id ok' );
+        is( $res->{politician_greeting}->{politician_id}, $politician_id, 'politician_id ok' );
+        like( $res->{politician_greeting}->{text}, qr/Hello. I'm the Mayor!/, 'text ok' );
+    };
+
+=put que não deu certo
+    rest_put "/api/politician/$politician_id/greeting/$greeting_id",
+      name                => "PUT sucessfuly",
+      automatic_load_item => 0,
+      code                => 201,
+      stash               => "c1",
+      [ text => "Hello. I'm your soon-to-be Mayor!" ];
+=cut
 
 };
 

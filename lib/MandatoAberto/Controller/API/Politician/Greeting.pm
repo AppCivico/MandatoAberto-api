@@ -6,9 +6,17 @@ BEGIN { extends 'CatalystX::Eta::Controller::REST' }
 
 with "CatalystX::Eta::Controller::AutoBase";
 
+#with "CatalystX::Eta::Controller::AutoListGET";
+
 __PACKAGE__->config(
     result  => "DB::PoliticianGreeting",
     no_user => 1,
+
+    # AutoListGET
+    list_key  => "politician_greeting",
+    build_row => sub {
+        return { $_[0]->get_columns() };
+    }
 
 );
 
@@ -46,21 +54,47 @@ sub object : Chained('base') : PathPart('') : CaptureArgs(1) {
     $c->detach("/api/forbidden") unless $c->stash->{is_me};
 }
 
-sub create : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }
+sub result : Chained('object') : PathPart('') : Args(0) : ActionClass('REST') { }
 
-sub create_POST {
+sub result_PUT { }
+
+=Put que deu errado
+sub result_PUT {
+    my ( $self, $c ) = @_;
+    use DDP;
+
+    p $c->stash->{politician_greeting};
+
+    my $politician_greeting = $c->stash->{politician}->execute(
+        $c,
+        for  => 'update',
+        with => $c->req->params
+    );
+
+    return $self->status_created(
+        $c,
+        entity => {
+            id            => $c->stash->{politician_greeting}->id,
+            politician_id => $c->stash->{politician_greeting}->politician_id,
+            text          => $c->stash->{politician_greeting}->$c->req->params
+        },
+    );
+}
+=cut
+
+sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }
+
+sub list_POST {
     my ( $self, $c ) = @_;
 
     my $politician_greeting = $c->stash->{collection}->execute(
         $c,
-        for  => "create",
+        for  => 'create',
         with => {
             %{ $c->req->params }, politician_id => $c->user->id,
           }
 
     );
-
-    # $c->slack_notify("O usuário '${\($user->user->name)}' se cadastrou na plataforma como doador.") unless is_test();
 
     return $self->status_created(
         $c,
@@ -74,7 +108,27 @@ sub create_POST {
     );
 }
 
-sub result : Chained('object') : PathPart('') : Args(0) : ActionClass('REST') { }
+sub list_GET {
+    my ( $self, $c ) = @_;
+
+    my $politician_id = $c->user->id;
+
+    return $self->status_ok(
+        $c,
+        entity => {
+            politician_greeting => {
+                politician_id => $politician_id,
+
+                map {
+                    my $c = $_;
+                    id              => $c->get_column('id'),
+                      politician_id => $c->get_column('politician_id'),
+                      text          => $c->get_column('text'),
+                } $c->stash->{collection}->search( { politician_id => $politician_id } )->all()
+            }
+        }
+    );
+}
 
 =encoding utf8
 
