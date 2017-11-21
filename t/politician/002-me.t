@@ -33,6 +33,28 @@ db_transaction {
     ;
 
     api_auth_as user_id => $politician_id;
+
+
+    rest_post "/api/politician/$politician_id/contact",
+        name                => "politician contact",
+        automatic_load_item => 0,
+        stash               => 'c1',
+        [
+            twitter  => '@lucas_ansei',
+            facebook => 'https://facebook.com/lucasansei',
+            email    => 'foobar@email.com'
+        ]
+    ;
+    my $contact_id = stash "c1.id";
+
+    rest_post "/api/politician/$politician_id/biography",
+        name                => "biography sucessful creation",
+        automatic_load_item => 0,
+        stash               => 'b1',
+        [ content => "foobar" ]
+    ;
+    my $biography_id = stash "b1.id";
+
     rest_get "/api/politician/$politician_id",
         name  => "get politician",
         list  => 1,
@@ -53,6 +75,12 @@ db_transaction {
         is ($res->{fb_app_secret}, "foobar" , 'fb_app_secret');
         is ($res->{fb_page_acess_token}, "FOOBAR" , 'fb_page_acess_token');
         is ($res->{gender}, $gender , 'gender');
+        is ($res->{contact}->{id}, $contact_id , 'contact id');
+        is ($res->{contact}->{twitter}, '@lucas_ansei', 'twitter');
+        is ($res->{contact}->{facebook}, 'https://facebook.com/lucasansei', 'facebook');
+        is ($res->{contact}->{email}, 'foobar@email.com', 'email');
+        is ($res->{biography}->{id}, $biography_id, 'biography_id');
+        is ($res->{biography}->{content}, 'foobar', 'biography content');
     };
 
     rest_put "/api/politician/$politician_id",

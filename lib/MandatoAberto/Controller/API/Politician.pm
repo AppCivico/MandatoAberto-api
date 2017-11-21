@@ -52,6 +52,31 @@ sub result_GET {
 
             ( office => { map { $_ => $c->stash->{politician}->office->$_ } qw/id name/ } ),
 
+            (
+                contact => {
+                    map {
+                        my $c = $_;
+
+                        id        => $c->get_column('id'),
+                        twitter   => $c->get_column('twitter'),
+                        facebook  => $c->get_column('facebook'),
+                        email     => $c->get_column('email'),
+                        cellphone => $c->get_column('cellphone'),
+                    } $c->model("DB::PoliticianContact")->search( { politician_id => $c->user->id } )
+                }
+            ),
+
+            (
+                biography => {
+                    map {
+                        my $b = $_;
+
+                        id      => $b->get_column('id'),
+                        content => $b->get_column('content')
+                    } $c->model("DB::PoliticianBiography")->search( { politician_id => $c->user->id } )
+                }
+            ),
+
             ( map { $_ => $c->stash->{politician}->user->$_ } qw/id email created_at/ ),
 
         }
