@@ -62,6 +62,17 @@ db_transaction {
     ;
 
     rest_post "/api/register/poll",
+        name    => "Poll with only question",
+        is_fail => 1,
+        code    => 400,
+        [
+            name                       => $poll_name,
+            active                     => 1,
+            'questions[0]'             => 'Você está bem?',
+        ]
+    ;
+
+    rest_post "/api/register/poll",
         name    => "Poll with question with only one option",
         is_fail => 1,
         code    => 400,
@@ -118,7 +129,6 @@ db_transaction {
             'questions[1][options][1]' => 'bar',
        ]
     ;
-
 };
 
 done_testing();

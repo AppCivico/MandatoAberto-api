@@ -54,7 +54,7 @@ sub create_POST {
     for (my $i = 0; $i < scalar @{ $c->req->params->{poll_questions} } ; $i++) {
         my $question = $c->req->params->{poll_questions}->[$i];
 
-        die \["questions[$i]", 'must have at least 2 options'] if scalar(@{ $question->{question_options} }) < 2;
+        die \["questions[$i]", 'must have at least 2 options'] if ( !defined $question->{question_options} || scalar(@{ $question->{question_options} }) < 2 );
 
         for my $k ( keys %{ $question } ) {
             my $cons;
