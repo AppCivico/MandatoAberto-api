@@ -7,11 +7,15 @@ use MandatoAberto::Test::Further;
 my $schema = MandatoAberto->model("DB");
 
 db_transaction {
-    my $party  = fake_int(1, 35)->();
-    my $office = fake_int(1, 8)->();
-    my $gender = fake_pick(qw/F M/)->();
+    my $party    = fake_int(1, 35)->();
+    my $office   = fake_int(1, 8)->();
+    my $gender   = fake_pick(qw/F M/)->();
+    my $email    = fake_email()->();
+    my $password = "foobar";
 
     create_politician(
+        email               => $email,
+        password            => $password,
         name                => "Lucas Ansei",
         address_state       => 'SP',
         address_city        => 'São Paulo',
@@ -109,6 +113,47 @@ db_transaction {
         is($res->{name},      "Ansei Lucas", "name updated");
         is($res->{address_city}, "Ubatuba",   "city updated");
     };
+
+    # Mudando a senha
+    rest_post "/api/login",
+        name  => "login with current password",
+        code  => 200,
+        [
+            email    => $email,
+            password => $password,
+        ],
+    ;
+
+    rest_put "/api/politician/$politician_id",
+        name    => "new password with less than 6 chars",
+        is_fail => 1,
+        code    => 400,
+        [ new_password => "12345" ]
+    ;
+
+    rest_put "/api/politician/$politician_id",
+        name    => "new password",
+        [ new_password => "123456" ]
+    ;
+
+    rest_post "/api/login",
+        name    => "login with old password",
+        is_fail => 1,
+        code    => 400,
+        [
+            email    => $email,
+            password => $password,
+        ],
+    ;
+
+    rest_post "/api/login",
+        name => "login with new password",
+        code => 200,
+        [
+            email    => $email,
+            password => '123456',
+        ],
+    ;
 
     create_politician;
     rest_get [ "api", "politician", stash "politician.id" ], name => "can't get other politician", is_fail => 1, code => 403;

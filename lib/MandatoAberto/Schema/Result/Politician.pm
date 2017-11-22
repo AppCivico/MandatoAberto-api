@@ -381,7 +381,10 @@ sub verifiers_specs {
                         return 1;
                     },
                 },
-
+                new_password => {
+                    required => 0,
+                    type     => "Str"
+                }
             }
         ),
     };
@@ -396,6 +399,12 @@ sub action_specs {
 
             my %values = $r->valid_values;
             not defined $values{$_} and delete $values{$_} for keys %values;
+
+            if ($values{new_password} && length $values{new_password} < 6) {
+                die \["new_password", "must have at least 6 characters"];
+            }
+
+            $self->user->update( { password => $values{new_password} } ) and delete $values{new_password} if $values{new_password};
 
             $self->update(\%values);
         }
