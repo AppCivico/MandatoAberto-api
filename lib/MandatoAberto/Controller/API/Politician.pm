@@ -77,6 +77,17 @@ sub result_GET {
                 }
             ),
 
+            (
+                greeting => {
+                    map {
+                        my $g = $_;
+
+                        id   => $g->get_column('id'),
+                        text => $g->get_column('text')
+                    } $c->model("DB::PoliticianGreeting")->search( { politician_id => $c->user->id } )
+                }
+            ),
+
             ( map { $_ => $c->stash->{politician}->user->$_ } qw/id email created_at/ ),
 
         }

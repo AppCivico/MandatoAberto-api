@@ -55,6 +55,14 @@ db_transaction {
     ;
     my $biography_id = stash "b1.id";
 
+    rest_post "/api/politician/$politician_id/greeting",
+        name                => "politician greeting",
+        automatic_load_item => 0,
+        stash               => 'g1',
+        [ text => "foobar" ]
+    ;
+    my $greeting_id = stash "g1.id";
+
     rest_get "/api/politician/$politician_id",
         name  => "get politician",
         list  => 1,
@@ -81,6 +89,8 @@ db_transaction {
         is ($res->{contact}->{email}, 'foobar@email.com', 'email');
         is ($res->{biography}->{id}, $biography_id, 'biography_id');
         is ($res->{biography}->{content}, 'foobar', 'biography content');
+        is ($res->{greeting}->{id}, $greeting_id, 'greeting_id');
+        is ($res->{greeting}->{text}, 'foobar', 'greeting content');
     };
 
     rest_put "/api/politician/$politician_id",
