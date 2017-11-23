@@ -1,5 +1,4 @@
 use utf8;
-
 package MandatoAberto::Schema::Result::PoliticianContact;
 
 # Created by DBIx::Class::Schema::Loader
@@ -33,7 +32,7 @@ extends 'DBIx::Class::Core';
 
 =cut
 
-__PACKAGE__->load_components( "InflateColumn::DateTime", "TimeStamp", "PassphraseColumn" );
+__PACKAGE__->load_components("InflateColumn::DateTime", "TimeStamp", "PassphraseColumn");
 
 =head1 TABLE: C<politician_contact>
 
@@ -79,23 +78,23 @@ __PACKAGE__->table("politician_contact");
 =cut
 
 __PACKAGE__->add_columns(
-    "id",
-    {
-        data_type         => "integer",
-        is_auto_increment => 1,
-        is_nullable       => 0,
-        sequence          => "politician_contact_id_seq",
-    },
-    "politician_id",
-    { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
-    "twitter",
-    { data_type => "text", is_nullable => 1 },
-    "facebook",
-    { data_type => "text", is_nullable => 1 },
-    "email",
-    { data_type => "text", is_nullable => 1 },
-    "cellphone",
-    { data_type => "text", is_nullable => 1 },
+  "id",
+  {
+    data_type         => "integer",
+    is_auto_increment => 1,
+    is_nullable       => 0,
+    sequence          => "politician_contact_id_seq",
+  },
+  "politician_id",
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
+  "twitter",
+  { data_type => "text", is_nullable => 1 },
+  "facebook",
+  { data_type => "text", is_nullable => 1 },
+  "email",
+  { data_type => "text", is_nullable => 1 },
+  "cellphone",
+  { data_type => "text", is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -121,14 +120,15 @@ Related object: L<MandatoAberto::Schema::Result::Politician>
 =cut
 
 __PACKAGE__->belongs_to(
-    "politician",
-    "MandatoAberto::Schema::Result::Politician",
-    { user_id       => "politician_id" },
-    { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
+  "politician",
+  "MandatoAberto::Schema::Result::Politician",
+  { user_id => "politician_id" },
+  { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
 );
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2017-11-12 14:41:09
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:1Hnj/TVDL6o9QNp14MNhbg
+
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2017-11-23 16:23:12
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:1Re1z+fzkKdEGTJY+yrRJQ
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
 with 'MandatoAberto::Role::Verification';
