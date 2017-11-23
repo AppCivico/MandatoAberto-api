@@ -85,8 +85,8 @@ sub list_GET {
             map {
                 my $c = $_;
                 id              => $c->get_column('id'),
-                politician_id   => $c->get_column('politician_id'),
-                text            => $c->get_column('text'),
+                  politician_id => $c->get_column('politician_id'),
+                  text          => $c->get_column('text'),
             } $c->stash->{collection}->search( { politician_id => $politician_id } )->all()
         }
     );
@@ -106,11 +106,8 @@ sub result_PUT {
     return $self->status_ok(
         $c,
         entity => {
-
-            #  id => $c->stash->{politician_greeting}->id,
-
-            #  politician_id => $politician_greeting->id,
-            #  text          => $politician_greeting->text
+            id   => $politician_greeting->id,
+            text => $politician_greeting->text
         },
     );
 }
