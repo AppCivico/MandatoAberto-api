@@ -65,11 +65,6 @@ __PACKAGE__->table("question");
   data_type: 'text'
   is_nullable: 0
 
-=head2 citizen_input
-
-  data_type: 'text'
-  is_nullable: 0
-
 =cut
 
 __PACKAGE__->add_columns(
@@ -85,8 +80,6 @@ __PACKAGE__->add_columns(
   "name",
   { data_type => "text", is_nullable => 0 },
   "content",
-  { data_type => "text", is_nullable => 0 },
-  "citizen_input",
   { data_type => "text", is_nullable => 0 },
 );
 
@@ -135,8 +128,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2017-11-23 16:23:12
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:ywPb56jDUaHfnVkjYichig
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2017-10-29 15:16:01
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:C02ytlQX5cuFYSVZK6zSqw
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

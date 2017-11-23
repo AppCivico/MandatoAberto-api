@@ -20,5 +20,4 @@
 0016-poll-active-boolean [0015-politician-greetings] 2017-11-16T16:09:09Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the active boolean field to the poll table
 0017-politician-biography [0016-poll-active-boolean] 2017-11-17T18:27:25Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Creating the politician_biography table
 0018-email_queue [0017-politician-biography] 2017-11-21T12:46:16Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Creating the email queue table
-0019-politician-greetings [0018-email_queue] 2017-11-16T18:23:35Z Jordan V. <jordan@eokoe.com> # Change table name to singular -> politician_greetings
-0020-question-citizen-input [0019-politician-greetings] 2017-11-23T18:22:30Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the column citizen input to the question table
+0019-politician-greetings [0018-email_queue] 2017-11-16T18:23:35Z Jordan V. <jordan@eokoe.com> # Change table name to singular -> politician_greetings 

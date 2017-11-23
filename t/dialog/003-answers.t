@@ -19,8 +19,9 @@ db_transaction {
         automatic_load_item => 0,
         stash               => "q1",
         [
-            name    => $question_name,
-            content => "Foobar"
+            name          => $question_name,
+            content       => "Foobar",
+            citizen_input => fake_words(1)->()
         ]
     ;
 

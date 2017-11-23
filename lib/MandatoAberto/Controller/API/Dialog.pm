@@ -58,9 +58,10 @@ sub list_GET {
                                 my $q = $_;
 
                                 +{
-                                    id      => $q->get_column('id'),
-                                    name    => $q->get_column('name'),
-                                    content => $q->get_column('content')
+                                    id            => $q->get_column('id'),
+                                    name          => $q->get_column('name'),
+                                    content       => $q->get_column('content'),
+                                    citizen_input => $q->get_column('citizen_input')
                                 }
                             } $d->questions->all()
                         ],

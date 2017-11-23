@@ -4,7 +4,7 @@
 BEGIN;
 
 ALTER TABLE question ADD COLUMN citizen_input TEXT;
-UPDATE question SET citizen_input = 'purus';
+UPDATE question SET citizen_input = '';
 ALTER TABLE question ALTER COLUMN citizen_input SET NOT NULL;
 
 COMMIT;

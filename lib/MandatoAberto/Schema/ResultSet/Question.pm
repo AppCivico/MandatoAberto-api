@@ -41,6 +41,11 @@ sub verifiers_specs {
                 content => {
                     required   => 1,
                     type       => "Str",
+                },
+                citizen_input => {
+                    required => 1,
+                    type     => "Str"
+                    # TODO validar citizen_input de acordo com o tamanho e se já existe um no banco
                 }
             }
         ),
@@ -61,9 +66,7 @@ sub action_specs {
                 die \["content", "Mustn't be longer than 640 chars"];
             }
 
-            my $question = $self->create(
-                { ( map { $_ => $values{$_} } qw(name dialog_id content) ) }
-            );
+            my $question = $self->create(\%values);
 
             return $question;
         }

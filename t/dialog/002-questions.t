@@ -23,8 +23,9 @@ db_transaction {
         is_fail => 1,
         code    => 403,
         [
-            name    => $question_name,
-            content => "Foobar"
+            name          => $question_name,
+            content       => "Foobar",
+            citizen_input => fake_words(1)->()
         ]
     ;
 
@@ -34,14 +35,30 @@ db_transaction {
         name    => "Question without content",
         is_fail => 1,
         code    => 400,
-        [ name => $question_name ]
+        [
+            name          => $question_name,
+            citizen_input => fake_words(1)->()
+        ]
     ;
 
     rest_post "/api/dialog/$dialog_id/question",
         name    => "Question without name",
         is_fail => 1,
         code    => 400,
-        [ content => "Foobar"]
+        [
+            content       => "Foobar",
+            citizen_input => fake_words(1)->()
+        ]
+    ;
+
+    rest_post "/api/dialog/$dialog_id/question",
+        name    => "Question without citizen input",
+        is_fail => 1,
+        code    => 400,
+        [
+            content => "Foobar",
+            name    => $question_name,
+        ]
     ;
 
     rest_post "/api/dialog/$dialog_id/question",
@@ -49,8 +66,9 @@ db_transaction {
         automatic_load_item => 0,
         stash               => "q1",
         [
-            name    => $question_name,
-            content => "Foobar"
+            name          => $question_name,
+            content       => "Foobar",
+            citizen_input => fake_words(1)->()
         ]
     ;
 
@@ -61,8 +79,9 @@ db_transaction {
         is_fail => 1,
         code    => 400,
         [
-            name      => $question_name,
-            content   => "Foobar"
+            name          => $question_name,
+            content       => "Foobar",
+            citizen_input => fake_words(1)->()
         ]
     ;
 
