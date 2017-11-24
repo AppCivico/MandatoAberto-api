@@ -17,21 +17,9 @@ sub verifiers_specs {
         create => Data::Verifier->new(
             filters => [qw(trim)],
             profile => {
-                question_id => {
-                    required   => 1,
-                    type       => "Int",
-                    post_check => sub {
-                        my $question_id = $_[0]->get_value("question_id");
-                        $self->result_source->schema->resultset("Question")->search({ id => $question_id })->count;
-                    },
-                },
-                politician_id => {
+                answers => {
                     required => 1,
-                    type     => "Int"
-                },
-                content => {
-                    required   => 1,
-                    type       => "Str",
+                    type     => 'ArrayRef'
                 }
             }
         ),
@@ -48,9 +36,7 @@ sub action_specs {
             my %values = $r->valid_values;
             not defined $values{$_} and delete $values{$_} for keys %values;
 
-            my $dialog = $self->create(
-                { ( map { $_ => $values{$_} } qw(question_id politician_id content) ) }
-            );
+            my $dialog = $self->populate($values{answers});
 
             return $dialog;
         }
