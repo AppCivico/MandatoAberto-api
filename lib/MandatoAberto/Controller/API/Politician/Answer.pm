@@ -20,7 +20,7 @@ __PACKAGE__->config(
 
 sub root : Chained('/api/politician/object') : PathPart('') : CaptureArgs(0) { }
 
-sub base : Chained('root') : PathPart('answer') : CaptureArgs(0) { }
+sub base : Chained('root') : PathPart('answers') : CaptureArgs(0) { }
 
 sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }
 

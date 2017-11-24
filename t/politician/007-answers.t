@@ -39,7 +39,7 @@ db_transaction {
     ;
     my $second_question_id = stash "q2.id";
 
-    rest_post "/api/politician/$politician_id/answer",
+    rest_post "/api/politician/$politician_id/answers",
         name    => "POST politician answer as admin",
         is_fail => 1,
         code    => 403,
@@ -50,7 +50,7 @@ db_transaction {
 
     api_auth_as user_id => $politician_id;
 
-    rest_post "/api/politician/$politician_id/answer",
+    rest_post "/api/politician/$politician_id/answers",
         name => "POST politician answer",
         code => 200,
         [
