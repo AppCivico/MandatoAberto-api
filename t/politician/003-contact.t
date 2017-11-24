@@ -53,6 +53,9 @@ db_transaction {
         ]
     ;
 
+    my $twitter  = '@lucas_ansei';
+    my $facebook = 'https://facebook.com/lucasansei';
+    
     rest_post "/api/politician/$politician_id/contact",
         name                => "politician contact",
         automatic_load_item => 0,
@@ -60,7 +63,8 @@ db_transaction {
         [
             twitter  => '@lucas_ansei',
             facebook => 'https://facebook.com/lucasansei',
-            email    => 'foobar@email.com'
+            email    => 'foobar@email.com',
+
         ]
     ;
     my $contact_id = stash "c1.id";

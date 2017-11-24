@@ -67,6 +67,11 @@ sub create_POST {
                 for (my $j = 0; $j < scalar @{ $question->{question_options} }; $j++) {
                     my $question_option = $question->{question_options}->[$j];
 
+                    # Caso a enquete tenha 2 opções mas só tenha a opção 2 preenchida
+                    # Isto é, apenas questions[$i][options][1] devo disparar um erro
+                    die \["questions[$i][options][$j]", "missing"] if $j < 1 && ! defined $question_option;
+
+                    # O Facebook tem um limite de 20 chars para botões de quick reply
                     if (length $question_option->{content} > 20) {
                         die \["questions[$i][options][$j]", "Options mustn't be longer than 20 characters"];
                     }

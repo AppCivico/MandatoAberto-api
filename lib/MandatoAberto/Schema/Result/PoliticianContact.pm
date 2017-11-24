@@ -144,20 +144,56 @@ sub verifiers_specs {
             filters => [qw(trim)],
             profile => {
                 twitter => {
-                    required => 0,
-                    type     => Twitter
+                    required   => 0,
+                    type       => Twitter,
+                    post_check => sub {
+                        my $twitter = $_[0]->get_value('twitter');
+
+                        $self->search({
+                            twitter => $twitter
+                        })->count and die \["twitter", "alredy in use"];
+
+                        return 1;
+                    }
                 },
                 facebook => {
-                    required => 0,
-                    type     => URI
+                    required   => 0,
+                    type       => URI,
+                    post_check => sub {
+                        my $facebook = $_[0]->get_value('facebook');
+
+                        $self->search({
+                            facebook => $facebook
+                        })->count and die \["facebook", "alredy in use"];
+
+                        return 1;
+                    }
                 },
                 email => {
-                    required => 0,
-                    type     => EmailAddress
+                    required   => 0,
+                    type       => EmailAddress,
+                    post_check => sub {
+                        my $email = $_[0]->get_value('email');
+
+                        $self->search({
+                            email => $email
+                        })->count and die \["email", "alredy in use"];
+
+                        return 1;
+                    }
                 },
                 cellphone => {
-                    required => 0,
-                    type     => PhoneNumber
+                    required   => 0,
+                    type       => PhoneNumber,
+                    post_check => sub {
+                        my $cellphone = $_[0]->get_value('cellphone');
+
+                        $self->search({
+                            cellphone => $cellphone
+                        })->count and die \["cellphone", "alredy in use"];
+
+                        return 1;
+                    }
                 },
             }
         )
