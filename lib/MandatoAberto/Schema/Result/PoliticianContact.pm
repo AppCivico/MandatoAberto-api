@@ -127,8 +127,9 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2017-11-23 16:35:08
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:lMRUev5g5NH4THB2GJW8cg
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2017-11-12 14:41:09
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:1Hnj/TVDL6o9QNp14MNhbg
+
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
 with 'MandatoAberto::Role::Verification';
@@ -137,63 +138,27 @@ with 'MandatoAberto::Role::Verification::TransactionalActions::DBIC';
 use MandatoAberto::Types qw(EmailAddress URI PhoneNumber Twitter);
 
 sub verifiers_specs {
-    my $self = shift;
+     my $self = shift;
 
     return {
         update => Data::Verifier->new(
-            filters => [qw(trim)],
+            filters => [ qw(trim) ],
             profile => {
                 twitter => {
-                    required   => 0,
-                    type       => Twitter,
-                    post_check => sub {
-                        my $twitter = $_[0]->get_value('twitter');
-
-                        $self->search({
-                            twitter => $twitter
-                        })->count and die \["twitter", "alredy in use"];
-
-                        return 1;
-                    }
+                    required => 0,
+                    type     => Twitter
                 },
                 facebook => {
-                    required   => 0,
-                    type       => URI,
-                    post_check => sub {
-                        my $facebook = $_[0]->get_value('facebook');
-
-                        $self->search({
-                            facebook => $facebook
-                        })->count and die \["facebook", "alredy in use"];
-
-                        return 1;
-                    }
+                    required => 0,
+                    type     => URI
                 },
                 email => {
-                    required   => 0,
-                    type       => EmailAddress,
-                    post_check => sub {
-                        my $email = $_[0]->get_value('email');
-
-                        $self->search({
-                            email => $email
-                        })->count and die \["email", "alredy in use"];
-
-                        return 1;
-                    }
+                    required => 0,
+                    type     => EmailAddress
                 },
                 cellphone => {
-                    required   => 0,
-                    type       => PhoneNumber,
-                    post_check => sub {
-                        my $cellphone = $_[0]->get_value('cellphone');
-
-                        $self->search({
-                            cellphone => $cellphone
-                        })->count and die \["cellphone", "alredy in use"];
-
-                        return 1;
-                    }
+                    required => 0,
+                    type     => PhoneNumber
                 },
             }
         )
@@ -210,9 +175,9 @@ sub action_specs {
             my %values = $r->valid_values;
             not defined $values{$_} and delete $values{$_} for keys %values;
 
-            die \[ "twitter", "must'nt be longer than 15 chars" ] if length $values{twitter} > 15;
+            die \["twitter", "must'nt be longer than 15 chars"] if length $values{twitter} > 15;
 
-            $self->update( \%values );
+            $self->update(\%values);
         }
     };
 }
