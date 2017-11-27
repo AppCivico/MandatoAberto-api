@@ -73,13 +73,18 @@ sub list_GET {
                                                 id      => $a->get_column('id'),
                                                 content => $a->get_column('content')
                                             }
-                                        } $q->answers
+                                        } $c->model("DB::Answer")->search(
+                                            {
+                                                politician_id => $politician_id,
+                                                question_id   => $q->get_column('id'),
+                                            }
+                                          )->all()
                                     
                                 }
                             } $d->questions->all()
                         ],
                     }
-                } $c->stash->{collection}->search({ politician_id => $politician_id }, { prefetch => [ 'questions', { 'questions' => 'answers' } ] })->all()
+                } $c->stash->{collection}->search({}, { prefetch => [ 'questions', { 'questions' => 'answers' } ] })->all()
             ],
         }
     );
