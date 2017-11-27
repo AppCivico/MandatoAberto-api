@@ -43,6 +43,8 @@ sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }
 sub list_GET {
     my ($self, $c) = @_;
 
+    my $politician_id = $c->user->id;
+
     return $self->status_ok(
         $c,
         entity => {
@@ -61,12 +63,23 @@ sub list_GET {
                                     id            => $q->get_column('id'),
                                     name          => $q->get_column('name'),
                                     content       => $q->get_column('content'),
-                                    citizen_input => $q->get_column('citizen_input')
+                                    citizen_input => $q->get_column('citizen_input'),
+
+                                    answer => 
+                                        map {
+                                            my $a = $_;
+
+                                            +{
+                                                id      => $a->get_column('id'),
+                                                content => $a->get_column('content')
+                                            }
+                                        } $q->answers
+                                    
                                 }
                             } $d->questions->all()
                         ],
                     }
-                } $c->stash->{collection}->search({}, { prefetch => [ qw/ questions / ] })->all()
+                } $c->stash->{collection}->search({ politician_id => $politician_id }, { prefetch => [ 'questions', { 'questions' => 'answers' } ] })->all()
             ],
         }
     );
