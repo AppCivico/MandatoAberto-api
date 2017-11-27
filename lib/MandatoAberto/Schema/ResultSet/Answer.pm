@@ -36,6 +36,17 @@ sub action_specs {
             my %values = $r->valid_values;
             not defined $values{$_} and delete $values{$_} for keys %values;
 
+            for (my $i = 0; $i < scalar @{ $values{answers} } ; $i++) {
+                my $answer = $values{answers}->[$i];
+
+                $self->search(
+                    {
+                        politician_id => $answer->{politician_id},
+                        question_id  => $answer->{question_id}
+                    }
+                )->count and die \["question_id", "politician alredy has an answer for that question"];
+            }
+
             my $dialog = $self->populate($values{answers});
 
             return $dialog;

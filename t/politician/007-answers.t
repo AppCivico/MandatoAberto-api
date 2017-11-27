@@ -51,6 +51,13 @@ db_transaction {
     api_auth_as user_id => $politician_id;
 
     rest_post "/api/politician/$politician_id/answers",
+        name    => "Empty answer",
+        is_fail => 1,
+        code    => 400,
+        [ "question[$first_question_id]"  => "" ]
+    ;
+
+    rest_post "/api/politician/$politician_id/answers",
         name => "POST politician answer",
         code => 200,
         [
@@ -58,6 +65,14 @@ db_transaction {
             "question[$second_question_id]" => fake_words(1)->()
         ]
     ;
+
+    rest_post "/api/politician/$politician_id/answers",
+        name    => "Answer for same question",
+        is_fail => 1,
+        code    => 400,
+        [ "question[$first_question_id]" => fake_words(1)->() ]
+    ;
+
 };
 
 done_testing();
