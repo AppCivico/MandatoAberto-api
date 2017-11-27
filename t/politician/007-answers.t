@@ -73,6 +73,12 @@ db_transaction {
         [ "question[$first_question_id]" => fake_words(1)->() ]
     ;
 
+    rest_get "/api/politician/$politician_id/answers",
+        name  => "GET politician answers",
+        list  => 1,
+        stash => "get_politician_answers"
+    ;
+
 };
 
 done_testing();
