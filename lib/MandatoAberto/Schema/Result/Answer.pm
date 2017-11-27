@@ -147,9 +147,9 @@ sub verifiers_specs {
         update => Data::Verifier->new(
             filters => [ qw(trim) ],
             profile => {
-                content => {
+                answers => {
                     required => 0,
-                    type     => "Str"
+                    type     => 'ArrayRef'
                 }
             }
         ),
@@ -166,6 +166,17 @@ sub action_specs {
             my %values = $r->valid_values;
             not defined $values{$_} and delete $values{$_} for keys %values;
 
+            for (my $i = 0; $i < scalar @{ $values{answers} } ; $i++) {
+                my $answer = $self->search(
+                    {
+                        politician_id => $values{answers}->[$i]->{politician_id},
+                        question_id   => $values{answers}->[$i]->{question_id}
+                    }
+                )->count;
+
+                die \["id", "Could not find answer"] unless $answer;
+            }
+            use DDP; p \%values;
             $self->update(\%values);
         }
     };

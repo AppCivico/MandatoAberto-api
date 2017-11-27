@@ -69,50 +69,62 @@ db_transaction {
     ;
     my $contact_id = stash "c1.id";
 
-    rest_get "/api/politician/$politician_id/contact",
-        name  => "get politician contact",
-        list  => 1,
-        stash => "get_politician_contact"
-    ;
-
-    stash_test "get_politician_contact" => sub {
-        my $res = shift;
-
-        is ($res->{politician_contact}->{id},        $contact_id, 'id');
-        is ($res->{politician_contact}->{facebook},  'https://facebook.com/lucasansei', 'facebook');
-        is ($res->{politician_contact}->{twitter},   '@lucas_ansei', 'twitter');
-        is ($res->{politician_contact}->{email},     'foobar@email.com', 'email');
-        is ($res->{politician_contact}->{cellphone}, undef, 'cellphone');
-    };
-
-    rest_put "/api/politician/$politician_id/contact/$contact_id",
-        name    => "PUT invalid twitter",
-        is_fail => "1",
+    rest_post "/api/politician/$politician_id/contact",
+        name    => "politician contact",
+        is_fail => 1,
         code    => 400,
         [
-            twitter => 'this is a twitter account'
+            twitter  => '@lucas_ansei',
+            facebook => 'https://facebook.com/lucasansei',
+            email    => 'foobar@email.com',
+
         ]
     ;
 
-    rest_put "/api/politician/$politician_id/contact/$contact_id",
-        name    => "PUT invalid email",
-        is_fail => "1",
-        code    => 400,
-        [
-            email => 'this is an email address'
-        ]
-    ;
+    # rest_get "/api/politician/$politician_id/contact",
+    #     name  => "get politician contact",
+    #     list  => 1,
+    #     stash => "get_politician_contact"
+    # ;
 
-    rest_put "/api/politician/$politician_id/contact/$contact_id",
-        name    => "PUT invalid cellphone",
-        is_fail => "1",
-        code    => 400,
-        [
-            cellphone => 'this is a cellphone number'
-        ]
-    ;
+    # stash_test "get_politician_contact" => sub {
+    #     my $res = shift;
 
-    # TODO validar
+    #     is ($res->{politician_contact}->{id},        $contact_id, 'id');
+    #     is ($res->{politician_contact}->{facebook},  'https://facebook.com/lucasansei', 'facebook');
+    #     is ($res->{politician_contact}->{twitter},   '@lucas_ansei', 'twitter');
+    #     is ($res->{politician_contact}->{email},     'foobar@email.com', 'email');
+    #     is ($res->{politician_contact}->{cellphone}, undef, 'cellphone');
+    # };
+
+    # rest_put "/api/politician/$politician_id/contact/$contact_id",
+    #     name    => "PUT invalid twitter",
+    #     is_fail => "1",
+    #     code    => 400,
+    #     [
+    #         twitter => 'this is a twitter account'
+    #     ]
+    # ;
+
+    # rest_put "/api/politician/$politician_id/contact/$contact_id",
+    #     name    => "PUT invalid email",
+    #     is_fail => "1",
+    #     code    => 400,
+    #     [
+    #         email => 'this is an email address'
+    #     ]
+    # ;
+
+    # rest_put "/api/politician/$politician_id/contact/$contact_id",
+    #     name    => "PUT invalid cellphone",
+    #     is_fail => "1",
+    #     code    => 400,
+    #     [
+    #         cellphone => 'this is a cellphone number'
+    #     ]
+    # ;
+
+    # # TODO validar
     # rest_put "/api/politician/$politician_id/contact/$contact_id",
     #     name    => "PUT invalid facebook",
     #     is_fail => "1",

@@ -24,7 +24,30 @@ sub base : Chained('root') : PathPart('answers') : CaptureArgs(0) { }
 
 sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }
 
-sub list_GET { }
+sub list_GET {
+    my ($self, $c) = @_;
+
+    return $self->status_ok(
+        $c,
+        entity => {
+            answers => [
+                map {
+                    my $a = $_;
+
+                   +{ 
+                        id          => $a->get_column('id'),
+                        content     => $a->get_column('content'),
+                        question_id => $a->get_column('question_id'),
+                        dialog_id   => $a->question->get_column('dialog_id')
+                    }
+                } $c->stash->{collection}->search(
+                    { politician_id => $c->stash->{politician}->user_id },
+                    { prefetch => [ qw / question / ] }
+                )->all()
+            ]
+        }
+    )
+}
 
 sub list_POST {
     my ($self, $c) = @_;
@@ -57,7 +80,7 @@ sub list_POST {
 
     my $answers = $c->stash->{collection}->execute(
         $c,
-        for  => "create",
+        for  => "update_or_create",
         with => $c->req->params,
     );
 

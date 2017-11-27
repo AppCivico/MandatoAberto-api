@@ -58,13 +58,21 @@ db_transaction {
     ;
 
     rest_post "/api/politician/$politician_id/answers",
-        name => "POST politician answer",
-        code => 200,
+        name  => "POST politician answer",
+        code  => 200,
+        stash => "q1",
         [
             "question[$first_question_id]"  => fake_words(1)->(),
             "question[$second_question_id]" => fake_words(1)->()
         ]
     ;
+
+    my $answers = stash "q1";
+
+    use DDP;
+
+    my $first_answer  = $answers->{answers}->[0];
+    my $second_answer = $answers->{answers}->[1];
 
     rest_post "/api/politician/$politician_id/answers",
         name    => "Answer for same question",
@@ -79,6 +87,11 @@ db_transaction {
         stash => "get_politician_answers"
     ;
 
+    my $first_get_answers = stash "get_politician_answers";
+
+    is (scalar(@{ $first_get_answers->{answers} }), 2, "two answers");
+
+    my $second_answer_id = $second_answer->{id};
 };
 
 done_testing();
