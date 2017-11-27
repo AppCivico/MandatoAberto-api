@@ -48,10 +48,10 @@ sub list_POST {
     }
 
     $c->req->params->{answers} = [ grep defined, @{ $c->req->params->{answers} } ];
-    use DDP;
+
     for (my $i = 0; $i < scalar @{ $c->req->params->{answers} } ; $i++) {
         my $answer = $c->req->params->{answers}->[$i];
-        p $answer;
+
         die \["answers[$i]", 'must not be empty'] if ( $answer->{content} eq "" );
     }
 
