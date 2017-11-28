@@ -33,10 +33,10 @@ db_transaction {
     api_auth_as user_id => $politician_id;
 
     rest_post "/api/politician/$politician_id/answers",
-        name  => "Answer for same question",
+        name  => "Politician answer",
         code  => 200,
         stash => "a1",
-        [ "question[$question_id]" => fake_words(1)->() ]
+        [ "question[$question_id][answer]" => fake_words(1)->() ]
     ;
 
     my $answer = stash "a1";

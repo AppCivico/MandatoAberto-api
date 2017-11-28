@@ -2,6 +2,8 @@ package MandatoAberto::Controller::API::Politician::Answer;
 use Moose;
 use namespace::autoclean;
 
+use Scalar::Util qw(looks_like_number);
+
 BEGIN { extends "CatalystX::Eta::Controller::REST" }
 
 with "CatalystX::Eta::Controller::AutoBase";
@@ -34,7 +36,7 @@ sub list_GET {
                 map {
                     my $a = $_;
 
-                   +{ 
+                   +{
                         id          => $a->get_column('id'),
                         content     => $a->get_column('content'),
                         question_id => $a->get_column('question_id'),
@@ -56,15 +58,24 @@ sub list_POST {
     my $i = 0;
 
     for my $param (keys %{ $c->req->params } ) {
-        if ($param =~ m{^question\[([0-9]+)\]$}) {
-            
+        if ($param =~ m{^question\[([0-9]+)\](\[(answer)\])?(\[([0-9]+)\])?$}) {
+
             $c->req->params->{answers}->[$i] ||= {};
 
-            $c->req->params->{answers}->[$i] = {
-                question_id   => $1,  
-                content       => delete $c->req->params->{$param},
-                politician_id => $c->user->id,
-            };
+            if ($5 && looks_like_number($5)) {
+                $c->req->params->{answers}->[$i] = {
+                    id            => $5,
+                    question_id   => $1,
+                    content       => delete $c->req->params->{$param},
+                    politician_id => $c->user->id,
+                };
+            } else {
+                $c->req->params->{answers}->[$i] = {
+                    question_id   => $1,
+                    content       => delete $c->req->params->{$param},
+                    politician_id => $c->user->id,
+                };
+            }
 
             $i++;
         }
@@ -85,7 +96,7 @@ sub list_POST {
     );
 
     my $created_answers;
-    if ( $answers) {
+    if ($answers) {
         for (my $z = 0; $z < scalar @{ $answers } ; $z++) {
             my $created_answer = $answers->[$z];
 

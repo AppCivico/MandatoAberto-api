@@ -134,52 +134,5 @@ __PACKAGE__->belongs_to(
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
-
-use MandatoAberto::Utils;
-
-with 'MandatoAberto::Role::Verification';
-with 'MandatoAberto::Role::Verification::TransactionalActions::DBIC';
-
-sub verifiers_specs {
-    my $self = shift;
-
-    return {
-        update => Data::Verifier->new(
-            filters => [ qw(trim) ],
-            profile => {
-                answers => {
-                    required => 0,
-                    type     => 'ArrayRef'
-                }
-            }
-        ),
-    };
-}
-
-sub action_specs {
-    my ($self) = @_;
-
-    return {
-        update => sub {
-            my $r = shift;
-
-            my %values = $r->valid_values;
-            not defined $values{$_} and delete $values{$_} for keys %values;
-
-            for (my $i = 0; $i < scalar @{ $values{answers} } ; $i++) {
-                my $answer = $self->search(
-                    {
-                        politician_id => $values{answers}->[$i]->{politician_id},
-                        question_id   => $values{answers}->[$i]->{question_id}
-                    }
-                )->count;
-
-                die \["id", "Could not find answer"] unless $answer;
-            } 
-            $self->update(\%values);
-        }
-    };
-}
-
 __PACKAGE__->meta->make_immutable;
 1;

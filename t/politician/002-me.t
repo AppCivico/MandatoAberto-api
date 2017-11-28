@@ -51,14 +51,6 @@ db_transaction {
     ;
     my $contact_id = stash "c1.id";
 
-    rest_post "/api/politician/$politician_id/biography",
-        name                => "biography sucessful creation",
-        automatic_load_item => 0,
-        stash               => 'b1',
-        [ content => "foobar" ]
-    ;
-    my $biography_id = stash "b1.id";
-
     rest_post "/api/politician/$politician_id/greeting",
         name                => "politician greeting",
         automatic_load_item => 0,
@@ -91,8 +83,6 @@ db_transaction {
         is ($res->{contact}->{twitter}, '@lucas_ansei', 'twitter');
         is ($res->{contact}->{facebook}, 'https://facebook.com/lucasansei', 'facebook');
         is ($res->{contact}->{email}, 'foobar@email.com', 'email');
-        is ($res->{biography}->{id}, $biography_id, 'biography_id');
-        is ($res->{biography}->{content}, 'foobar', 'biography content');
         is ($res->{greeting}->{id}, $greeting_id, 'greeting_id');
         is ($res->{greeting}->{text}, 'foobar', 'greeting content');
     };

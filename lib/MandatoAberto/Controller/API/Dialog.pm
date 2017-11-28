@@ -65,7 +65,7 @@ sub list_GET {
                                     content       => $q->get_column('content'),
                                     citizen_input => $q->get_column('citizen_input'),
 
-                                    answer => 
+                                    answer =>
                                         map {
                                             my $a = $_;
 
@@ -79,7 +79,7 @@ sub list_GET {
                                                 question_id   => $q->get_column('id'),
                                             }
                                           )->all()
-                                    
+
                                 }
                             } $d->questions->all()
                         ],

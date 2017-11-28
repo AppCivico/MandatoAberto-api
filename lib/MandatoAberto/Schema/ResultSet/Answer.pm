@@ -36,22 +36,36 @@ sub action_specs {
             my %values = $r->valid_values;
             not defined $values{$_} and delete $values{$_} for keys %values;
 
-            # use DDP; p $values{answers};
+            my @answers;
 
             for (my $i = 0; $i < scalar @{ $values{answers} } ; $i++) {
                 my $answer = $values{answers}->[$i];
 
-                $self->search(
-                    {
-                        politician_id => $answer->{politician_id},
-                        question_id  => $answer->{question_id}
-                    }
-                )->count and die \["question_id", "politician alredy has an answer for that question"];
+                if ($answer->{id}) {
+                    my $answer_id = $answer->{id};
+                    my $located_answer = $self->find($answer_id);
+
+                    die \["question[$i][answer][$answer_id]", 'could not find answer'] unless $located_answer;
+
+                    my $updated_answer = $located_answer->update($answer);
+                    push @answers, $updated_answer;
+                } else {
+                    $self->search(
+                        {
+                            politician_id => $answer->{politician_id},
+                            question_id   => $answer->{question_id}
+                        }
+                    )->count and die \["question_id", "politician alredy has an answer for that question"];
+
+                    my $new_answer = $self->create($answer);
+
+                    push @answers, $new_answer;
+                }
             }
+            use DDP;
+            # p \@answers;
 
-            my $dialog = $self->populate($values{answers});
-
-            return $dialog;
+            return \@answers;
         },
     };
 }
