@@ -175,8 +175,7 @@ sub action_specs {
                 )->count;
 
                 die \["id", "Could not find answer"] unless $answer;
-            }
-            use DDP; p \%values;
+            } 
             $self->update(\%values);
         }
     };
