@@ -67,17 +67,6 @@ sub result_GET {
             ),
 
             (
-                biography => {
-                    map {
-                        my $b = $_;
-
-                        id      => $b->get_column('id'),
-                        content => $b->get_column('content')
-                    } $c->model("DB::PoliticianBiography")->search( { politician_id => $c->user->id } )
-                }
-            ),
-
-            (
                 greeting => {
                     map {
                         my $g = $_;

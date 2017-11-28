@@ -201,21 +201,6 @@ __PACKAGE__->belongs_to(
   { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
 );
 
-=head2 politician_biographies
-
-Type: has_many
-
-Related object: L<MandatoAberto::Schema::Result::PoliticianBiography>
-
-=cut
-
-__PACKAGE__->has_many(
-  "politician_biographies",
-  "MandatoAberto::Schema::Result::PoliticianBiography",
-  { "foreign.politician_id" => "self.user_id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
-
 =head2 politician_contacts
 
 Type: has_many
@@ -277,8 +262,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2017-11-23 16:35:08
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:XPhKdVKH/F1RQdCbHblemg
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2017-11-28 14:15:55
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:9QuF5IrHa5IMlYhnZaIncg
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
