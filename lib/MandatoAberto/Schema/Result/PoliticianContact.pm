@@ -141,7 +141,7 @@ sub verifiers_specs {
      my $self = shift;
 
     return {
-        update => Data::Verifier->new(
+        update_or_create => Data::Verifier->new(
             filters => [ qw(trim) ],
             profile => {
                 twitter => {
@@ -169,7 +169,7 @@ sub action_specs {
     my ($self) = @_;
 
     return {
-        update => sub {
+        update_or_create => sub {
             my $r = shift;
 
             my %values = $r->valid_values;

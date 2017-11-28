@@ -22,15 +22,6 @@ sub verifiers_specs {
                 politician_id => {
                     required => 1,
                     type     => "Int",
-                    post_check => sub {
-                        my $politician_id = $_[0]->get_value('politician_id');
-
-                        $self->search({
-                            politician_id => $politician_id
-                        })->count and die \["politician_id", "politician alredy has a contact entity"];
-
-                        return 1;
-                    }
                 },
                 twitter => {
                     required => 0,
@@ -67,9 +58,19 @@ sub action_specs {
                 die \["contact", "Must have at least one contact mean"];
             }
 
-            my $politician_contact = $self->create(\%values);
+            my $existent_politician_contact = $self->search(
+                { politician_id => $values{politician_id} }
+            )->next;
 
-            return $politician_contact;
+            if (!defined $existent_politician_contact) {
+                my $politician_contact = $self->create(\%values);
+
+                return $politician_contact;
+            } else {
+                my $updated_politician_contact = $existent_politician_contact->update(\%values);
+
+                return $updated_politician_contact;
+            }
         }
     };
 }

@@ -8,15 +8,10 @@ BEGIN { extends 'CatalystX::Eta::Controller::REST' }
 with "CatalystX::Eta::Controller::AutoBase";
 with "CatalystX::Eta::Controller::AutoListGET";
 with "CatalystX::Eta::Controller::AutoListPOST";
-with "CatalystX::Eta::Controller::AutoResultPUT";
 
 __PACKAGE__->config(
     # AutoBase.
     result => "DB::PoliticianContact",
-
-    # AutoResultPUT.
-    object_key     => "politician_contact",
-    result_put_for => "update",
 
     list_key  => "politician_contact",
     build_row => sub {
@@ -36,27 +31,33 @@ sub root : Chained('/api/politician/object') : PathPart('') : CaptureArgs(0) { }
 
 sub base : Chained('root') : PathPart('contact') : CaptureArgs(0) { }
 
-sub object : Chained('base') : PathPart('') : CaptureArgs(1) {
-    my ($self, $c, $politician_contact_id) = @_;
-
-    $c->stash->{collection} = $c->stash->{collection}->search( { id => $politician_contact_id } );
-
-    my $politician_contact = $c->stash->{collection}->find($politician_contact_id);
-    $c->detach("/error_404") unless ref $politician_contact;
-
-    $c->stash->{politician_contact} = $politician_contact;
-
-    $c->stash->{is_me} = int($c->user->id == $politician_contact->politician_id);
-    $c->detach("/api/forbidden") unless $c->stash->{is_me};
-}
-
-sub result : Chained('object') : PathPart('') : Args(0) : ActionClass('REST') { }
-
-sub result_PUT { }
-
 sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }
 
-sub list_POST { }
+sub list_POST {
+    my ($self, $c) = @_;
+
+    my $politician_contact = $c->stash->{collection}->execute(
+        $c,
+        for  => "create",
+        with => {
+            %{ $c->req->params },
+            politician_id => $c->user->id
+        },
+    );
+
+    $politician_contact->id;
+
+    return $self->status_ok(
+        $c,
+        entity => {
+            id        => $politician_contact->id,
+            facebook  => $politician_contact->facebook,
+            twitter   => $politician_contact->twitter,
+            cellphone => $politician_contact->cellphone,
+            email     => $politician_contact->email,
+        }
+    );
+}
 
 sub list_GET {
     my ($self, $c) = @_;

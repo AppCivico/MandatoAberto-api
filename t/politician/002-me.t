@@ -42,6 +42,7 @@ db_transaction {
     rest_post "/api/politician/$politician_id/contact",
         name                => "politician contact",
         automatic_load_item => 0,
+        code                => 200,
         stash               => 'c1',
         [
             twitter  => '@lucas_ansei',
@@ -49,7 +50,8 @@ db_transaction {
             email    => 'foobar@email.com'
         ]
     ;
-    my $contact_id = stash "c1.id";
+    my $contact    = stash "c1";
+    my $contact_id = $contact->{id};
 
     rest_post "/api/politician/$politician_id/greeting",
         name                => "politician greeting",

@@ -59,6 +59,7 @@ db_transaction {
     rest_post "/api/politician/$politician_id/contact",
         name                => "politician contact",
         automatic_load_item => 0,
+        code                => 200,
         stash               => 'c1',
         [
             twitter  => '@lucas_ansei',
@@ -67,99 +68,47 @@ db_transaction {
 
         ]
     ;
-    my $contact_id = stash "c1.id";
+    my $contact = stash "c1";
+
+    rest_get "/api/politician/$politician_id/contact",
+        name  => "get politician contact",
+        list  => 1,
+        stash => "get_politician_contact"
+    ;
+
+    stash_test "get_politician_contact" => sub {
+        my $res = shift;
+
+        is ($res->{politician_contact}->{id},        $contact->{id}, 'id');
+        is ($res->{politician_contact}->{facebook},  'https://facebook.com/lucasansei', 'facebook');
+        is ($res->{politician_contact}->{twitter},   '@lucas_ansei', 'twitter');
+        is ($res->{politician_contact}->{email},     'foobar@email.com', 'email');
+        is ($res->{politician_contact}->{cellphone}, undef, 'cellphone');
+    };
 
     rest_post "/api/politician/$politician_id/contact",
-        name    => "politician contact",
-        is_fail => 1,
-        code    => 400,
+        name                => "update politician contact",
+        automatic_load_item => 0,
+        code                => 200,
+        stash               => 'c2',
         [
-            twitter  => '@lucas_ansei',
-            facebook => 'https://facebook.com/lucasansei',
-            email    => 'foobar@email.com',
+            twitter  => '@foobar',
+            facebook => 'https://facebook.com/aaaa',
+            email    => 'foobar@aaaaa.com',
 
         ]
     ;
 
-    # rest_get "/api/politician/$politician_id/contact",
-    #     name  => "get politician contact",
-    #     list  => 1,
-    #     stash => "get_politician_contact"
-    # ;
+    rest_reload_list "get_politician_contact";
+    stash_test "get_politician_contact.list" => sub {
+        my $res = shift;
 
-    # stash_test "get_politician_contact" => sub {
-    #     my $res = shift;
-
-    #     is ($res->{politician_contact}->{id},        $contact_id, 'id');
-    #     is ($res->{politician_contact}->{facebook},  'https://facebook.com/lucasansei', 'facebook');
-    #     is ($res->{politician_contact}->{twitter},   '@lucas_ansei', 'twitter');
-    #     is ($res->{politician_contact}->{email},     'foobar@email.com', 'email');
-    #     is ($res->{politician_contact}->{cellphone}, undef, 'cellphone');
-    # };
-
-    # rest_put "/api/politician/$politician_id/contact/$contact_id",
-    #     name    => "PUT invalid twitter",
-    #     is_fail => "1",
-    #     code    => 400,
-    #     [
-    #         twitter => 'this is a twitter account'
-    #     ]
-    # ;
-
-    # rest_put "/api/politician/$politician_id/contact/$contact_id",
-    #     name    => "PUT invalid email",
-    #     is_fail => "1",
-    #     code    => 400,
-    #     [
-    #         email => 'this is an email address'
-    #     ]
-    # ;
-
-    # rest_put "/api/politician/$politician_id/contact/$contact_id",
-    #     name    => "PUT invalid cellphone",
-    #     is_fail => "1",
-    #     code    => 400,
-    #     [
-    #         cellphone => 'this is a cellphone number'
-    #     ]
-    # ;
-
-    # # TODO validar
-    # rest_put "/api/politician/$politician_id/contact/$contact_id",
-    #     name    => "PUT invalid facebook",
-    #     is_fail => "1",
-    #     code    => 400,
-    #     [
-    #         facebook => 'this is a facebook URI'
-    #     ]
-    # ;
-
-    # my $facebook  = 'https://www.facebook.com/pagina';
-    # my $cellphone = fake_digits("+551198#######")->();
-    # my $email     = fake_email()->();
-    # my $twitter   = '@twitter_pol';
-
-    # rest_put "/api/politician/$politician_id/contact/$contact_id",
-    #     name    => "PUT sucessfuly",
-    #     [
-    #         facebook  => $facebook,
-    #         cellphone => $cellphone,
-    #         email     => $email,
-    #         twitter   => $twitter
-    #     ]
-    # ;
-
-    # rest_reload_list "get_politician_contact";
-
-    # stash_test "get_politician_contact.list" => sub {
-    #     my $res = shift;
-
-    #     is ($res->{politician_contact}->{id},        $contact_id, 'id');
-    #     is ($res->{politician_contact}->{facebook},  $facebook, 'facebook');
-    #     is ($res->{politician_contact}->{twitter},   $twitter, 'twitter');
-    #     is ($res->{politician_contact}->{email},     $email, 'email');
-    #     is ($res->{politician_contact}->{cellphone}, $cellphone, 'cellphone');
-    # };
+        is ($res->{politician_contact}->{id},        $contact->{id}, 'id');
+        is ($res->{politician_contact}->{facebook},  'https://facebook.com/aaaa', 'facebook');
+        is ($res->{politician_contact}->{twitter},   '@foobar', 'twitter');
+        is ($res->{politician_contact}->{email},     'foobar@aaaaa.com', 'email');
+        is ($res->{politician_contact}->{cellphone}, undef, 'cellphone');
+    };
 };
 
 done_testing();
