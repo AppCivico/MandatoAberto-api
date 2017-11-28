@@ -84,8 +84,8 @@ sub list_POST {
         with => $c->req->params,
     );
 
+    my $created_answers;
     if ( $answers) {
-        my $created_answers;
         for (my $z = 0; $z < scalar @{ $answers } ; $z++) {
             my $created_answer = $answers->[$z];
 
