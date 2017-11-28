@@ -175,7 +175,9 @@ sub action_specs {
             my %values = $r->valid_values;
             not defined $values{$_} and delete $values{$_} for keys %values;
 
-            die \["twitter", "must'nt be longer than 15 chars"] if length $values{twitter} > 15;
+            if ($values{twitter} && $values{twitter} > 15) {
+                die \["twitter", "must'nt be longer than 15 chars"] if length $values{twitter} > 15;
+            }
 
             $self->update(\%values);
         }
