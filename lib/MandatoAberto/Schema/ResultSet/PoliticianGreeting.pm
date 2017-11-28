@@ -20,15 +20,6 @@ sub verifiers_specs {
                 politician_id => {
                     required   => 1,
                     type       => "Int",
-                    post_check => sub {
-                        my $politician_id = $_[0]->get_value('politician_id');
-
-                        $self->search({
-                            politician_id => $politician_id
-                        })->count and die \["politician_id", "politician alredy has a greeting"];
-
-                        return 1;
-                    }
                 },
                 text => {
                     required   => 1,
@@ -55,11 +46,20 @@ sub action_specs {
                 die \[ "greeting", "Text mustn't be empty" ];
             }
 
-            my $politician_greeting = $self->create( \%values );
+            my $existent_politician_greeting = $self->search(
+                { politician_id => $values{politician_id} }
+            )->next;
 
-            return $politician_greeting;
+            if (!defined $existent_politician_greeting) {
+                my $politician_greeting = $self->create(\%values);
+
+                return $politician_greeting;
+            } else {
+                my $updated_politician_greeting = $existent_politician_greeting->update(\%values);
+
+                return $updated_politician_greeting;
+            }
         },
-
     };
 }
 

@@ -32,7 +32,7 @@ db_transaction {
 
     rest_post "/api/politician/$politician_id/greeting",
       name                => "greeting create",
-      code                => 201,
+      code                => 200,
       automatic_load_item => 0,
       stash               => "c1",
       [ text => "Hello. I'm the Mayor!" ],
@@ -53,8 +53,8 @@ db_transaction {
         like( $res->{text}, qr/Hello. I'm the Mayor!/, 'text ok' );
     };
 
-    rest_put "/api/politician/$politician_id/greeting/$greeting_id",
-      name  => "PUT sucessfuly",
+    rest_post "/api/politician/$politician_id/greeting/$greeting_id",
+      name  => "post sucessfuly",
       code  => 200,
       stash => "c1",
       [ text => "Hello. I'm your soon-to-be Mayor!" ];
@@ -72,14 +72,14 @@ db_transaction {
         is( $res->{text},          "Hello. I'm your soon-to-be Mayor!", 'text ok' );
     };
 
-    rest_put "/api/politician/$politician_id/greeting/$greeting_id",
-      name  => "PUT ok - empty text",
+    rest_post "/api/politician/$politician_id/greeting/$greeting_id",
+      name  => "post ok - empty text",
       code  => 200,
       stash => "c1",
       [ text => "" ];
 
-    rest_put "/api/politician/$politician_id/greeting/$greeting_id",
-      name  => "PUT sucessfuly",
+    rest_post "/api/politician/$politician_id/greeting/$greeting_id",
+      name  => "post sucessfuly",
       code  => 200,
       stash => "c1",
       [ text => "Hi!. I'm not your Mayor anymore!" ];

@@ -6,8 +6,6 @@ BEGIN { extends 'CatalystX::Eta::Controller::REST' }
 
 with "CatalystX::Eta::Controller::AutoBase";
 
-#with "CatalystX::Eta::Controller::AutoResultPUT";
-
 __PACKAGE__->config(
     result  => "DB::PoliticianGreeting",
     no_user => 1,
@@ -57,15 +55,14 @@ sub list_POST {
         $c,
         for  => 'create',
         with => {
-            %{ $c->req->params }, politician_id => $c->user->id,
+            %{ $c->req->params },
+            politician_id => $c->user->id,
           }
 
     );
 
-    return $self->status_created(
+    return $self->status_ok(
         $c,
-        location =>
-          $c->uri_for( $self->action_for('result'), [ $c->stash->{politician}->user_id, $politician_greeting->id ] ),
         entity => {
             id => $politician_greeting->id
         },
