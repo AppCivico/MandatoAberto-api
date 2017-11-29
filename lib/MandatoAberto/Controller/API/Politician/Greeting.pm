@@ -32,20 +32,6 @@ sub root : Chained('/api/politician/object') : PathPart('') : CaptureArgs(0) { }
 
 sub base : Chained('root') : PathPart('greeting') : CaptureArgs(0) { }
 
-sub object : Chained('base') : PathPart('') : CaptureArgs(1) {
-    my ( $self, $c, $politician_greeting_id ) = @_;
-
-    $c->stash->{collection} = $c->stash->{collection}->search( { id => $politician_greeting_id } );
-
-    my $politician_greeting = $c->stash->{collection}->find($politician_greeting_id);
-    $c->detach("/error_404") unless ref $politician_greeting;
-
-    $c->stash->{politician_greeting} = $politician_greeting;
-
-    $c->stash->{is_me} = int( $c->user->id == $politician_greeting->politician_id );
-    $c->detach("/api/forbidden") unless $c->stash->{is_me};
-}
-
 sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }
 
 sub list_POST {
@@ -86,26 +72,6 @@ sub list_GET {
                   text          => $c->get_column('text'),
             } $c->stash->{collection}->search( { politician_id => $politician_id } )->all()
         }
-    );
-}
-
-sub result : Chained('object') : PathPart('') : Args(0) : ActionClass('REST') { }
-
-sub result_PUT {
-    my ( $self, $c ) = @_;
-
-    my $politician_greeting = $c->stash->{politician_greeting}->execute(
-        $c,
-        for  => "update",
-        with => { %{ $c->req->params }, }
-    );
-
-    return $self->status_ok(
-        $c,
-        entity => {
-            id   => $politician_greeting->id,
-            text => $politician_greeting->text
-        },
     );
 }
 

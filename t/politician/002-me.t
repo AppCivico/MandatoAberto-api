@@ -55,11 +55,13 @@ db_transaction {
 
     rest_post "/api/politician/$politician_id/greeting",
         name                => "politician greeting",
+        code                => 200,
         automatic_load_item => 0,
         stash               => 'g1',
         [ text => "foobar" ]
     ;
-    my $greeting_id = stash "g1.id";
+    my $greeting    = stash "g1";
+    my $greeting_id = $greeting->{id};
 
     rest_get "/api/politician/$politician_id",
         name  => "get politician",

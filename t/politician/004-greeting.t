@@ -38,7 +38,8 @@ db_transaction {
       [ text => "Hello. I'm the Mayor!" ],
       ;
 
-    my $greeting_id = stash "c1.id";
+    my $greeting    = stash "c1";
+    my $greeting_id = $greeting->{id};
 
     rest_get "/api/politician/$politician_id/greeting",
       name  => "get politician greeting",
@@ -53,7 +54,7 @@ db_transaction {
         like( $res->{text}, qr/Hello. I'm the Mayor!/, 'text ok' );
     };
 
-    rest_post "/api/politician/$politician_id/greeting/$greeting_id",
+    rest_post "/api/politician/$politician_id/greeting",
       name  => "post sucessfuly",
       code  => 200,
       stash => "c1",
@@ -72,13 +73,13 @@ db_transaction {
         is( $res->{text},          "Hello. I'm your soon-to-be Mayor!", 'text ok' );
     };
 
-    rest_post "/api/politician/$politician_id/greeting/$greeting_id",
-      name  => "post ok - empty text",
-      code  => 200,
-      stash => "c1",
+    rest_post "/api/politician/$politician_id/greeting",
+      name    => "post fail - empty text",
+      is_fail => 1,
+      code    => 400,
       [ text => "" ];
 
-    rest_post "/api/politician/$politician_id/greeting/$greeting_id",
+    rest_post "/api/politician/$politician_id/greeting",
       name  => "post sucessfuly",
       code  => 200,
       stash => "c1",

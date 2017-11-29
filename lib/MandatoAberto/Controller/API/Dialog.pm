@@ -68,7 +68,7 @@ sub list_GET {
                                     answer =>
                                         map {
                                             my $a = $_;
-                                            use DDP; p $a;
+                                            # use DDP; p $a;
                                             +{
                                                 id      => $a->get_column('id'),
                                                 content => $a->get_column('content')
