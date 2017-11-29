@@ -42,8 +42,10 @@ sub action_specs {
                 my $answer = $values{answers}->[$i];
 
                 if ($answer->{id}) {
-                    my $answer_id = $answer->{id};
+                    my $answer_id      = $answer->{id};
                     my $located_answer = $self->find($answer_id);
+
+                    next if $answer->{content} eq "";
 
                     die \["question[$i][answer][$answer_id]", 'could not find answer'] unless $located_answer;
 

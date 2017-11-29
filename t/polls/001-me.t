@@ -89,9 +89,7 @@ db_transaction {
     };
 
     rest_post "/api/register/poll",
-        name    => "Creating poll with active flag when there is one alredy active",
-        is_fail => 1,
-        code    => 400,
+        name    => "Creating second poll",
         [
             name                       => 'foobar',
             active                     => 1,
@@ -108,54 +106,41 @@ db_transaction {
         ]
     ;
 
+    # TODO testar array ordenada
     rest_reload_list "get_poll_data";
     stash_test "get_poll_data.list" => sub {
-        my $res = shift;
+        my $res        = shift;
+        my @sorted_res = sort { $a->{id} <=> $b->{id} } @{ $res->{polls} };
+        use DDP; p $poll_id;
 
         is_deeply(
-            $res,
-            {
-                polls => [
-                    {
-                        id     => $poll_id,
-                        name   => $poll_name,
-                        active => 0,
-
-                        questions => [
-                            {
-                                content => "Foobar",
-                                id      => $question_id,
-
-                                options => [
-                                    {
-                                        content => $first_option_content,
-                                        id      => $first_option_id
-                                    },
-                                    {
-                                        content => $second_option_content,
-                                        id      => $second_option_id
-                                    }
-                                ]
+            [ sort { $a->{id} <=> $b->{id} } @{ $res->{polls} } ],
+            [
+                {
+                    polls => [
+                        {
+                            [0] => {
+                            active    => 0,
+                            id        => $poll_id,
+                            name      => $poll_name,
+                            questions => [
+                                [0] => {
+                                    content => $first_option_content,
+                                    id      => $first_option_id
+                                },
+                                [1] => {
+                                    content => $second_option_content,
+                                    id      => $second_option_id
+                                }
+                            ]
                             }
-                        ]
-                    }
-                ]
-            },
+                        }
+                    ]
+                }
+            ],
             'get poll data updated expected response'
         );
     };
-
-    rest_post "/api/register/poll",
-        name                => "Sucessful second poll creation",
-        automatic_load_item => 0,
-        [
-            name                       => 'foobar',
-            active                     => 1,
-            'questions[0]'             => 'Foobar',
-            'questions[0][options][0]' => 'Foobar',
-            'questions[0][options][1]' => 'foobar',
-        ]
-    ;
 };
 
 done_testing();

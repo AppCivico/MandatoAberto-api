@@ -99,8 +99,14 @@ db_transaction {
         code    => 400,
         [
             "question[$first_question_id][answer][$answer_id]" => 'foobar',
-            "question[$first_question_id][answer][$fake_id]" => 'foobar',
+            "question[$first_question_id][answer][$fake_id]"   => 'foobar',
         ]
+    ;
+
+    rest_post "/api/politician/$politician_id/answers",
+        name  => "Update politician answer with an empty string",
+        code  => 200,
+        [ "question[$first_question_id][answer][$answer_id]" => '' ]
     ;
 
     rest_reload_list "get_politician_answers";
