@@ -98,41 +98,41 @@ db_transaction {
     ;
 
 
-    # rest_post "/api/register/poll",
-    #     name                => "Sucessful poll creation",
-    #     automatic_load_item => 0,
-    #     stash               => "p1",
-    #     [
-    #         name                       => $poll_name,
-    #         active                     => 1,
-    #         'questions[0]'             => 'Você está bem?',
-    #         'questions[0][options][0]' => 'Sim',
-    #         'questions[0][options][1]' => 'Não',
-    #         'questions[1]'             => 'foobar?',
-    #         'questions[1][options][0]' => 'foo',
-    #         'questions[1][options][1]' => 'bar',
-    #         'questions[1][options][2]' => 'não',
-    #     ]
-    # ;
-
-    # rest_post "/api/register/poll",
-    #    name    => "Poll with repeated name",
-    #    is_fail => 1,
-    #    code    => 400,
-    #    [
-    #         name                       => $poll_name,
-    #         active                     => 1,
-    #         'questions[0]'             => 'alalala?',
-    #         'questions[0][options][0]' => 'Sim',
-    #         'questions[0][options][1]' => 'Não',
-    #         'questions[1]'             => 'foobar?',
-    #         'questions[1][options][0]' => 'foo',
-    #         'questions[1][options][1]' => 'bar',
-    #    ]
-    # ;
+    rest_post "/api/register/poll",
+        name                => "Sucessful poll creation",
+        automatic_load_item => 0,
+        stash               => "p1",
+        [
+            name                       => $poll_name,
+            active                     => 1,
+            'questions[0]'             => 'Você está bem?',
+            'questions[0][options][0]' => 'Sim',
+            'questions[0][options][1]' => 'Não',
+            'questions[1]'             => 'foobar?',
+            'questions[1][options][0]' => 'foo',
+            'questions[1][options][1]' => 'bar',
+            'questions[1][options][2]' => 'não',
+        ]
+    ;
 
     rest_post "/api/register/poll",
-        name    => "Poll with invalid question format",
+       name    => "Poll with repeated name",
+       is_fail => 1,
+       code    => 400,
+       [
+            name                       => $poll_name,
+            active                     => 1,
+            'questions[0]'             => 'alalala?',
+            'questions[0][options][0]' => 'Sim',
+            'questions[0][options][1]' => 'Não',
+            'questions[1]'             => 'foobar?',
+            'questions[1][options][0]' => 'foo',
+            'questions[1][options][1]' => 'bar',
+       ]
+    ;
+
+    rest_post "/api/register/poll",
+        name    => "Poll with only one option",
         is_fail => 1,
         code    => 400,
         [

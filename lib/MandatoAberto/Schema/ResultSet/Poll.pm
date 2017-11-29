@@ -52,15 +52,17 @@ sub action_specs {
             my %values = $r->valid_values;
             not defined $values{$_} and delete $values{$_} for keys %values;
 
-            my $active_poll = $self->result_source->schema->resultset("Poll")->search(
-                {
-                    politician_id => $values{politician_id},
-                    active        => 1
-                }
-            )->count;
+            # Caso tenha uma enquete ativa, essa deverá ser desativada
+            # E a nova criada deverá ser já ativada
+            if ($values{active} == 1) {
+                my $active_poll = $self->result_source->schema->resultset("Poll")->search(
+                    {
+                        politician_id => $values{politician_id},
+                        active        => 1
+                    }
+                );
 
-            if ($active_poll && $values{active} == 1) {
-                die \["active", "There must be only 1 poll active per time"];
+                $active_poll->update( { active => 0 } );
             }
 
             my $poll = $self->create(\%values);
