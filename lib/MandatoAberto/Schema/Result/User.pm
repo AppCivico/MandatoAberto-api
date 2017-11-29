@@ -66,6 +66,17 @@ __PACKAGE__->table("user");
   is_nullable: 0
   original: {default_value => \"now()"}
 
+=head2 approved
+
+  data_type: 'boolean'
+  default_value: false
+  is_nullable: 0
+
+=head2 approved_at
+
+  data_type: 'timestamp'
+  is_nullable: 1
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -87,6 +98,10 @@ __PACKAGE__->add_columns(
     is_nullable   => 0,
     original      => { default_value => \"now()" },
   },
+  "approved",
+  { data_type => "boolean", default_value => \"false", is_nullable => 0 },
+  "approved_at",
+  { data_type => "timestamp", is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -188,8 +203,8 @@ Composing rels: L</user_roles> -> role
 __PACKAGE__->many_to_many("roles", "user_roles", "role");
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2017-10-25 17:13:27
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:y+cMLhcJ09wUpf2uezW3EA
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2017-11-29 16:30:19
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:qp++JMhmGsqRMvL3kFe7oA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

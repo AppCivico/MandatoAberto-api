@@ -14,6 +14,7 @@ db_transaction {
         email    => $email,
         password => $password
     );
+    my $politician_id = stash "politician.id";
 
     rest_post "/api/login",
         name    => "wrong login",
@@ -23,6 +24,17 @@ db_transaction {
             password => "ALL YOUR BASE ARE BELONG TO US",
         ],
     ;
+
+    rest_post "/api/login",
+        name    => "user not approved",
+        is_fail => 1,
+        [
+            email    => $email,
+            password => $password,
+        ],
+    ;
+
+    $schema->resultset("User")->find($politician_id)->update({ approved => 1 });
 
     rest_post "/api/login",
         name  => "login",

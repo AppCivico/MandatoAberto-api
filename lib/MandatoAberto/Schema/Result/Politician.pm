@@ -95,17 +95,6 @@ __PACKAGE__->table("politician");
   data_type: 'text'
   is_nullable: 1
 
-=head2 approved
-
-  data_type: 'boolean'
-  default_value: false
-  is_nullable: 0
-
-=head2 approved_at
-
-  data_type: 'timestamp'
-  is_nullable: 1
-
 =head2 gender
 
   data_type: 'text'
@@ -134,10 +123,6 @@ __PACKAGE__->add_columns(
   { data_type => "text", is_nullable => 1 },
   "fb_page_acess_token",
   { data_type => "text", is_nullable => 1 },
-  "approved",
-  { data_type => "boolean", default_value => \"false", is_nullable => 0 },
-  "approved_at",
-  { data_type => "timestamp", is_nullable => 1 },
   "gender",
   { data_type => "text", is_nullable => 0 },
 );
@@ -262,8 +247,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2017-11-28 14:15:55
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:9QuF5IrHa5IMlYhnZaIncg
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2017-11-29 16:30:19
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:kLR7b0I8qOb0CshNYK2pxw
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

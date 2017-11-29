@@ -31,9 +31,16 @@ sub login_POST {
         },
     );
 
+    my $approved_user = $c->model("DB::User")->search({
+        email => $c->req->params->{email},
+        approved => 1,
+    })->next;
+
+    die \['approved', 'user not approved'] unless $approved_user;
+
     my $authenticate = $c->authenticate({
         ( map { $_ => $c->req->params->{$_} } qw(email password) ),
-        # verified => 1,
+        approved => 1,
     });
 
     if ($authenticate) {
