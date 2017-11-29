@@ -50,13 +50,6 @@ db_transaction {
 
     api_auth_as user_id => $politician_id;
 
-    rest_post "/api/politician/$politician_id/answers",
-        name    => "Empty answer",
-        is_fail => 1,
-        code    => 400,
-        [ "question[$first_question_id][answer]"  => "" ]
-    ;
-
     my $answer_content = fake_words(1)->();
     rest_post "/api/politician/$politician_id/answers",
         name  => "POST politician answer",
