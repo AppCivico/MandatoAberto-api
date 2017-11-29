@@ -11,6 +11,7 @@ with 'MandatoAberto::Role::Verification::TransactionalActions::DBIC';
 use MandatoAberto::Types qw(EmailAddress);
 
 use Data::Verifier;
+use MandatoAberto::Utils;
 
 sub verifiers_specs {
     my $self = shift;
@@ -147,10 +148,14 @@ sub action_specs {
             }
 
             my $user = $self->result_source->schema->resultset("User")->create(
-                { ( map { $_ => $values{$_} } qw(email password) ) }
+                { ( map { $_ => $values{$_} } qw(email password) ) },
             );
 
             $user->add_to_roles( { id => 2 } );
+
+            if (is_test()) {
+                $user->update( { approved => 1 } );
+            }
 
             my $politician = $self->create(
                 {

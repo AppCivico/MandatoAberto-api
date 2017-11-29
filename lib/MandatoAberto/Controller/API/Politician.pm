@@ -44,7 +44,7 @@ sub result_GET {
         $c,
         entity => {
             ( map { $_ => $c->stash->{politician}->$_ } qw/
-                name address_city address_state approved
+                name address_city address_state
                 fb_page_id fb_app_id fb_app_secret
                 fb_page_acess_token gender/ ),
 
@@ -77,7 +77,7 @@ sub result_GET {
                 }
             ),
 
-            ( map { $_ => $c->stash->{politician}->user->$_ } qw/id email created_at/ ),
+            ( map { $_ => $c->stash->{politician}->user->$_ } qw/id email approved created_at/ ),
 
         }
     );
