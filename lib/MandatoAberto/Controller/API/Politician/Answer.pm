@@ -83,12 +83,6 @@ sub list_POST {
 
     $c->req->params->{answers} = [ grep defined, @{ $c->req->params->{answers} } ];
 
-    for (my $i = 0; $i < scalar @{ $c->req->params->{answers} } ; $i++) {
-        my $answer = $c->req->params->{answers}->[$i];
-
-        die \["answers[$i]", 'must not be empty'] if ( $answer->{content} eq "" );
-    }
-
     my $answers = $c->stash->{collection}->execute(
         $c,
         for  => "update_or_create",

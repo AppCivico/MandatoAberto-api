@@ -50,13 +50,6 @@ db_transaction {
 
     api_auth_as user_id => $politician_id;
 
-    rest_post "/api/politician/$politician_id/answers",
-        name    => "Empty answer",
-        is_fail => 1,
-        code    => 400,
-        [ "question[$first_question_id][answer]"  => "" ]
-    ;
-
     my $answer_content = fake_words(1)->();
     rest_post "/api/politician/$politician_id/answers",
         name  => "POST politician answer",
@@ -106,8 +99,14 @@ db_transaction {
         code    => 400,
         [
             "question[$first_question_id][answer][$answer_id]" => 'foobar',
-            "question[$first_question_id][answer][$fake_id]" => 'foobar',
+            "question[$first_question_id][answer][$fake_id]"   => 'foobar',
         ]
+    ;
+
+    rest_post "/api/politician/$politician_id/answers",
+        name  => "Update politician answer with an empty string",
+        code  => 200,
+        [ "question[$first_question_id][answer][$answer_id]" => '' ]
     ;
 
     rest_reload_list "get_politician_answers";
