@@ -49,7 +49,7 @@ db_transaction {
 
     stash_test "get_dialog" => sub {
         my $res = shift;
-        use DDP; p $res;
+
         # Dialogs without questions
         is_deeply(
             $res,
