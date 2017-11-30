@@ -55,7 +55,7 @@ sub list_POST {
     return $self->status_ok(
         $c,
         entity => {
-
+            id => $citizen->id
         }
     );
 }
