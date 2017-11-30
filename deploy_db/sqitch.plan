@@ -24,3 +24,4 @@
 0020-question-citizen-input [0019-politician-greetings] 2017-11-23T18:34:31Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the citizen input to the question table
 0021-drop-politician-biography [0020-question-citizen-input] 2017-11-28T16:15:23Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Droping the politician_biography table
 0022-user_approved_bool [0021-drop-politician-biography] 2017-11-29T18:29:41Z Lucas Ansei,,, <lucas@lucas-G750JX> # Moving the approved and approved_at fields to the "user" table
+0023-citizen [0022-user_approved_bool] 2017-11-29T20:08:21Z Lucas Ansei,,, <lucas@lucas-G750JX> # Creating the citizen table 
