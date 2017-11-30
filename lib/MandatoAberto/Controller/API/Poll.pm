@@ -98,9 +98,7 @@ sub list_GET {
 
 sub result : Chained('object') : PathPart('') : Args(0) : ActionClass('REST') { }
 
-sub result_PUT {
-    # TODO implementar edição de enquete
-}
+sub result_PUT { }
 
 __PACKAGE__->meta->make_immutable;
 
