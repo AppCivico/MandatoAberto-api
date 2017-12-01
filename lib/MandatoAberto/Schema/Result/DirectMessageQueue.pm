@@ -49,11 +49,6 @@ __PACKAGE__->table("direct_message_queue");
   is_nullable: 0
   sequence: 'direct_message_queue_id_seq'
 
-=head2 recipient_fb_id
-
-  data_type: 'text'
-  is_nullable: 0
-
 =head2 content
 
   data_type: 'text'
@@ -76,8 +71,6 @@ __PACKAGE__->add_columns(
     is_nullable       => 0,
     sequence          => "direct_message_queue_id_seq",
   },
-  "recipient_fb_id",
-  { data_type => "text", is_nullable => 0 },
   "content",
   { data_type => "text", is_nullable => 0 },
   "created_at",
@@ -102,8 +95,8 @@ __PACKAGE__->add_columns(
 __PACKAGE__->set_primary_key("id");
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2017-12-01 01:18:17
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Ilst6ygoUdigCQpzM+gmiQ
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2017-12-01 11:45:20
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:9KNVntfduBgwHvq8kUolMw
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

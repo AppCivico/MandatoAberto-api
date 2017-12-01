@@ -6,35 +6,32 @@ use Furl;
 
 use MandatoAberto::Utils;
 
-has fb_api_url => {
-    is       => "rw",
-    isa      => "Str",
-    required => 1,
-};
-
 has _transport => (
     is         => "ro",
     lazy_build => 1,
 );
 
+sub _build_transport {
+    my $self = shift;
+
+    return Furl->new(
+        timeout => 10,
+    );
+}
 
 sub send {
-    my ($self, $content, $recipient_fb_id) = @_;
+    my ($self, $content) = @_;
 
     my $furl = Furl->new();
 
-    my $url = $ENV{fb_api_url};
+    # TODO complementar URL
+    my $url = '';
 
     if (is_test()) {
         return 1;
     }
 
-    my $json = encode_json {
-        recipient => { id   => $recipient_fb_id },
-        message   => { text => $content },
-    };
-
-    $furl->post($url, $json)
+    $furl->post($url, $content);
 
     return 1;
 }

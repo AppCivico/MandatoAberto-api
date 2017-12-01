@@ -4,7 +4,7 @@ use Moose;
 
 with "MandatoAberto::Worker";
 
-use MandatoAberto::Mailer;
+use MandatoAberto::Messager;
 
 has timer => (
     is      => "rw",
@@ -31,7 +31,7 @@ sub listen_queue {
         undef,
         {
             rows   => 20,
-            column => [ qw(me.id me.content me.recipient_fb_id) ],
+            column => [ qw(me.id me.content) ],
         },
     )->all;
 
@@ -61,7 +61,7 @@ sub run_once {
             undef,
             {
                 rows   => 1,
-                column => [ qw(me.id me.content me.recipient_fb_id) ],
+                column => [ qw(me.id me.content) ],
             },
         )->next;
     }
@@ -77,7 +77,7 @@ sub exec_item {
 
     $self->logger->debug($item->content) if $self->logger;
 
-    if ($self->messager->send($item->content, $item->recipient_fb_id)) {
+    if ($self->messager->send($item->content)) {
         $item->delete();
         return 1;
     }
