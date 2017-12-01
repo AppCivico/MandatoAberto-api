@@ -165,6 +165,15 @@ sub action_specs {
             my %values = $r->valid_values;
             not defined $values{$_} and delete $values{$_} for keys %values;
 
+            my $active_poll = $self->schema->resultset('Poll')->search(
+                {
+                    active        => 1,
+                    politician_id => $self->politician_id
+                }
+            )->next;
+
+            $active_poll->update( { active => 0 } );
+
             $self->update(\%values);
         }
     };
