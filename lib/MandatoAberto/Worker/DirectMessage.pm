@@ -31,7 +31,7 @@ sub listen_queue {
         undef,
         {
             rows   => 20,
-            column => [ qw(me.id me.content) ],
+            column => [ qw(me.id me.direct_message_id) ],
         },
     )->all;
 
@@ -74,7 +74,7 @@ sub run_once {
 
 sub exec_item {
     my ($self, $item) = @_;
-
+    use DDP; p $item;
     $self->logger->debug($item->content) if $self->logger;
 
     if ($self->messager->send($item->content)) {

@@ -49,17 +49,18 @@ __PACKAGE__->table("direct_message_queue");
   is_nullable: 0
   sequence: 'direct_message_queue_id_seq'
 
-=head2 content
-
-  data_type: 'text'
-  is_nullable: 0
-
 =head2 created_at
 
   data_type: 'timestamp'
   default_value: current_timestamp
   is_nullable: 0
   original: {default_value => \"now()"}
+
+=head2 direct_message_id
+
+  data_type: 'integer'
+  is_foreign_key: 1
+  is_nullable: 0
 
 =cut
 
@@ -71,8 +72,6 @@ __PACKAGE__->add_columns(
     is_nullable       => 0,
     sequence          => "direct_message_queue_id_seq",
   },
-  "content",
-  { data_type => "text", is_nullable => 0 },
   "created_at",
   {
     data_type     => "timestamp",
@@ -80,6 +79,8 @@ __PACKAGE__->add_columns(
     is_nullable   => 0,
     original      => { default_value => \"now()" },
   },
+  "direct_message_id",
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
 );
 
 =head1 PRIMARY KEY
@@ -94,9 +95,26 @@ __PACKAGE__->add_columns(
 
 __PACKAGE__->set_primary_key("id");
 
+=head1 RELATIONS
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2017-12-01 11:45:20
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:9KNVntfduBgwHvq8kUolMw
+=head2 direct_message
+
+Type: belongs_to
+
+Related object: L<MandatoAberto::Schema::Result::DirectMessage>
+
+=cut
+
+__PACKAGE__->belongs_to(
+  "direct_message",
+  "MandatoAberto::Schema::Result::DirectMessage",
+  { id => "direct_message_id" },
+  { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
+);
+
+
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2017-12-03 14:32:11
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:3wRV7wJPQkMXnntrr7gMJg
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

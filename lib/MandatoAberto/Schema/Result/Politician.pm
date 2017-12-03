@@ -171,6 +171,21 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 direct_messages
+
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::DirectMessage>
+
+=cut
+
+__PACKAGE__->has_many(
+  "direct_messages",
+  "MandatoAberto::Schema::Result::DirectMessage",
+  { "foreign.politician_id" => "self.user_id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 office
 
 Type: belongs_to
@@ -262,8 +277,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2017-11-29 18:08:05
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:n927EUY8jXP5R2F/3UV5dQ
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2017-12-03 14:32:11
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:0VtXCaxMOdU0HCVzAYznJQ
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
