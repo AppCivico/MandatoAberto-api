@@ -46,7 +46,7 @@ sub result_GET {
             ( map { $_ => $c->stash->{politician}->$_ } qw/
                 name address_city address_state
                 fb_page_id fb_app_id fb_app_secret
-                fb_page_acess_token gender/ ),
+                fb_page_access_token gender/ ),
 
             ( party => { map { $_ => $c->stash->{politician}->party->$_ } qw/acronym name id/ } ),
 

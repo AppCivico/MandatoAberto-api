@@ -74,10 +74,13 @@ sub run_once {
 
 sub exec_item {
     my ($self, $item) = @_;
-    use DDP; p $item;
-    $self->logger->debug($item->content) if $self->logger;
 
-    if ($self->messager->send($item->content)) {
+    my $direct_message       = $self->schema->resultset("DirectMessage")->find($item->direct_message_id);
+    my $fb_page_access_token = $self->schema->resultset("Politician")->find($direct_message->politician_id)->fb_page_access_token;
+
+    $self->logger->debug($direct_message->content) if $self->logger;
+
+    if ($self->messager->send($direct_message->content, $fb_page_access_token)) {
         $item->delete();
         return 1;
     }

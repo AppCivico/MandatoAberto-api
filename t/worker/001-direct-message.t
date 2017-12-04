@@ -8,7 +8,9 @@ use MandatoAberto::Utils;
 my $schema = MandatoAberto->model('DB');
 
 db_transaction {
-    create_politician;
+    create_politician(
+        fb_page_access_token => "aaaaa"
+    );
     my $politician_id = stash "politician.id";
 
     use_ok 'MandatoAberto::Worker::DirectMessage';

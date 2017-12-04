@@ -54,6 +54,11 @@ db_transaction {
         , '1'
         , 'one direct message in the queue'
     );
+
+    rest_get "/api/politician/$politician_id/direct-message",
+        name => "search politician direct messages",
+        list => 1,
+    ;
 };
 
 done_testing();

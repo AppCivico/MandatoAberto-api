@@ -6,6 +6,8 @@ use Furl;
 
 use MandatoAberto::Utils;
 
+BEGIN { $ENV{FB_API_URL} or die "missing env 'FB_API_URL'." }
+
 has _transport => (
     is         => "ro",
     lazy_build => 1,
@@ -20,18 +22,21 @@ sub _build_transport {
 }
 
 sub send {
-    my ($self, $content) = @_;
+    my ($self, $content, $access_token) = @_;
 
     my $furl = Furl->new();
 
-    # TODO complementar URL
-    my $url = '';
+    my $url = $ENV{FB_API_URL} . $access_token;
 
     if (is_test()) {
         return 1;
     }
 
-    $furl->post($url, $content);
+    $furl->post(
+        $url,
+        [ 'Content-Type' => 'application/json' ],
+        $content
+    );
 
     return 1;
 }

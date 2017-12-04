@@ -13,7 +13,7 @@ __PACKAGE__->config(
     # AutoBase.
     result => "DB::DirectMessage",
 
-    list_key  => "direct_message",
+    list_key  => "direct_messages",
     build_row => sub {
         return { $_[0]->get_columns() };
     },
@@ -45,23 +45,23 @@ sub list_POST { }
 sub list_GET {
     my ($self, $c) = @_;
 
-    my $politician_id = $c->user->id;
+    my $politician_id = $c->stash->{politician}->id;
 
     return $self->status_ok(
         $c,
         entity => {
-            politician_contact => {
-                politician_id => $politician_id,
-
+            direct_messages => [
                 map {
-                    my $c = $_;
-                    id        => $c->get_column('id'),
-                    facebook  => $c->get_column('facebook'),
-                    twitter   => $c->get_column('twitter'),
-                    email     => $c->get_column('email'),
-                    cellphone => $c->get_column('cellphone'),
+                    my $dm = $_;
+
+                    +{
+                        id      => $dm->get_column('id'),
+                        content => $dm->get_column('content'),
+                        sent    => $dm->get_column('sent'),
+                        sent_at => $dm->get_column('sent_at')
+                    }
                 } $c->stash->{collection}->search( { politician_id => $politician_id } )->all()
-            }
+            ]
         }
     );
 }

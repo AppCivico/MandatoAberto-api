@@ -29,7 +29,7 @@ sub build_message {
         recipient => { id   => $self->to },
         message   => { text => $self->message },
     };
-    
+
     return $facebook_message;
 }
 

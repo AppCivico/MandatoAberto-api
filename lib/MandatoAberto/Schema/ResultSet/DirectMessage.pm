@@ -65,8 +65,6 @@ sub action_specs {
                 return $queued;
             }
 
-            use DDP; p \@citizens;
-
             return $direct_message;
         }
     };
