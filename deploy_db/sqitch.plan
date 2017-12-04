@@ -24,4 +24,8 @@
 0020-question-citizen-input [0019-politician-greetings] 2017-11-23T18:34:31Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the citizen input to the question table
 0021-drop-politician-biography [0020-question-citizen-input] 2017-11-28T16:15:23Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Droping the politician_biography table
 0022-user_approved_bool [0021-drop-politician-biography] 2017-11-29T18:29:41Z Lucas Ansei,,, <lucas@lucas-G750JX> # Moving the approved and approved_at fields to the "user" table
-0023-citizen [0022-user_approved_bool] 2017-11-29T20:08:21Z Lucas Ansei,,, <lucas@lucas-G750JX> # Creating the citizen table 
+0023-citizen [0022-user_approved_bool] 2017-11-29T20:08:21Z Lucas Ansei,,, <lucas@lucas-G750JX> # Creating the citizen table
+0024-direct_message_queue [0023-citizen] 2017-12-01T03:14:52Z Lucas Ansei,,, <lucas@lucas-G750JX> # Creating the direct message queue table
+0025-direct-message-table [0024-direct_message_queue] 2017-12-03T15:47:44Z Lucas Ansei,,, <lucas@lucas-G750JX> # Adding the direct_message table and fixing the direct_message_queue table
+0026-removing-politicianid-dmqueue [0025-direct-message-table] 2017-12-03T16:32:27Z Lucas Ansei,,, <lucas@lucas-G750JX> # Removing the politician_id of the direct message queue table
+0027-rename-page-acess-token [0026-removing-politicianid-dmqueue] 2017-12-04T02:35:54Z Lucas Ansei,,, <lucas@lucas-G750JX> # Renaming the 'page_acess_token' to 'page_access_token'

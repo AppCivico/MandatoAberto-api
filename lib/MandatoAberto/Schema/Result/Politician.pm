@@ -90,7 +90,7 @@ __PACKAGE__->table("politician");
   data_type: 'text'
   is_nullable: 1
 
-=head2 fb_page_acess_token
+=head2 fb_page_access_token
 
   data_type: 'text'
   is_nullable: 1
@@ -121,7 +121,7 @@ __PACKAGE__->add_columns(
   { data_type => "text", is_nullable => 1 },
   "fb_app_secret",
   { data_type => "text", is_nullable => 1 },
-  "fb_page_acess_token",
+  "fb_page_access_token",
   { data_type => "text", is_nullable => 1 },
   "gender",
   { data_type => "text", is_nullable => 0 },
@@ -167,6 +167,21 @@ Related object: L<MandatoAberto::Schema::Result::Citizen>
 __PACKAGE__->has_many(
   "citizens",
   "MandatoAberto::Schema::Result::Citizen",
+  { "foreign.politician_id" => "self.user_id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+=head2 direct_messages
+
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::DirectMessage>
+
+=cut
+
+__PACKAGE__->has_many(
+  "direct_messages",
+  "MandatoAberto::Schema::Result::DirectMessage",
   { "foreign.politician_id" => "self.user_id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
@@ -262,8 +277,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2017-11-29 18:08:05
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:n927EUY8jXP5R2F/3UV5dQ
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2017-12-04 00:35:41
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:tb8ikEDK0lS630llZF5zAQ
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
@@ -353,15 +368,15 @@ sub verifiers_specs {
                         return 1;
                     },
                 },
-                fb_page_acess_token => {
+                fb_page_access_token => {
                     required   => 0,
                     type       => "Str",
                     post_check => sub {
                         my $r = shift;
 
                         $self->search({
-                            fb_page_acess_token => $r->get_value('fb_page_acess_token'),
-                        })->count and die \["fb_page_acess_token", "alredy exists"];
+                            fb_page_access_token => $r->get_value('fb_page_access_token'),
+                        })->count and die \["fb_page_access_token", "alredy exists"];
 
                         return 1;
                     },

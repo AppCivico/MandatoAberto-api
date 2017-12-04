@@ -24,7 +24,7 @@ db_transaction {
         fb_page_id          => "FOO",
         fb_app_id           => "BAR",
         fb_app_secret       => "foobar",
-        fb_page_acess_token => "FOOBAR",
+        fb_page_access_token => "FOOBAR",
         gender              => $gender,
     );
 
@@ -81,7 +81,7 @@ db_transaction {
         is ($res->{fb_page_id}, "FOO" , 'fb_page_id');
         is ($res->{fb_app_id}, "BAR" , 'fb_app_id');
         is ($res->{fb_app_secret}, "foobar" , 'fb_app_secret');
-        is ($res->{fb_page_acess_token}, "FOOBAR" , 'fb_page_acess_token');
+        is ($res->{fb_page_access_token}, "FOOBAR" , 'fb_page_access_token');
         is ($res->{gender}, $gender , 'gender');
         is ($res->{contact}->{id}, $contact_id , 'contact id');
         is ($res->{contact}->{twitter}, '@lucas_ansei', 'twitter');

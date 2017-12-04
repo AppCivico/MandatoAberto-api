@@ -107,15 +107,15 @@ sub verifiers_specs {
                         return 1;
                     },
                 },
-                fb_page_acess_token => {
+                fb_page_access_token => {
                     required   => 0,
                     type       => "Str",
                     post_check => sub {
                         my $r = shift;
 
                         $self->search({
-                            fb_page_acess_token => $r->get_value('fb_page_acess_token'),
-                        })->count and die \["fb_page_acess_token", "alredy exists"];
+                            fb_page_access_token => $r->get_value('fb_page_access_token'),
+                        })->count and die \["fb_page_access_token", "alredy exists"];
 
                         return 1;
                     },
@@ -163,7 +163,7 @@ sub action_specs {
                         map { $_ => $values{$_} } qw(
                             name address_state address_city party_id
                             office_id fb_page_id fb_app_id fb_app_secret
-                            fb_page_acess_token gender
+                            fb_page_access_token gender
                         )
                     ),
                     user_id => $user->id,
