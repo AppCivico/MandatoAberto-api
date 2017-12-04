@@ -238,15 +238,10 @@ sub new_session {
 
     my $roles = [ map { $_->name } $self->roles ];
 
-    if ( !defined($session) && ($roles->[0] eq 'politician' || $roles->[0] eq 'admin' ) ) {
+    if ( !defined($session) ) {
         $session = $self->user_sessions->create({
             api_key      => random_string(128),
             valid_until  => \"(NOW() + '1 days'::interval)",
-        });
-    } elsif ( !defined($session) && $roles->[0] eq 'chatbot' ) {
-        $session = $self->user_sessions->create({
-            api_key      => random_string(128),
-            valid_until  => \"(NOW() + '120 days'::interval)",
         });
     }
 
