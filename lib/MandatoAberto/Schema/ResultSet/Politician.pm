@@ -153,10 +153,6 @@ sub action_specs {
 
             $user->add_to_roles( { id => 2 } );
 
-            if (is_test()) {
-                $user->update( { approved => 1 } );
-            }
-
             my $politician = $self->create(
                 {
                     (
@@ -169,6 +165,24 @@ sub action_specs {
                     user_id => $user->id,
                 }
             );
+
+            # Ao criar um representante público cria-se também um chatbot
+            my $chatbot_user = $self->result_source->schema->resultset("User")->create({
+                email    => $values{email} . '.chatbot',
+                password => $values{email} . '.chatbot'
+            });
+
+            $chatbot_user->add_to_roles( { id => 3 } );
+
+            my $politician_chatbot = $self->result_source->schema->resultset("PoliticianChatbot")->create( {
+                user_id       => $chatbot_user->id,
+                politician_id => $politician->id
+            } );
+
+            if (is_test()) {
+                $user->update( { approved => 1 } );
+                $chatbot_user->update( { approved => 1 } );
+            }
 
             return $politician
         }
