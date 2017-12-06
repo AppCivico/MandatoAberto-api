@@ -30,3 +30,4 @@
 0026-removing-politicianid-dmqueue [0025-direct-message-table] 2017-12-03T16:32:27Z Lucas Ansei,,, <lucas@lucas-G750JX> # Removing the politician_id of the direct message queue table
 0027-rename-page-acess-token [0026-removing-politicianid-dmqueue] 2017-12-04T02:35:54Z Lucas Ansei,,, <lucas@lucas-G750JX> # Renaming the 'page_acess_token' to 'page_access_token'
 0028-chatbot-role [0027-rename-page-acess-token] 2017-12-04T03:23:02Z Lucas Ansei,,, <lucas@lucas-G750JX> # Adding the chatbot role
+0029-politician_chatbot-table [0028-chatbot-role] 2017-12-06T18:02:32Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Creating the politician_chatbot table
