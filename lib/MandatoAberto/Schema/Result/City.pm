@@ -90,6 +90,21 @@ __PACKAGE__->set_primary_key("id");
 
 =head1 RELATIONS
 
+=head2 politicians
+
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::Politician>
+
+=cut
+
+__PACKAGE__->has_many(
+  "politicians",
+  "MandatoAberto::Schema::Result::Politician",
+  { "foreign.address_city_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 state
 
 Type: belongs_to
@@ -106,8 +121,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2017-10-19 16:30:17
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:c1FhDvb8+hEhYahpUjL0+w
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2017-12-07 14:21:21
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:RACr39AO771EHRIDoJ/irA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

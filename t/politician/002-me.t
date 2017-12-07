@@ -17,8 +17,8 @@ db_transaction {
         email               => $email,
         password            => $password,
         name                => "Lucas Ansei",
-        address_state       => 'SP',
-        address_city        => 'São Paulo',
+        address_state       => 26,
+        address_city_id     => 9508,
         party_id            => $party,
         office_id           => $office,
         fb_page_id          => "FOO",
@@ -74,8 +74,9 @@ db_transaction {
 
         is ($res->{id}, $politician_id,  'id');
         is ($res->{name}, "Lucas Ansei", 'name');
-        is ($res->{address_state}, "SP" , 'address_state');
-        is ($res->{address_city}, "São Paulo" , 'address_city');
+        is ($res->{state}->{code}, "SP" , 'state code');
+        is ($res->{state}->{name}, "São Paulo" , 'state name');
+        is ($res->{city}->{name}, "São Paulo" , 'city');
         is ($res->{party}->{id}, $party , 'party');
         is ($res->{office}->{id}, $office , 'office');
         is ($res->{fb_page_id}, "FOO" , 'fb_page_id');
@@ -94,8 +95,8 @@ db_transaction {
     rest_put "/api/politician/$politician_id",
         name => "update politician",
         [
-            name         => "Ansei Lucas",
-            address_city => "Ubatuba"
+            name            => "Ansei Lucas",
+            address_city_id => 9552
         ]
     ;
 
@@ -104,8 +105,8 @@ db_transaction {
     stash_test "get_politician.list" => sub {
         my $res = shift;
 
-        is($res->{name},      "Ansei Lucas", "name updated");
-        is($res->{address_city}, "Ubatuba",   "city updated");
+        is($res->{name},         "Ansei Lucas", "name updated");
+        is($res->{city}->{name}, "Ubatuba",   "city updated");
     };
 
     # Mudando a senha

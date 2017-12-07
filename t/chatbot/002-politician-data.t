@@ -14,18 +14,18 @@ db_transaction {
     my $password = "foobar";
 
     create_politician(
-        email                => $email,
-        password             => $password,
-        name                 => "Lucas Ansei",
-        address_state        => 'SP',
-        address_city         => 'São Paulo',
-        party_id             => $party,
-        office_id            => $office,
-        fb_page_id           => "FOO",
-        fb_app_id            => "BAR",
-        fb_app_secret        => "foobar",
-        fb_page_access_token => "FOOBAR",
-        gender               => $gender,
+        email                   => $email,
+        password                => $password,
+        name                    => "Lucas Ansei",
+        address_state_id        => 26,
+        address_city_id         => 9508,
+        party_id                => $party,
+        office_id               => $office,
+        fb_page_id              => "FOO",
+        fb_app_id               => "BAR",
+        fb_app_secret           => "foobar",
+        fb_page_access_token    => "FOOBAR",
+        gender                  => $gender,
     );
     my $politician_id = stash "politician.id";
 
@@ -55,8 +55,8 @@ db_transaction {
 
         is ($res->{user_id}, $politician_id, 'user_id');
         is ($res->{name}, "Lucas Ansei", 'name');
-        is ($res->{address_state}, "SP" , 'address_state');
-        is ($res->{address_city}, "São Paulo" , 'address_city');
+        is ($res->{address_state}, 26 , 'address_state');
+        is ($res->{address_city}, 9508 , 'address_city');
         is ($res->{gender}, $gender , 'gender');
         is ($res->{contact}->{twitter}, '@foobar', 'twitter');
         is ($res->{contact}->{email}, $email, 'email');

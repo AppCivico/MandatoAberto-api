@@ -109,14 +109,14 @@ sub create_politician {
     my (%opts) = @_;
 
     my %params = (
-        email         => fake_email()->(),
-        password      => 'foobarpass',
-        name          => fake_name()->(),
-        address_state => 'SP',
-        address_city  => 'São Paulo',
-        party_id      => fake_int(1, 35)->(),
-        office_id     => fake_int(1, 8)->(),
-        gender        => fake_pick(qw/F M/)->(),
+        email            => fake_email()->(),
+        password         => 'foobarpass',
+        name             => fake_name()->(),
+        address_state_id => 26,
+        address_city_id  => 9508,
+        party_id         => fake_int(1, 35)->(),
+        office_id        => fake_int(1, 8)->(),
+        gender           => fake_pick(qw/F M/)->(),
         %opts
     );
 

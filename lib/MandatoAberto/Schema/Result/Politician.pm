@@ -53,16 +53,6 @@ __PACKAGE__->table("politician");
   data_type: 'text'
   is_nullable: 0
 
-=head2 address_state
-
-  data_type: 'text'
-  is_nullable: 0
-
-=head2 address_city
-
-  data_type: 'text'
-  is_nullable: 0
-
 =head2 party_id
 
   data_type: 'integer'
@@ -100,16 +90,24 @@ __PACKAGE__->table("politician");
   data_type: 'text'
   is_nullable: 0
 
+=head2 address_state_id
+
+  data_type: 'integer'
+  is_foreign_key: 1
+  is_nullable: 0
+
+=head2 address_city_id
+
+  data_type: 'integer'
+  is_foreign_key: 1
+  is_nullable: 0
+
 =cut
 
 __PACKAGE__->add_columns(
   "user_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "name",
-  { data_type => "text", is_nullable => 0 },
-  "address_state",
-  { data_type => "text", is_nullable => 0 },
-  "address_city",
   { data_type => "text", is_nullable => 0 },
   "party_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
@@ -125,6 +123,10 @@ __PACKAGE__->add_columns(
   { data_type => "text", is_nullable => 1 },
   "gender",
   { data_type => "text", is_nullable => 0 },
+  "address_state_id",
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
+  "address_city_id",
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
 );
 
 =head1 PRIMARY KEY
@@ -140,6 +142,36 @@ __PACKAGE__->add_columns(
 __PACKAGE__->set_primary_key("user_id");
 
 =head1 RELATIONS
+
+=head2 address_city
+
+Type: belongs_to
+
+Related object: L<MandatoAberto::Schema::Result::City>
+
+=cut
+
+__PACKAGE__->belongs_to(
+  "address_city",
+  "MandatoAberto::Schema::Result::City",
+  { id => "address_city_id" },
+  { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
+);
+
+=head2 address_state
+
+Type: belongs_to
+
+Related object: L<MandatoAberto::Schema::Result::State>
+
+=cut
+
+__PACKAGE__->belongs_to(
+  "address_state",
+  "MandatoAberto::Schema::Result::State",
+  { id => "address_state_id" },
+  { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
+);
 
 =head2 answers
 
@@ -292,8 +324,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2017-12-06 11:45:29
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:f52HJaoYMENPLqKo47cwOA
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2017-12-07 14:21:21
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:bpDsUPY/YM06w1geau51mA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
@@ -312,20 +344,20 @@ sub verifiers_specs {
                     required => 0,
                     type     => "Str",
                 },
-                address_state => {
+                address_state_id => {
                     required   => 0,
                     type       => "Str",
                     post_check => sub {
-                        my $address_state = $_[0]->get_value('address_state');
-                        $self->result_source->schema->resultset("State")->search({ code => $address_state })->count;
+                        my $address_state_id = $_[0]->get_value('address_state_');
+                        $self->result_source->schema->resultset("State")->search({ id => $address_state_id })->count;
                     },
                 },
-                address_city => {
+                address_city_id => {
                     required   => 0,
                     type       => "Str",
                     post_check => sub {
-                        my $address_city = $_[0]->get_value('address_city');
-                        $self->result_source->schema->resultset("City")->search({ name => $address_city })->count;
+                        my $address_city_id = $_[0]->get_value('address_city_id');
+                        $self->result_source->schema->resultset("City")->search({ id => $address_city_id })->count;
                     },
                 },
                 party_id => {

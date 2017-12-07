@@ -14,14 +14,14 @@ db_transaction {
         stash               => "d1",
         automatic_load_item => 0,
         [
-            email         => $email,
-            password      => '1234567',
-            name          => 'Lucas Ansei',
-            address_state => 'SP',
-            address_city  => 'São Paulo',
-            party_id      => fake_int(1, 35)->(),
-            office_id     => fake_int(1, 8)->(),
-            gender        => fake_pick(qw/F M/)->(),
+            email            => $email,
+            password         => '1234567',
+            name             => 'Lucas Ansei',
+            address_state_id => 26,
+            address_city_id  => 9508,
+            party_id         => fake_int(1, 35)->(),
+            office_id        => fake_int(1, 8)->(),
+            gender           => fake_pick(qw/F M/)->(),
         ]
     ;
 
@@ -35,13 +35,13 @@ db_transaction {
         name    => "politician without email",
         is_fail => 1,
         [
-            password      => '1234567',
-            name          => 'Lucas Ansei',
-            address_state => 'SP',
-            address_city  => 'São Paulo',
-            party_id      => fake_int(1, 35)->(),
-            office_id     => fake_int(1, 8)->(),
-            gender        => fake_pick(qw/F M/)->(),
+            password         => '1234567',
+            name             => 'Lucas Ansei',
+            address_state_id => 26,
+            address_city_id  => 9508,
+            party_id         => fake_int(1, 35)->(),
+            office_id        => fake_int(1, 8)->(),
+            gender           => fake_pick(qw/F M/)->(),
         ]
     ;
 
@@ -49,13 +49,13 @@ db_transaction {
         name    => "politician without name",
         is_fail => 1,
         [
-            email         => fake_email()->(),
-            password      => '1234567',
-            address_state => 'SP',
-            address_city  => 'São Paulo',
-            party_id      => fake_int(1, 35)->(),
-            office_id     => fake_int(1, 8)->(),
-            gender        => fake_pick(qw/F M/)->(),
+            email            => fake_email()->(),
+            password         => '1234567',
+            address_state_id => 26,
+            address_city_id  => 9508,
+            party_id         => fake_int(1, 35)->(),
+            office_id        => fake_int(1, 8)->(),
+            gender           => fake_pick(qw/F M/)->(),
         ]
     ;
 
@@ -73,32 +73,32 @@ db_transaction {
     ;
 
     rest_post "/api/register/politician",
-        name    => "politician with invalid address_state",
+        name    => "politician with invalid address_state_id",
         is_fail => 1,
         [
-            email         => fake_email()->(),
-            password      => '1234567',
-            name          => 'Lucas Ansei',
-            address_state => 'ZL',
-            address_city  => 'São Paulo',
-            party_id      => fake_int(1, 35)->(),
-            office_id     => fake_int(1, 8)->(),
-            gender        => fake_pick(qw/F M/)->(),
+            email            => fake_email()->(),
+            password         => '1234567',
+            name             => 'Lucas Ansei',
+            address_state_id => 'ZL',
+            address_city_id  => 9508,
+            party_id         => fake_int(1, 35)->(),
+            office_id        => fake_int(1, 8)->(),
+            gender           => fake_pick(qw/F M/)->(),
         ]
     ;
 
     rest_post "/api/register/politician",
-        name    => "politician with invalid address_city",
+        name    => "politician with invalid address_city_id",
         is_fail => 1,
         [
-            email         => fake_email()->(),
-            password      => '1234567',
-            name          => 'Lucas Ansei',
-            address_state => 'SP',
-            address_city  => 'Rapture',
-            party_id      => fake_int(1, 35)->(),
-            office_id     => fake_int(1, 8)->(),
-            gender        => fake_pick(qw/F M/)->(),
+            email            => fake_email()->(),
+            password         => '1234567',
+            name             => 'Lucas Ansei',
+            address_state_id => 26,
+            address_city_id  => 'Rapture',
+            party_id         => fake_int(1, 35)->(),
+            office_id        => fake_int(1, 8)->(),
+            gender           => fake_pick(qw/F M/)->(),
         ]
     ;
 
@@ -106,13 +106,13 @@ db_transaction {
         name    => "politician without party",
         is_fail => 1,
         [
-            email         => fake_email()->(),
-            password      => '1234567',
-            name          => 'Lucas Ansei',
-            address_state => 'SP',
-            address_city  => 'São Paulo',
-            office_id     => fake_int(1, 8)->(),
-            gender        => fake_pick(qw/F M/)->(),
+            email            => fake_email()->(),
+            password         => '1234567',
+            name             => 'Lucas Ansei',
+            address_state_id => 26,
+            address_city_id  => 9508,
+            office_id        => fake_int(1, 8)->(),
+            gender           => fake_pick(qw/F M/)->(),
         ]
     ;
 
@@ -120,13 +120,13 @@ db_transaction {
         name    => "politician without office",
         is_fail => 1,
         [
-            email         => fake_email()->(),
-            password      => '1234567',
-            name          => 'Lucas Ansei',
-            address_state => 'SP',
-            address_city  => 'São Paulo',
-            party_id      => fake_int(1, 35)->(),
-            gender        => fake_pick(qw/F M/)->(),
+            email            => fake_email()->(),
+            password         => '1234567',
+            name             => 'Lucas Ansei',
+            address_state_id => 26,
+            address_city_id  => 9508,
+            party_id         => fake_int(1, 35)->(),
+            gender           => fake_pick(qw/F M/)->(),
         ]
     ;
 
@@ -135,14 +135,14 @@ db_transaction {
         name    => "politician with invalid party",
         is_fail => 1,
         [
-            email         => fake_email()->(),
-            password      => '1234567',
-            name          => 'Lucas Ansei',
-            address_state => 'SP',
-            address_city  => 'São Paulo',
-            party_id      => 'AppCivico',
-            office_id     => fake_int(1, 8)->(),
-            gender        => fake_pick(qw/F M/)->(),
+            email            => fake_email()->(),
+            password         => '1234567',
+            name             => 'Lucas Ansei',
+            address_state_id => 26,
+            address_city_id  => 9508,
+            party_id         => 'AppCivico',
+            office_id        => fake_int(1, 8)->(),
+            gender           => fake_pick(qw/F M/)->(),
         ]
     ;
 
@@ -151,14 +151,14 @@ db_transaction {
         name    => "politician with invalid party",
         is_fail => 1,
         [
-            email         => fake_email()->(),
-            password      => '1234567',
-            name          => 'Lucas Ansei',
-            address_state => 'SP',
-            address_city  => 'São Paulo',
-            party_id      => fake_int(1, 35)->(),
-            office_id     => 'Developer',
-            gender        => fake_pick(qw/F M/)->(),
+            email            => fake_email()->(),
+            password         => '1234567',
+            name             => 'Lucas Ansei',
+            address_state_id => 26,
+            address_city_id  => 9508,
+            party_id         => fake_int(1, 35)->(),
+            office_id        => 'Developer',
+            gender           => fake_pick(qw/F M/)->(),
         ]
     ;
 
@@ -166,13 +166,13 @@ db_transaction {
         name    => "politician without gender",
         is_fail => 1,
         [
-            email         => fake_email()->(),
-            password      => '1234567',
-            name          => 'Lucas Ansei',
-            address_state => 'SP',
-            address_city  => 'São Paulo',
-            party_id      => fake_int(1, 35)->(),
-            office_id     => fake_int(1, 8)->(),
+            email            => fake_email()->(),
+            password         => '1234567',
+            name             => 'Lucas Ansei',
+            address_state_id => 26,
+            address_city_id  => 9508,
+            party_id         => fake_int(1, 35)->(),
+            office_id        => fake_int(1, 8)->(),
         ]
     ;
 
@@ -180,14 +180,14 @@ db_transaction {
         name    => "politician with invalid gender",
         is_fail => 1,
         [
-            email         => fake_email()->(),
-            password      => '1234567',
-            name          => 'Lucas Ansei',
-            address_state => 'SP',
-            address_city  => 'São Paulo',
-            party_id      => fake_int(1, 35)->(),
-            office_id     => fake_int(1, 8)->(),
-            gender        => "A",
+            email            => fake_email()->(),
+            password         => '1234567',
+            name             => 'Lucas Ansei',
+            address_state_id => 26,
+            address_city_id  => 9508,
+            party_id         => fake_int(1, 35)->(),
+            office_id        => fake_int(1, 8)->(),
+            gender           => "A",
         ]
     ;
 };

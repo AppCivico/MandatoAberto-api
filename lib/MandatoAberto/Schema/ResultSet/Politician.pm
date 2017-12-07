@@ -36,20 +36,20 @@ sub verifiers_specs {
                     required => 1,
                     type     => "Str",
                 },
-                address_state => {
+                address_state_id => {
                     required   => 1,
-                    type       => "Str",
+                    type       => "Int",
                     post_check => sub {
-                        my $address_state = $_[0]->get_value('address_state');
-                        $self->result_source->schema->resultset("State")->search({ code => $address_state })->count;
+                        my $address_state = $_[0]->get_value('address_state_id');
+                        $self->result_source->schema->resultset("State")->search({ id => $address_state })->count;
                     },
                 },
-                address_city => {
+                address_city_id => {
                     required   => 1,
-                    type       => "Str",
+                    type       => "Int",
                     post_check => sub {
-                        my $address_city = $_[0]->get_value('address_city');
-                        $self->result_source->schema->resultset("City")->search({ name => $address_city })->count;
+                        my $address_city = $_[0]->get_value('address_city_id');
+                        $self->result_source->schema->resultset("City")->search({ id => $address_city })->count;
                     },
                 },
                 party_id => {
@@ -157,7 +157,7 @@ sub action_specs {
                 {
                     (
                         map { $_ => $values{$_} } qw(
-                            name address_state address_city party_id
+                            name address_state_id address_city_id party_id
                             office_id fb_page_id fb_app_id fb_app_secret
                             fb_page_access_token gender
                         )

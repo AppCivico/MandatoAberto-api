@@ -32,8 +32,8 @@ sub list_GET {
                 user_id       => $p->get_column('user_id'),
                 name          => $p->get_column('name'),
                 gender        => $p->get_column('gender'),
-                address_city  => $p->get_column('address_city'),
-                address_state => $p->get_column('address_state'),
+                address_city  => $p->get_column('address_city_id'),
+                address_state => $p->get_column('address_state_id'),
                 party         => {
                     name    => $p->party->get_column('name'),
                     acronym => $p->party->get_column('acronym'),
