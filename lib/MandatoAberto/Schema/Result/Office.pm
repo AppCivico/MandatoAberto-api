@@ -54,6 +54,11 @@ __PACKAGE__->table("office");
   data_type: 'text'
   is_nullable: 0
 
+=head2 gender
+
+  data_type: 'text'
+  is_nullable: 0
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -65,6 +70,8 @@ __PACKAGE__->add_columns(
     sequence          => "office_id_seq",
   },
   "name",
+  { data_type => "text", is_nullable => 0 },
+  "gender",
   { data_type => "text", is_nullable => 0 },
 );
 
@@ -79,20 +86,6 @@ __PACKAGE__->add_columns(
 =cut
 
 __PACKAGE__->set_primary_key("id");
-
-=head1 UNIQUE CONSTRAINTS
-
-=head2 C<office_name_key>
-
-=over 4
-
-=item * L</name>
-
-=back
-
-=cut
-
-__PACKAGE__->add_unique_constraint("office_name_key", ["name"]);
 
 =head1 RELATIONS
 
@@ -112,8 +105,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2017-10-25 17:13:27
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:fD17avv7cdkpBxY4B9qirA
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2017-12-07 15:30:24
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:mCq3I9GkrnrrDRL4bGA+Fg
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
