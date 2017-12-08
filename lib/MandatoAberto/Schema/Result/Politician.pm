@@ -379,54 +379,18 @@ sub verifiers_specs {
                 fb_page_id => {
                     required   => 0,
                     type       => "Str",
-                    post_check => sub {
-                        my $r = shift;
-
-                        $self->search({
-                            fb_page_id => $r->get_value('fb_page_id'),
-                        })->count and die \["fb_page_id", "alredy exists"];
-
-                        return 1;
-                    },
                 },
                 fb_app_id => {
                     required   => 0,
                     type       => "Str",
-                    post_check => sub {
-                        my $r = shift;
-
-                        $self->search({
-                            fb_app_id => $r->get_value('fb_app_id'),
-                        })->count and die \["fb_app_id", "alredy exists"];
-
-                        return 1;
-                    },
                 },
                 fb_app_secret => {
                     required   => 0,
                     type       => "Str",
-                    post_check => sub {
-                        my $r = shift;
-
-                        $self->search({
-                            fb_app_secret => $r->get_value('fb_app_secret'),
-                        })->count and die \["fb_app_secret", "alredy exists"];
-
-                        return 1;
-                    },
                 },
                 fb_page_access_token => {
                     required   => 0,
                     type       => "Str",
-                    post_check => sub {
-                        my $r = shift;
-
-                        $self->search({
-                            fb_page_access_token => $r->get_value('fb_page_access_token'),
-                        })->count and die \["fb_page_access_token", "alredy exists"];
-
-                        return 1;
-                    },
                 },
                 new_password => {
                     required => 0,
