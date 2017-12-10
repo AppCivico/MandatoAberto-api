@@ -10,18 +10,22 @@ db_transaction {
     create_politician;
     my $politician_id = stash "politician.id";
 
-    api_auth_as user_id => $politician_id;
+    my $chatbot = $schema->resultset("PoliticianChatbot")->search( { politician_id => $politician_id } )->next;
 
-    rest_post "/api/politician/$politician_id/citizen",
+    api_auth_as user_id => $chatbot->user_id;
+
+    rest_post "/api/chatbot/citizen",
         name                => "Create citizen",
         automatic_load_item => 0,
-        code                => 200,
         [
             name          => "foobar",
             fb_id         => "foobar",
             origin_dialog => "enquete"
         ]
     ;
+
+    api_auth_as user_id => $politician_id;
+
 
     rest_post "/api/politician/$politician_id/direct-message",
         name    => "creating direct message without content",

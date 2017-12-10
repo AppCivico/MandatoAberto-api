@@ -75,6 +75,23 @@ __PACKAGE__->table("citizen");
   data_type: 'text'
   is_nullable: 1
 
+=head2 email
+
+  data_type: 'text'
+  is_nullable: 1
+
+=head2 cellphone
+
+  data_type: 'text'
+  is_nullable: 1
+
+=head2 created_at
+
+  data_type: 'timestamp'
+  default_value: current_timestamp
+  is_nullable: 0
+  original: {default_value => \"now()"}
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -95,6 +112,17 @@ __PACKAGE__->add_columns(
   { data_type => "text", is_nullable => 0 },
   "gender",
   { data_type => "text", is_nullable => 1 },
+  "email",
+  { data_type => "text", is_nullable => 1 },
+  "cellphone",
+  { data_type => "text", is_nullable => 1 },
+  "created_at",
+  {
+    data_type     => "timestamp",
+    default_value => \"current_timestamp",
+    is_nullable   => 0,
+    original      => { default_value => \"now()" },
+  },
 );
 
 =head1 PRIMARY KEY
@@ -127,10 +155,50 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2017-11-29 23:16:58
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:fI52hzI9tL0OCMfWGJvgqg
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2017-12-10 18:36:14
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:2qxQPgHJiWTj7U88LyGxmQ
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
+with 'MandatoAberto::Role::Verification';
+with 'MandatoAberto::Role::Verification::TransactionalActions::DBIC';
+
+use MandatoAberto::Types qw(EmailAddress PhoneNumber);
+
+sub verifiers_specs {
+    my $self = shift;
+
+    return {
+        update => Data::Verifier->new(
+            filters => [qw(trim)],
+            profile => {
+                email => {
+                    required => 0,
+                    type     => EmailAddress
+                },
+                cellphone => {
+                    required => 0,
+                    type     => PhoneNumber,
+                }
+            }
+        ),
+    };
+}
+
+sub action_specs {
+    my ($self) = @_;
+
+    return {
+        update => sub {
+            my $r = shift;
+
+            my %values = $r->valid_values;
+            not defined $values{$_} and delete $values{$_} for keys %values;
+
+            $self->update(\%values);
+        }
+    };
+}
+
 __PACKAGE__->meta->make_immutable;
 1;
