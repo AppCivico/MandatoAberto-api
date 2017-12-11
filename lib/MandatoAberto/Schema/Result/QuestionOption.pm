@@ -90,6 +90,21 @@ __PACKAGE__->set_primary_key("id");
 
 =head1 RELATIONS
 
+=head2 poll_results
+
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::PollResult>
+
+=cut
+
+__PACKAGE__->has_many(
+  "poll_results",
+  "MandatoAberto::Schema::Result::PollResult",
+  { "foreign.option_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 question
 
 Type: belongs_to
@@ -106,8 +121,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2017-11-07 17:45:42
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:UeJDCG1ZLBjS+avgCWEXJg
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2017-12-11 09:12:27
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:r2fQGkahmQUMSLgwSGuvNg
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

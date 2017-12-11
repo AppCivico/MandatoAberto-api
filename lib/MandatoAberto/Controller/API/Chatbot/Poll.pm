@@ -42,6 +42,7 @@ sub list_GET {
                                     my $o = $_;
 
                                     +{
+                                        id      => $o->get_column('id'),
                                         content => $o->get_column('content')
                                     }
                                 } $q->question_options->all()

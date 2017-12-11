@@ -154,9 +154,24 @@ __PACKAGE__->belongs_to(
   { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
 );
 
+=head2 poll_results
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2017-12-10 18:36:14
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:2qxQPgHJiWTj7U88LyGxmQ
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::PollResult>
+
+=cut
+
+__PACKAGE__->has_many(
+  "poll_results",
+  "MandatoAberto::Schema::Result::PollResult",
+  { "foreign.citizen_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2017-12-11 02:20:45
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:+Lz960eCkWgLdYw/Rxw4MQ
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

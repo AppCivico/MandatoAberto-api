@@ -77,6 +77,9 @@ sub list_GET {
                                         map {
                                             my $qo = $_;
 
+                                            my $result = $qo->poll_results->all();
+                                            use DDP; p $result;
+
                                             +{
                                                 id      => $qo->get_column('id'),
                                                 content => $qo->get_column('content')
@@ -90,7 +93,8 @@ sub list_GET {
                     }
                 } $c->stash->{collection}->search(
                     { 'me.politician_id' => $politician_id },
-                    { prefetch => [ 'poll_questions' , { 'poll_questions' => "question_options" } ] } )->all()
+                    { prefetch => [ 'poll_questions' , { 'poll_questions' => { "question_options" => 'poll_results' } } ] }
+                )->all()
             ],
         }
     );
