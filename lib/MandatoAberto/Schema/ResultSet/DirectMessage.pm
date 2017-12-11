@@ -27,6 +27,11 @@ sub verifiers_specs {
                     required   => 1,
                     type       => "Str",
                     max_length => 250,
+                },
+                name => {
+                    required  => 1,
+                    type      => "Str",
+                    max_length => 50,
                 }
             }
         ),

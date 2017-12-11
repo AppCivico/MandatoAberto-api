@@ -71,6 +71,11 @@ __PACKAGE__->table("direct_message");
   data_type: 'timestamp'
   is_nullable: 1
 
+=head2 name
+
+  data_type: 'text'
+  is_nullable: 1
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -89,6 +94,8 @@ __PACKAGE__->add_columns(
   { data_type => "boolean", default_value => \"false", is_nullable => 0 },
   "sent_at",
   { data_type => "timestamp", is_nullable => 1 },
+  "name",
+  { data_type => "text", is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -136,8 +143,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2017-12-03 13:52:55
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:YtXCaXJu0+iFMihTKDi1Ow
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2017-12-11 17:31:53
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:XvIKeqb5zU6rz1oluxnYqw
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
