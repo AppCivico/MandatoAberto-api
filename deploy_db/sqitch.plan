@@ -35,3 +35,4 @@
 0031-office-gender [0030-politician-addresses-id] 2017-12-07T17:30:52Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding gender to the office table
 0032-citizen-contact-fields [0031-office-gender] 2017-12-10T23:06:03Z Lucas Ansei,,, <lucas@lucas-G750JX> # Adding contact fields to the citizen table
 0033-dialog-description [0032-citizen-contact-fields] 2017-12-11T03:15:00Z Lucas Ansei,,, <lucas@lucas-G750JX> # Adding the description field to the dialog table
+0034-poll-results [0033-dialog-description] 2017-12-11T12:22:15Z Lucas Ansei,,, <lucas@lucas-G750JX> # Creating the poll results table

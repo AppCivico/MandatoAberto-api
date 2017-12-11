@@ -79,7 +79,8 @@ sub list_GET {
 
                                             +{
                                                 id      => $qo->get_column('id'),
-                                                content => $qo->get_column('content')
+                                                content => $qo->get_column('content'),
+                                                count   => $qo->poll_results->search()->count,
                                             }
                                         } $pq->question_options->all()
                                     ]
@@ -90,7 +91,8 @@ sub list_GET {
                     }
                 } $c->stash->{collection}->search(
                     { 'me.politician_id' => $politician_id },
-                    { prefetch => [ 'poll_questions' , { 'poll_questions' => "question_options" } ] } )->all()
+                    { prefetch => [ 'poll_questions' , { 'poll_questions' => { "question_options" => 'poll_results' } } ] }
+                )->all()
             ],
         }
     );

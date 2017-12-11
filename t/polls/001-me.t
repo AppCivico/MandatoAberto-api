@@ -55,37 +55,11 @@ db_transaction {
     stash_test "get_poll_data" => sub {
         my $res = shift;
 
-        is_deeply(
-            $res,
-            {
-                polls => [
-                    {
-                        id     => $poll_id,
-                        name   => $poll_name,
-                        active => 1,
-
-                        questions => [
-                            {
-                                content => "Foobar",
-                                id      => $question_id,
-
-                                options => [
-                                    {
-                                        content => $first_option_content,
-                                        id      => $first_option_id
-                                    },
-                                    {
-                                        content => $second_option_content,
-                                        id      => $second_option_id
-                                    }
-                                ]
-                            }
-                        ]
-                    }
-                ]
-            },
-            'get poll data expected response'
-        );
+        is ($res->{polls}->[0]->{id}, $poll_id, 'poll id');
+        is ($res->{polls}->[0]->{active}, 1, 'poll active');
+        is ($res->{polls}->[0]->{name}, $poll_name, 'poll name');
+        is ($res->{polls}->[0]->{questions}->[0]->{content}, 'Foobar', 'question content');
+        is ($res->{polls}->[0]->{questions}->[0]->{id}, $question_id, 'question id');
     };
 
 
@@ -100,37 +74,7 @@ db_transaction {
     stash_test "get_poll_data.list" => sub {
         my $res = shift;
 
-        is_deeply(
-            $res,
-            {
-                polls => [
-                    {
-                        id     => $poll_id,
-                        name   => $poll_name,
-                        active => 0,
-
-                        questions => [
-                            {
-                                content => "Foobar",
-                                id      => $question_id,
-
-                                options => [
-                                    {
-                                        content => $first_option_content,
-                                        id      => $first_option_id
-                                    },
-                                    {
-                                        content => $second_option_content,
-                                        id      => $second_option_id
-                                    }
-                                ]
-                            }
-                        ]
-                    }
-                ]
-            },
-            'get poll data updated expected response'
-        );
+        is ($res->{polls}->[0]->{active}, 0, 'poll active');
     };
 };
 
