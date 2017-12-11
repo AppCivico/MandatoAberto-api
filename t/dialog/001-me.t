@@ -8,7 +8,8 @@ my $schema = MandatoAberto->model("DB");
 
 db_transaction {
     create_dialog(
-        name => "Dialogo foo"
+        name        => "Dialogo foo",
+        description => "Dialogo bar"
     );
     my $dialog_id = stash "dialog.id";
 
@@ -56,8 +57,10 @@ db_transaction {
             {
                 dialogs => [
                     {
-                        id        => $dialog_id,
-                        name      => "Dialogo foo",
+                        id          => $dialog_id,
+                        name        => "Dialogo foo",
+                        description => "Dialogo bar",
+
                         questions => [
                             {
                                 id            => $question_id,
@@ -106,6 +109,8 @@ db_transaction {
                     {
                         id   => $dialog_id,
                         name => "foobar",
+                        description => "Dialogo bar",
+
                         questions => [
                             {
                                 id            => $question_id,

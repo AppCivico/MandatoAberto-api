@@ -135,7 +135,8 @@ sub create_dialog {
     api_auth_as user_id => 1;
 
     my %params = (
-        name => "Foobar",
+        name        => fake_words(1)->(),
+        description => fake_words(1)->(),
         %opts
     );
 

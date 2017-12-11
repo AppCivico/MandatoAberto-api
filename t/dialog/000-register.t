@@ -37,26 +37,41 @@ db_transaction {
 
     api_auth_as user_id => $user->id;
 
-    my $dialog_name = "Foobar";
+    my $name        = fake_words(1)->();
+    my $description = fake_words(1)->();
 
     rest_post "/api/register/dialog",
         name                => "Creating dialog",
         automatic_load_item => 0,
         stash               => 'd1',
-        [ name => $dialog_name ]
+        [
+            name        => $name,
+            description => $description
+        ]
     ;
 
     rest_post "/api/register/dialog",
         name    => "Dialog alredy exists",
         is_fail => 1,
         code    => 400,
-        [ name => $dialog_name ]
+        [
+            name        => $name,
+            description => $description
+        ]
     ;
 
     rest_post "/api/register/dialog",
         name    => "Dialog without name",
         is_fail => 1,
         code    => 400,
+        [ description => $description ]
+    ;
+
+    rest_post "/api/register/dialog",
+        name    => "Dialog without name",
+        is_fail => 1,
+        code    => 400,
+        [ name => $name ]
     ;
 };
 
