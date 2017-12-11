@@ -77,12 +77,10 @@ sub list_GET {
                                         map {
                                             my $qo = $_;
 
-                                            my $result = $qo->poll_results->all();
-                                            use DDP; p $result;
-
                                             +{
                                                 id      => $qo->get_column('id'),
-                                                content => $qo->get_column('content')
+                                                content => $qo->get_column('content'),
+                                                count   => $qo->poll_results->search()->count,
                                             }
                                         } $pq->question_options->all()
                                     ]

@@ -52,6 +52,7 @@ db_transaction {
     my $poll = stash "get_poll";
 
     my $chosen_option_id = $poll->{questions}->[0]->{options}->[1]->{id};
+    my $second_chosen_option_id = $poll->{questions}->[0]->{options}->[0]->{id};
 
     rest_post "/api/chatbot/poll-result",
         name    => "create poll without option_id",
@@ -83,10 +84,6 @@ db_transaction {
             option_id => $chosen_option_id,
         ]
     ;
-
-    api_auth_as user_id => $politician_id;
-
-    rest_get "/api/poll";
 };
 
 done_testing();
