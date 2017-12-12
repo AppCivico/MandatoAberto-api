@@ -22,7 +22,7 @@ sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }
 sub list_GET {
     my ($self, $c) = @_;
 
-    my $politician_id = $c->stash->{politician}->{user_id};
+    my $politician_id = $c->stash->{politician}->user_id;
 
     return $self->status_ok(
         $c,
@@ -30,7 +30,7 @@ sub list_GET {
             citizens => [
                 map {
                     my $c = $_;
-
+                    
                     +{
                         id            => $c->get_column('id'),
                         name          => $c->get_column('name'),
