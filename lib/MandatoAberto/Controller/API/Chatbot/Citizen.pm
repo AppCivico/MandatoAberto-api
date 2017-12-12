@@ -7,7 +7,6 @@ BEGIN { extends 'CatalystX::Eta::Controller::REST' }
 
 with "CatalystX::Eta::Controller::AutoBase";
 with "CatalystX::Eta::Controller::AutoListPOST";
-with "CatalystX::Eta::Controller::AutoResultPUT";
 
 __PACKAGE__->config(
     # AutoBase.
@@ -26,9 +25,13 @@ __PACKAGE__->config(
     prepare_params_for_create => sub {
         my ($self, $c, $params) = @_;
 
+        my $citizen_fb_id = $c->req->params->{fb_id};
+        die \["fb_id", "missing"] unless $citizen_fb_id;
+
         my $politician = $c->model("DB::PoliticianChatbot")->find($c->user->id)->politician;
 
         $params->{politician_id} = $politician->user_id;
+        $params->{fb_id}         = $citizen_fb_id;
 
         return $params;
     },
@@ -37,21 +40,6 @@ __PACKAGE__->config(
 sub root : Chained('/api/chatbot/base') : PathPart('') : CaptureArgs(0) { }
 
 sub base : Chained('root') : PathPart('citizen') : CaptureArgs(0) {  }
-
-sub object : Chained('base') : PathPart('') : CaptureArgs(1) {
-    my ($self, $c, $citizen_id) = @_;
-
-    $c->stash->{collection} = $c->stash->{collection}->search( { id => $citizen_id } );
-
-    my $citizen = $c->stash->{collection}->find($citizen_id);
-    $c->detach("/error_404") unless ref $citizen;
-
-    $c->stash->{citizen} = $citizen;
-}
-
-sub result : Chained('object') : PathPart('') : Args(0) : ActionClass('REST') { }
-
-sub result_PUT {}
 
 sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }
 

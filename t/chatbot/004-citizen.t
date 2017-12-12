@@ -123,9 +123,12 @@ db_transaction {
     };
 
     my $new_email = fake_email()->();
-    rest_put "/api/chatbot/citizen/$citizen_id",
+    rest_post "/api/chatbot/citizen/",
         name => "change citizen data",
-        [ email => $new_email ]
+        [
+            fb_id => $fb_id,
+            email => $new_email
+        ]
     ;
 
     rest_reload_list "get_citizen";
@@ -133,6 +136,7 @@ db_transaction {
     stash_test "get_citizen.list" => sub {
         my $res = shift;
 
+        is($res->{id}, $citizen_id, 'id');
         is($res->{email}, $new_email, 'email');
     };
 };

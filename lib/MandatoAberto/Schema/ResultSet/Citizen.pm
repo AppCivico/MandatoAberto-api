@@ -29,7 +29,7 @@ sub verifiers_specs {
                     }
                 },
                 name => {
-                    required => 1,
+                    required => 0,
                     type     => "Str"
                 },
                 fb_id => {
@@ -37,7 +37,7 @@ sub verifiers_specs {
                     type     => "Str"
                 },
                 origin_dialog => {
-                    required => 1,
+                    required => 0,
                     type     => "Str"
                 },
                 gender => {
@@ -71,9 +71,24 @@ sub action_specs {
                 die \["gender", "must be F or M"];
             }
 
-            my $citizen = $self->create(\%values);
+            my $existing_citizen = $self->search( { fb_id => $values{fb_id} } )->next;
 
-            return $citizen;
+            if (!defined $existing_citizen) {
+
+                if ( ( !$values{origin_dialog} && $values{name} ) || ( !$values{origin_dialog} && !$values{name} ) ) {
+                    die \["origin_dialog", "missing"];
+                } elsif ( ( $values{origin_dialog} && !$values{name} ) ) {
+                    die \["name", "missing"];
+                }
+
+                my $citizen = $self->create(\%values);
+
+                return $citizen;
+            } else {
+                my $updated_citizen = $existing_citizen->update(\%values);
+
+                return $updated_citizen;
+            }
         }
     };
 }
