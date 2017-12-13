@@ -347,18 +347,18 @@ sub verifiers_specs {
                 address_state_id => {
                     required   => 0,
                     type       => "Str",
-                    post_check => sub {
-                        my $address_state_id = $_[0]->get_value('address_state_');
-                        $self->result_source->schema->resultset("State")->search({ id => $address_state_id })->count;
-                    },
+                    # post_check => sub {
+                    #     my $address_state_id = $_[0]->get_value('address_state_');
+                    #     $self->result_source->schema->resultset("State")->search({ id => $address_state_id })->count;
+                    # },
                 },
                 address_city_id => {
                     required   => 0,
                     type       => "Str",
-                    post_check => sub {
-                        my $address_city_id = $_[0]->get_value('address_city_id');
-                        $self->result_source->schema->resultset("City")->search({ id => $address_city_id })->count;
-                    },
+                    # post_check => sub {
+                    #     my $address_city_id = $_[0]->get_value('address_city_id');
+                    #     $self->result_source->schema->resultset("City")->search({ id => $address_city_id })->count;
+                    # },
                 },
                 party_id => {
                     required   => 0,
