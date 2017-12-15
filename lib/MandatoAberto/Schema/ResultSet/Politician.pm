@@ -39,18 +39,26 @@ sub verifiers_specs {
                 address_state_id => {
                     required   => 1,
                     type       => "Int",
-                    # post_check => sub {
-                    #     my $address_state = $_[0]->get_value('address_state_id');
-                    #     $self->result_source->schema->resultset("State")->search({ id => $address_state })->count;
-                    # },
+                    post_check => sub {
+                        my $address_state = $_[0]->get_value('address_state_id');
+                        $self->result_source->schema->resultset("State")->search({ id => $address_state })->count == 1;
+                    },
                 },
                 address_city_id => {
                     required   => 1,
                     type       => "Int",
-                    # post_check => sub {
-                    #     my $address_city = $_[0]->get_value('address_city_id');
-                    #     $self->result_source->schema->resultset("City")->search({ id => $address_city })->count;
-                    # },
+                    post_check => sub {
+                        my $address_city  = $_[0]->get_value('address_city_id');
+                        my $address_state = $_[0]->get_value('address_state_id');
+
+                        $self->result_source->schema->resultset("City")->search(
+                            {
+                                'me.id' => $address_city,
+                                'state.id' => $address_state
+                            },
+                            { prefetch => 'state' }
+                        )->count == 1;
+                    },
                 },
                 party_id => {
                     required   => 1,
