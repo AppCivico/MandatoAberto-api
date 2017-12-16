@@ -347,18 +347,20 @@ sub verifiers_specs {
                 address_state_id => {
                     required   => 0,
                     type       => "Str",
-                    # post_check => sub {
-                    #     my $address_state_id = $_[0]->get_value('address_state_');
-                    #     $self->result_source->schema->resultset("State")->search({ id => $address_state_id })->count;
-                    # },
+                    post_check => sub {
+                        my $address_state_id = $_[0]->get_value('address_state_');
+                        $self->result_source->schema->resultset("State")->search({ id => $address_state_id })->count;
+                    },
                 },
                 address_city_id => {
                     required   => 0,
                     type       => "Str",
-                    # post_check => sub {
-                    #     my $address_city_id = $_[0]->get_value('address_city_id');
-                    #     $self->result_source->schema->resultset("City")->search({ id => $address_city_id })->count;
-                    # },
+                    post_check => sub {
+                        my $address_city_id  = $_[0]->get_value('address_city_id');
+                        my $address_state_id = $_[0]->get_value('address_state_id');
+
+                        my $v= $self->result_source->schema->resultset("City")->search( { id => $address_city_id} )->count;
+                    },
                 },
                 party_id => {
                     required   => 0,
@@ -410,6 +412,24 @@ sub action_specs {
 
             my %values = $r->valid_values;
             not defined $values{$_} and delete $values{$_} for keys %values;
+
+            if ($values{address_city_id} && !$values{address_state_id}) {
+                my $address_state = $self->address_state_id;
+
+                my $new_address_city_id = $self->result_source->schema->resultset("City")->search(
+                    {
+                        'me.id'    => $values{address_city_id},
+                        'state.id' => $address_state
+                    },
+                    { prefetch => 'state' }
+                )->count;
+
+                die \["address_city_id", "city does not belong to state id: $address_state"] unless $new_address_city_id;
+            }
+
+            if ( ( $values{address_state_id} && !$values{address_city_id} ) ) {
+                die \["address_city_id", 'missing'];
+            }
 
             if ($values{new_password} && length $values{new_password} < 6) {
                 die \["new_password", "must have at least 6 characters"];

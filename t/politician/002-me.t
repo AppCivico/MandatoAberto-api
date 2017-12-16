@@ -92,6 +92,22 @@ db_transaction {
         is ($res->{greeting}->{text}, 'foobar', 'greeting content');
     };
 
+    # Caso apenas a cidade seja editada, deve bater com o estado corrente
+    rest_put "/api/politician/$politician_id",
+        name    => "invalid address_city_id",
+        is_fail => 1,
+        code    => 400,
+        [ address_city_id => 400 ]
+    ;
+
+    # Caso o estado seja editado, deve ser editada também a cidade
+    rest_put "/api/politician/$politician_id",
+        name    => "missing address_city_id",
+        is_fail => 1,
+        code    => 400,
+        [ address_state_id => 1 ]
+    ;
+
     rest_put "/api/politician/$politician_id",
         name => "update politician",
         [
