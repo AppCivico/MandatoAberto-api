@@ -30,7 +30,7 @@ sub list_GET {
             citizens => [
                 map {
                     my $c = $_;
-                    
+
                     +{
                         id            => $c->get_column('id'),
                         name          => $c->get_column('name'),

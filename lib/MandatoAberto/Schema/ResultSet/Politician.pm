@@ -41,7 +41,7 @@ sub verifiers_specs {
                     type       => "Int",
                     post_check => sub {
                         my $address_state = $_[0]->get_value('address_state_id');
-                        $self->result_source->schema->resultset("State")->search({ id => $address_state })->count == 1;
+                        $self->result_source->schema->resultset("State")->search({ id => $address_state })->count;
                     },
                 },
                 address_city_id => {
@@ -57,7 +57,7 @@ sub verifiers_specs {
                                 'state.id' => $address_state
                             },
                             { prefetch => 'state' }
-                        )->count == 1;
+                        )->count;
                     },
                 },
                 party_id => {

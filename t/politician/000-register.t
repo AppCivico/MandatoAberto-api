@@ -103,6 +103,21 @@ db_transaction {
     ;
 
     rest_post "/api/register/politician",
+        name    => "politician with invalid address_city_id that does not belogs to state",
+        is_fail => 1,
+        [
+            email            => fake_email()->(),
+            password         => '1234567',
+            name             => 'Lucas Ansei',
+            address_state_id => 26,
+            address_city_id  => 400,
+            party_id         => fake_int(1, 35)->(),
+            office_id        => fake_int(1, 8)->(),
+            gender           => fake_pick(qw/F M/)->(),
+        ]
+    ;
+
+    rest_post "/api/register/politician",
         name    => "politician without party",
         is_fail => 1,
         [
