@@ -3,6 +3,6 @@
 
 BEGIN;
 
-	ALTER TABLE direct_message ADD name text;
+ALTER TABLE direct_message ADD name text;
 
 COMMIT;
