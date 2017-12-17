@@ -62,10 +62,13 @@ sub action_specs {
                     }
                 );
 
-                $active_poll->update( { active => 0 } );
+                $active_poll->update( { active => 0 } ) if $active_poll;
             }
 
-            my $poll = $self->create(\%values);
+            my $poll = $self->create({
+                %values,
+                activated_at => $values{active} == 1 ? \"NOW()" : undef
+            });
 
             return $poll;
         }

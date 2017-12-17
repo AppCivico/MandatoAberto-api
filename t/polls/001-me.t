@@ -64,17 +64,22 @@ db_transaction {
 
 
     rest_put "/api/poll/$poll_id",
-        name => "PUT poll",
-        [
-            active => 0
-        ]
+        name => "Deactivate poll",
+        [ active => 0 ]
+    ;
+
+    rest_put "/api/poll/$poll_id",
+        name    => "Activate poll that has been active before",
+        is_fail => 1,
+        code    => 400,
+        [ active => 1 ]
     ;
 
     rest_reload_list "get_poll_data";
     stash_test "get_poll_data.list" => sub {
         my $res = shift;
 
-        is ($res->{polls}->[0]->{active}, 0, 'poll active');
+        is ($res->{polls}->[0]->{active}, 0, 'poll not active');
     };
 };
 

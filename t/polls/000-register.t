@@ -142,6 +142,47 @@ db_transaction {
             'questions[0][options][1]' => 'Não',
         ]
     ;
+
+    rest_post "/api/register/poll",
+        name                => "Create deactivated poll",
+        automatic_load_item => 0,
+        stash               => "p2",
+        [
+            name                       => 'this is the second poll',
+            active                     => 0,
+            'questions[0]'             => 'Você está bem?',
+            'questions[0][options][0]' => 'Sim',
+            'questions[0][options][1]' => 'Não',
+            'questions[1]'             => 'foobar?',
+            'questions[1][options][0]' => 'foo',
+            'questions[1][options][1]' => 'bar',
+            'questions[1][options][2]' => 'não',
+        ]
+    ;
+
+    is( $schema->resultset('Poll')->find(stash "p1.id")->active, 1, 'first poll is active' );
+    is( $schema->resultset('Poll')->find(stash "p2.id")->active, 0, 'second poll is not active' );
+
+    rest_post "/api/register/poll",
+        name                => "Create a new active poll",
+        automatic_load_item => 0,
+        stash               => "p3",
+        [
+            name                       => 'this is the third poll',
+            active                     => 1,
+            'questions[0]'             => 'Você está bem?',
+            'questions[0][options][0]' => 'Sim',
+            'questions[0][options][1]' => 'Não',
+            'questions[1]'             => 'foobar?',
+            'questions[1][options][0]' => 'foo',
+            'questions[1][options][1]' => 'bar',
+            'questions[1][options][2]' => 'não',
+        ]
+    ;
+
+    is( $schema->resultset('Poll')->find(stash "p1.id")->active, 0, 'first poll is not active' );
+    is( $schema->resultset('Poll')->find(stash "p2.id")->active, 0, 'second poll is not active' );
+    is( $schema->resultset('Poll')->find(stash "p3.id")->active, 1, 'third poll is active' );
 };
 
 done_testing();

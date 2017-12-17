@@ -66,6 +66,18 @@ __PACKAGE__->table("poll");
   default_value: false
   is_nullable: 0
 
+=head2 created_at
+
+  data_type: 'timestamp'
+  default_value: current_timestamp
+  is_nullable: 0
+  original: {default_value => \"now()"}
+
+=head2 activated_at
+
+  data_type: 'timestamp'
+  is_nullable: 1
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -82,6 +94,15 @@ __PACKAGE__->add_columns(
   { data_type => "text", is_nullable => 0 },
   "active",
   { data_type => "boolean", default_value => \"false", is_nullable => 0 },
+  "created_at",
+  {
+    data_type     => "timestamp",
+    default_value => \"current_timestamp",
+    is_nullable   => 0,
+    original      => { default_value => \"now()" },
+  },
+  "activated_at",
+  { data_type => "timestamp", is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -129,8 +150,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2017-11-16 13:50:27
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:MeMo/VEbyvU6aZf9zl/AjA
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2017-12-17 17:10:16
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:1f0kx6+FdAFHcZ/7vKbRTg
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
@@ -172,7 +193,11 @@ sub action_specs {
                 }
             )->next;
 
-            $active_poll->update( { active => 0 } );
+            $active_poll->update( { active => 0 } ) if $active_poll;
+
+            if ($values{active} == 1 && $self->activated_at) {
+                die \["active", "poll has alredy been active before"];
+            }
 
             $self->update(\%values);
         }
