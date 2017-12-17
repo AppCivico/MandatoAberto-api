@@ -37,3 +37,4 @@
 0033-dialog-description [0032-citizen-contact-fields] 2017-12-11T03:15:00Z Lucas Ansei,,, <lucas@lucas-G750JX> # Adding the description field to the dialog table
 0034-poll-results [0033-dialog-description] 2017-12-11T12:22:15Z Lucas Ansei,,, <lucas@lucas-G750JX> # Creating the poll results table
 0035-poll-timestamps [0034-poll-results] 2017-12-17T19:30:12Z Lucas Ansei,,, <lucas@lucas-G750JX> # Adding created_at and activated_at timestamps to the poll table
+0036-dm-created_at [0035-poll-timestamps] 2017-12-17T19:39:07Z Lucas Ansei,,, <lucas@lucas-G750JX> # Adding the created_at column to the direct_message table

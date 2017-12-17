@@ -66,10 +66,12 @@ __PACKAGE__->table("direct_message");
   default_value: false
   is_nullable: 0
 
-=head2 sent_at
+=head2 created_at
 
   data_type: 'timestamp'
-  is_nullable: 1
+  default_value: current_timestamp
+  is_nullable: 0
+  original: {default_value => \"now()"}
 
 =cut
 
@@ -87,8 +89,13 @@ __PACKAGE__->add_columns(
   { data_type => "text", is_nullable => 0 },
   "sent",
   { data_type => "boolean", default_value => \"false", is_nullable => 0 },
-  "sent_at",
-  { data_type => "timestamp", is_nullable => 1 },
+  "created_at",
+  {
+    data_type     => "timestamp",
+    default_value => \"current_timestamp",
+    is_nullable   => 0,
+    original      => { default_value => \"now()" },
+  },
 );
 
 =head1 PRIMARY KEY
@@ -136,8 +143,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2017-12-03 13:52:55
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:YtXCaXJu0+iFMihTKDi1Ow
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2017-12-17 17:38:52
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:bkz4CWkhFtg8TTMMHnxAnQ
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

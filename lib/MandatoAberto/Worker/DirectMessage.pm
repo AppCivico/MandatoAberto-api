@@ -80,7 +80,6 @@ sub exec_item {
 
     $self->logger->debug($direct_message->content) if $self->logger;
 
-    # TODO atualizar a messagem para sent
     if ($self->messager->send($direct_message->content, $fb_page_access_token)) {
         $item->delete();
         return 1;
