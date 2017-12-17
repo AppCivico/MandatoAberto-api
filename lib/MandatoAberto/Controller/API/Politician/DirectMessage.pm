@@ -58,7 +58,8 @@ sub list_GET {
                         id         => $dm->get_column('id'),
                         content    => $dm->get_column('content'),
                         sent       => $dm->get_column('sent'),
-                        created_at => $dm->get_column('created_at')
+                        created_at => $dm->get_column('created_at'),
+                        name       => $dm->get_column('name')
                     }
                 } $c->stash->{collection}->search( { politician_id => $politician_id } )->all()
             ]
