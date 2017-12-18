@@ -348,7 +348,7 @@ sub verifiers_specs {
                     required   => 0,
                     type       => "Str",
                     post_check => sub {
-                        my $address_state_id = $_[0]->get_value('address_state_');
+                        my $address_state_id = $_[0]->get_value('address_state_id');
                         $self->result_source->schema->resultset("State")->search({ id => $address_state_id })->count;
                     },
                 },
@@ -359,7 +359,7 @@ sub verifiers_specs {
                         my $address_city_id  = $_[0]->get_value('address_city_id');
                         my $address_state_id = $_[0]->get_value('address_state_id');
 
-                        my $v= $self->result_source->schema->resultset("City")->search( { id => $address_city_id} )->count;
+                        $self->result_source->schema->resultset("City")->search( { id => $address_city_id} )->count;
                     },
                 },
                 party_id => {
