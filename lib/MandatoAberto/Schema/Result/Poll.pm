@@ -195,7 +195,7 @@ sub action_specs {
 
             $active_poll->update( { active => 0 } ) if $active_poll;
 
-            if ($values{active} == 1 && $self->activated_at) {
+            if ($self->active == 0 && $self->activated_at) {
                 die \["active", "poll has alredy been active before"];
             }
 
