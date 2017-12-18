@@ -12,12 +12,6 @@ db_transaction {
 
     my $chatbot = $schema->resultset("PoliticianChatbot")->search( { politician_id => $politician_id } )->next;
 
-    rest_post "/api/chatbot/citizen",
-        name    => "create citizen as a politician",
-        is_fail => 1,
-        code    => 403,
-    ;
-
     api_auth_as user_id => $chatbot->user_id;
 
     rest_post "/api/chatbot/citizen",

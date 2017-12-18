@@ -7,7 +7,9 @@ use MandatoAberto::Test::Further;
 my $schema = MandatoAberto->model("DB");
 
 db_transaction {
-    create_politician;
+    create_politician(
+        fb_page_id => '1111'
+        );
     my $politician_id = stash "politician.id";
 
     ok( my $chatbot = $schema->resultset("PoliticianChatbot")->
@@ -17,6 +19,10 @@ db_transaction {
 
     is ($schema->resultset("PoliticianChatbot")->search( { politician_id => $politician_id } )->count, '1', "chatbot created");
     is ($schema->resultset("UserRole")->search( { user_id => $chatbot->id } )->next->role_id, '3', "chatbot role" );
+
+    rest_get "/api/chatbot",
+        [ fb_page_id => '1111' ]
+    ;
 };
 
 done_testing();

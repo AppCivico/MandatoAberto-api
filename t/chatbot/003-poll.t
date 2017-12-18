@@ -28,12 +28,6 @@ db_transaction {
         ]
     ;
 
-    rest_get "/api/chatbot/poll",
-        name    => 'get poll as politician',
-        is_fail => 1,
-        code    => 403
-    ;
-
     my $politician_chatbot = $schema->resultset("PoliticianChatbot")->search( { politician_id => $politician_id } )->next;
 
     api_auth_as user_id => $politician_chatbot->id;
