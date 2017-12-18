@@ -199,6 +199,8 @@ sub action_specs {
                 die \["active", "poll has alredy been active before"];
             }
 
+            $values{activated_at} = \"now()" if $values{active} == 1;
+
             $self->update(\%values);
         }
     };
