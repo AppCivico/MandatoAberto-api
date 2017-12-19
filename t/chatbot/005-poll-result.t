@@ -17,6 +17,7 @@ db_transaction {
     rest_post "/api/register/poll",
         name                => "Sucessful poll creation",
         automatic_load_item => 0,
+        stash               => "p1",
         [
             name                       => $poll_name,
             status_id                  => 1,
@@ -25,6 +26,7 @@ db_transaction {
             'questions[0][options][1]' => 'Não',
         ]
     ;
+    my $poll_id = stash "p1.id";
 
     my $politician_chatbot = $schema->resultset("PoliticianChatbot")->search( { politician_id => $politician_id } )->next;
 
@@ -79,6 +81,22 @@ db_transaction {
         ]
     ;
 
+    rest_get "/api/chatbot/poll-result",
+        name  => "get poll answer",
+        list  => 1,
+        stash => "get_poll_answer", 
+        [
+            fb_id     => $citizen_fb_id,
+            poll_id   => $poll_id,
+        ]
+    ;
+
+    stash_test "get_poll_answer" => sub {
+        my $res = shift;
+
+        is($res->{citizen_answered}, 0, 'citizen does not have answer yet');
+    };
+
     rest_post "/api/chatbot/poll-result",
         name                => "create poll result",
         automatic_load_item => 0,
@@ -88,6 +106,23 @@ db_transaction {
             option_id => $chosen_option_id,
         ]
     ;
+
+    rest_post "/api/chatbot/poll-result",
+        name    => "Alredy answered poll",
+        is_fail => 1,
+        code    => 400,
+        [
+            fb_id     => $citizen_fb_id,
+            option_id => $chosen_option_id,
+        ]
+    ;
+
+    rest_reload_list "get_poll_answer";
+    stash_test "get_poll_answer.list" => sub {
+        my $res = shift;
+
+        is($res->{citizen_answered}, 1, 'citizen answered');
+    };
 };
 
 done_testing();

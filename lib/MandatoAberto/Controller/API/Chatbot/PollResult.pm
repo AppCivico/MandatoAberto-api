@@ -36,6 +36,31 @@ sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }
 
 sub list_POST { }
 
+sub list_GET {
+    my ($self, $c) = @_;
+
+    my $citizen_fb_id = $c->req->params->{fb_id};
+    die \["fb_id", "missing"] unless $citizen_fb_id;
+
+    my $poll_id = $c->req->params->{poll_id};
+    die \["poll_id", "missing"] unless $poll_id;
+
+    my $citizen_answer = $c->stash->{collection}->search(
+        {
+            'citizen.fb_id' => $citizen_fb_id,
+            'poll.id'       => $poll_id
+        },
+        { prefetch => [ 'option', { 'option' => { 'question' => 'poll' } }, 'citizen' ] }
+    )->count;
+
+    return $self->status_ok(
+        $c,
+        entity => {
+            citizen_answered => $citizen_answer,
+        }
+    )
+}
+
 __PACKAGE__->meta->make_immutable;
 
 1;

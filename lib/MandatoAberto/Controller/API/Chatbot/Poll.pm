@@ -30,7 +30,9 @@ sub list_GET {
             map {
                 my $p = $_;
 
+                id        => $p->get_column('id'),
                 name      => $p->get_column('name'),
+
                 questions => [
                     map {
                         my $q = $_;
