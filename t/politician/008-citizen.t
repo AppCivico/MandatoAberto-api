@@ -25,6 +25,7 @@ db_transaction {
         automatic_load_item => 0,
         [
             name          => $name,
+            politician_id => $politician_id,
             fb_id         => "foobar",
             origin_dialog => $origin_dialog,
             gender        => $gender,

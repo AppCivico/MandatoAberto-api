@@ -18,6 +18,7 @@ db_transaction {
         name    => "create citizen without fb_id",
         is_fail => 1,
         [
+            politician_id => $politician_id,
             origin_dialog => fake_words(1)->(),
             name          => fake_name()->()
         ]
@@ -28,7 +29,8 @@ db_transaction {
         is_fail => 1,
         [
             origin_dialog => fake_words(1)->(),
-            fb_id         => "foobar"
+            fb_id         => "foobar",
+            politician_id => $politician_id,
         ]
     ;
 
@@ -37,6 +39,7 @@ db_transaction {
         is_fail => 1,
         [
             name          => fake_name()->(),
+            politician_id => $politician_id,
             fb_id         => "foobar"
         ]
     ;
@@ -47,6 +50,7 @@ db_transaction {
         [
             origin_dialog => fake_words(1)->(),
             name          => fake_name()->(),
+            politician_id => $politician_id,
             fb_id         => "foobar",
             email         => "foobar"
         ]
@@ -58,6 +62,7 @@ db_transaction {
         [
             origin_dialog => fake_words(1)->(),
             name          => fake_name()->(),
+            politician_id => $politician_id,
             fb_id         => "foobar",
             cellphone     => "foobar"
         ]
@@ -69,6 +74,7 @@ db_transaction {
         [
             origin_dialog => fake_words(1)->(),
             name          => fake_name()->(),
+            politician_id => $politician_id,
             fb_id         => "foobar",
             gender        => "foobar"
         ]
@@ -85,6 +91,7 @@ db_transaction {
         stash               => 'c1',
         [
             origin_dialog => fake_words(1)->(),
+            politician_id => $politician_id,
             name          => fake_name()->(),
             fb_id         => $fb_id,
             email         => $email,
@@ -121,6 +128,7 @@ db_transaction {
         name => "change citizen data",
         [
             fb_id => $fb_id,
+            politician_id => $politician_id,
             email => $new_email
         ]
     ;

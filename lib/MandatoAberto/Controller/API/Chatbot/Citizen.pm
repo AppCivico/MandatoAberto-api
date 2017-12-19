@@ -28,9 +28,11 @@ __PACKAGE__->config(
         my $citizen_fb_id = $c->req->params->{fb_id};
         die \["fb_id", "missing"] unless $citizen_fb_id;
 
-        my $politician = $c->model("DB::PoliticianChatbot")->find($c->user->id)->politician;
+        # TODO não aceitar politician_id
+        my $politician_id = $c->req->params->{politician_id};
+        die \["politician_id", "missing"] unless $politician_id;
 
-        $params->{politician_id} = $politician->user_id;
+        $params->{politician_id} = $politician_id;
         $params->{fb_id}         = $citizen_fb_id;
 
         return $params;

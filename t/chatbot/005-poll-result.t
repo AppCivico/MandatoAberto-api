@@ -37,6 +37,7 @@ db_transaction {
         stash               => 'c1',
         [
             origin_dialog => fake_words(1)->(),
+            politician_id => $politician_id,
             name          => fake_name()->(),
             fb_id         => $citizen_fb_id,
             email         => fake_email()->(),
