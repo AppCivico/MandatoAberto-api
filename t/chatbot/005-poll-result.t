@@ -17,7 +17,7 @@ db_transaction {
         automatic_load_item => 0,
         [
             name                       => $poll_name,
-            active                     => 1,
+            status_id                  => 1,
             'questions[0]'             => 'Você está bem?',
             'questions[0][options][0]' => 'Sim',
             'questions[0][options][1]' => 'Não',

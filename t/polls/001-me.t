@@ -21,7 +21,7 @@ db_transaction {
         stash               => "p1",
         [
             name                       => $poll_name,
-            active                     => 1,
+            status_id                  => 1,
             'questions[0]'             => 'Foobar',
             'questions[0][options][0]' => $first_option_content,
             'questions[0][options][1]' => $second_option_content,
@@ -56,30 +56,36 @@ db_transaction {
         my $res = shift;
 
         is ($res->{polls}->[0]->{id}, $poll_id, 'poll id');
-        is ($res->{polls}->[0]->{active}, 1, 'poll active');
+        is ($res->{polls}->[0]->{status_id}, 1, 'poll status_id');
         is ($res->{polls}->[0]->{name}, $poll_name, 'poll name');
         is ($res->{polls}->[0]->{questions}->[0]->{content}, 'Foobar', 'question content');
         is ($res->{polls}->[0]->{questions}->[0]->{id}, $question_id, 'question id');
     };
 
-
     rest_put "/api/poll/$poll_id",
-        name => "Deactivate poll",
-        [ active => 0 ]
+        name    => "set poll to inactive",
+        is_fail => 1,
+        code    => 400,
+        [ status_id => 2 ]
     ;
 
     rest_put "/api/poll/$poll_id",
-        name    => "Activate poll that has been active before",
+        name => "Deactivate poll",
+        [ status_id => 3 ]
+    ;
+
+    rest_put "/api/poll/$poll_id",
+        name    => "Activate poll that has been activated before",
         is_fail => 1,
         code    => 400,
-        [ active => 1 ]
+        [ status_id => 1 ]
     ;
 
     rest_reload_list "get_poll_data";
     stash_test "get_poll_data.list" => sub {
         my $res = shift;
 
-        is ($res->{polls}->[0]->{active}, 0, 'poll not active');
+        is ($res->{polls}->[0]->{status_id}, 3, 'poll deactivated');
     };
 };
 

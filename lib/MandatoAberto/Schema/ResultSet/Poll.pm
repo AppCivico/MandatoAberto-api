@@ -33,9 +33,13 @@ sub verifiers_specs {
                     required => 1,
                     type     => "ArrayRef"
                 },
-                active => {
+                status_id => {
                     required   => 1,
-                    type       => "Bool",
+                    type       => "Int",
+                    post_check => sub {
+                        my $status_id = $_[0]->get_value("status_id");
+                        $self->result_source->schema->resultset("PollStatus")->search( { id => $status_id } )->count == 1;
+                    }
                 }
             }
         ),
@@ -54,21 +58,23 @@ sub action_specs {
 
             # Caso tenha uma enquete ativa, essa deverá ser desativada
             # E a nova criada deverá ser já ativada
-            if ($values{active} == 1) {
+            if ($values{status_id} == 1) {
                 my $active_poll = $self->result_source->schema->resultset("Poll")->search(
                     {
                         politician_id => $values{politician_id},
-                        active        => 1
+                        status_id     => 1
                     }
                 );
 
-                $active_poll->update( { active => 0 } ) if $active_poll;
+                $active_poll->update( { status_id => 2 } ) if $active_poll;
             }
 
-            my $poll = $self->create({
-                %values,
-                activated_at => $values{active} == 1 ? \"NOW()" : undef
-            });
+            # Não deve ser permitido criar uma enquete desativada
+            # apenas inativa, pois uma vez desativada
+            # uma enquete não pode ser ativada novamente
+            die \['status_id', 'cannot created deactivated poll'] if $values{status_id} == 3;
+
+            my $poll = $self->create(\%values);
 
             return $poll;
         }

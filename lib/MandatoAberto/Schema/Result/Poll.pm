@@ -60,12 +60,6 @@ __PACKAGE__->table("poll");
   data_type: 'text'
   is_nullable: 0
 
-=head2 active
-
-  data_type: 'boolean'
-  default_value: false
-  is_nullable: 0
-
 =head2 created_at
 
   data_type: 'timestamp'
@@ -73,10 +67,11 @@ __PACKAGE__->table("poll");
   is_nullable: 0
   original: {default_value => \"now()"}
 
-=head2 activated_at
+=head2 status_id
 
-  data_type: 'timestamp'
-  is_nullable: 1
+  data_type: 'integer'
+  is_foreign_key: 1
+  is_nullable: 0
 
 =cut
 
@@ -92,8 +87,6 @@ __PACKAGE__->add_columns(
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "name",
   { data_type => "text", is_nullable => 0 },
-  "active",
-  { data_type => "boolean", default_value => \"false", is_nullable => 0 },
   "created_at",
   {
     data_type     => "timestamp",
@@ -101,8 +94,8 @@ __PACKAGE__->add_columns(
     is_nullable   => 0,
     original      => { default_value => \"now()" },
   },
-  "activated_at",
-  { data_type => "timestamp", is_nullable => 1 },
+  "status_id",
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
 );
 
 =head1 PRIMARY KEY
@@ -149,9 +142,24 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 status
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2017-12-17 17:10:16
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:1f0kx6+FdAFHcZ/7vKbRTg
+Type: belongs_to
+
+Related object: L<MandatoAberto::Schema::Result::PollStatus>
+
+=cut
+
+__PACKAGE__->belongs_to(
+  "status",
+  "MandatoAberto::Schema::Result::PollStatus",
+  { id => "status_id" },
+  { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
+);
+
+
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2017-12-18 23:15:55
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:eTJdRa7/9KNTImcBTlvLBQ
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
@@ -167,9 +175,13 @@ sub verifiers_specs {
         update => Data::Verifier->new(
             filters => [ qw(trim) ],
             profile => {
-                active => {
-                    required => 0,
-                    type     => "Bool"
+                status_id => {
+                    required   => 0,
+                    type       => "Int",
+                    post_check => sub {
+                        my $status_id = $_[0]->get_value("status_id");
+                        $self->result_source->schema->resultset("PollStatus")->search( { id => $status_id } )->count == 1;
+                    }
                 }
             }
         )
@@ -186,20 +198,24 @@ sub action_specs {
             my %values = $r->valid_values;
             not defined $values{$_} and delete $values{$_} for keys %values;
 
-            my $active_poll = $self->schema->resultset('Poll')->search(
-                {
-                    active        => 1,
-                    politician_id => $self->politician_id
-                }
-            )->next;
-
-            $active_poll->update( { active => 0 } ) if $active_poll;
-
-            if ($self->active == 0 && $self->activated_at) {
-                die \["active", "poll has alredy been active before"];
+            if ($self->status_id == 3) {
+                die \["status_id", "poll has been deactivated"];
             }
 
-            $values{activated_at} = \"now()" if $values{active} == 1;
+            if ($values{status_id} == 2 && $self->status_id == 1) {
+                die \["status_id", "active poll cannot be inactive, must be deactivated"];
+            }
+
+            if ($values{status_id} == 1) {
+                my $active_poll = $self->schema->resultset('Poll')->search(
+                    {
+                        status_id     => 1,
+                        politician_id => $self->politician_id
+                    }
+                )->next;
+
+                $active_poll->update( { status_id => 2 } ) if $active_poll;
+            }
 
             $self->update(\%values);
         }

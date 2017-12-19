@@ -53,7 +53,7 @@ sub list_GET {
             } $c->model("DB::Poll")->search(
                 {
                     politician_id => $politician_chatbot->politician_id,
-                    active        => 1
+                    status_id     => 1
                 },
                 { prefetch => [ 'poll_questions', { 'poll_questions' => "question_options" } ] }
             )
