@@ -107,7 +107,7 @@ my %WriteMakefileArgs = (
     "Test::More" => 0,
     "lib" => 0
   },
-  "VERSION" => 20171217,
+  "VERSION" => 20171219,
   "test" => {
     "TESTS" => "t/*.t t/chatbot/*.t t/dialog/*.t t/politician/*.t t/polls/*.t t/worker/*.t"
   }
