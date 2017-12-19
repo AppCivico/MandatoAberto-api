@@ -228,7 +228,7 @@ db_transaction {
         ]
     ;
 
-    is( $schema->resultset('Poll')->find(stash "p1.id")->status_id, 2, 'first poll is inactive' );
+    is( $schema->resultset('Poll')->find(stash "p1.id")->status_id, 3, 'first poll is deactivated' );
     is( $schema->resultset('Poll')->find(stash "p2.id")->status_id, 2, 'second poll is inactive' );
     is( $schema->resultset('Poll')->find(stash "p3.id")->status_id, 1, 'third poll is active' );
 };

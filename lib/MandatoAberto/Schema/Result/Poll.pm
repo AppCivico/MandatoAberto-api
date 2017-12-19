@@ -214,7 +214,7 @@ sub action_specs {
                     }
                 )->next;
 
-                $active_poll->update( { status_id => 2 } ) if $active_poll;
+                $active_poll->update( { status_id => 3 } ) if $active_poll;
             }
 
             $self->update(\%values);
