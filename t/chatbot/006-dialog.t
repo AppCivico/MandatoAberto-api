@@ -12,7 +12,9 @@ db_transaction {
 
     api_auth_as user_id => 1;
 
-    create_dialog;
+    create_dialog(
+        name => 'foobar'
+    );
     my $dialog_id = stash "dialog.id";
 
     rest_post "/api/dialog/$dialog_id/question",
@@ -41,7 +43,10 @@ db_transaction {
         name  => "get politician answers",
         list  => 1,
         stash => "get_politician_answers",
-        [ politician_id => $politician_id ]
+        [
+            politician_id => $politician_id,
+            dialog_name   => 'foobar'
+        ]
     ;
 
     # TODO stash test

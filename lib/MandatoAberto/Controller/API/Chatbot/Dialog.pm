@@ -24,48 +24,45 @@ sub list_GET {
     my $politician_id = $c->req->params->{politician_id};
     die \["politician_id", "missing"] unless $politician_id;
 
+    my $dialog_name = $c->req->params->{dialog_name};
+    die \["dialog_name", "missing"] unless $dialog_name;
+
     return $self->status_ok(
         $c,
         entity => {
-            dialogs => [
-                map {
-                    my $d = $_;
-                    +{
-                        id          => $d->get_column('id'),
-                        name        => $d->get_column('name'),
-                        description => $d->get_column('description'),
+            map {
+                my $d = $_;
+                    id          => $d->get_column('id'),
 
-                        questions => [
-                            map {
-                                my $q = $_;
+                    questions => [
+                        map {
+                            my $q = $_;
 
-                                +{
-                                    id            => $q->get_column('id'),
-                                    name          => $q->get_column('name'),
-                                    content       => $q->get_column('content'),
-                                    citizen_input => $q->get_column('citizen_input'),
+                            +{
+                                id            => $q->get_column('id'),
+                                name          => $q->get_column('name'),
+                                content       => $q->get_column('content'),
+                                citizen_input => $q->get_column('citizen_input'),
 
-                                    answer =>
-                                        map {
-                                            my $a = $_;
+                                answer =>
+                                    map {
+                                        my $a = $_;
 
-                                            +{
-                                                id      => $a->get_column('id'),
-                                                content => $a->get_column('content')
-                                            }
-                                        } $c->model("DB::Answer")->search(
-                                            {
-                                                politician_id => $politician_id,
-                                                question_id   => $q->get_column('id'),
-                                            }
-                                          )->all()
+                                        +{
+                                            id      => $a->get_column('id'),
+                                            content => $a->get_column('content')
+                                        }
+                                    } $c->model("DB::Answer")->search(
+                                        {
+                                            politician_id => $politician_id,
+                                            question_id   => $q->get_column('id'),
+                                        }
+                                      )->all()
 
-                                }
-                            } $d->questions->all()
-                        ],
-                    }
-                } $c->stash->{collection}->search({}, { prefetch => [ 'questions', { 'questions' => 'answers' } ] })->all()
-            ],
+                            }
+                        } $d->questions->all()
+                    ],
+            } $c->stash->{collection}->search({ 'me.name' => $dialog_name }, { prefetch => [ 'questions', { 'questions' => 'answers' } ] })->all()
         }
     );
 }
