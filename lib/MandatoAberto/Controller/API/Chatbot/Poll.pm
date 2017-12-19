@@ -21,7 +21,8 @@ sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }
 sub list_GET {
     my ($self, $c) = @_;
 
-    my $politician_chatbot = $c->stash->{collection}->find($c->user->id);
+    my $page_id = $c->req->params->{fb_page_id};
+    die \["fb_page_id", "missing"] unless $page_id;
 
     return $self->status_ok(
         $c,
@@ -52,10 +53,10 @@ sub list_GET {
                 ],
             } $c->model("DB::Poll")->search(
                 {
-                    politician_id => $politician_chatbot->politician_id,
-                    status_id     => 1
+                    'politician.fb_page_id' => $page_id,
+                    status_id               => 1
                 },
-                { prefetch => [ 'poll_questions', { 'poll_questions' => "question_options" } ] }
+                { prefetch => [ 'poll_questions', { 'poll_questions' => "question_options" }, 'politician' ] }
             )
         }
     )

@@ -7,7 +7,9 @@ use MandatoAberto::Test::Further;
 my $schema = MandatoAberto->model("DB");
 
 db_transaction {
-    create_politician;
+    create_politician(
+        fb_page_id => "foobar"
+    );
     my $politician_id = stash "politician.id";
     api_auth_as user_id => $politician_id;
 
@@ -35,7 +37,8 @@ db_transaction {
     rest_get "/api/chatbot/poll",
         name  => 'get poll',
         list  => 1,
-        stash => "get_poll"
+        stash => "get_poll",
+        [ fb_page_id => 'foobar' ]
     ;
 };
 

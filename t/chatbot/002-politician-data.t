@@ -47,7 +47,8 @@ db_transaction {
     rest_get "/api/chatbot/politician",
         name  => "get politician data",
         list  => 1,
-        stash => "get_politician_data"
+        stash => "get_politician_data",
+        [ fb_page_id => "FOO" ]
     ;
 
     stash_test "get_politician_data" => sub {
