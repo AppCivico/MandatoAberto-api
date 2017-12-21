@@ -84,7 +84,7 @@ db_transaction {
     rest_get "/api/chatbot/poll-result",
         name  => "get poll answer",
         list  => 1,
-        stash => "get_poll_answer", 
+        stash => "get_poll_answer",
         [
             fb_id     => $citizen_fb_id,
             poll_id   => $poll_id,
