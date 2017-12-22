@@ -27,7 +27,41 @@ sub list_GET {
     return $self->status_ok(
         $c,
         entity => {
-            citizens => $citizen_count
+            citizens => $citizen_count,
+
+            map {
+                my $p = $_;
+
+                id        => $p->get_column('id'),
+                name      => $p->get_column('name'),
+
+                questions => [
+                    map {
+                        my $q = $_;
+
+                        +{
+                            content => $q->get_column('content'),
+
+                            options => [
+                                map {
+                                    my $o = $_;
+
+                                    +{
+                                        id      => $o->get_column('id'),
+                                        content => $o->get_column('content')
+                                    }
+                                } $q->question_options->all()
+                            ]
+                        }
+                    } $p->poll_questions->all()
+                ],
+            } $c->model("DB::Poll")->search(
+                {
+                    politician_id => $politician_id,
+                    status_id     => 1
+                },
+                { prefetch => [ 'poll_questions' , { 'poll_questions' => { "question_options" => 'poll_results' } } ] }
+              )->next
         }
     );
 }
