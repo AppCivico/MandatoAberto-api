@@ -29,39 +29,41 @@ sub list_GET {
         entity => {
             citizens => $citizen_count,
 
-            map {
-                my $p = $_;
+            poll => {
+                # map {
+                #     my $p = $_;
 
-                id        => $p->get_column('id'),
-                name      => $p->get_column('name'),
+                #     id        => $p->get_column('id'),
+                #     name      => $p->get_column('name'),
 
-                questions => [
-                    map {
-                        my $q = $_;
+                #     questions => [
+                #         map {
+                #             my $q = $_;
 
-                        +{
-                            content => $q->get_column('content'),
+                #             +{
+                #                 content => $q->get_column('content'),
 
-                            options => [
-                                map {
-                                    my $o = $_;
+                #                 options => [
+                #                     map {
+                #                         my $o = $_;
 
-                                    +{
-                                        id      => $o->get_column('id'),
-                                        content => $o->get_column('content')
-                                    }
-                                } $q->question_options->all()
-                            ]
-                        }
-                    } $p->poll_questions->all()
-                ],
-            } $c->model("DB::Poll")->search(
-                {
-                    politician_id => $politician_id,
-                    status_id     => 1
-                },
-                { prefetch => [ 'poll_questions' , { 'poll_questions' => { "question_options" => 'poll_results' } } ] }
-              )->next
+                #                         +{
+                #                             id      => $o->get_column('id'),
+                #                             content => $o->get_column('content')
+                #                         }
+                #                     } $q->question_options->all()
+                #                 ]
+                #             }
+                #         } $p->poll_questions->all()
+                #     ],
+                # } $c->model("DB::Poll")->search(
+                #     {
+                #         politician_id => $politician_id,
+                #         status_id     => 1
+                #     },
+                #     { prefetch => [ 'poll_questions' , { 'poll_questions' => { "question_options" => 'poll_results' } } ] }
+                #   )->next
+            }
         }
     );
 }
