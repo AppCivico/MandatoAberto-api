@@ -62,3 +62,9 @@ echo STDERR "Restaring server...";
 up_server "mandatoaberto.psgi" $API_PORT $API_WORKERS
 
 line
+
+# Daemons.
+../script/daemon/Emailsd restart
+../script/daemon/Emailsd status
+../script/daemon/DirectMessagesd restart
+../script/daemon/DirectMessagesd status
