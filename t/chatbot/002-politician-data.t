@@ -37,7 +37,7 @@ db_transaction {
 
     $schema->resultset("PoliticianGreeting")->create({
         politician_id => $politician_id,
-        text          => "Foobar"
+        greeting_id   => 1
     });
 
     my $politician_chatbot = $schema->resultset("PoliticianChatbot")->search( { politician_id => $politician_id } )->next;
