@@ -11,6 +11,36 @@ db_transaction {
     create_politician( fb_page_access_token => "aaaaa" );
     my $politician_id = stash "politician.id";
 
+    rest_post "/api/chatbot/citizen",
+        name                => "create citizen",
+        automatic_load_item => 0,
+        stash               => 'c1',
+        [
+            origin_dialog => fake_words(1)->(),
+            politician_id => $politician_id,
+            name          => fake_name()->(),
+            fb_id         => fake_words(1)->(),
+            email         => fake_email()->(),
+            cellphone     => fake_digits("+551198#######")->(),
+            gender        => fake_pick( qw/F M/ )->()
+        ]
+    ;
+
+    rest_post "/api/chatbot/citizen",
+        name                => "create citizen",
+        automatic_load_item => 0,
+        stash               => 'c2',
+        [
+            origin_dialog => fake_words(1)->(),
+            politician_id => $politician_id,
+            name          => fake_name()->(),
+            fb_id         => fake_words(1)->(),
+            email         => fake_email()->(),
+            cellphone     => fake_digits("+551198#######")->(),
+            gender        => fake_pick( qw/F M/ )->()
+        ]
+    ;
+
     use_ok 'MandatoAberto::Worker::DirectMessage';
     use_ok 'MandatoAberto::Messager::Template';
 

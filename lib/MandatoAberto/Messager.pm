@@ -3,6 +3,7 @@ use common::sense;
 use Moose;
 
 use Furl;
+use JSON::MaybeXS;
 
 use MandatoAberto::Utils;
 
@@ -22,7 +23,7 @@ sub _build_transport {
 }
 
 sub send {
-    my ($self, $content, $access_token) = @_;
+    my ($self, $content, $access_token, @citizens) = @_;
 
     my $furl = Furl->new();
 
@@ -32,11 +33,29 @@ sub send {
         return 1;
     }
 
-    $furl->post(
-        $url,
-        [ 'Content-Type' => 'application/json' ],
-        $content
-    );
+    for (my $i = 0; $i < scalar (@citizens) ; $i++) {
+        my $citizen = @citizens[$i];
+
+        my $res = $furl->post(
+            $url,
+            [ 'Content-Type' => 'application/json' ],
+            encode_json {
+                recipient => {
+                    id => $citizen->fb_id
+                },
+                message => {
+                    text => $content,
+                    quick_replies => [
+                        {
+                            content_type => 'text',
+                            title        => 'Voltar para o início',
+                            payload      => 'action?getstarted'
+                        }
+                    ]
+                }
+            }
+        );
+    }
 
     return 1;
 }
