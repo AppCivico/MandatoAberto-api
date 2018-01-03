@@ -26,7 +26,7 @@ sub send {
 
     my $furl = Furl->new();
 
-    my $url = $ENV{FB_API_URL} . $access_token;
+    my $url = $ENV{FB_API_URL} . '/me/messages?access_token=' . $access_token;
 
     if (is_test()) {
         return 1;
