@@ -333,16 +333,6 @@ __PACKAGE__->belongs_to(
 with 'MandatoAberto::Role::Verification';
 with 'MandatoAberto::Role::Verification::TransactionalActions::DBIC';
 
-use MandatoAberto::Utils;
-use Furl;
-use JSON::MaybeXS;
-
-BEGIN {
-    $ENV{FB_API_URL}    or die "missing env 'FB_API_URL'.";
-    $ENV{FB_APP_ID}     or die "missing env 'FB_APP_ID'.";
-    $ENV{FB_APP_SECRET} or die "missing env 'FB_APP_SECRET'."
-}
-
 sub verifiers_specs {
     my $self = shift;
 
@@ -445,38 +435,11 @@ sub action_specs {
                 die \["new_password", "must have at least 6 characters"];
             }
 
-            if ($values{fb_page_access_token}) {
-                # O access token gerado pela primeira vez é o de vida curta
-                # portanto devo pegar o mesmo e gerar um novo token de vida longa
-                # API do Facebook: https://developers.facebook.com/docs/facebook-login/access-tokens/expiration-and-extension
-                $values{fb_page_access_token} = $self->get_long_lived_access_token($values{fb_page_access_token});
-            }
-
             $self->user->update( { password => $values{new_password} } ) and delete $values{new_password} if $values{new_password};
 
             $self->update(\%values);
         }
     };
-}
-
-sub get_long_lived_access_token {
-    my $short_lived_token = $_[1];
-
-    if (is_test()) {
-        return 1;
-    }
-
-    my $furl = Furl->new(timeout => 20);
-
-    my $res = $furl->get(
-        $ENV{FB_API_URL} . "/oauth/access_token?grant_type=fb_exchange_token&client_id=$ENV{FB_APP_ID}&client_secret=$ENV{FB_APP_SECRET}&fb_exchange_token=$short_lived_token",
-    );
-    die $res->decoded_content unless $res->is_success;
-
-    my $decoded_res = decode_json $res->decoded_content;
-    my $long_lived_access_token = $decoded_res->{access_token};
-
-    return $long_lived_access_token;
 }
 
 __PACKAGE__->meta->make_immutable;
