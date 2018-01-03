@@ -108,7 +108,7 @@ my %WriteMakefileArgs = (
     "blib" => "1.01",
     "lib" => 0
   },
-  "VERSION" => 20171221,
+  "VERSION" => 20180103,
   "test" => {
     "TESTS" => "t/*.t t/chatbot/*.t t/dialog/*.t t/politician/*.t t/polls/*.t t/worker/*.t"
   }
