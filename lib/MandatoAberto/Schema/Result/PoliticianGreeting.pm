@@ -55,9 +55,11 @@ __PACKAGE__->table("politician_greeting");
   is_foreign_key: 1
   is_nullable: 0
 
-=head2 text
+=head2 greeting_id
 
-  data_type: 'text'
+  data_type: 'integer'
+  default_value: 1
+  is_foreign_key: 1
   is_nullable: 0
 
 =cut
@@ -72,8 +74,13 @@ __PACKAGE__->add_columns(
   },
   "politician_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
-  "text",
-  { data_type => "text", is_nullable => 0 },
+  "greeting_id",
+  {
+    data_type      => "integer",
+    default_value  => 1,
+    is_foreign_key => 1,
+    is_nullable    => 0,
+  },
 );
 
 =head1 PRIMARY KEY
@@ -89,6 +96,21 @@ __PACKAGE__->add_columns(
 __PACKAGE__->set_primary_key("id");
 
 =head1 RELATIONS
+
+=head2 greeting
+
+Type: belongs_to
+
+Related object: L<MandatoAberto::Schema::Result::Greeting>
+
+=cut
+
+__PACKAGE__->belongs_to(
+  "greeting",
+  "MandatoAberto::Schema::Result::Greeting",
+  { id => "greeting_id" },
+  { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
+);
 
 =head2 politician
 
@@ -106,8 +128,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2017-11-23 16:35:08
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:DVrixIWABk+5GKYDA+gQjA
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-01-03 16:21:21
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:G2BRl2O171i9CkDlr0g/Sw
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
 
@@ -120,11 +142,14 @@ sub verifiers_specs {
         update => Data::Verifier->new(
             filters => [qw(trim)],
             profile => {
-
-                text => {
+                greeting_id => {
                     required   => 0,
-                    type       => "Str",
-                    max_length => 250,
+                    type       => "Int",
+                    post_check => sub {
+                        my $greeting_id = $_[0]->get_value('greeting_id');
+
+                        $self->result_source->schema->resultset("Greeting")->search( { id => $greeting_id } )->count;
+                    }
                 }
             }
         ),

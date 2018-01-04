@@ -58,12 +58,12 @@ sub list_GET {
                     map {
                         my $g = $_;
 
-                        $g->get_column('text')
+                        $g->greeting->get_column('content');
                     } $p->politicians_greeting->all()
 
             } $c->model("DB::Politician")->search(
                 { fb_page_id => $page_id },
-                { prefetch => [ qw/politician_contacts politicians_greeting party office/ ] }
+                { prefetch => [ qw/politician_contacts party office/, { 'politicians_greeting' => 'greeting' } ] }
             )
         }
     )

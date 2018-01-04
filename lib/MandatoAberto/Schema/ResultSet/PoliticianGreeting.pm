@@ -21,10 +21,14 @@ sub verifiers_specs {
                     required   => 1,
                     type       => "Int",
                 },
-                text => {
+                greeting_id => {
                     required   => 1,
-                    type       => "Str",
-                    max_length => 250,
+                    type       => "Int",
+                    post_check => sub {
+                        my $greeting_id = $_[0]->get_value('greeting_id');
+
+                        $self->result_source->schema->resultset("Greeting")->search( { id => $greeting_id } )->count;
+                    }
                 }
             }
         ),
@@ -41,10 +45,6 @@ sub action_specs {
             my %values = $r->valid_values;
 
             not defined $values{$_} and delete $values{$_} for keys %values;
-
-            if ( !$values{text} ) {
-                die \[ "greeting", "Text mustn't be empty" ];
-            }
 
             my $existent_politician_greeting = $self->search(
                 { politician_id => $values{politician_id} }

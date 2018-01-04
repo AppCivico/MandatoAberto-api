@@ -37,7 +37,7 @@ db_transaction {
 
     $schema->resultset("PoliticianGreeting")->create({
         politician_id => $politician_id,
-        text          => "Foobar"
+        greeting_id   => 1
     });
 
     my $politician_chatbot = $schema->resultset("PoliticianChatbot")->search( { politician_id => $politician_id } )->next;
@@ -61,7 +61,7 @@ db_transaction {
         is ($res->{gender}, $gender , 'gender');
         is ($res->{contact}->{twitter}, '@foobar', 'twitter');
         is ($res->{contact}->{email}, $email, 'email');
-        is ($res->{greeting}, 'Foobar', 'greeting content');
+        is ($res->{greeting}, '`Olá, sou assistente digital do(a) ${user.office.name} ${user.name} Seja benvindo a nossa Rede! Queremos um Brasil a melhor e precisamos de sua ajuda.`', 'greeting content');
     };
 };
 

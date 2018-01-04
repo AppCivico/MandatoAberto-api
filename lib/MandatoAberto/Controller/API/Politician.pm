@@ -74,9 +74,13 @@ sub result_GET {
                     map {
                         my $g = $_;
 
-                        id   => $g->get_column('id'),
-                        text => $g->get_column('text')
-                    } $c->model("DB::PoliticianGreeting")->search( { politician_id => $c->user->id } )
+                        id          => $g->get_column('id'),
+                        greeting_id => $g->greeting->get_column('id'),
+                        content     => $g->greeting->get_column('content')
+                    } $c->model("DB::PoliticianGreeting")->search(
+                        { politician_id => $c->user->id },
+                        { prefetch => 'greeting' }
+                    )
                 }
             ),
 
