@@ -42,10 +42,9 @@ db_transaction {
     stash_test "get_politician_greeting" => sub {
         my $res = shift;
 
-        is ($res->{greetings}[0]->{id}, 1, 'first greeting');
-        is ($res->{greetings}[0]->{selected}, 1, 'first greeting selected');
-        is ($res->{greetings}[1]->{id}, 2, 'second greeting');
-        is ($res->{greetings}[1]->{selected}, 0, 'second greeting not selected');
+        is ($res->{greetings}->{list}[0]->{id}, 1, 'first greeting');
+        is ($res->{greetings}->{selected}, 1, 'first greeting selected');
+        is ($res->{greetings}->{list}[1]->{id}, 2, 'second greeting');
     };
 
     rest_post "/api/politician/$politician_id/greeting",
@@ -61,10 +60,9 @@ db_transaction {
     stash_test "get_politician_greeting.list" => sub {
         my $res = shift;
 
-        is ($res->{greetings}[0]->{id}, 2, 'second greeting');
-        is ($res->{greetings}[0]->{selected}, 1, 'second greeting selected');
-        is ($res->{greetings}[1]->{id}, 1, 'first greeting');
-        is ($res->{greetings}[1]->{selected}, 0, 'first greeting not selected');
+        is ($res->{greetings}->{list}[0]->{id}, 2, 'second greeting');
+        is ($res->{greetings}->{list}[1]->{id}, 1, 'first greeting');
+        is ($res->{greetings}->{selected}, 2, 'first greeting selected');
     };
 };
 

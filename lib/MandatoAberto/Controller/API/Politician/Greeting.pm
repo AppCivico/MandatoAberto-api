@@ -65,23 +65,25 @@ sub list_GET {
     return $self->status_ok(
         $c,
         entity => {
-            greetings => [
-                map {
-                    my $g = $_;
-
-                    my $greeting_id = $g->get_column('id');
-
-                    +{
-                        id       => $greeting_id,
-                        content  => $g->get_column('content'),
-                        selected => $selected_greeting ? $selected_greeting->greeting_id == $greeting_id ? 1 : 0 : 0
-                    }
-
-                } $c->model("DB::Greeting")->search(
-                    undef,
-                    { prefetch => 'politicians_greeting' }
-                )->all()
-            ]
+            greetings => {
+                selected => $selected_greeting->greeting_id,
+                list => [
+                    map {
+                        
+                        my $g = $_;
+    
+                        my $greeting_id = $g->get_column('id');
+                        +{
+                            id       => $greeting_id,
+                            content  => $g->get_column('content'),
+                        }
+    
+                    } $c->model("DB::Greeting")->search(
+                        undef,
+                        { prefetch => 'politicians_greeting' }
+                    )->all()
+                ]
+            }
         }
     );
 }
