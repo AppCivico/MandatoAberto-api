@@ -3,6 +3,8 @@ export API_WORKERS=""
 
 export MANDATOABERTO_URL=""
 export FB_API_URL=""
+export FB_APP_ID=""
+export FB_APP_SECRET=""
 
 export POSTGRESQL_HOST=""
 export POSTGRESQL_PORT=""
