@@ -58,7 +58,7 @@ sub list_GET {
                     map {
                         my $g = $_;
 
-                        $g->get_column('text')
+                        $g->greeting->get_column('content');
                     } $p->politicians_greeting->all()
 
             } $c->model("DB::Politician")->search(

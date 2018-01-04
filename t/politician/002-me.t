@@ -58,7 +58,7 @@ db_transaction {
         code                => 200,
         automatic_load_item => 0,
         stash               => 'g1',
-        [ text => "foobar" ]
+        [ greeting_id => 1 ]
     ;
     my $greeting    = stash "g1";
     my $greeting_id = $greeting->{id};
@@ -88,8 +88,9 @@ db_transaction {
         is ($res->{contact}->{twitter}, '@lucas_ansei', 'twitter');
         is ($res->{contact}->{facebook}, 'https://facebook.com/lucasansei', 'facebook');
         is ($res->{contact}->{email}, 'foobar@email.com', 'email');
-        is ($res->{greeting}->{id}, $greeting_id, 'greeting_id');
-        is ($res->{greeting}->{text}, 'foobar', 'greeting content');
+        is ($res->{greeting}->{id}, $greeting_id, 'greeting entity id');
+        is ($res->{greeting}->{greeting_id}, 1, 'greeting id');
+        is ($res->{greeting}->{content}, '`Olá, sou assistente digital do(a) ${user.office.name} ${user.name} Seja benvindo a nossa Rede! Queremos um Brasil a melhor e precisamos de sua ajuda.`', 'greeting content');
     };
 
     # Caso apenas a cidade seja editada, deve bater com o estado corrente

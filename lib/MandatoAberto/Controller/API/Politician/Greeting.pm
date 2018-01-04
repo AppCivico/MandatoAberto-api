@@ -74,7 +74,7 @@ sub list_GET {
                     +{
                         id       => $greeting_id,
                         content  => $g->get_column('content'),
-                        selected => $selected_greeting_id == $greeting_id ? 1 : 0,  
+                        selected => $selected_greeting_id == $greeting_id ? 1 : 0,
                     }
 
                 } $c->model("DB::Greeting")->search(

@@ -61,7 +61,7 @@ db_transaction {
         is ($res->{gender}, $gender , 'gender');
         is ($res->{contact}->{twitter}, '@foobar', 'twitter');
         is ($res->{contact}->{email}, $email, 'email');
-        is ($res->{greeting}, 'Foobar', 'greeting content');
+        is ($res->{greeting}, '`Olá, sou assistente digital do(a) ${user.office.name} ${user.name} Seja benvindo a nossa Rede! Queremos um Brasil a melhor e precisamos de sua ajuda.`', 'greeting content');
     };
 };
 
