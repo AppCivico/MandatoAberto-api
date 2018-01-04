@@ -41,3 +41,4 @@
 0037-add-answer-name [0036-dm-created_at] 2017-12-11T20:03:37Z Jordan V. <jordan@eokoe.com> # add-answer-name
 0038-poll-status [0037-add-answer-name] 2017-12-19T01:40:52Z Lucas Ansei,,, <lucas@lucas-G750JX> # Creating the poll_status table and adding a FK id to the poll table
 0039-greetings-correction [0038-poll-status] 2018-01-03T18:21:52Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Changing the politician_greetings table to receive fks and creating the greeting table
+0040-greetings-update [0039-greetings-correction] 2018-01-04T13:19:26Z Lucas Ansei,,, <lucas@lucas-G750JX> # Updating the content of the greetings
