@@ -60,7 +60,7 @@ sub list_GET {
 
     my $politician_id = $c->user->id;
 
-    my $selected_greeting_id = $c->stash->{collection}->search( { politician_id => $politician_id } )->next->greeting_id;
+    my $selected_greeting = $c->stash->{collection}->search( { politician_id => $politician_id } )->next;
 
     return $self->status_ok(
         $c,
@@ -74,7 +74,7 @@ sub list_GET {
                     +{
                         id       => $greeting_id,
                         content  => $g->get_column('content'),
-                        selected => $selected_greeting_id == $greeting_id ? 1 : 0,
+                        selected => $selected_greeting ? $selected_greeting->greeting_id == $greeting_id ? 1 : 0 : 0
                     }
 
                 } $c->model("DB::Greeting")->search(
