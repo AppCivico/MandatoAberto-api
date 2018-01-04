@@ -24,46 +24,108 @@ sub list_GET {
 
     my $citizen_count = $c->model("DB::Citizen")->search( { politician_id => $politician_id } )->count;
 
+    my $ever_had_poll = $c->model("DB::Poll")->search( { politician_id => $politician_id } )->count > 0 ? 1 : 0;
+
+    # Sempre haverá apenas uma única enquete ativa 't/polls/000-register.t'
+    # logo posso apenas contar quantas enquetes ativas (status_id 1) existem
+    my $active_poll = $c->model("DB::Poll")->search(
+        {
+            politician_id => $politician_id,
+            status_id     => 1
+        },
+        { prefetch => [ 'poll_questions' , { 'poll_questions' => { "question_options" => 'poll_results' } } ] }
+    )->next;
+
+    my $last_active_poll;
+    if ($ever_had_poll && !$active_poll) {
+        $last_active_poll = $c->model("DB::Poll")->search(
+            {
+                politician_id => $politician_id,
+                status_id     => 3,
+            },
+            {
+                order_by => { -desc => [qw/updated_at/] },
+                prefetch => [ 'poll_questions' , { 'poll_questions' => { "question_options" => 'poll_results' } } ]
+            }
+        )->next;
+    }
+
     return $self->status_ok(
         $c,
         entity => {
             citizens => $citizen_count,
 
-            poll => {
-                # map {
-                #     my $p = $_;
+            ever_had_poll   => $ever_had_poll,
+            has_active_poll => $active_poll ? 1 : 0,
 
-                #     id        => $p->get_column('id'),
-                #     name      => $p->get_column('name'),
+            poll => $active_poll ?
+                    map {
+                        my $p = $_;
 
-                #     questions => [
-                #         map {
-                #             my $q = $_;
+                        {
+                            id        => $p->get_column('id'),
+                            name      => $p->get_column('name'),
 
-                #             +{
-                #                 content => $q->get_column('content'),
+                            questions => [
+                                map {
+                                    my $q = $_;
 
-                #                 options => [
-                #                     map {
-                #                         my $o = $_;
+                                    +{
+                                        content => $q->get_column('content'),
 
-                #                         +{
-                #                             id      => $o->get_column('id'),
-                #                             content => $o->get_column('content')
-                #                         }
-                #                     } $q->question_options->all()
-                #                 ]
-                #             }
-                #         } $p->poll_questions->all()
-                #     ],
-                # } $c->model("DB::Poll")->search(
-                #     {
-                #         politician_id => $politician_id,
-                #         status_id     => 1
-                #     },
-                #     { prefetch => [ 'poll_questions' , { 'poll_questions' => { "question_options" => 'poll_results' } } ] }
-                #   )->next
-            }
+                                        options => [
+                                            map {
+                                                my $o = $_;
+
+                                                +{
+                                                    id      => $o->get_column('id'),
+                                                    content => $o->get_column('content'),
+                                                    count   => $o->poll_results->search()->count,
+                                                }
+                                            } $q->question_options->all()
+                                        ]
+                                    }
+                                } $p->poll_questions->all()
+                            ]
+                        }
+                    } $active_poll
+                :
+                (
+                    $last_active_poll ?
+
+                            map {
+                                my $p = $_;
+
+                                {
+                                    id        => $p->get_column('id'),
+                                    name      => $p->get_column('name'),
+
+                                    questions => [
+                                        map {
+                                            my $q = $_;
+
+                                            +{
+                                                content => $q->get_column('content'),
+
+                                                options => [
+                                                    map {
+                                                        my $o = $_;
+
+                                                        +{
+                                                            id      => $o->get_column('id'),
+                                                            content => $o->get_column('content'),
+                                                            count   => $o->poll_results->search()->count,
+                                                        }
+                                                    } $q->question_options->all()
+                                                ]
+                                            }
+                                        } $p->poll_questions->all()
+                                    ]
+                                }
+                            } $last_active_poll
+                        :
+                        { }
+                )
         }
     );
 }

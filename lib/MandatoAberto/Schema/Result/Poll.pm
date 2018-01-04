@@ -73,6 +73,11 @@ __PACKAGE__->table("poll");
   is_foreign_key: 1
   is_nullable: 0
 
+=head2 updated_at
+
+  data_type: 'timestamp'
+  is_nullable: 1
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -96,6 +101,8 @@ __PACKAGE__->add_columns(
   },
   "status_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
+  "updated_at",
+  { data_type => "timestamp", is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -158,8 +165,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2017-12-18 23:15:55
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:eTJdRa7/9KNTImcBTlvLBQ
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-01-04 13:18:57
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:xlbIwaNJSKKp6fcPb3VPog
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
@@ -217,7 +224,10 @@ sub action_specs {
                 $active_poll->update( { status_id => 3 } ) if $active_poll;
             }
 
-            $self->update(\%values);
+            $self->update({
+                %values,
+                updated_at => \'NOW()',
+            });
         }
     };
 }

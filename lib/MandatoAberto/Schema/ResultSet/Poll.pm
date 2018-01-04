@@ -66,7 +66,12 @@ sub action_specs {
                     }
                 );
 
-                $active_poll->update( { status_id => 3 } ) if $active_poll;
+                $active_poll->update(
+                    {
+                        status_id  => 3,
+                        updated_at => \'NOW()',
+                    }
+                ) if $active_poll;
             }
 
             # Não deve ser permitido criar uma enquete desativada
