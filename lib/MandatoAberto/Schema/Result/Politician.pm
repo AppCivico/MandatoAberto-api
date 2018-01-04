@@ -450,7 +450,7 @@ sub action_specs {
                 # portanto devo pegar o mesmo e gerar um novo token de vida longa
                 # API do Facebook: https://developers.facebook.com/docs/facebook-login/access-tokens/expiration-and-extension
 
-                if (0) { } 
+                if (is_test()) { } 
                 else {
                     my $short_lived_token = $values{fb_page_access_token};
                     
