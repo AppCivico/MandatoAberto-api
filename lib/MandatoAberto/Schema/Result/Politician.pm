@@ -337,12 +337,6 @@ use MandatoAberto::Utils;
 use Furl;
 use JSON::MaybeXS;
 
-BEGIN {
-    $ENV{FB_API_URL}    or die "missing env 'FB_API_URL'.";
-    $ENV{FB_APP_ID}     or die "missing env 'FB_APP_ID'.";
-    $ENV{FB_APP_SECRET} or die "missing env 'FB_APP_SECRET'.";
-}
-
 sub verifiers_specs {
     my $self = shift;
 
