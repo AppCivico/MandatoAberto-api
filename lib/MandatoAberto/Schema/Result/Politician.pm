@@ -336,6 +336,7 @@ with 'MandatoAberto::Role::Verification::TransactionalActions::DBIC';
 use MandatoAberto::Utils;
 use Furl;
 use JSON::MaybeXS;
+use IO::Socket::SSL;
 
 sub verifiers_specs {
     my $self = shift;
@@ -461,7 +462,9 @@ sub get_long_lived_access_token {
         return 1;
     }
 
-    my $furl = Furl->new();
+    my $furl = Furl->new(
+        ssl_opts => { SSL_verify_mode => SSL_VERIFY_NONE },
+    );
 
     my $url = $ENV{FB_API_URL} . "/oauth/access_token?grant_type=fb_exchange_token&client_id=$ENV{FB_APP_ID}&client_secret=$ENV{FB_APP_SECRET}&fb_exchange_token=$short_lived_token";
 
@@ -470,7 +473,7 @@ sub get_long_lived_access_token {
 
     my $decoded_res = decode_json $res->decoded_content;
     my $long_lived_access_token = $decoded_res->{access_token};
-    die $decoded_res unless $long_lived_access_token; 
+    die $decoded_res unless $long_lived_access_token;
 
     return $long_lived_access_token;
 }
