@@ -49,7 +49,7 @@ sub send {
                         {
                             content_type => 'text',
                             title        => 'Voltar para o início',
-                            payload      => 'action?getstarted'
+                            payload      => 'greetings'
                         }
                     ]
                 }
