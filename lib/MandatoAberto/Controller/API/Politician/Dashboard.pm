@@ -2,6 +2,10 @@ package MandatoAberto::Controller::API::Politician::Dashboard;
 use Moose;
 use namespace::autoclean;
 
+use Furl;
+use JSON::MaybeXS;
+use DateTime;
+
 BEGIN { extends 'CatalystX::Eta::Controller::REST' }
 
 with "CatalystX::Eta::Controller::AutoBase";
@@ -44,11 +48,24 @@ sub list_GET {
                 status_id     => 3,
             },
             {
-                order_by => { -desc => [qw/updated_at/] },
+                    order_by => { -desc => [qw/updated_at/] },
                 prefetch => [ 'poll_questions' , { 'poll_questions' => { "question_options" => 'poll_results' } } ]
             }
         )->next;
     }
+
+    # Pegando dados do analytics do Facebook
+    my $furl = Furl->new();
+
+    my $page_id      = $c->stash->{politician}->fb_page_id;
+    my $access_token = $c->stash->{politician}->fb_page_access_token;
+
+    my $start_date = DateTime->now->subtract( days => 7 )->epoch();
+    my $end_date   = DateTime->now->epoch();
+
+    my $res = $furl->get(
+        $ENV{FB_API_URL} . "/$page_id/insights?access_token=$access_token&metric=page_messages_active_threads_unique&since=$start_date&until=$end_date",
+    );
 
     return $self->status_ok(
         $c,
