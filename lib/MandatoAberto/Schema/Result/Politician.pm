@@ -447,6 +447,9 @@ sub action_specs {
                 # API do Facebook: https://developers.facebook.com/docs/facebook-login/access-tokens/expiration-and-extension
                 my $short_lived_token = $values{fb_page_access_token};
                 $values{fb_page_access_token} = $self->get_long_lived_access_token($short_lived_token);
+
+                # Setando o botão get started
+                $self->set_get_started_button($values{fb_page_access_token});
             }
 
             $self->user->update( { password => $values{new_password} } ) and delete $values{new_password} if $values{new_password};
@@ -463,7 +466,7 @@ sub get_long_lived_access_token {
         return 1;
     }
 
-    my $furl = Furl->new( ssl_opts => { SSL_verify_mode => SSL_VERIFY_PEER() } );
+    my $furl = Furl->new();
 
     my $url = $ENV{FB_API_URL} . "/oauth/access_token?grant_type=fb_exchange_token&client_id=$ENV{FB_APP_ID}&client_secret=$ENV{FB_APP_SECRET}&fb_exchange_token=$short_lived_token";
 
@@ -475,6 +478,31 @@ sub get_long_lived_access_token {
     die $decoded_res unless $long_lived_access_token; 
 
     return $long_lived_access_token;
+}
+
+sub set_get_started_button {
+    my $access_token = $_[1];
+
+    if (is_test()) {
+        return 1;
+    }
+
+    my $furl = Furl->new();
+
+    my $url = "https://graph.facebook.com/v2.6/me/messenger_profile?access_token=$access_token";
+
+    my $res = $furl->post(
+        $url,
+        [ 'Content-Type' => "application/json" ],
+        encode_json {
+            get_started => {
+                payload => 'greetings'
+            }
+        }
+    );
+    die $res->decoded_content unless $res->is_success;
+
+    return decode_json $res->decoded_content;
 }
 
 __PACKAGE__->meta->make_immutable;
