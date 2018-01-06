@@ -25,14 +25,6 @@ __PACKAGE__->config(
     enable_catalyst_header => 0,
 );
 
-after setup_finalize => sub {
-    my $app = shift;
-
-    for my $key (keys %ENV) {
-        $app->log->info($key . ' = ' . $ENV{$key});
-    }
-};
-
 # Start the application
 __PACKAGE__->setup();
 

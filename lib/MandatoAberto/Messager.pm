@@ -34,7 +34,7 @@ sub send {
     }
 
     for (my $i = 0; $i < scalar (@citizens) ; $i++) {
-        my $citizen = @citizens[$i];
+        my $citizen = $citizens[$i];
 
         my $res = $furl->post(
             $url,

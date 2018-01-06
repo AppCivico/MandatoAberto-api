@@ -34,8 +34,9 @@ db_transaction {
     rest_post "/api/politician/$politician_id/direct-message",
       name    => "creating direct message without name",
       is_fail => 1,
-      code    => 400;
-    [ content => fake_words(2)->() ];
+      code    => 400,
+    [ content => fake_words(2)->() ]
+    ;
 
     rest_post "/api/politician/$politician_id/direct-message",
       name                => "creating direct message",
