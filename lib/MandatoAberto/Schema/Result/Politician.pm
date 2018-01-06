@@ -338,6 +338,7 @@ use Furl;
 use JSON::MaybeXS;
 use HTTP::Request;
 use IO::Socket::SSL;
+use DateTime;
 
 sub verifiers_specs {
     my $self = shift;
@@ -503,6 +504,25 @@ sub set_get_started_button {
     die $res->decoded_content unless $res->is_success;
 
     return decode_json $res->decoded_content;
+}
+
+sub get_analytics_data {
+    my ($self, $range) = @_;
+
+    my $page_id      = $self->fb_page_id;
+    my $access_token = $self->fb_page_access_token;
+
+    my $furl = Furl->new();
+
+    my $start_date = DateTime->now->subtract( days => $range )->epoch();
+    my $end_date   = DateTime->now->epoch();
+
+    my $res = $furl->get(
+        $ENV{FB_API_URL} . "/$page_id/insights?access_token=$access_token&metric=page_messages_active_threads_unique&since=$start_date&until=$end_date",
+    );
+    die $res->decoded_content unless $res->is_success;
+
+    
 }
 
 __PACKAGE__->meta->make_immutable;

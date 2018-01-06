@@ -60,17 +60,11 @@ sub list_GET {
     my $has_facebook_auth = $c->stash->{politician}->fb_page_access_token ? 1 : 0;
 
     # Pegando dados do analytics do Facebook
-    # my $furl = Furl->new();
+    my $range = $c->req->params->{range};
+    $range = 7 if !$range;
+    die \["range", 'invalid'] if $range != (7 || 15 || 30);
 
-    # my $page_id      = $c->stash->{politician}->fb_page_id;
-    # my $access_token = $c->stash->{politician}->fb_page_access_token;
-
-    # my $start_date = DateTime->now->subtract( days => 7 )->epoch();
-    # my $end_date   = DateTime->now->epoch();
-
-    # my $res = $furl->get(
-    #     $ENV{FB_API_URL} . "/$page_id/insights?access_token=$access_token&metric=page_messages_active_threads_unique&since=$start_date&until=$end_date",
-    # );
+    my $analytics_data = $c->stash->{politician}->get_analytics_data($range);
 
     return $self->status_ok(
         $c,
