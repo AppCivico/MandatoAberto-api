@@ -69,15 +69,15 @@ sub list_GET {
                 selected => $selected_greeting->greeting_id,
                 list => [
                     map {
-                        
+
                         my $g = $_;
-    
+
                         my $greeting_id = $g->get_column('id');
                         +{
                             id       => $greeting_id,
                             content  => $g->get_column('content'),
                         }
-    
+
                     } $c->model("DB::Greeting")->search(
                         undef,
                         { prefetch => 'politicians_greeting' }

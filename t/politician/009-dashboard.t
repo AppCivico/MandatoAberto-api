@@ -7,6 +7,23 @@ use MandatoAberto::Test::Further;
 my $schema = MandatoAberto->model("DB");
 
 db_transaction {
+    api_auth_as user_id => 1;
+
+    create_dialog;
+    my $dialog_id = stash "dialog.id";
+
+    rest_post "/api/dialog/$dialog_id/question",
+        name                => "Creating question",
+        stash               => "q1",
+        automatic_load_item => 0,
+        [
+            name          => 'foobar',
+            content       => "Foobar",
+            citizen_input => fake_words(1)->()
+        ]
+    ;
+    my $question_id = stash "q1.id";
+
     create_politician;
     my $politician_id = stash "politician.id";
 
@@ -42,6 +59,7 @@ db_transaction {
             'questions[1][options][2]' => 'não',
         ]
     ;
+    my $poll_id = stash "p1.id";
 
     rest_get "/api/politician/$politician_id/dashboard",
         name  => "politician dashboard",
@@ -75,6 +93,108 @@ db_transaction {
         my $res = shift;
 
         is ($res->{citizens}, 2, 'two citizens');
+        is ($res->{has_greeting}, 0, 'politician does not have greeting');
+        is ($res->{has_contacts}, 0, 'politician does not have contacts');
+        is ($res->{has_dialogs}, 0, 'politician does not have dialogs');
+        is ($res->{has_active_poll}, 1, 'politician has active poll');
+        is ($res->{has_facebook_auth}, 0, 'politician does not have facebook auth');
+    };
+
+    rest_put "/api/poll/$poll_id",
+        name => 'Deactivating poll',
+        [ status_id => 3 ]
+    ;
+
+    rest_reload_list "get_politician_dashboard";
+
+    stash_test "get_politician_dashboard.list" => sub {
+        my $res = shift;
+
+        is ($res->{citizens}, 2, 'two citizens');
+        is ($res->{has_greeting}, 0, 'politician does not have greeting');
+        is ($res->{has_contacts}, 0, 'politician does not have contacts');
+        is ($res->{has_dialogs}, 0, 'politician does not have dialogs');
+        is ($res->{has_active_poll}, 0, 'politician does not have active poll');
+        is ($res->{ever_had_poll}, 1, 'politician has at least one poll');
+        is ($res->{has_facebook_auth}, 0, 'politician does not have facebook auth');
+    };
+
+    rest_post "/api/politician/$politician_id/greeting",
+        name                => 'politician greeting',
+        automatic_load_item => 1,
+        code                => 200,
+        [ greeting_id => 1 ]
+    ;
+
+    rest_reload_list "get_politician_dashboard";
+
+    stash_test "get_politician_dashboard.list" => sub {
+        my $res = shift;
+
+        is ($res->{citizens}, 2, 'two citizens');
+        is ($res->{has_greeting}, 1, 'politician has greeting');
+        is ($res->{has_contacts}, 0, 'politician does not have contacts');
+        is ($res->{has_dialogs}, 0, 'politician does not have dialogs');
+        is ($res->{has_facebook_auth}, 0, 'politician does not have facebook auth');
+    };
+
+    rest_post "/api/politician/$politician_id/contact",
+        name                => "politician contact",
+        automatic_load_item => 0,
+        code                => 200,
+        [
+            twitter  => '@lucas_ansei',
+            facebook => 'https://facebook.com/lucasansei',
+            email    => 'foobar@email.com',
+
+        ]
+    ;
+
+    rest_reload_list "get_politician_dashboard";
+
+    stash_test "get_politician_dashboard.list" => sub {
+        my $res = shift;
+
+        is ($res->{citizens}, 2, 'two citizens');
+        is ($res->{has_greeting}, 1, 'politician has greeting');
+        is ($res->{has_contacts}, 1, 'politician has contacts');
+        is ($res->{has_dialogs}, 0, 'politician does not have dialogs');
+        is ($res->{has_facebook_auth}, 0, 'politician does not have facebook auth');
+    };
+
+    rest_post "/api/politician/$politician_id/answers",
+        name  => "politician answer",
+        code  => 200,
+        [ "question[$question_id][answer]" => fake_words(1)->() ]
+    ;
+
+    rest_reload_list "get_politician_dashboard";
+
+    stash_test "get_politician_dashboard.list" => sub {
+        my $res = shift;
+
+        is ($res->{citizens}, 2, 'two citizens');
+        is ($res->{has_greeting}, 1, 'politician has greeting');
+        is ($res->{has_contacts}, 1, 'politician has contacts');
+        is ($res->{has_dialogs}, 1, 'politician has dialogs');
+        is ($res->{has_facebook_auth}, 0, 'politician does not have facebook auth');
+    };
+
+    rest_put "/api/politician/$politician_id",
+        name => "facebook auth",
+        [ fb_page_access_token => "aaaa" ]
+    ;
+
+    rest_reload_list "get_politician_dashboard";
+
+    stash_test "get_politician_dashboard.list" => sub {
+        my $res = shift;
+
+        is ($res->{citizens}, 2, 'two citizens');
+        is ($res->{has_greeting}, 1, 'politician has greeting');
+        is ($res->{has_contacts}, 1, 'politician has contacts');
+        is ($res->{has_dialogs}, 1, 'politician has dialogs');
+        is ($res->{has_facebook_auth}, 1, 'politician has facebook auth');
     };
 };
 

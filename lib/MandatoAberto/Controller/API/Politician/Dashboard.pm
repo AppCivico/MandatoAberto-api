@@ -54,26 +54,35 @@ sub list_GET {
         )->next;
     }
 
+    my $has_greeting      = $c->model("DB::PoliticianGreeting")->search( { politician_id => $politician_id } )->count;
+    my $has_contacts      = $c->model("DB::PoliticianContact")->search( { politician_id => $politician_id } )->count;
+    my $has_dialogs       = $c->model("DB::Answer")->search( { politician_id => $politician_id } )->count > 0 ? 1 : 0;
+    my $has_facebook_auth = $c->stash->{politician}->fb_page_access_token ? 1 : 0;
+
     # Pegando dados do analytics do Facebook
-    my $furl = Furl->new();
+    # my $furl = Furl->new();
 
-    my $page_id      = $c->stash->{politician}->fb_page_id;
-    my $access_token = $c->stash->{politician}->fb_page_access_token;
+    # my $page_id      = $c->stash->{politician}->fb_page_id;
+    # my $access_token = $c->stash->{politician}->fb_page_access_token;
 
-    my $start_date = DateTime->now->subtract( days => 7 )->epoch();
-    my $end_date   = DateTime->now->epoch();
+    # my $start_date = DateTime->now->subtract( days => 7 )->epoch();
+    # my $end_date   = DateTime->now->epoch();
 
-    my $res = $furl->get(
-        $ENV{FB_API_URL} . "/$page_id/insights?access_token=$access_token&metric=page_messages_active_threads_unique&since=$start_date&until=$end_date",
-    );
+    # my $res = $furl->get(
+    #     $ENV{FB_API_URL} . "/$page_id/insights?access_token=$access_token&metric=page_messages_active_threads_unique&since=$start_date&until=$end_date",
+    # );
 
     return $self->status_ok(
         $c,
         entity => {
             citizens => $citizen_count,
 
-            ever_had_poll   => $ever_had_poll,
-            has_active_poll => $active_poll ? 1 : 0,
+            has_greeting      => $has_greeting,
+            has_contacts      => $has_contacts,
+            has_dialogs       => $has_dialogs,
+            has_facebook_auth => $has_facebook_auth,
+            has_active_poll   => $active_poll ? 1 : 0,
+            ever_had_poll     => $ever_had_poll,
 
             poll => $active_poll ?
                     map {

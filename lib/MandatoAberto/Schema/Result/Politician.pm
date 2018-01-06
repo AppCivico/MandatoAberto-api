@@ -475,7 +475,7 @@ sub get_long_lived_access_token {
 
     my $decoded_res = decode_json $res->decoded_content;
     my $long_lived_access_token = $decoded_res->{access_token};
-    die $decoded_res unless $long_lived_access_token; 
+    die $decoded_res unless $long_lived_access_token;
 
     return $long_lived_access_token;
 }
