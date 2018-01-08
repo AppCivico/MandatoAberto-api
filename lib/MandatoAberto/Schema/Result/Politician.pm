@@ -338,6 +338,8 @@ use Furl;
 use JSON::MaybeXS;
 use HTTP::Request;
 use IO::Socket::SSL;
+use DateTime;
+use DateTime::Format::DateParse;
 
 sub verifiers_specs {
     my $self = shift;
@@ -503,6 +505,43 @@ sub set_get_started_button {
     die $res->decoded_content unless $res->is_success;
 
     return decode_json $res->decoded_content;
+}
+
+sub get_citizen_interaction {
+    my ($self, $range) = @_;
+
+    if (is_test()) {
+        return 1;
+    }
+
+    my $page_id      = $self->fb_page_id;
+    my $access_token = $self->fb_page_access_token;
+
+    my $furl = Furl->new();
+
+    my $start_date = DateTime->now->subtract( days => $range )->epoch();
+    my $end_date   = DateTime->now->epoch();
+
+    my $res = $furl->get(
+        $ENV{FB_API_URL} . "/$page_id/insights?access_token=$access_token&metric=page_messages_active_threads_unique&since=$start_date&until=$end_date",
+    );
+    die $res->decoded_content unless $res->is_success;
+
+    my $decoded_res = decode_json $res->decoded_content;
+    my $untreated_data = $decoded_res->{data}->[0]->{values};
+    my $treated_data = {};
+
+    for (my $i = 0; $i < scalar @{ $untreated_data } ; $i++) {
+        my $data_per_day = $untreated_data->[$i];
+
+        my $day = DateTime::Format::DateParse->parse_datetime($data_per_day->{end_time});
+
+        $treated_data->{labels}->[$i] = $day->day() . '/' . $day->month();
+        $treated_data->{datasets}->[$i]->{label} = $treated_data->{labels}->[$i];
+        $treated_data->{datasets}->[$i]->{data}  = $data_per_day->{value};
+    }
+    
+    return $treated_data;
 }
 
 __PACKAGE__->meta->make_immutable;

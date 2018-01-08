@@ -48,7 +48,7 @@ sub list_GET {
                 status_id     => 3,
             },
             {
-                    order_by => { -desc => [qw/updated_at/] },
+                order_by => { -desc => qw/updated_at/ },
                 prefetch => [ 'poll_questions' , { 'poll_questions' => { "question_options" => 'poll_results' } } ]
             }
         )->next;
@@ -60,29 +60,27 @@ sub list_GET {
     my $has_facebook_auth = $c->stash->{politician}->fb_page_access_token ? 1 : 0;
 
     # Pegando dados do analytics do Facebook
-    # my $furl = Furl->new();
+    my $range = $c->req->params->{range};
+    $range = 16 if !$range;
+    die \["range", 'invalid'] if $range !~ m/^(8|16|31)/;
 
-    # my $page_id      = $c->stash->{politician}->fb_page_id;
-    # my $access_token = $c->stash->{politician}->fb_page_access_token;
-
-    # my $start_date = DateTime->now->subtract( days => 7 )->epoch();
-    # my $end_date   = DateTime->now->epoch();
-
-    # my $res = $furl->get(
-    #     $ENV{FB_API_URL} . "/$page_id/insights?access_token=$access_token&metric=page_messages_active_threads_unique&since=$start_date&until=$end_date",
-    # );
+    my $citizen_interaction;
+    if ($has_facebook_auth) {
+        $citizen_interaction = $c->stash->{politician}->get_citizen_interaction($range);
+    }
 
     return $self->status_ok(
         $c,
         entity => {
             citizens => $citizen_count,
 
-            has_greeting      => $has_greeting,
-            has_contacts      => $has_contacts,
-            has_dialogs       => $has_dialogs,
-            has_facebook_auth => $has_facebook_auth,
-            has_active_poll   => $active_poll ? 1 : 0,
-            ever_had_poll     => $ever_had_poll,
+            has_greeting        => $has_greeting,
+            has_contacts        => $has_contacts,
+            has_dialogs         => $has_dialogs,
+            has_facebook_auth   => $has_facebook_auth,
+            has_active_poll     => $active_poll ? 1 : 0,
+            ever_had_poll       => $ever_had_poll,
+            citizen_interaction => $citizen_interaction,
 
             poll => $active_poll ?
                     map {
