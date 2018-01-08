@@ -531,16 +531,18 @@ sub get_citizen_interaction {
     my $untreated_data = $decoded_res->{data}->[0]->{values};
     my $treated_data = {};
 
-    for (my $i = 0; $i < scalar @{ $untreated_data } ; $i++) {
-        my $data_per_day = $untreated_data->[$i];
+    if ($untreated_data) {
+        for (my $i = 0; $i < scalar @{ $untreated_data } ; $i++) {
+            my $data_per_day = $untreated_data->[$i];
 
-        my $day = DateTime::Format::DateParse->parse_datetime($data_per_day->{end_time});
+            my $day = DateTime::Format::DateParse->parse_datetime($data_per_day->{end_time});
 
-        $treated_data->{labels}->[$i] = $day->day() . '/' . $day->month();
-        $treated_data->{datasets}->[$i]->{label} = $treated_data->{labels}->[$i];
-        $treated_data->{datasets}->[$i]->{data}  = $data_per_day->{value};
+            $treated_data->{labels}->[$i] = $day->day() . '/' . $day->month();
+            $treated_data->{datasets}->[$i]->{label} = $treated_data->{labels}->[$i];
+            $treated_data->{datasets}->[$i]->{data}  = $data_per_day->{value};
+        }
     }
-
+    
     return $treated_data;
 }
 
