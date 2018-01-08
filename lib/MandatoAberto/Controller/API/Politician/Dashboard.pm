@@ -61,7 +61,7 @@ sub list_GET {
 
     # Pegando dados do analytics do Facebook
     my $range = $c->req->params->{range};
-    $range = 16 if !$range;
+    $range = 8 if !$range;
     die \["range", 'invalid'] if $range !~ m/^(8|16|31)/;
 
     my $citizen_interaction;

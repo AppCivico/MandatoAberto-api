@@ -538,8 +538,7 @@ sub get_citizen_interaction {
             my $day = DateTime::Format::DateParse->parse_datetime($data_per_day->{end_time});
 
             $treated_data->{labels}->[$i] = $day->day() . '/' . $day->month();
-            $treated_data->{datasets}->[$i]->{label} = $treated_data->{labels}->[$i];
-            $treated_data->{datasets}->[$i]->{data}  = $data_per_day->{value};
+            $treated_data->{data}->[$i]   = $data_per_day->{value};
         }
     }
     
