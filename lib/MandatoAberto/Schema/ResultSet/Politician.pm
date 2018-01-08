@@ -25,7 +25,10 @@ sub verifiers_specs {
                     type       => EmailAddress,
                     post_check => sub {
                         my $email = $_[0]->get_value("email");
-                        $self->result_source->schema->resultset("User")->search({ email => $email })->count == 0;
+                        my $email_count = $self->result_source->schema->resultset("User")->search({ email => $email })->count;
+                        die \["email", 'alredy in use'] if $email_count;
+
+                        return 1;
                     }
                 },
                 password => {
