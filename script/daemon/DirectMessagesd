@@ -19,7 +19,7 @@ newdaemon(
     options => {
         'verbose!' => \$verbose,
     },
-    pidfile => "/tmp/mandatoaberto/$Script.pid",
+    pidfile => "/tmp/$Script.pid",
 );
 
 sub gd_preconfig {
