@@ -59,6 +59,27 @@ sub list_GET {
     my $has_dialogs       = $c->model("DB::Answer")->search( { politician_id => $politician_id } )->count > 0 ? 1 : 0;
     my $has_facebook_auth = $c->stash->{politician}->fb_page_access_token ? 1 : 0;
 
+    # Dados de genero
+    my $female_citizen_count = $c->model("DB::Citizen")->search(
+        {
+            politician_id => $politician_id,
+            gender        => 'F'
+        }
+    )->count;
+
+    my $male_citizen_count = $c->model("DB::Citizen")->search(
+        {
+            politician_id => $politician_id,
+            gender        => 'M'
+        }
+    )->count;
+
+    my $citizen_gender = {
+        name   => 'Sexo',
+        labels => [ 'F', 'M' ],
+        data   => [ $female_citizen_count, $male_citizen_count ]
+    };
+
     # Pegando dados do analytics do Facebook
     my $range = $c->req->params->{range};
     $range = 8 if !$range;
@@ -81,6 +102,7 @@ sub list_GET {
             has_active_poll     => $active_poll ? 1 : 0,
             ever_had_poll       => $ever_had_poll,
             citizen_interaction => $citizen_interaction,
+            citizen_gender      => $citizen_gender,
 
             poll => $active_poll ?
                     map {
