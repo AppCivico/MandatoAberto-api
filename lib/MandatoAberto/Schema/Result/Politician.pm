@@ -540,7 +540,7 @@ sub get_citizen_interaction {
         $treated_data->{datasets}->[$i]->{label} = $treated_data->{labels}->[$i];
         $treated_data->{datasets}->[$i]->{data}  = $data_per_day->{value};
     }
-    
+
     return $treated_data;
 }
 
