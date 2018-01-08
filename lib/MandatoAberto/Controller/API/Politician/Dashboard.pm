@@ -48,7 +48,7 @@ sub list_GET {
                 status_id     => 3,
             },
             {
-                    order_by => { -desc => [qw/updated_at/] },
+                order_by => { -desc => qw/updated_at/ },
                 prefetch => [ 'poll_questions' , { 'poll_questions' => { "question_options" => 'poll_results' } } ]
             }
         )->next;
@@ -61,22 +61,26 @@ sub list_GET {
 
     # Pegando dados do analytics do Facebook
     my $range = $c->req->params->{range};
-    $range = 7 if !$range;
-    die \["range", 'invalid'] if $range != (7 || 15 || 30);
+    $range = 16 if !$range;
+    die \["range", 'invalid'] if $range !~ m/^(8|16|31)/;
 
-    my $analytics_data = $c->stash->{politician}->get_analytics_data($range);
+    my $citizen_interaction;
+    if ($has_facebook_auth) {
+        $citizen_interaction = $c->stash->{politician}->get_citizen_interaction($range);
+    }
 
     return $self->status_ok(
         $c,
         entity => {
             citizens => $citizen_count,
 
-            has_greeting      => $has_greeting,
-            has_contacts      => $has_contacts,
-            has_dialogs       => $has_dialogs,
-            has_facebook_auth => $has_facebook_auth,
-            has_active_poll   => $active_poll ? 1 : 0,
-            ever_had_poll     => $ever_had_poll,
+            has_greeting        => $has_greeting,
+            has_contacts        => $has_contacts,
+            has_dialogs         => $has_dialogs,
+            has_facebook_auth   => $has_facebook_auth,
+            has_active_poll     => $active_poll ? 1 : 0,
+            ever_had_poll       => $ever_had_poll,
+            citizen_interaction => $citizen_interaction,
 
             poll => $active_poll ?
                     map {

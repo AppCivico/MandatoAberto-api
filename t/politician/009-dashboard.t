@@ -180,10 +180,15 @@ db_transaction {
         is ($res->{has_facebook_auth}, 0, 'politician does not have facebook auth');
     };
 
-    rest_put "/api/politician/$politician_id",
-        name => "facebook auth",
-        [ fb_page_access_token => "aaaa" ]
-    ;
+    ok(
+        $schema->resultset("Politician")->find($politician_id)->update(
+            {
+                fb_page_id => 'aa',
+                fb_page_access_token => "aa"
+            }
+        ) ,
+        'facebook_auth'
+    );
 
     rest_reload_list "get_politician_dashboard";
 
