@@ -502,7 +502,7 @@ sub set_get_started_button {
             }
         }
     );
-    die $res->decoded_content unless $res->is_success;
+    return 0 unless $res->is_success;
 
     return decode_json $res->decoded_content;
 }
@@ -525,7 +525,7 @@ sub get_citizen_interaction {
     my $res = $furl->get(
         $ENV{FB_API_URL} . "/$page_id/insights?access_token=$access_token&metric=page_messages_active_threads_unique&since=$start_date&until=$end_date",
     );
-    die $res->decoded_content unless $res->is_success;
+    return 0 unless $res->is_success;
 
     my $decoded_res = decode_json $res->decoded_content;
     my $untreated_data = $decoded_res->{data}->[0]->{values};
