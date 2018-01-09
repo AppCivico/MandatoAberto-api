@@ -66,7 +66,7 @@ sub list_GET {
         $c,
         entity => {
             greetings => {
-                selected => $selected_greeting->greeting_id,
+                selected => $selected_greeting ? $selected_greeting->greeting_id : (),
                 list => [
                     map {
 
