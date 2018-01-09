@@ -75,7 +75,7 @@ sub list_GET {
     )->count;
 
     my $citizen_gender = {
-        name   => "Gênero",
+        name   => "G\ênero",
         labels => [ 'F', 'M' ],
         data   => [ $female_citizen_count, $male_citizen_count ]
     };
