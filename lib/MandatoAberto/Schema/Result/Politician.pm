@@ -451,7 +451,7 @@ sub action_specs {
                 $values{fb_page_access_token} = $self->get_long_lived_access_token($short_lived_token);
 
                 # Setando o botão get started
-                $self->set_get_started_button($values{fb_page_access_token});
+                $self->set_get_started_button_and_persistent_menu($values{fb_page_access_token});
             }
 
             $self->user->update( { password => $values{new_password} } ) and delete $values{new_password} if $values{new_password};
@@ -464,9 +464,9 @@ sub action_specs {
 sub get_long_lived_access_token {
     my $short_lived_token = $_[1];
 
-    if (is_test()) {
-        return 1;
-    }
+    # if (is_test()) {
+    #     return 1;
+    # }
 
     my $furl = Furl->new();
 
@@ -482,12 +482,12 @@ sub get_long_lived_access_token {
     return $long_lived_access_token;
 }
 
-sub set_get_started_button {
+sub set_get_started_button_and_persistent_menu {
     my $access_token = $_[1];
 
-    if (is_test()) {
-        return 1;
-    }
+    # if (is_test()) {
+    #     return 1;
+    # }
 
     my $furl = Furl->new();
 
@@ -499,7 +499,20 @@ sub set_get_started_button {
         encode_json {
             get_started => {
                 payload => 'greetings'
-            }
+            },
+            persistent_menu => [
+                {
+                    locale                  => 'default',
+                    composer_input_disabled => 'false',
+                    call_to_actions         => [
+                        {
+                            title   => "Ir para o início",
+                            type    => 'postback',
+                            payload => 'greetings'
+                        }
+                    ]
+                }
+            ]
         }
     );
     return 0 unless $res->is_success;
