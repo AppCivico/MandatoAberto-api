@@ -464,9 +464,9 @@ sub action_specs {
 sub get_long_lived_access_token {
     my $short_lived_token = $_[1];
 
-    # if (is_test()) {
-    #     return 1;
-    # }
+    if (is_test()) {
+        return 1;
+    }
 
     my $furl = Furl->new();
 
