@@ -31,12 +31,12 @@ sub login_POST {
         },
     );
 
-    my $approved_user = $c->model("DB::User")->search({
-        email => $c->req->params->{email},
-        approved => 1,
-    })->next;
+    my $user = $c->model("DB::User")->search( { email => $c->req->params->{email} } )->next;
+    die \['email', 'email does not exists'] unless $user;
 
-    die \['approved', 'user not approved'] unless $approved_user;
+    if ($user) {
+        $user->approved == 1 ? () : die \['approved', 'user not approved']
+    }
 
     my $authenticate = $c->authenticate({
         ( map { $_ => $c->req->params->{$_} } qw(email password) ),
