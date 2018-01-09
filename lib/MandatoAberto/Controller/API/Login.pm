@@ -17,6 +17,10 @@ sub login : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }
 sub login_POST {
     my ($self, $c) = @_;
 
+    if (length $c->req->params->{email} < 1) {
+        die \['email', 'missing'] unless $c->req->params->{email};
+    }
+
     $c->req->params->{email} = lc $c->req->params->{email};
 
     $self->validate_request_params(
