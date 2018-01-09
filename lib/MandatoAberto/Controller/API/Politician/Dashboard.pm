@@ -2,6 +2,7 @@ package MandatoAberto::Controller::API::Politician::Dashboard;
 use Moose;
 use namespace::autoclean;
 
+use utf8;
 use Furl;
 use JSON::MaybeXS;
 use DateTime;
@@ -75,7 +76,7 @@ sub list_GET {
     )->count;
 
     my $citizen_gender = {
-        name   => "G\ênero",
+        name   => "Gênero",
         labels => [ 'F', 'M' ],
         data   => [ $female_citizen_count, $male_citizen_count ]
     };
