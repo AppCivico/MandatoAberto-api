@@ -553,6 +553,7 @@ sub get_citizen_interaction {
             $treated_data->{labels}->[$i] = $day->day() . '/' . $day->month();
             $treated_data->{data}->[$i]   = $data_per_day->{value};
         }
+        $treated_data->{name} = 'Acessos por dia';
     }
     
     return $treated_data;
