@@ -545,5 +545,25 @@ sub get_citizen_interaction {
     return $treated_data;
 }
 
+sub get_current_facebook_page {
+    my ($self) = @_;
+
+    if (is_test()) {
+        return 1;
+    }
+
+    my $furl = Furl->new();
+
+    my $page_id      = $self->fb_page_id;
+    my $access_token = $self->fb_page_access_token;
+
+    my $res = $furl->get(
+        $ENV{FB_API_URL} . "/me?fields=id,name&access_token=$access_token",
+    );
+    die $res->decoded_content unless $res->is_success;
+
+    return decode_json $res->decoded_content;
+}
+
 __PACKAGE__->meta->make_immutable;
 1;

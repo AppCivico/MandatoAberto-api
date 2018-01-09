@@ -40,12 +40,16 @@ sub result : Chained('object') : PathPart('') : Args(0) : ActionClass('REST') { 
 sub result_GET {
     my ($self, $c) = @_;
 
+    my $facebook_active_page = {};
+    if ($c->stash->{politician}->fb_page_id) {
+        $facebook_active_page = $c->stash->{politician}->get_current_facebook_page();
+    }
+
     return $self->status_ok(
         $c,
         entity => {
             ( map { $_ => $c->stash->{politician}->$_ } qw/
-                name fb_page_id fb_app_id fb_app_secret
-                fb_page_access_token gender/ ),
+                name fb_page_id gender/ ),
 
             ( state => { map { $_ => $c->stash->{politician}->address_state->$_ } qw/name code/  } ),
 
@@ -86,6 +90,7 @@ sub result_GET {
 
             ( map { $_ => $c->stash->{politician}->user->$_ } qw/id email approved created_at/ ),
 
+            facebook_active_page => $facebook_active_page,
         }
     );
 }
