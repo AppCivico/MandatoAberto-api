@@ -485,9 +485,9 @@ sub get_long_lived_access_token {
 sub set_get_started_button_and_persistent_menu {
     my $access_token = $_[1];
 
-    # if (is_test()) {
-    #     return 1;
-    # }
+    if (is_test()) {
+        return 1;
+    }
 
     my $furl = Furl->new();
 
