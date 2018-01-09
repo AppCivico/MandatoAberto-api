@@ -560,7 +560,7 @@ sub get_current_facebook_page {
     my $res = $furl->get(
         $ENV{FB_API_URL} . "/me?fields=id,name&access_token=$access_token",
     );
-    die $res->decoded_content unless $res->is_success;
+    return 0 unless $res->is_success;
 
     return decode_json $res->decoded_content;
 }
