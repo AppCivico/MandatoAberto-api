@@ -38,13 +38,15 @@ sub login_POST {
     my $user = $c->model("DB::User")->search( { email => $c->req->params->{email} } )->next;
     die \['email', 'email does not exists'] unless $user;
 
-    if ($user) {
-        $user->approved == 1 ? () : die \['approved', 'user not approved']
-    }
+    # Desativando por enquanto.
+    # Todos os usuários serão criados como aprovados
+    # if ($user) {
+    #     $user->approved == 1 ? () : die \['approved', 'user not approved']
+    # }
 
     my $authenticate = $c->authenticate({
         ( map { $_ => $c->req->params->{$_} } qw(email password) ),
-        approved => 1,
+        # approved => 1
     });
 
     if ($authenticate) {

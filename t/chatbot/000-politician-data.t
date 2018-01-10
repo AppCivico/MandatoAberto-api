@@ -40,10 +40,6 @@ db_transaction {
         greeting_id   => 1
     });
 
-    my $politician_chatbot = $schema->resultset("PoliticianChatbot")->search( { politician_id => $politician_id } )->next;
-
-    api_auth_as user_id => $politician_chatbot->id;
-
     rest_get "/api/chatbot/politician",
         name  => "get politician data",
         list  => 1,

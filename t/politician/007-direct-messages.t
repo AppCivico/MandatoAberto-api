@@ -10,10 +10,6 @@ db_transaction {
     create_politician;
     my $politician_id = stash "politician.id";
 
-    my $chatbot = $schema->resultset("PoliticianChatbot")->search( { politician_id => $politician_id } )->next;
-
-    api_auth_as user_id => $chatbot->user_id;
-
     rest_post "/api/chatbot/citizen",
       name                => "Create citizen",
       automatic_load_item => 0,

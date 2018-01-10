@@ -147,21 +147,6 @@ __PACKAGE__->might_have(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 politician_chatbot
-
-Type: might_have
-
-Related object: L<MandatoAberto::Schema::Result::PoliticianChatbot>
-
-=cut
-
-__PACKAGE__->might_have(
-  "politician_chatbot",
-  "MandatoAberto::Schema::Result::PoliticianChatbot",
-  { "foreign.user_id" => "self.id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
-
 =head2 user_forgot_passwords
 
 Type: has_many
@@ -218,8 +203,8 @@ Composing rels: L</user_roles> -> role
 __PACKAGE__->many_to_many("roles", "user_roles", "role");
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2017-12-06 11:45:29
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:2iw0KVwNnRpjXM3decXGvQ
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-01-10 17:06:37
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:YyX2n50UiFdz6kemY2v+NQ
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

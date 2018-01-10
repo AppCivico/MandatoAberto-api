@@ -10,10 +10,6 @@ db_transaction {
     create_politician;
     my $politician_id = stash "politician.id";
 
-    my $chatbot = $schema->resultset("PoliticianChatbot")->search( { politician_id => $politician_id } )->next;
-
-    api_auth_as user_id => $chatbot->user_id;
-
     my $name          = fake_name()->();
     my $origin_dialog = fake_words(1)->();
     my $email         = fake_email()->();

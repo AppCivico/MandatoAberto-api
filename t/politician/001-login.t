@@ -35,19 +35,10 @@ db_transaction {
         ],
     ;
 
-    $schema->resultset("User")->find($politician_id)->update({ approved => 0 });
+    # Validação de aprovação desativada por enquanto
+    # $schema->resultset("User")->find($politician_id)->update({ approved => 0 });
 
-    rest_post "/api/login",
-        name    => "user not approved",
-        is_fail => 1,
-        code    => 400,
-        [
-            email    => $email,
-            password => $password,
-        ],
-    ;
-
-    $schema->resultset("User")->find($politician_id)->update({ approved => 1 });
+    # $schema->resultset("User")->find($politician_id)->update({ approved => 1 });
 
     rest_post "/api/login",
         name  => "login",

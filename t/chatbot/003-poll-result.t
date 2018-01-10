@@ -28,10 +28,6 @@ db_transaction {
     ;
     my $poll_id = stash "p1.id";
 
-    my $politician_chatbot = $schema->resultset("PoliticianChatbot")->search( { politician_id => $politician_id } )->next;
-
-    api_auth_as user_id => $politician_chatbot->id;
-
     my $citizen_fb_id = fake_words(1)->();
     rest_post "/api/chatbot/citizen",
         name                => "create citizen",
