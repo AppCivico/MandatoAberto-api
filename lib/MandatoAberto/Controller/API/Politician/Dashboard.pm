@@ -77,7 +77,7 @@ sub list_GET {
 
     my $citizen_gender = {
         name   => "Gênero",
-        labels => [ 'F', 'M' ],
+        labels => [ 'Feminino', 'Masculino' ],
         data   => [ $female_citizen_count, $male_citizen_count ]
     };
 
@@ -113,6 +113,8 @@ sub list_GET {
                             id        => $p->get_column('id'),
                             name      => $p->get_column('name'),
 
+                            title     => "Enquete: " . $p->get_column('name'),
+
                             questions => [
                                 map {
                                     my $q = $_;
@@ -146,6 +148,8 @@ sub list_GET {
                                 {
                                     id        => $p->get_column('id'),
                                     name      => $p->get_column('name'),
+
+                                    title     => "Enquete: " . $p->get_column('name'),
 
                                     questions => [
                                         map {

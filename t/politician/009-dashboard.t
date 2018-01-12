@@ -62,6 +62,25 @@ db_transaction {
     my $poll_id = stash "p1.id";
 
     rest_get "/api/politician/$politician_id/dashboard",
+        name    => "invalid data range",
+        is_fail => 1,
+        code    => 400,
+        [ range => 5 ]
+    ;
+
+    rest_get "/api/politician/$politician_id/dashboard",
+        name    => "invalid data range",
+        is_fail => 1,
+        code    => 400,
+        [ range => 'foobar' ]
+    ;
+
+    rest_get "/api/politician/$politician_id/dashboard",
+        name    => "valid data range",
+        [ range => 16 ]
+    ;
+
+    rest_get "/api/politician/$politician_id/dashboard",
         name  => "politician dashboard",
         list  => 1,
         stash => "get_politician_dashboard"

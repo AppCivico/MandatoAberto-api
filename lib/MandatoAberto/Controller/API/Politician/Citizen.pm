@@ -31,12 +31,14 @@ sub list_GET {
                 map {
                     my $c = $_;
 
+                    my $gender = $c->get_column('gender');
+
                     +{
                         id            => $c->get_column('id'),
                         name          => $c->get_column('name'),
                         email         => $c->get_column('email'),
                         cellphone     => $c->get_column('cellphone'),
-                        gender        => $c->get_column('gender'),
+                        gender        => $gender = 'F' ? 'Feminino' : 'Masculino',
                         origin_dialog => $c->get_column('origin_dialog'),
                         created_at    => $c->get_column('created_at'),
                     }

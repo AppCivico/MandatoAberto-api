@@ -45,7 +45,7 @@ db_transaction {
         is ($res->{citizens}->[0]->{origin_dialog}, $origin_dialog, 'citizen origin_dialog');
         is ($res->{citizens}->[0]->{email}, $email, 'citizen email');
         is ($res->{citizens}->[0]->{cellphone}, $cellphone, 'citizen cellphone');
-        is ($res->{citizens}->[0]->{gender}, $gender, 'citizen gender');
+        is ($res->{citizens}->[0]->{gender}, $gender = 'F' ? 'Feminino' : 'Masculino', 'citizen gender');
     };
 };
 
