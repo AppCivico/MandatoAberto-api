@@ -122,6 +122,7 @@ sub list_GET {
                                     my $q = $_;
 
                                     +{
+                                        id      => $q->get_column('id'),
                                         content => $q->get_column('content'),
 
                                         options => [
@@ -158,6 +159,7 @@ sub list_GET {
                                             my $q = $_;
 
                                             +{
+                                                id      => $q->get_column('id'),
                                                 content => $q->get_column('content'),
 
                                                 options => [
