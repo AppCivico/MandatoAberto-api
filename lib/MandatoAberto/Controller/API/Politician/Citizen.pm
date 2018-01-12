@@ -38,7 +38,7 @@ sub list_GET {
                         name          => $c->get_column('name'),
                         email         => $c->get_column('email'),
                         cellphone     => $c->get_column('cellphone'),
-                        gender        => $gender = 'F' ? 'Feminino' : 'Masculino',
+                        gender        => $gender eq 'F' ? 'Feminino' : 'Masculino',
                         origin_dialog => $c->get_column('origin_dialog'),
                         created_at    => $c->get_column('created_at'),
                     }
