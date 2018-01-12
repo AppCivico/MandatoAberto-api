@@ -75,6 +75,11 @@ __PACKAGE__->table("politician_contact");
   data_type: 'text'
   is_nullable: 1
 
+=head2 url
+
+  data_type: 'text'
+  is_nullable: 1
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -94,6 +99,8 @@ __PACKAGE__->add_columns(
   "email",
   { data_type => "text", is_nullable => 1 },
   "cellphone",
+  { data_type => "text", is_nullable => 1 },
+  "url",
   { data_type => "text", is_nullable => 1 },
 );
 
@@ -127,8 +134,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2017-11-12 14:41:09
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:1Hnj/TVDL6o9QNp14MNhbg
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-01-12 08:29:51
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:MSJOosL/zjSvEsMpkJuixg
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
@@ -160,6 +167,10 @@ sub verifiers_specs {
                     required => 0,
                     type     => PhoneNumber
                 },
+                url => {
+                    required => 0,
+                    type     => URI
+                }
             }
         )
     };

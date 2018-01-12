@@ -51,6 +51,7 @@ sub list_GET {
                         cellphone => $c->get_column('cellphone'),
                         email     => $c->get_column('email'),
                         facebook  => $c->get_column('facebook'),
+                        url       => $c->get_column('url'),
                         twitter   => $c->get_column('twitter'),
                     } $p->politician_contacts->all()
                 },

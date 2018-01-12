@@ -47,7 +47,8 @@ db_transaction {
         [
             twitter  => '@lucas_ansei',
             facebook => 'https://facebook.com/lucasansei',
-            email    => 'foobar@email.com'
+            email    => 'foobar@email.com',
+            url      => "https://www.google.com",
         ]
     ;
     my $contact    = stash "c1";
@@ -85,6 +86,7 @@ db_transaction {
         is ($res->{contact}->{twitter}, '@lucas_ansei', 'twitter');
         is ($res->{contact}->{facebook}, 'https://facebook.com/lucasansei', 'facebook');
         is ($res->{contact}->{email}, 'foobar@email.com', 'email');
+        is ($res->{contact}->{url}, "https://www.google.com", 'url');
         is ($res->{greeting}->{id}, $greeting_id, 'greeting entity id');
         is ($res->{greeting}->{greeting_id}, 1, 'greeting id');
         is ($res->{greeting}->{content}, 'Olá, sou assistente digital do(a) ${user.office.name} ${user.name} Seja benvindo a nossa Rede! Queremos um Brasil a melhor e precisamos de sua ajuda.', 'greeting content');

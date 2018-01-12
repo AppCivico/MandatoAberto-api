@@ -77,6 +77,7 @@ sub list_GET {
                     twitter   => $c->get_column('twitter'),
                     email     => $c->get_column('email'),
                     cellphone => $c->get_column('cellphone'),
+                    url       => $c->get_column('url'),
                 } $c->stash->{collection}->search( { politician_id => $politician_id } )->all()
             }
         }

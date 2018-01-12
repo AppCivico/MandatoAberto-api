@@ -53,6 +53,24 @@ db_transaction {
         ]
     ;
 
+    rest_post "/api/politician/$politician_id/contact",
+        name    => "politician with invalid url",
+        is_fail => 1,
+        code    => 400,
+        [
+            url => 1,
+        ]
+    ;
+
+    rest_post "/api/politician/$politician_id/contact",
+        name    => "politician with invalid url",
+        is_fail => 1,
+        code    => 400,
+        [
+            url => 'foobar',
+        ]
+    ;
+
     my $twitter  = '@lucas_ansei';
     my $facebook = 'https://facebook.com/lucasansei';
 
@@ -65,7 +83,7 @@ db_transaction {
             twitter  => '@lucas_ansei',
             facebook => 'https://facebook.com/lucasansei',
             email    => 'foobar@email.com',
-
+            url      => 'https://www.google.com'
         ]
     ;
     my $contact = stash "c1";
@@ -83,6 +101,7 @@ db_transaction {
         is ($res->{politician_contact}->{facebook},  'https://facebook.com/lucasansei', 'facebook');
         is ($res->{politician_contact}->{twitter},   '@lucas_ansei', 'twitter');
         is ($res->{politician_contact}->{email},     'foobar@email.com', 'email');
+        is ($res->{politician_contact}->{url},       'https://www.google.com', 'url');
         is ($res->{politician_contact}->{cellphone}, undef, 'cellphone');
     };
 

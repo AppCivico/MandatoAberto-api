@@ -69,6 +69,7 @@ sub result_GET {
                         facebook  => $c->get_column('facebook'),
                         email     => $c->get_column('email'),
                         cellphone => $c->get_column('cellphone'),
+                        url       => $c->get_column('url'),
                     } $c->model("DB::PoliticianContact")->search( { politician_id => $c->user->id } )
                 }
             ),

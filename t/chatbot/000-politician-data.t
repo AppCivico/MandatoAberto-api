@@ -32,6 +32,7 @@ db_transaction {
     $schema->resultset("PoliticianContact")->create({
         politician_id => $politician_id,
         twitter       => '@foobar',
+        url           => "https://www.google.com",
         email         => $email
     });
 
@@ -57,6 +58,7 @@ db_transaction {
         is ($res->{gender}, $gender , 'gender');
         is ($res->{contact}->{twitter}, '@foobar', 'twitter');
         is ($res->{contact}->{email}, $email, 'email');
+        is ($res->{contact}->{url}, "https://www.google.com", 'url');
         is ($res->{greeting}, 'Olá, sou assistente digital do(a) ${user.office.name} ${user.name} Seja benvindo a nossa Rede! Queremos um Brasil a melhor e precisamos de sua ajuda.', 'greeting content');
     };
 };
