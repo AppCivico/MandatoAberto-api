@@ -17,6 +17,8 @@ db_transaction {
 
     my $user = $schema->resultset("User")->find(stash 'politician.id');
 
+    $user->update({ approved => 1 });
+
     rest_post "/api/login",
         name  => "login",
         code  => 200,

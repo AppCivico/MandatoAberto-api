@@ -36,9 +36,9 @@ db_transaction {
     ;
 
     # Validação de aprovação desativada por enquanto
-    # $schema->resultset("User")->find($politician_id)->update({ approved => 0 });
+    $schema->resultset("User")->find($politician_id)->update({ approved => 0 });
 
-    # $schema->resultset("User")->find($politician_id)->update({ approved => 1 });
+    $schema->resultset("User")->find($politician_id)->update({ approved => 1 });
 
     rest_post "/api/login",
         name  => "login",

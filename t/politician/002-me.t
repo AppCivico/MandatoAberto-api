@@ -28,6 +28,8 @@ db_transaction {
 
     my $politician_id = stash "politician.id";
 
+    $schema->resultset("User")->find($politician_id)->update({ approved => 1 });
+
     rest_get "/api/politician/$politician_id",
         name    => "get when logged off --fail",
         is_fail => 1,
