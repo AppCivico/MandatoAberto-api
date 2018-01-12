@@ -22,8 +22,6 @@ db_transaction {
         party_id            => $party,
         office_id           => $office,
         fb_page_id          => "FOO",
-        fb_app_id           => "BAR",
-        fb_app_secret       => "foobar",
         fb_page_access_token => "FOOBAR",
         gender              => $gender,
     );

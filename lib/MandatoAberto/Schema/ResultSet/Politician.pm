@@ -92,32 +92,6 @@ sub verifiers_specs {
                         return 1;
                     },
                 },
-                fb_app_id => {
-                    required   => 0,
-                    type       => "Str",
-                    post_check => sub {
-                        my $r = shift;
-
-                        $self->search({
-                            fb_app_id => $r->get_value('fb_app_id'),
-                        })->count and die \["fb_app_id", "alredy exists"];
-
-                        return 1;
-                    },
-                },
-                fb_app_secret => {
-                    required   => 0,
-                    type       => "Str",
-                    post_check => sub {
-                        my $r = shift;
-
-                        $self->search({
-                            fb_app_secret => $r->get_value('fb_app_secret'),
-                        })->count and die \["fb_app_secret", "alredy exists"];
-
-                        return 1;
-                    },
-                },
                 fb_page_access_token => {
                     required   => 0,
                     type       => "Str",
@@ -169,8 +143,7 @@ sub action_specs {
                     (
                         map { $_ => $values{$_} } qw(
                             name address_state_id address_city_id party_id
-                            office_id fb_page_id fb_app_id fb_app_secret
-                            fb_page_access_token gender
+                            office_id fb_page_id fb_page_access_token gender
                         )
                     ),
                     user_id => $user->id,

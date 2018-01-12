@@ -46,3 +46,4 @@
 0042-deleting-politician_chatbot-table [0041-poll-updated_at] 2018-01-10T19:05:48Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Deleting the politician_chatbot table
 0043-updating-party [0042-deleting-politician_chatbot-table] 2018-01-12T10:25:06Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Updating party acronym and name
 0044-adding-url-to-politician_contact [0043-updating-party] 2018-01-12T10:30:07Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the 'URL' col to the politician_contact table
+0045-removing-fb_app_secret-fb_app_id [0044-adding-url-to-politician_contact] 2018-01-12T10:42:09Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Removing the 'fb_app_id' and 'fb_app_secret' from the politician table 

@@ -70,16 +70,6 @@ __PACKAGE__->table("politician");
   data_type: 'text'
   is_nullable: 1
 
-=head2 fb_app_id
-
-  data_type: 'text'
-  is_nullable: 1
-
-=head2 fb_app_secret
-
-  data_type: 'text'
-  is_nullable: 1
-
 =head2 fb_page_access_token
 
   data_type: 'text'
@@ -114,10 +104,6 @@ __PACKAGE__->add_columns(
   "office_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "fb_page_id",
-  { data_type => "text", is_nullable => 1 },
-  "fb_app_id",
-  { data_type => "text", is_nullable => 1 },
-  "fb_app_secret",
   { data_type => "text", is_nullable => 1 },
   "fb_page_access_token",
   { data_type => "text", is_nullable => 1 },
@@ -309,8 +295,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-01-10 17:06:37
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:yXe3wxQazgXN37XfFZVXFg
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-01-12 08:41:46
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Dqj3SILUXtI2Su4tYDNBHA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
@@ -372,14 +358,6 @@ sub verifiers_specs {
                     }
                 },
                 fb_page_id => {
-                    required   => 0,
-                    type       => "Str",
-                },
-                fb_app_id => {
-                    required   => 0,
-                    type       => "Str",
-                },
-                fb_app_secret => {
                     required   => 0,
                     type       => "Str",
                 },
