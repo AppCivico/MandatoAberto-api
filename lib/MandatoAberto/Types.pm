@@ -55,7 +55,7 @@ coerce CEP, from Str, via {
 };
 
 subtype EmailAddress,as Str,
-  where   { Email::Valid->address(-address => $_) eq $_ },
+  where   { ( Email::Valid->address(-address => $_) || '' ) eq $_ },
   message {'Must be a valid email address'}
 ;
 
