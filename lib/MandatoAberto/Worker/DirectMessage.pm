@@ -77,7 +77,7 @@ sub exec_item {
 
     my $direct_message       = $self->schema->resultset("DirectMessage")->find($item->direct_message_id);
     my $fb_page_access_token = $self->schema->resultset("Politician")->find($direct_message->politician_id)->fb_page_access_token;
-    my @citizens             = $self->schema->resultset("Citizen")->search( { politician_id => $direct_message->politician_id } );
+    my @citizens             = $self->schema->resultset("Recipient")->search( { politician_id => $direct_message->politician_id } );
 
     $self->logger->debug($direct_message->content) if $self->logger;
 

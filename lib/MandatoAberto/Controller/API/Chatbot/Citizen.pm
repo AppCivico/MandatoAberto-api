@@ -10,7 +10,7 @@ with "CatalystX::Eta::Controller::AutoListPOST";
 
 __PACKAGE__->config(
     # AutoBase.
-    result => "DB::Citizen",
+    result => "DB::Recipient",
     no_user => 1,
 
     list_key => "citizen",

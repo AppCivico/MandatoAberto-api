@@ -9,7 +9,7 @@ BEGIN { extends "CatalystX::Eta::Controller::REST" }
 with "CatalystX::Eta::Controller::AutoBase";
 
 __PACKAGE__->config(
-    result  => "DB::Citizen",
+    result  => "DB::Recipient",
     no_user => 1,
 );
 

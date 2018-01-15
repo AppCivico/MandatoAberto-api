@@ -52,7 +52,7 @@ sub action_specs {
 
             # Depois de criada a messagem direta, devo adicionar uma entrada
             # na fila para cada citizen atrelado ao rep. público
-            my @citizens = $self->result_source->schema->resultset("Citizen")->search(
+            my @citizens = $self->result_source->schema->resultset("Recipient")->search(
                 { politician_id => $values{politician_id} },
                 { column        => [ qw(me.fb_id) ]  }
             )->all();

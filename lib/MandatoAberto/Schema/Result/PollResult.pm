@@ -109,13 +109,13 @@ __PACKAGE__->set_primary_key("id");
 
 Type: belongs_to
 
-Related object: L<MandatoAberto::Schema::Result::Citizen>
+Related object: L<MandatoAberto::Schema::Result::Recipient>
 
 =cut
 
 __PACKAGE__->belongs_to(
   "citizen",
-  "MandatoAberto::Schema::Result::Citizen",
+  "MandatoAberto::Schema::Result::Recipient",
   { id => "citizen_id" },
   { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
 );
@@ -136,8 +136,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2017-12-11 09:12:27
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:0R8tsjvbLT2CYzfuglRdbg
+# Created by DBIx::Class::Schema::Loader v0.07046 @ 2018-01-15 11:12:17
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:/UOvWJnQwtU1DAzHJ9U3zg
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

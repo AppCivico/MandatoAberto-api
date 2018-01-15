@@ -19,7 +19,7 @@ __PACKAGE__->config(
         my $citizen_fb_id = $c->req->params->{fb_id};
         die \["fb_id", "missing"] unless $citizen_fb_id;
 
-        my $citizen = $c->model("DB::Citizen")->search( { fb_id => $citizen_fb_id } )->next;
+        my $citizen = $c->model("DB::Recipient")->search( { fb_id => $citizen_fb_id } )->next;
         die \["fb_id", "could not find citizen with that fb_id"] unless $citizen;
 
         $params->{citizen_id} = $citizen->id;

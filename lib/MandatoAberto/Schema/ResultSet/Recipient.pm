@@ -1,4 +1,4 @@
-package MandatoAberto::Schema::ResultSet::Citizen;
+package MandatoAberto::Schema::ResultSet::Recipient;
 use common::sense;
 use Moose;
 use namespace::autoclean;

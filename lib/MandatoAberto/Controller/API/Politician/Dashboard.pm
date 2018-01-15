@@ -27,7 +27,7 @@ sub list_GET {
 
     my $politician_id = $c->stash->{politician}->id;
 
-    my $citizen_count = $c->model("DB::Citizen")->search( { politician_id => $politician_id } )->count;
+    my $citizen_count = $c->model("DB::Recipient")->search( { politician_id => $politician_id } )->count;
 
     my $ever_had_poll = $c->model("DB::Poll")->search( { politician_id => $politician_id } )->count > 0 ? 1 : 0;
 
@@ -61,14 +61,14 @@ sub list_GET {
     my $has_facebook_auth = $c->stash->{politician}->fb_page_access_token ? 1 : 0;
 
     # Dados de genero
-    my $female_citizen_count = $c->model("DB::Citizen")->search(
+    my $female_citizen_count = $c->model("DB::Recipient")->search(
         {
             politician_id => $politician_id,
             gender        => 'F'
         }
     )->count;
 
-    my $male_citizen_count = $c->model("DB::Citizen")->search(
+    my $male_citizen_count = $c->model("DB::Recipient")->search(
         {
             politician_id => $politician_id,
             gender        => 'M'

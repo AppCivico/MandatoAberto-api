@@ -23,7 +23,7 @@ sub verifiers_specs {
                     post_check => sub {
                         my $citizen_id = $_[0]->get_value("citizen_id");
 
-                        $self->result_source->schema->resultset("Citizen")->search({ id => $citizen_id })->count;
+                        $self->result_source->schema->resultset("Recipient")->search({ id => $citizen_id })->count;
                     }
                 },
                 option_id => {

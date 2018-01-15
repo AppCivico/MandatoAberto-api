@@ -1,12 +1,12 @@
 use utf8;
-package MandatoAberto::Schema::Result::Citizen;
+package MandatoAberto::Schema::Result::Recipient;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
 
 =head1 NAME
 
-MandatoAberto::Schema::Result::Citizen
+MandatoAberto::Schema::Result::Recipient
 
 =cut
 
@@ -34,11 +34,11 @@ extends 'DBIx::Class::Core';
 
 __PACKAGE__->load_components("InflateColumn::DateTime", "TimeStamp", "PassphraseColumn");
 
-=head1 TABLE: C<citizen>
+=head1 TABLE: C<recipient>
 
 =cut
 
-__PACKAGE__->table("citizen");
+__PACKAGE__->table("recipient");
 
 =head1 ACCESSORS
 
@@ -170,8 +170,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2017-12-11 02:20:45
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:+Lz960eCkWgLdYw/Rxw4MQ
+# Created by DBIx::Class::Schema::Loader v0.07046 @ 2018-01-15 11:12:17
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:K8qu7HPO6yGP5/NMTZpQcw
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
