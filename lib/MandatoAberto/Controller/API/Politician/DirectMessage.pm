@@ -32,6 +32,8 @@ __PACKAGE__->config(
 sub root : Chained('/api/politician/object') : PathPart('') : CaptureArgs(0) {
     my ($self, $c) = @_;
 
+    $c->detach("/api/forbidden") unless $c->stash->{is_me};
+
     eval { $c->assert_user_roles(qw/politician/) };
     if ($@) {
         $c->forward("/api/forbidden");

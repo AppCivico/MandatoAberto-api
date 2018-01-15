@@ -10,6 +10,14 @@ db_transaction {
     create_politician;
     my $politician_id = stash "politician.id";
 
+    api_auth_as user_id => 1;
+
+    rest_post "/api/politician/$politician_id/greeting",
+        name    => 'politician greeting as admin',
+        is_fail => 1,
+        code    => 403,
+    ;
+
     api_auth_as user_id => $politician_id;
 
     rest_post "/api/politician/$politician_id/greeting",

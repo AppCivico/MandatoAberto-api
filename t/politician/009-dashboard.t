@@ -41,6 +41,14 @@ db_transaction {
         ]
     ;
 
+    api_auth_as user_id => 1;
+
+    rest_get "/api/politician/$politician_id/dashboard",
+        name    => "get dashboard as admin",
+        is_fail => 1,
+        code    => 403,
+    ;
+
     api_auth_as user_id => $politician_id;
 
     rest_post "/api/register/poll",
