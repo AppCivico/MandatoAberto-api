@@ -1,4 +1,4 @@
-package MandatoAberto::Schema::ResultSet::QuestionOption;
+package MandatoAberto::Schema::ResultSet::PollQuestionOption;
 use common::sense;
 use Moose;
 use namespace::autoclean;

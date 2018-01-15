@@ -38,7 +38,7 @@ sub list_GET {
             politician_id => $politician_id,
             status_id     => 1
         },
-        { prefetch => [ 'poll_questions' , { 'poll_questions' => { "question_options" => 'poll_results' } } ] }
+        { prefetch => [ 'poll_questions' , { 'poll_questions' => { "poll_question_options" => 'poll_results' } } ] }
     )->next;
 
     my $last_active_poll;
@@ -50,7 +50,7 @@ sub list_GET {
             },
             {
                 order_by => { -desc => qw/updated_at/ },
-                prefetch => [ 'poll_questions' , { 'poll_questions' => { "question_options" => 'poll_results' } } ]
+                prefetch => [ 'poll_questions' , { 'poll_questions' => { "poll_question_options" => 'poll_results' } } ]
             }
         )->next;
     }
@@ -134,7 +134,7 @@ sub list_GET {
                                                     content => $o->get_column('content'),
                                                     count   => $o->poll_results->search()->count,
                                                 }
-                                            } $q->question_options->all()
+                                            } $q->poll_question_options->all()
                                         ]
                                     }
                                 } $p->poll_questions->all()
@@ -171,7 +171,7 @@ sub list_GET {
                                                             content => $o->get_column('content'),
                                                             count   => $o->poll_results->search()->count,
                                                         }
-                                                    } $q->question_options->all()
+                                                    } $q->poll_question_options->all()
                                                 ]
                                             }
                                         } $p->poll_questions->all()

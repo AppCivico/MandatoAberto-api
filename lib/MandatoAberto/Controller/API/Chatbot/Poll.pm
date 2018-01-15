@@ -48,7 +48,7 @@ sub list_GET {
                                         id      => $o->get_column('id'),
                                         content => $o->get_column('content')
                                     }
-                                } $q->question_options->all()
+                                } $q->poll_question_options->all()
                             ]
                         }
                     } $p->poll_questions->all()
@@ -58,7 +58,7 @@ sub list_GET {
                     'politician.fb_page_id' => $page_id,
                     status_id               => 1
                 },
-                { prefetch => [ 'poll_questions', { 'poll_questions' => "question_options" }, 'politician' ] }
+                { prefetch => [ 'poll_questions', { 'poll_questions' => "poll_question_options" }, 'politician' ] }
             )
         }
     )

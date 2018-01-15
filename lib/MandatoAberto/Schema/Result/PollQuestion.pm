@@ -34,11 +34,11 @@ extends 'DBIx::Class::Core';
 
 __PACKAGE__->load_components("InflateColumn::DateTime", "TimeStamp", "PassphraseColumn");
 
-=head1 TABLE: C<poll_questions>
+=head1 TABLE: C<poll_question>
 
 =cut
 
-__PACKAGE__->table("poll_questions");
+__PACKAGE__->table("poll_question");
 
 =head1 ACCESSORS
 
@@ -105,24 +105,24 @@ __PACKAGE__->belongs_to(
   { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
 );
 
-=head2 question_options
+=head2 poll_question_options
 
 Type: has_many
 
-Related object: L<MandatoAberto::Schema::Result::QuestionOption>
+Related object: L<MandatoAberto::Schema::Result::PollQuestionOption>
 
 =cut
 
 __PACKAGE__->has_many(
-  "question_options",
-  "MandatoAberto::Schema::Result::QuestionOption",
-  { "foreign.question_id" => "self.id" },
+  "poll_question_options",
+  "MandatoAberto::Schema::Result::PollQuestionOption",
+  { "foreign.poll_question_id" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07046 @ 2018-01-15 14:42:08
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:3uCY4VNYSNsh862ZAIMMEw
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-01-15 15:12:32
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:EOVjP9qLVMvCeiKulBKoOA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
