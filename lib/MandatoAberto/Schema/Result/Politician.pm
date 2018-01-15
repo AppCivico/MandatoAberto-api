@@ -294,6 +294,21 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 tags
+
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::Tag>
+
+=cut
+
+__PACKAGE__->has_many(
+  "tags",
+  "MandatoAberto::Schema::Result::Tag",
+  { "foreign.politician_id" => "self.user_id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 user
 
 Type: belongs_to
@@ -310,8 +325,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07046 @ 2018-01-15 11:12:17
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:/XrdLZffGtweuvzq1U1OQQ
+# Created by DBIx::Class::Schema::Loader v0.07046 @ 2018-01-15 12:01:23
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:FQ74djdmxWgcvPuxXRLB3w
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

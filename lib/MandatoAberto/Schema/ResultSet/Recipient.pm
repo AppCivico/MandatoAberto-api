@@ -93,4 +93,10 @@ sub action_specs {
     };
 }
 
+sub search_by_filter {
+    my ($self, $filter) = @_;
+
+    ref $filter eq 'HASH' or die "'filter' must be hashref.";
+}
+
 1;
