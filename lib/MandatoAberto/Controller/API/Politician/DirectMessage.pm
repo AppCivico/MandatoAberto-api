@@ -21,6 +21,8 @@ __PACKAGE__->config(
     prepare_params_for_create => sub {
         my ($self, $c, $params) = @_;
 
+        die \['premium', 'politician is not premium'] unless $c->stash->{politician}->premium;
+        
         $params->{politician_id} = $c->user->id;
 
         return $params;

@@ -82,6 +82,7 @@ db_transaction {
         is ($res->{office}->{id}, $office , 'office');
         is ($res->{fb_page_id}, "FOO" , 'fb_page_id');
         is ($res->{gender}, $gender , 'gender');
+        is ($res->{premium}, 0, 'politician is not premium');
         is ($res->{contact}->{id}, $contact_id , 'contact id');
         is ($res->{contact}->{twitter}, '@lucas_ansei', 'twitter');
         is ($res->{contact}->{facebook}, 'https://facebook.com/lucasansei', 'facebook');
