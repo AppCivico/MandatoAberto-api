@@ -50,7 +50,7 @@ sub list_GET {
             'citizen.fb_id' => $citizen_fb_id,
             'poll.id'       => $poll_id
         },
-        { prefetch => [ 'option', { 'option' => { 'question' => 'poll' } }, 'citizen' ] }
+        { prefetch => [ 'poll_question_option', { 'poll_question_option' => { 'poll_question' => 'poll' } }, 'citizen' ] }
     )->count;
 
     return $self->status_ok(
