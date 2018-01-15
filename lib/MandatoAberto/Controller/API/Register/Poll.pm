@@ -42,7 +42,7 @@ sub create_POST {
                 $c->req->params->{poll_questions}->[$1]->{content} = delete $c->req->params->{$param};
             }
             elsif ($3 eq 'options') {
-                $c->req->params->{poll_questions}->[$1]->{question_options}->[$5]->{content} = delete $c->req->params->{$param};
+                $c->req->params->{poll_questions}->[$1]->{poll_question_options}->[$5]->{content} = delete $c->req->params->{$param};
             }
         }
     }
@@ -54,7 +54,7 @@ sub create_POST {
     for (my $i = 0; $i < scalar @{ $c->req->params->{poll_questions} } ; $i++) {
         my $question = $c->req->params->{poll_questions}->[$i];
 
-        die \["questions[$i]", 'must have at least 2 options'] if ( !defined $question->{question_options} || scalar(@{ $question->{question_options} }) < 2 );
+        die \["questions[$i]", 'must have at least 2 options'] if ( !defined $question->{poll_question_options} || scalar(@{ $question->{poll_question_options} }) < 2 );
 
         for my $k ( keys %{ $question } ) {
             my $cons;
@@ -63,9 +63,9 @@ sub create_POST {
                 $cons = Moose::Util::TypeConstraints::find_or_parse_type_constraint('Str');
                 die \["question[$i]", 'invalid'] if !ref($cons) || !$cons->check($question->{$k}) || looks_like_number($question->{$k});
             }
-            if ($k eq 'question_options') {
-                for (my $j = 0; $j < scalar @{ $question->{question_options} }; $j++) {
-                    my $question_option = $question->{question_options}->[$j];
+            if ($k eq 'poll_question_options') {
+                for (my $j = 0; $j < scalar @{ $question->{poll_question_options} }; $j++) {
+                    my $question_option = $question->{poll_question_options}->[$j];
 
                     # Caso a enquete tenha 2 opções mas só tenha a opção 2 preenchida
                     # Isto é, apenas questions[$i][options][1] devo disparar um erro

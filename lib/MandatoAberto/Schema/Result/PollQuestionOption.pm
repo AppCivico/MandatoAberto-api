@@ -1,12 +1,12 @@
 use utf8;
-package MandatoAberto::Schema::Result::QuestionOption;
+package MandatoAberto::Schema::Result::PollQuestionOption;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
 
 =head1 NAME
 
-MandatoAberto::Schema::Result::QuestionOption
+MandatoAberto::Schema::Result::PollQuestionOption
 
 =cut
 
@@ -34,11 +34,11 @@ extends 'DBIx::Class::Core';
 
 __PACKAGE__->load_components("InflateColumn::DateTime", "TimeStamp", "PassphraseColumn");
 
-=head1 TABLE: C<question_options>
+=head1 TABLE: C<poll_question_option>
 
 =cut
 
-__PACKAGE__->table("question_options");
+__PACKAGE__->table("poll_question_option");
 
 =head1 ACCESSORS
 
@@ -49,7 +49,7 @@ __PACKAGE__->table("question_options");
   is_nullable: 0
   sequence: 'question_options_id_seq'
 
-=head2 question_id
+=head2 poll_question_id
 
   data_type: 'integer'
   is_foreign_key: 1
@@ -70,7 +70,7 @@ __PACKAGE__->add_columns(
     is_nullable       => 0,
     sequence          => "question_options_id_seq",
   },
-  "question_id",
+  "poll_question_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "content",
   { data_type => "text", is_nullable => 0 },
@@ -90,6 +90,21 @@ __PACKAGE__->set_primary_key("id");
 
 =head1 RELATIONS
 
+=head2 poll_question
+
+Type: belongs_to
+
+Related object: L<MandatoAberto::Schema::Result::PollQuestion>
+
+=cut
+
+__PACKAGE__->belongs_to(
+  "poll_question",
+  "MandatoAberto::Schema::Result::PollQuestion",
+  { id => "poll_question_id" },
+  { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
+);
+
 =head2 poll_results
 
 Type: has_many
@@ -101,28 +116,13 @@ Related object: L<MandatoAberto::Schema::Result::PollResult>
 __PACKAGE__->has_many(
   "poll_results",
   "MandatoAberto::Schema::Result::PollResult",
-  { "foreign.option_id" => "self.id" },
+  { "foreign.poll_question_option_id" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 question
 
-Type: belongs_to
-
-Related object: L<MandatoAberto::Schema::Result::PollQuestion>
-
-=cut
-
-__PACKAGE__->belongs_to(
-  "question",
-  "MandatoAberto::Schema::Result::PollQuestion",
-  { id => "question_id" },
-  { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
-);
-
-
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2017-12-11 09:12:27
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:r2fQGkahmQUMSLgwSGuvNg
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-01-15 15:25:43
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:L09GOWU+zMcy8EiP+7dImQ
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

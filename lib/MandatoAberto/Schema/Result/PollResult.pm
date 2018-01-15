@@ -34,11 +34,11 @@ extends 'DBIx::Class::Core';
 
 __PACKAGE__->load_components("InflateColumn::DateTime", "TimeStamp", "PassphraseColumn");
 
-=head1 TABLE: C<poll_results>
+=head1 TABLE: C<poll_result>
 
 =cut
 
-__PACKAGE__->table("poll_results");
+__PACKAGE__->table("poll_result");
 
 =head1 ACCESSORS
 
@@ -55,7 +55,7 @@ __PACKAGE__->table("poll_results");
   is_foreign_key: 1
   is_nullable: 0
 
-=head2 option_id
+=head2 poll_question_option_id
 
   data_type: 'integer'
   is_foreign_key: 1
@@ -80,7 +80,7 @@ __PACKAGE__->add_columns(
   },
   "citizen_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
-  "option_id",
+  "poll_question_option_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "created_at",
   {
@@ -120,24 +120,24 @@ __PACKAGE__->belongs_to(
   { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
 );
 
-=head2 option
+=head2 poll_question_option
 
 Type: belongs_to
 
-Related object: L<MandatoAberto::Schema::Result::QuestionOption>
+Related object: L<MandatoAberto::Schema::Result::PollQuestionOption>
 
 =cut
 
 __PACKAGE__->belongs_to(
-  "option",
-  "MandatoAberto::Schema::Result::QuestionOption",
-  { id => "option_id" },
+  "poll_question_option",
+  "MandatoAberto::Schema::Result::PollQuestionOption",
+  { id => "poll_question_option_id" },
   { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07046 @ 2018-01-15 11:12:17
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:/UOvWJnQwtU1DAzHJ9U3zg
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-01-15 15:25:43
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:8AmI+ArZXydbV/MnBsU+6Q
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

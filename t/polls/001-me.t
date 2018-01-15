@@ -32,16 +32,16 @@ db_transaction {
 
     my $question_id     = $schema->resultset('PollQuestion')->search( { poll_id => $poll_id } )->next->id;
 
-    my $first_option_id = $schema->resultset('QuestionOption')->search(
+    my $first_option_id = $schema->resultset('PollQuestionOption')->search(
         {
-            question_id => $question_id,
-            content     => $first_option_content
+            poll_question_id => $question_id,
+            content          => $first_option_content
         }
     )->next->id;
 
-    my $second_option_id = $schema->resultset('QuestionOption')->search(
+    my $second_option_id = $schema->resultset('PollQuestionOption')->search(
         {
-            question_id => $question_id,
+            poll_question_id => $question_id,
             content     => $second_option_content
         }
     )->next->id;

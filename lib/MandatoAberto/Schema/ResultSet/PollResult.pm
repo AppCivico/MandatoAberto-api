@@ -26,13 +26,13 @@ sub verifiers_specs {
                         $self->result_source->schema->resultset("Recipient")->search({ id => $citizen_id })->count;
                     }
                 },
-                option_id => {
+                poll_question_option_id => {
                     required   => 1,
                     type       => "Int",
                     post_check => sub {
-                        my $option_id = $_[0]->get_value("option_id");
+                        my $option_id = $_[0]->get_value("poll_question_option_id");
 
-                        $self->result_source->schema->resultset("QuestionOption")->search({ id => $option_id })->count;
+                        $self->result_source->schema->resultset("PollQuestionOption")->search({ id => $option_id })->count;
                     }
                 }
             }
@@ -52,8 +52,8 @@ sub action_specs {
 
             # Devo permitir apenas uma resposta por enquete
             my $poll_id = $self->result_source->schema->resultset("Poll")->search(
-                { 'question_options.id' => $values{option_id} },
-                { prefetch => [ 'poll_questions', { 'poll_questions' => "question_options" } ] }
+                { 'poll_question_options.id' => $values{poll_question_option_id} },
+                { prefetch => [ 'poll_questions', { 'poll_questions' => "poll_question_options" } ] }
             )->next->id;
 
             my $poll_citizen_answer = $self->result_source->schema->resultset("PollResult")->search(
@@ -61,9 +61,9 @@ sub action_specs {
                     'citizen.id' => $values{citizen_id},
                     'poll.id'    => $poll_id
                 },
-                { prefetch => [ 'option', { 'option' => { 'question' => 'poll' } }, 'citizen' ] }
+                { prefetch => [ 'poll_question_option', { 'poll_question_option' => { 'poll_question' => 'poll' } }, 'citizen' ] }
             )->count;
-            die \["option_id", "citizen alredy answered poll"] if $poll_citizen_answer;
+            die \["poll_question_option_id", "citizen alredy answered poll"] if $poll_citizen_answer;
 
             my $poll_result = $self->create(\%values);
 

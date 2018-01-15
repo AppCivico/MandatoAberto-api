@@ -65,7 +65,7 @@ db_transaction {
     rest_post "/api/chatbot/poll-result",
         name    => "create poll without fb_id",
         is_fail => 1,
-        [ option_id => $chosen_option_id ]
+        [ poll_question_option_id => $chosen_option_id ]
     ;
 
     rest_post "/api/chatbot/poll-result",
@@ -98,8 +98,8 @@ db_transaction {
         automatic_load_item => 0,
         stash               => "c1",
         [
-            fb_id     => $citizen_fb_id,
-            option_id => $chosen_option_id,
+            fb_id                   => $citizen_fb_id,
+            poll_question_option_id => $chosen_option_id,
         ]
     ;
 
@@ -108,8 +108,8 @@ db_transaction {
         is_fail => 1,
         code    => 400,
         [
-            fb_id     => $citizen_fb_id,
-            option_id => $chosen_option_id,
+            fb_id                   => $citizen_fb_id,
+            poll_question_option_id => $chosen_option_id,
         ]
     ;
 
