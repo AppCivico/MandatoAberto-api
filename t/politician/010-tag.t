@@ -81,16 +81,16 @@ db_transaction {
                 my $poll_question_id = $poll_question->id;
 
                 ok(
-                    my $question_option = $schema->resultset('QuestionOption')->create(
+                    my $poll_question_option = $schema->resultset('PollQuestionOption')->create(
                         {
-                            question_id => $poll_question_id,
-                            content     => $content,
+                            poll_question_id => $poll_question_id,
+                            content          => $content,
                         },
                     ),
                     'add question option',
                 );
 
-                $text_to_options_id{$poll_question_id}->{$content} = $question_option->id;
+                $text_to_options_id{$poll_question_id}->{$content} = $poll_question_option->id;
             }
         }
     };
@@ -101,8 +101,8 @@ db_transaction {
         ok(
             $schema->resultset('PollResult')->create(
                 {
-                    citizen_id => $recipient_ids[0],
-                    option_id  => $text_to_options_id{ $poll_questions[0]->id }->{'Sim'},
+                    citizen_id               => $recipient_ids[0],
+                    poll_question_option_id  => $text_to_options_id{ $poll_questions[0]->id }->{'Sim'},
                 }
             ),
         );
@@ -112,7 +112,7 @@ db_transaction {
             $schema->resultset('PollResult')->create(
                 {
                     citizen_id => $recipient_ids[0],
-                    option_id  => $text_to_options_id{ $poll_questions[1]->id }->{'Não'},
+                    poll_question_option_id  => $text_to_options_id{ $poll_questions[1]->id }->{'Não'},
                 }
             ),
         );
@@ -122,7 +122,7 @@ db_transaction {
             $schema->resultset('PollResult')->create(
                 {
                     citizen_id => $recipient_ids[0],
-                    option_id  => $text_to_options_id{ $poll_questions[2]->id }->{'Talvez'},
+                    poll_question_option_id  => $text_to_options_id{ $poll_questions[2]->id }->{'Talvez'},
                 }
             ),
         );
@@ -132,7 +132,7 @@ db_transaction {
             $schema->resultset('PollResult')->create(
                 {
                     citizen_id => $recipient_ids[1],
-                    option_id  => $text_to_options_id{ $poll_questions[0]->id }->{'Sim'},
+                    poll_question_option_id  => $text_to_options_id{ $poll_questions[0]->id }->{'Sim'},
                 }
             ),
         );
@@ -142,7 +142,7 @@ db_transaction {
             $schema->resultset('PollResult')->create(
                 {
                     citizen_id => $recipient_ids[1],
-                    option_id  => $text_to_options_id{ $poll_questions[1]->id }->{'Talvez'},
+                    poll_question_option_id  => $text_to_options_id{ $poll_questions[1]->id }->{'Talvez'},
                 }
             ),
         );
@@ -152,7 +152,7 @@ db_transaction {
             $schema->resultset('PollResult')->create(
                 {
                     citizen_id => $recipient_ids[1],
-                    option_id  => $text_to_options_id{ $poll_questions[2]->id }->{'Não'},
+                    poll_question_option_id  => $text_to_options_id{ $poll_questions[2]->id }->{'Não'},
                 }
             ),
         );
@@ -162,7 +162,7 @@ db_transaction {
             $schema->resultset('PollResult')->create(
                 {
                     citizen_id => $recipient_ids[2],
-                    option_id  => $text_to_options_id{ $poll_questions[0]->id }->{'Não'},
+                    poll_question_option_id  => $text_to_options_id{ $poll_questions[0]->id }->{'Não'},
                 }
             ),
         );
