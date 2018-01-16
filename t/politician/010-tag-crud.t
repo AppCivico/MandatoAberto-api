@@ -170,7 +170,8 @@ db_transaction {
 
     api_auth_as user_id => $politician_id;
 
-    subtest 'valid operators' => sub {
+    subtest 'validate operators' => sub {
+
         rest_post '/api/politician/tag',
             name    => 'add tag',
             is_fail => 1,
@@ -204,6 +205,74 @@ db_transaction {
                 filter   => {
                     operator => 'OR',
                     rules    => [],
+                },
+            }),
+        ;
+    };
+
+    subtest 'validate rules' => sub {
+
+        rest_post '/api/politician/tag',
+            name    => 'add tag with invalid filter',
+            is_fail => 1,
+            headers => [ 'Content-Type' => 'application/json' ],
+            data    => encode_json({
+                name     => 'Junior',
+                filter   => {
+                    operator => 'AND',
+                    rules    => [
+                        {
+                            rule => 'RULE_THAT_NOT_EXISTS',
+                            data => {
+                                field => '32',
+                                value => 'Sim',
+                            },
+                        },
+                    ],
+                },
+            }),
+        ;
+
+        rest_post '/api/politician/tag',
+            name    => 'add tag',
+            headers => [ 'Content-Type' => 'application/json' ],
+            data    => encode_json({
+                name     => 'Junior',
+                filter   => {
+                    operator => 'AND',
+                    rules    => [
+                        {
+                            rule => 'QUESTION_ANSWER_EQUALS',
+                            data => {
+                                field => '32',
+                                value => 'Sim',
+                            },
+                        },
+                    ],
+                },
+            }),
+        ;
+    };
+
+    subtest 'validate data keys' => sub {
+
+        rest_post '/api/politician/tag',
+            name    => 'add tag with invalid data key',
+            is_fail => 1,
+            headers => [ 'Content-Type' => 'application/json' ],
+            data    => encode_json({
+                name     => 'Junior',
+                filter   => {
+                    operator => 'OR',
+                    rules    => [
+                        {
+                            rule => 'QUESTION_ANSWER_EQUALS',
+                            data => {
+                                invalid_key => '1',
+                                value       => 'Não',
+                            },
+                        },
+                    ],
                 },
             }),
         ;
