@@ -17,7 +17,14 @@ __PACKAGE__->config(
     result_put_for => "update",
 );
 
-sub root : Chained('/api/logged') : PathPart('') : CaptureArgs(0) { }
+sub root : Chained('/api/logged') : PathPart('') : CaptureArgs(0) {
+    my ($self, $c) = @_;
+
+    eval { $c->assert_any_user_role(qw/ politician admin /) };
+    if ($@) {
+        $c->forward("/api/forbidden");
+    }
+}
 
 sub base : Chained('root') : PathPart('politician') : CaptureArgs(0) { }
 
@@ -42,7 +49,7 @@ sub result : Chained('object') : PathPart('') : Args(0) : ActionClass('REST') {
 
 sub result_GET {
     my ($self, $c) = @_;
-    
+
     my $facebook_active_page = {};
     if ($c->stash->{politician}->fb_page_id) {
         $facebook_active_page = $c->stash->{politician}->get_current_facebook_page();
