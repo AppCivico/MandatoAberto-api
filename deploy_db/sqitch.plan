@@ -50,3 +50,4 @@
 0046-politician-premium [0045-removing-fb_app_secret-fb_app_id] 2018-01-15T03:08:45Z Lucas Ansei,,, <lucas@lucas-G750JX> # Adding 'premium' and 'premium_updated_at' columns to the politician table
 0047-rename-citizen-to-recipient [0046-politician-premium] 2018-01-15T13:30:05Z Junior Moraes <juniorfvox@gmail.com> # rename-citizen-to-recipient
 0048-relations-names [0047-rename-citizen-to-recipient] 2018-01-15T17:11:34Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Updating the relations names and removing plurals
+0049-add-tag [0048-relations-names] 2018-01-16T15:37:18Z Junior Moraes <juniorfvox@gmail.com> # add-tag

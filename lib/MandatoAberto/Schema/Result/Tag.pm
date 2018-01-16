@@ -55,10 +55,26 @@ __PACKAGE__->table("tag");
   is_foreign_key: 1
   is_nullable: 0
 
+=head2 name
+
+  data_type: 'text'
+  is_nullable: 0
+
 =head2 filter
 
   data_type: 'json'
   is_nullable: 0
+
+=head2 calc
+
+  data_type: 'boolean'
+  default_value: false
+  is_nullable: 0
+
+=head2 last_calc_at
+
+  data_type: 'timestamp'
+  is_nullable: 1
 
 =head2 created_at
 
@@ -84,8 +100,14 @@ __PACKAGE__->add_columns(
   },
   "politician_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
+  "name",
+  { data_type => "text", is_nullable => 0 },
   "filter",
   { data_type => "json", is_nullable => 0 },
+  "calc",
+  { data_type => "boolean", default_value => \"false", is_nullable => 0 },
+  "last_calc_at",
+  { data_type => "timestamp", is_nullable => 1 },
   "created_at",
   {
     data_type     => "timestamp",
@@ -127,8 +149,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07046 @ 2018-01-15 12:01:23
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:xuBtIapdcD5UQusjsOr/6g
+# Created by DBIx::Class::Schema::Loader v0.07046 @ 2018-01-16 13:37:30
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:/Anv8MpDaDg435XyVBIFxQ
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
