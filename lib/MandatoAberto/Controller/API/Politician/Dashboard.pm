@@ -124,7 +124,7 @@ sub list_GET {
                             id        => $p->get_column('id'),
                             name      => $p->get_column('name'),
 
-                            title     => "Enquete: " . $p->get_column('name'),
+                            title     => "Enquete ativa",
 
                             questions => [
                                 map {
@@ -161,7 +161,7 @@ sub list_GET {
                                     id        => $p->get_column('id'),
                                     name      => $p->get_column('name'),
 
-                                    title     => "Enquete: " . $p->get_column('name'),
+                                    title     => "Última enquete ativa",
 
                                     questions => [
                                         map {
