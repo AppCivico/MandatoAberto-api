@@ -32,14 +32,17 @@ sub object : Chained('base') : PathPart('') : CaptureArgs(1) {
     $c->stash->{is_me}    = int($c->user->id == $user->id);
     $c->stash->{politician} = $user;
 
+}
+
+sub result : Chained('object') : PathPart('') : Args(0) : ActionClass('REST') {
+    my ($self, $c) = @_;
+
     $c->detach("/api/forbidden") unless $c->stash->{is_me};
 }
 
-sub result : Chained('object') : PathPart('') : Args(0) : ActionClass('REST') { }
-
 sub result_GET {
     my ($self, $c) = @_;
-
+    
     my $facebook_active_page = {};
     if ($c->stash->{politician}->fb_page_id) {
         $facebook_active_page = $c->stash->{politician}->get_current_facebook_page();
