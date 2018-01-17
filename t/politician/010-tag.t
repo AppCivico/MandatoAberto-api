@@ -22,7 +22,7 @@ db_transaction {
                 [
                     name          => fake_name()->(),
                     politician_id => $politician_id,
-                    fb_id         => "foobar",
+                    fb_id         => fake_words(1)->(),
                     origin_dialog => fake_words(1)->(),
                     gender        => fake_pick( qw/ M F/ )->(),
                     cellphone     => fake_digits("+551198#######")->(),

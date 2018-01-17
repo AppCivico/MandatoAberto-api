@@ -168,24 +168,15 @@ sub update_recipients {
     my ($self) = @_;
 
     my $filter = $self->filter;
+    #my $rules = $filter->{rules};
 
-    my $rules = $filter->{rules};
-
-    my $operator = $filter->{operator} eq 'AND' ? '-and' : '-or';
-
-    for my $rule (@{ $rules }) {
-        $self = $self->_apply_rule($rule, $operator);
-    }
-
-    #my $recipients_rs = $self->politician->recipients;
+    my $recipients_rs = $self->politician->recipients->apply_tag_filter($filter);
+    p $recipients_rs->as_query;
+    p [ $recipients_rs->all ];
 
     return ;
 }
 
-sub _apply_rule {
-    my ($self, $rule, $operator) = @_;
-
-}
 
 __PACKAGE__->meta->make_immutable;
 

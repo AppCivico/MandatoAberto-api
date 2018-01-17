@@ -11,6 +11,7 @@ with 'MandatoAberto::Role::Verification::TransactionalActions::DBIC';
 use MandatoAberto::Types qw(EmailAddress PhoneNumber);
 
 use Data::Verifier;
+use Data::Printer;
 
 sub verifiers_specs {
     my $self = shift;
@@ -91,6 +92,47 @@ sub action_specs {
             }
         }
     };
+}
+
+sub apply_tag_filter {
+    my ($self, $filter) = @_;
+
+    my $operator = $filter->{operator} eq 'AND' ? '-and' : '-or';
+
+    for my $rule (@{ $filter->{rules } }) {
+        my $name = $rule->{name};
+
+        if ($name eq 'QUESTION_ANSWER_EQUALS') {
+            my $field = $rule->{data}->{field};
+            my $value = $rule->{data}->{value};
+
+            $self = $self->search(
+                {
+                    $operator => [
+                        \[ <<'SQL_QUERY', $field, $value ],
+
+EXISTS(
+    SELECT 1
+    FROM poll_result
+    JOIN poll_question_option
+      ON poll_result.poll_question_option_id = poll_question_option.id
+    WHERE poll_result.citizen_id = me.id
+      AND poll_question_option.poll_question_id = ?
+      AND poll_question_option.content = ?
+)
+SQL_QUERY
+                    ],
+                }
+            );
+
+
+        }
+        else {
+            die "rule name '$name' does not exists.";
+        }
+    }
+
+    return $self;
 }
 
 1;
