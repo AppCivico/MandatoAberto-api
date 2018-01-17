@@ -180,7 +180,7 @@ db_transaction {
                 operator => 'AND',
                 rules => [
                     {
-                        rule => 'QUESTION_ANSWER_EQUALS',
+                        name => 'QUESTION_ANSWER_EQUALS',
                         data => {
                             field => '32',
                             value => 'Sim',
@@ -191,7 +191,7 @@ db_transaction {
         }),
     ;
 
-    $schema->resultset('Tag')->find(stash 'tag.id')->update();
+    p $schema->resultset('Tag')->find(stash 'tag.id')->update_recipients();
 };
 
 done_testing();

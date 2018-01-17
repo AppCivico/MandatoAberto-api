@@ -37,7 +37,7 @@ sub verifiers_specs {
 
                         my $rules = $filter->{rules};
                         for my $rule ( @{ $rules || [] } ) {
-                            $allowed_rules{$rule->{rule}} or return 0;
+                            $allowed_rules{$rule->{name}} or return 0;
 
                             if (defined($rule->{data})) {
                                 ref $rule->{data} eq 'HASH' or return 0;

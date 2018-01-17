@@ -222,7 +222,7 @@ db_transaction {
                     operator => 'AND',
                     rules    => [
                         {
-                            rule => 'RULE_THAT_NOT_EXISTS',
+                            name => 'RULE_THAT_NOT_EXISTS',
                             data => {
                                 field => '32',
                                 value => 'Sim',
@@ -242,7 +242,7 @@ db_transaction {
                     operator => 'AND',
                     rules    => [
                         {
-                            rule => 'QUESTION_ANSWER_EQUALS',
+                            name => 'QUESTION_ANSWER_EQUALS',
                             data => {
                                 field => '32',
                                 value => 'Sim',
@@ -266,7 +266,7 @@ db_transaction {
                     operator => 'OR',
                     rules    => [
                         {
-                            rule => 'QUESTION_ANSWER_EQUALS',
+                            name => 'QUESTION_ANSWER_EQUALS',
                             data => {
                                 foo   => 'bar',
                                 value => 'Não',

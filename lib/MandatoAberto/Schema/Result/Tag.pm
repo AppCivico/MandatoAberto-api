@@ -162,17 +162,32 @@ __PACKAGE__->add_columns(
     },
 );
 
+use Data::Printer;
+
 sub update_recipients {
     my ($self) = @_;
 
     my $filter = $self->filter;
 
-    my $recipients_rs = $self->politician->recipients;
+    my $rules = $filter->{rules};
 
-    #use DDP; p $recipients_rs;
+    my $operator = $filter->{operator} eq 'AND' ? '-and' : '-or';
+
+    for my $rule (@{ $rules }) {
+        $self = $self->_apply_rule($rule, $operator);
+    }
+
+    #my $recipients_rs = $self->politician->recipients;
 
     return ;
 }
 
+sub _apply_rule {
+    my ($self, $rule, $operator) = @_;
+
+}
+
 __PACKAGE__->meta->make_immutable;
+
 1;
+
