@@ -268,8 +268,8 @@ db_transaction {
                         {
                             rule => 'QUESTION_ANSWER_EQUALS',
                             data => {
-                                invalid_key => '1',
-                                value       => 'Não',
+                                foo   => 'bar',
+                                value => 'Não',
                             },
                         },
                     ],

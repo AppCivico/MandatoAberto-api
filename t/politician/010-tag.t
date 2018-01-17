@@ -168,9 +168,30 @@ db_transaction {
         );
     };
 
-    # Ok, agora tenho uma base de dados suficientemente populada para testar o filtro de tags.
+    api_auth_as user_id => $politician_id;
+    rest_post '/api/politician/tag',
+        name    => 'add tag',
+        stash   => 'tag',
+        automatic_load_item => 0,
+        headers => [ 'Content-Type' => 'application/json' ],
+        data    => encode_json({
+            name     => 'Junior',
+            filter   => {
+                operator => 'AND',
+                rules => [
+                    {
+                        rule => 'QUESTION_ANSWER_EQUALS',
+                        data => {
+                            field => '32',
+                            value => 'Sim',
+                        },
+                    },
+                ],
+            },
+        }),
+    ;
 
-    #api_auth_as user_id => $politician_id;
+    $schema->resultset('Tag')->find(stash 'tag.id')->update();
 };
 
 done_testing();

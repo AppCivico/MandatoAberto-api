@@ -152,7 +152,27 @@ __PACKAGE__->belongs_to(
 # Created by DBIx::Class::Schema::Loader v0.07046 @ 2018-01-16 13:13:40
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:h+h8C5njECv8CRPCWn8t1Q
 
+__PACKAGE__->load_components("InflateColumn::Serializer", "Core");
+__PACKAGE__->remove_column('filter');
+__PACKAGE__->add_columns(
+    filter => {
+        'data_type'        => 'json',
+        is_nullable        => 0,
+        'serializer_class' => 'JSON',
+    },
+);
 
-# You can replace this text with custom code or comments, and it will be preserved on regeneration
+sub update_recipients {
+    my ($self) = @_;
+
+    my $filter = $self->filter;
+
+    my $recipients_rs = $self->politician->recipients;
+
+    #use DDP; p $recipients_rs;
+
+    return ;
+}
+
 __PACKAGE__->meta->make_immutable;
 1;
