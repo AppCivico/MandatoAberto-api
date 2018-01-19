@@ -120,11 +120,13 @@ sub list_GET {
                     map {
                         my $p = $_;
 
+                        my $poll_name = $p->get_column('name');
+
                         {
                             id        => $p->get_column('id'),
-                            name      => $p->get_column('name'),
+                            name      => $poll_name,
 
-                            title     => "Enquete ativa",
+                            title     => "Enquete: " . $poll_name,
 
                             questions => [
                                 map {
@@ -157,11 +159,13 @@ sub list_GET {
                             map {
                                 my $p = $_;
 
+                                my $poll_name = $p->get_column('name');
+
                                 {
                                     id        => $p->get_column('id'),
-                                    name      => $p->get_column('name'),
+                                    name      => $poll_name,
 
-                                    title     => "Última enquete ativa",
+                                    title     => "Enquete: " . $poll_name,
 
                                     questions => [
                                         map {
