@@ -650,16 +650,45 @@ __DATA__
 <tbody>
 <tr>
 <td align="justify" style="color:#666666; font-family:'Montserrat',Arial,sans-serif; font-size:16px; font-weight:300; line-height:23px; margin:0">
-<p style="text-align: center;"><a href="https://midialibre.org.br/"><img src="https://gallery.mailchimp.com/af2df78bcac96c77cfa3aae07/images/c75c64c5-c400-4c18-9564-16b4a7116b03.png" class="x_deviceWidth" style="border-radius:7px 7px 0 0; align: center"></a></p>
-<p><b>Olá, [% name %]. </b></p>
-<br></span>
+<p style="text-align: center;"><a href="https://mandatoaberto.com.br/"><img src="https://gallery.mailchimp.com/3db402cdd48dbf45ea97bd7da/images/940adc5a-6e89-468e-9a03-2a4769245c79.png" class="x_deviceWidth" style="border-radius:7px 7px 0 0; align: center"></a></p>
+<br>
+</span>
 </p>
-<p> <strong> </strong>Agradecemos seu compromisso em valorizar a imprensa. Seu apoio é fundamental para que, juntos, jornalistas e o público criem uma mídia cada vez mais livre e democrática.</p>
-<p>A partir de agora você poderá distribuir seus Libres com facilidade e segurança em toda a rede de veículos e jornalistas que utilizam nossa plataforma.</p>
-<p>Em seu perfil em nosso site, você pode acompanhar o balanço de sua conta, consultar e a lista de matérias, artigos e conteúdos que você apoiou.</p>
-<p>E fique de olho em nossos informes e atualizações. Libre é uma ferramenta nova e em constante evolução. Ao longo dos próximos meses vamos ampliar nossa rede de veículos, aprimorando o funcionamento e criando novas funcionalidades em nosso site.</p>
-<p>Qualquer dúvida procure nosso FAQ ou escreva para nós.
-<br><br>A mídia Libre conta com você!</p>
+<p align="center"> <strong> </strong>Seu cadastro foi aprovado!</p>
+<p align="center"><b>Boas-vindas ao Mandato Aberto.</b></p>
+<p>Monte agora seu Chatbot (robô que simula uma ação humana em uma conversação). Em pouco tempo ele  estará  ativo e pronto para iniciar uma interação sem intervenção humana, registrando ocorrências e fornecendo informação verificada.</p>
+<p>Garanta sua presença digital eficiente e muito além do “bom dia”, 24 horas por dia, 7 dias por semana, dentro ou fora do período eleitoral.</p>
+<p>Transparência e inovação, coloque a tecnologia a serviço da população.</p>
+<p align="center"><b>Próximos passos</b></p>
+<p>Customize seu assistente digital. É só ir até opção de menu Diálogos e começar a preencher. </p>
+<ul>
+<li>Escolha a saudação do seu assistente social, essa será a primeira mensagem que seu assistente enviara para os cidadãos que interagirem com ele. Para isso é só selecionar uma das opções disponíveis.</li>
+<li>Preencha os dados seus dados de contato para que seu assistente digital possa informar para os cidadãos.</li>
+<li>Responda as perguntas feitas na página de diálogos e seu bot irá incorporar mais diálogos.</li>
+</ul>
+<p>Agora é só escolher a sua página do Facebook onde o bot ficará hospedada, para isso, vá até o item do menu Perfil, e click no botão Facebook, e é só selecionar a página. Pronto, agora seu assistente digital estará pronto para se comunicar com os cidadãos.
+</p>
+<p align="center"><b>O que mais posso fazer?</b></p>
+<p>No Mandato Aberto, você pode….</p>
+<p>Através da sessão Apoiadores, você pode ver todas as pessoas que interagiram com seu assistente digital.</p>
+<p>Você também pode visualizar alguns indicadores sobres as interações dos cidadãos com seu assistente digital, como ….. Além disso, você pode criar outras interações do seu assistente digital com os cidadãos.
+</p>
+<p><b>Criando enquetes</b></p>
+<p>Crie enquetes para que as pessoas que interagirem com seu assistente digital possam responder, contribuindo para as tomadas de decisão do gabinete.</p>
+<p>É muito simples, é só preencher o nome da enquete, os textos das enquetes e as duas opções de respostas que você queira que o usuário responda. Após preencher os dados, você pode avisar seu assistente digital que ele pode divulgar a enquete, clicando em “Ativar”, ou pode salvar a enquete e só liberá-la depois para seu assistente digital, para isso é só tirar a seleção “sim”, do campo “Registar enquete ativa?”, e quando quiser ativá-lá, é só ir na sessão Minhas Enquetes, selecioná-la e clicar em Ativar.
+</p>
+<p>Por exemplo:</p>
+<p>[Imagem plataforma]</p>
+<p>O seu assistente digital enviará assim?</p>
+<p>[Imagem plataforma]</p>
+<p><b>Enviando notificações</b></p>
+<p>Através do Mandato Aberto é possível enviar mensagens diretas aos cidadãos que já interagiram com seu assistente digital, é só você criar seu texto e enviar, e pronto, todos os cidadão que já interagiram com o assistente digital receberão seu mensagem no Facebook Messenger. 
+</p>
+<p>Por exemplo:</p>
+<p>[Imagem plataforma]</p>
+<p>O seu assistente digital enviará assim?</p>
+<p>[Imagem plataforma]</p>
+
 </td>
 </tr>
 <tr>
@@ -668,8 +697,7 @@ __DATA__
 <tr>
 <td align="justify" style="color:#999999; font-size:13px; font-style:normal; font-weight:normal; line-height:16px">
 <strong id="docs-internal-guid-d5013b4e-a1b5-bf39-f677-7dd0712c841b">
-<p>Dúvidas? Acesse <a href="https://midialibre.org.br/ajuda/" target="_blank" style="color:#4ab957">Perguntas frequentes</a>.</p>
-Equipe Libre
+Equipe Mandato Aberto
 </strong>
 <a href="mailto:contato@midialibre.org.br" target="_blank" style="color:#4ab957"></a>
 </td>
@@ -687,7 +715,7 @@ Equipe Libre
 <tbody>
 <tr>
 <td align="center" style="color:#666666; font-family:'Montserrat',Arial,sans-serif; font-size:11px; font-weight:300; line-height:16px; margin:0; padding:30px 0px">
-<span><strong>Libre</strong></span>
+<span><strong>Mandato Aberto</strong></span>
 </td>
 </tr>
 </tbody>
