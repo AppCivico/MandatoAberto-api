@@ -302,7 +302,7 @@ __DATA__
 <td align="justify" style="color:#666666; font-family:'Montserrat',Arial,sans-serif; font-size:16px; font-weight:300; line-height:23px; margin:0">
 <p style="text-align: center;"><a href="https://mandatoaberto.com.br/"><img src="https://gallery.mailchimp.com/3db402cdd48dbf45ea97bd7da/images/940adc5a-6e89-468e-9a03-2a4769245c79.png" class="x_deviceWidth" style="border-radius:7px 7px 0 0; align: center"></a></p>
 <p><b>Olá, [% name %]. </b></p>
-<p> <strong> </strong>Recebemos a sua solicitação para uma nova senha de acesso ao Libre.
+<p> <strong> </strong>Recebemos a sua solicitação para uma nova senha de acesso ao Mandato Aberto.
 É muito simples, clique no botão abaixo para trocar sua senha.</p>
   </td>
 </tr>
@@ -314,7 +314,7 @@ __DATA__
 <table align="center" border="0" cellpadding="0" cellspacing="0" style="border-collapse:separate; border-radius:7px; margin:0">
 <tbody>
 <tr>
-<td align="center" valign="middle"><a href="http://devcp.mandatoaberto.com.br/reset-password/[% token %]" target="_blank" class="x_btn" style="background:#4ab957; border-radius:8px; color:#ffffff; font-family:'Montserrat',Arial,sans-serif; font-size:15px; padding:16px 24px 15px 24px; text-decoration:none; text-transform:uppercase"><strong>TROCAR MINHA SENHA</strong></a></td>
+<td align="center" valign="middle"><a href="http://devcp.mandatoaberto.com.br/reset-password/[% token %]" target="_blank" class="x_btn" style="background:#B04783; border-radius:8px; color:#ffffff; font-family:'Montserrat',Arial,sans-serif; font-size:15px; padding:16px 24px 15px 24px; text-decoration:none; text-transform:uppercase"><strong>TROCAR MINHA SENHA</strong></a></td>
 </tr>
 </tbody>
 </table>
@@ -326,7 +326,6 @@ __DATA__
 <tr>
 <td align="justify" style="color:#999999; font-size:13px; font-style:normal; font-weight:normal; line-height:16px"><strong id="docs-internal-guid-d5013b4e-a1b5-bf39-f677-7dd0712c841b">
   <p>Caso você não tenha solicitado esta alteração de senha, por favor desconsidere esta mensagem, nenhuma alteração foi feita na sua conta.</p>
-  <p>Dúvidas? Acesse <a href="https://midialibre.org.br/ajuda" target="_blank" style="color:#4ab957">Perguntas frequentes</a>.</p>
   Equipe Libre</strong><a href="mailto:contato@midialibre.org.br" target="_blank" style="color:#4ab957"></a></td>
 </tr>
 <tr>
@@ -342,7 +341,7 @@ __DATA__
   <tbody>
 <tr>
 <td align="center" style="color:#666666; font-family:'Montserrat',Arial,sans-serif; font-size:11px; font-weight:300; line-height:16px; margin:0; padding:30px 0px">
-<span><strong>Libre</strong></span></td>
+<span><strong>Mandato Aberto</strong></span></td>
 </tr>
 </tbody>
 </table>
