@@ -168,13 +168,10 @@ sub update_recipients {
     my ($self) = @_;
 
     my $filter = $self->filter;
-    #my $rules = $filter->{rules};
 
     my $recipients_rs = $self->politician->recipients->apply_tag_filter($filter);
-    p $recipients_rs->as_query;
-    p [ $recipients_rs->all ];
 
-    return ;
+    return $recipients_rs->count ;
 }
 
 

@@ -182,8 +182,15 @@ db_transaction {
                     {
                         name => 'QUESTION_ANSWER_EQUALS',
                         data => {
-                            field => '32',
+                            field => $poll_questions[0]->id,
                             value => 'Sim',
+                        },
+                    },
+                    {
+                        name => 'QUESTION_ANSWER_EQUALS',
+                        data => {
+                            field => $poll_questions[1]->id,
+                            value => 'Não',
                         },
                     },
                 ],
