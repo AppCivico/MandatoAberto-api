@@ -159,7 +159,7 @@ sub create_recipient {
         automatic_load_item => 0,
         [
             name          => fake_name()->(),
-            fb_id         => 'foobar',
+            fb_id         => fake_words(1)->(),
             origin_dialog => fake_words(1)->(),
             gender        => fake_pick( qw/ M F/ )->(),
             cellphone     => fake_digits("+551198#######")->(),

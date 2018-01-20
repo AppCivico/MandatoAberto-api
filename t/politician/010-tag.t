@@ -17,7 +17,8 @@ db_transaction {
         for (my $i = 0; $i <= 3; $i++) {
             create_recipient(politician_id => $politician_id);
 
-            push @recipient_ids, stash 'recipient.id';
+            my $recipient_id = stash 'recipient.id';
+            push @recipient_ids, $recipient_id;
         }
     };
 
@@ -191,8 +192,8 @@ db_transaction {
         my $tag_id = stash 'tag.id';
 
         is_deeply(
-            [ $recipient_ids[0], $recipient_ids[1] ],
-            [ map { $_->id } $schema->resultset('Recipient')->search_by_tag_id($tag_id)->all ],
+            [ sort $recipient_ids[0], $recipient_ids[1] ],
+            [ sort map { $_->id } $schema->resultset('Recipient')->search_by_tag_id($tag_id)->all ],
         );
     };
 
@@ -231,8 +232,8 @@ db_transaction {
         my $tag_id = stash 'tag.id';
 
         is_deeply(
-            [ $recipient_ids[0], $recipient_ids[1] ],
-            [ map { $_->id } $schema->resultset('Recipient')->search_by_tag_id($tag_id)->all ],
+            [ sort $recipient_ids[0], $recipient_ids[1] ],
+            [ sort map { $_->id } $schema->resultset('Recipient')->search_by_tag_id($tag_id)->all ],
         );
     };
 };
