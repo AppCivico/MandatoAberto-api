@@ -94,11 +94,18 @@ sub action_specs {
     };
 }
 
+sub search_by_tag_id {
+    my ($self, $tag_id) = @_;
+
+    return $self->search( \[ 'EXIST(tags, ?)', $tag_id ] );
+}
+
 sub search_by_tag_filter {
     my ($self, $filter) = @_;
 
     my $operator = $filter->{operator} eq 'AND' ? '-and' : '-or';
 
+    my @where_attrs = ();
     for my $rule (@{ $filter->{rules } }) {
         my $name = $rule->{name};
 
@@ -106,11 +113,7 @@ sub search_by_tag_filter {
             my $field = $rule->{data}->{field};
             my $value = $rule->{data}->{value};
 
-            $self = $self->search(
-                {
-                    $operator => [
-                        \[ <<'SQL_QUERY', $field, $value ],
-
+            push @where_attrs, \[ <<'SQL_QUERY', $field, $value ],
 EXISTS(
     SELECT 1
     FROM poll_result
@@ -121,18 +124,13 @@ EXISTS(
       AND poll_question_option.content = ?
 )
 SQL_QUERY
-                    ],
-                }
-            );
-
-
         }
         else {
             die "rule name '$name' does not exists.";
         }
     }
 
-    return $self;
+    return $self->search( { $operator => \@where_attrs } );
 }
 
 1;
