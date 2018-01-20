@@ -167,9 +167,19 @@ use Data::Printer;
 sub update_recipients {
     my ($self) = @_;
 
-    my $filter = $self->filter;
+    my $recipients_rs = $self->politician->recipients;
 
-    my $recipients_rs = $self->politician->recipients->apply_tag_filter($filter);
+    $self->result_source->schema->txn_do(sub {
+        # 'Zerando' todos os contatos dessa lista antes de recalcular.
+        # TODO Testar essa parte no 010-tag.t.
+        my $id = $self->id;
+        $recipients_rs
+            ->search( \[ "EXIST(tags, '$id')" ] )
+            ->update( { tags => \"DELETE(tags, '$id')" } );
+
+        my $filter = $self->filter;
+        $recipients_rs = $self->politician->recipients->apply_tag_filter($filter);
+    });
 
     return $recipients_rs->count ;
 }
