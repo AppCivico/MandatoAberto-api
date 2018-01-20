@@ -169,36 +169,46 @@ db_transaction {
     };
 
     api_auth_as user_id => $politician_id;
-    rest_post '/api/politician/tag',
-        name    => 'add tag',
-        stash   => 'tag',
-        automatic_load_item => 0,
-        headers => [ 'Content-Type' => 'application/json' ],
-        data    => encode_json({
-            name     => 'Junior',
-            filter   => {
-                operator => 'AND',
-                rules => [
-                    {
-                        name => 'QUESTION_ANSWER_EQUALS',
-                        data => {
-                            field => $poll_questions[0]->id,
-                            value => 'Sim',
-                        },
-                    },
-                    {
-                        name => 'QUESTION_ANSWER_EQUALS',
-                        data => {
-                            field => $poll_questions[1]->id,
-                            value => 'Não',
-                        },
-                    },
-                ],
-            },
-        }),
-    ;
 
-    $schema->resultset('Tag')->find(stash 'tag.id')->update_recipients();
+    subtest 'filter 1' => sub {
+
+        # Neste filtro eu quero pegar quem respondeu 'Sim' para frango com catupiry e 'Não' para quatro queijos.
+        rest_post '/api/politician/tag',
+            name    => 'add tag',
+            stash   => 'tag',
+            automatic_load_item => 0,
+            headers => [ 'Content-Type' => 'application/json' ],
+            data    => encode_json({
+                name     => 'Junior',
+                filter   => {
+                    operator => 'OR',
+                    rules => [
+                        {
+                            name => 'QUESTION_ANSWER_EQUALS',
+                            data => {
+                                field => $poll_questions[0]->id,
+                                value => 'Sim',
+                            },
+                        },
+                        {
+                            name => 'QUESTION_ANSWER_EQUALS',
+                            data => {
+                                field => $poll_questions[2]->id,
+                                value => 'Talvez',
+                            },
+                        },
+                    ],
+                },
+            }),
+        ;
+
+        my $tag_id = stash 'tag.id';
+
+        is_deeply(
+            [ $recipient_ids[0], $recipient_ids[1] ],
+            [ map { $_->id } $schema->resultset('Recipient')->search_by_tag_id($tag_id)->all ],
+        );
+    };
 };
 
 done_testing();
