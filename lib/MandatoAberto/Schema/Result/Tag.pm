@@ -171,13 +171,11 @@ sub update_recipients {
 
     my $count = 0;
     $self->result_source->schema->txn_do(sub {
-        my $id = $self->id;
-
         # 'Zerando' todos os contatos dessa lista antes de recalcular.
         # TODO Testar no 010-tag.t.
         $recipients_rs
-            ->search( \[ "EXIST(tags, '$id')" ] )
-            ->update( { tags => \"DELETE(tags, '$id')" } );
+            ->search( \[ "EXIST(tags, ?)", $self->id ] )
+            ->update( { tags => \[ "DELETE(tags, ?)", $self->id ] } );
 
         my $filter = $self->filter;
         my $recipients_with_filter_rs = $recipients_rs->search_by_tag_filter($filter);
@@ -187,7 +185,7 @@ sub update_recipients {
                 id => { '-in' => $recipients_with_filter_rs->get_column('id')->as_query }
             }
         )
-        ->update( { tags => \[ "COALESCE(tags, '') || HSTORE(?, '1')", $id ] } );
+        ->update( { tags => \[ "COALESCE(tags, '') || HSTORE(?, '1')", $self->id ] } );
     });
 
     # TODO Atualizar o calculo nessa tabela.

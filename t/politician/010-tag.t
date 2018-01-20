@@ -198,7 +198,7 @@ db_transaction {
         }),
     ;
 
-    p $schema->resultset('Tag')->find(stash 'tag.id')->update_recipients();
+    $schema->resultset('Tag')->find(stash 'tag.id')->update_recipients();
 };
 
 done_testing();
