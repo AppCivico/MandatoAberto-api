@@ -95,6 +95,7 @@ __PACKAGE__->table("recipient");
 =head2 tags
 
   data_type: 'hstore'
+  default_value: (empty string)
   is_nullable: 1
 
 =cut
@@ -129,7 +130,7 @@ __PACKAGE__->add_columns(
     original      => { default_value => \"now()" },
   },
   "tags",
-  { data_type => "hstore", is_nullable => 1 },
+  { data_type => "hstore", default_value => "", is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -177,8 +178,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07046 @ 2018-01-19 17:55:40
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:ijG54iRRcceD2g72vFNNoA
+# Created by DBIx::Class::Schema::Loader v0.07046 @ 2018-01-20 00:23:14
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:4rlQUUgE77jB4kI2MQOcKw
 
 with 'MandatoAberto::Role::Verification';
 with 'MandatoAberto::Role::Verification::TransactionalActions::DBIC';

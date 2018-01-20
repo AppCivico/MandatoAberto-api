@@ -169,21 +169,32 @@ sub update_recipients {
 
     my $recipients_rs = $self->politician->recipients;
 
+    my $count = 0;
     $self->result_source->schema->txn_do(sub {
-        # 'Zerando' todos os contatos dessa lista antes de recalcular.
-        # TODO Testar essa parte no 010-tag.t.
         my $id = $self->id;
+
+        # 'Zerando' todos os contatos dessa lista antes de recalcular.
+        # TODO Testar no 010-tag.t.
         $recipients_rs
             ->search( \[ "EXIST(tags, '$id')" ] )
             ->update( { tags => \"DELETE(tags, '$id')" } );
 
         my $filter = $self->filter;
-        $recipients_rs = $self->politician->recipients->search_by_tag_filter($filter);
+        my $recipients_with_filter_rs = $recipients_rs->search_by_tag_filter($filter);
+
+        $count = $recipients_rs->search(
+            {
+                id => { '-in' => $recipients_with_filter_rs->get_column('id')->as_query }
+            }
+        )
+        ->update( { tags => \[ "COALESCE(tags, '') || HSTORE(?, '1')", $id ] } );
     });
 
-    return $recipients_rs->count ;
-}
+    # TODO Atualizar o calculo nessa tabela.
+    #$self->update( { recipients_count => $count, last_count_at => \"NOW()" } );
 
+    return $count;
+}
 
 __PACKAGE__->meta->make_immutable;
 
