@@ -76,13 +76,17 @@ sub action_specs {
 
             my %values = $r->valid_values;
 
-            return $self->create(
+            my $tag = $self->create(
                 {
                     name          => $values{name},
                     politician_id => $values{politician_id},
                     filter        => $values{filter},
                 }
             );
+            # TODO Atualizar o count de recipients.
+            $tag->update_recipients();
+
+            return $tag;
         },
     };
 }
