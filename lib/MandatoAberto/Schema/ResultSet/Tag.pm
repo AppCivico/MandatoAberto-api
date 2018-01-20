@@ -29,7 +29,6 @@ sub verifiers_specs {
                     post_check => sub {
                         my $filter = $_[0]->get_value('filter');
 
-
                         my %allowed_operators = map { $_ => 1 } qw/ AND OR /;
                         my %allowed_rules     = map { $_ => 1 } qw/ QUESTION_ANSWER_EQUALS QUESTION_ANSWER_NOT_EQUALS /;
                         my %allowed_data      = map { $_ => 1 } qw/ field value /;
@@ -38,7 +37,7 @@ sub verifiers_specs {
 
                         my $rules = $filter->{rules};
                         for my $rule ( @{ $rules || [] } ) {
-                            $allowed_rules{$rule->{rule}} or return 0;
+                            $allowed_rules{$rule->{name}} or return 0;
 
                             if (defined($rule->{data})) {
                                 ref $rule->{data} eq 'HASH' or return 0;
@@ -81,7 +80,7 @@ sub action_specs {
                 {
                     name          => $values{name},
                     politician_id => $values{politician_id},
-                    filter        => encode_json($values{filter}),
+                    filter        => $values{filter},
                 }
             );
         },
@@ -89,3 +88,4 @@ sub action_specs {
 }
 
 1;
+

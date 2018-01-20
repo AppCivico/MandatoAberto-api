@@ -22,7 +22,7 @@ db_transaction {
                 [
                     name          => fake_name()->(),
                     politician_id => $politician_id,
-                    fb_id         => "foobar",
+                    fb_id         => fake_words(1)->(),
                     origin_dialog => fake_words(1)->(),
                     gender        => fake_pick( qw/ M F/ )->(),
                     cellphone     => fake_digits("+551198#######")->(),
@@ -168,9 +168,37 @@ db_transaction {
         );
     };
 
-    # Ok, agora tenho uma base de dados suficientemente populada para testar o filtro de tags.
+    api_auth_as user_id => $politician_id;
+    rest_post '/api/politician/tag',
+        name    => 'add tag',
+        stash   => 'tag',
+        automatic_load_item => 0,
+        headers => [ 'Content-Type' => 'application/json' ],
+        data    => encode_json({
+            name     => 'Junior',
+            filter   => {
+                operator => 'AND',
+                rules => [
+                    {
+                        name => 'QUESTION_ANSWER_EQUALS',
+                        data => {
+                            field => $poll_questions[0]->id,
+                            value => 'Sim',
+                        },
+                    },
+                    {
+                        name => 'QUESTION_ANSWER_EQUALS',
+                        data => {
+                            field => $poll_questions[1]->id,
+                            value => 'Não',
+                        },
+                    },
+                ],
+            },
+        }),
+    ;
 
-    #api_auth_as user_id => $politician_id;
+    p $schema->resultset('Tag')->find(stash 'tag.id')->update_recipients();
 };
 
 done_testing();
