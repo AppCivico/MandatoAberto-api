@@ -172,7 +172,7 @@ db_transaction {
 
     subtest 'filter 1' => sub {
 
-        # Neste filtro eu quero pegar quem respondeu 'Sim' para frango com catupiry e 'Não' para quatro queijos.
+        # Neste filtro eu quero pegar quem respondeu 'Sim' para frango com catupiry e 'Talvez' para portuguesa.
         rest_post '/api/politician/tag',
             name    => 'add tag',
             stash   => 'tag',
