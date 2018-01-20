@@ -94,7 +94,7 @@ sub action_specs {
     };
 }
 
-sub apply_tag_filter {
+sub search_by_tag_filter {
     my ($self, $filter) = @_;
 
     my $operator = $filter->{operator} eq 'AND' ? '-and' : '-or';

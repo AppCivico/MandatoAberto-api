@@ -178,7 +178,7 @@ sub update_recipients {
             ->update( { tags => \"DELETE(tags, '$id')" } );
 
         my $filter = $self->filter;
-        $recipients_rs = $self->politician->recipients->apply_tag_filter($filter);
+        $recipients_rs = $self->politician->recipients->search_by_tag_filter($filter);
     });
 
     return $recipients_rs->count ;
