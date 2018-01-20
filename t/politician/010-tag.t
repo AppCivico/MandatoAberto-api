@@ -15,23 +15,9 @@ db_transaction {
 
         # Criando três recipients.
         for (my $i = 0; $i <= 3; $i++) {
-            rest_post '/api/chatbot/citizen',
-                name                => 'create citizen',
-                stash               => 'citizen',
-                automatic_load_item => 0,
-                [
-                    name          => fake_name()->(),
-                    politician_id => $politician_id,
-                    fb_id         => fake_words(1)->(),
-                    origin_dialog => fake_words(1)->(),
-                    gender        => fake_pick( qw/ M F/ )->(),
-                    cellphone     => fake_digits("+551198#######")->(),
-                    email         => fake_email()->(),
-                ]
-            ;
+            create_recipient(politician_id => $politician_id);
 
-            my $recipient_id = stash 'citizen.id';
-            push @recipient_ids, $recipient_id;
+            push @recipient_ids, stash 'recipient.id';
         }
     };
 

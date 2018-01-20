@@ -149,4 +149,25 @@ sub create_dialog {
     );
 }
 
+sub create_recipient {
+    my (%opts) = @_;
+
+    return $obj->rest_post(
+        '/api/chatbot/citizen',
+        name  => 'create recipient',
+        stash => 'recipient',
+        automatic_load_item => 0,
+        [
+            name          => fake_name()->(),
+            fb_id         => 'foobar',
+            origin_dialog => fake_words(1)->(),
+            gender        => fake_pick( qw/ M F/ )->(),
+            cellphone     => fake_digits("+551198#######")->(),
+            email         => fake_email()->(),
+            %opts,
+        ]
+    );
+}
+
 1;
+
