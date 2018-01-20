@@ -107,13 +107,28 @@ sub search_by_tag_filter {
 
     my @where_attrs = ();
     for my $rule (@{ $filter->{rules } }) {
-        my $name = $rule->{name};
+        my $name  = $rule->{name};
+        my $field = $rule->{data}->{field};
+        my $value = $rule->{data}->{value};
 
         if ($name eq 'QUESTION_ANSWER_EQUALS') {
-            my $field = $rule->{data}->{field};
-            my $value = $rule->{data}->{value};
+            push @where_attrs, $self->_build_rule_question_answer_equals($field, $value);
+        }
+        elsif ($name eq 'QUESTION_ANSWER_NOT_EQUALS') {
+            push @where_attrs, $self->_build_rule_question_answer_not_equals($field, $value);
+        }
+        else {
+            die "rule name '$name' does not exists.";
+        }
+    }
 
-            push @where_attrs, \[ <<'SQL_QUERY', $field, $value ],
+    return $self->search( { $operator => \@where_attrs } );
+}
+
+sub _build_rule_question_answer_equals {
+    my ($self, $field, $value) = @_;
+
+    return \[ <<'SQL_QUERY', $field, $value ];
 EXISTS(
     SELECT 1
     FROM poll_result
@@ -124,13 +139,23 @@ EXISTS(
       AND poll_question_option.content = ?
 )
 SQL_QUERY
-        }
-        else {
-            die "rule name '$name' does not exists.";
-        }
-    }
+}
 
-    return $self->search( { $operator => \@where_attrs } );
+sub _build_rule_question_answer_not_equals {
+    my ($self, $field, $value) = @_;
+
+    return \[ <<'SQL_QUERY', $field, $value ];
+EXISTS(
+    SELECT 1
+    FROM poll_result
+    JOIN poll_question_option
+      ON poll_result.poll_question_option_id = poll_question_option.id
+    WHERE poll_result.citizen_id = me.id
+      AND poll_question_option.poll_question_id = ?
+      AND poll_question_option.poll_question_id IS NOT NULL
+      AND poll_question_option.content <> ?
+)
+SQL_QUERY
 }
 
 1;

@@ -170,7 +170,7 @@ db_transaction {
 
     api_auth_as user_id => $politician_id;
 
-    subtest 'filter 1' => sub {
+    subtest "filter 'QUESTION_ANSWER_EQUALS" => sub {
 
         # Neste filtro eu quero pegar quem respondeu 'Sim' para frango com catupiry e 'Talvez' para portuguesa.
         rest_post '/api/politician/tag',
@@ -194,6 +194,46 @@ db_transaction {
                             name => 'QUESTION_ANSWER_EQUALS',
                             data => {
                                 field => $poll_questions[2]->id,
+                                value => 'Talvez',
+                            },
+                        },
+                    ],
+                },
+            }),
+        ;
+
+        my $tag_id = stash 'tag.id';
+
+        is_deeply(
+            [ $recipient_ids[0], $recipient_ids[1] ],
+            [ map { $_->id } $schema->resultset('Recipient')->search_by_tag_id($tag_id)->all ],
+        );
+    };
+
+    subtest "filter 'QUESTION_ANSWER_NOT_EQUALS" => sub {
+
+        # Neste filtro eu quero pegar quem respondeu algo diferente de 'Talvez' e diferente de 'Sim' para 4 quejos.
+        rest_post '/api/politician/tag',
+            name    => 'add tag',
+            stash   => 'tag',
+            automatic_load_item => 0,
+            headers => [ 'Content-Type' => 'application/json' ],
+            data    => encode_json({
+                name     => 'Junior',
+                filter   => {
+                    operator => 'OR',
+                    rules => [
+                        {
+                            name => 'QUESTION_ANSWER_NOT_EQUALS',
+                            data => {
+                                field => $poll_questions[1]->id,
+                                value => 'Sim',
+                            },
+                        },
+                        {
+                            name => 'QUESTION_ANSWER_NOT_EQUALS',
+                            data => {
+                                field => $poll_questions[1]->id,
                                 value => 'Talvez',
                             },
                         },
