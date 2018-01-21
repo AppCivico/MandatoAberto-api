@@ -166,7 +166,7 @@ db_transaction {
             automatic_load_item => 0,
             headers => [ 'Content-Type' => 'application/json' ],
             data    => encode_json({
-                name     => 'Junior',
+                name     => 'AppCivico',
                 filter   => {
                     operator => 'OR',
                     rules => [
@@ -206,7 +206,7 @@ db_transaction {
             automatic_load_item => 0,
             headers => [ 'Content-Type' => 'application/json' ],
             data    => encode_json({
-                name     => 'Junior',
+                name     => 'AppCivico',
                 filter   => {
                     operator => 'OR',
                     rules => [
@@ -236,7 +236,38 @@ db_transaction {
             [ sort map { $_->id } $schema->resultset('Recipient')->search_by_tag_id($tag_id)->all ],
         );
     };
+
+    subtest "filter 'QUESTION_IS_NOT_ANSWERED" => sub {
+
+        # Neste filtro eu quero pegar quem respondeu algo diferente de 'Talvez' e diferente de 'Sim' para 4 quejos.
+        rest_post '/api/politician/tag',
+            name    => 'add tag',
+            stash   => 'tag',
+            automatic_load_item => 0,
+            headers => [ 'Content-Type' => 'application/json' ],
+            data    => encode_json({
+                name     => 'AppCivico',
+                filter   => {
+                    operator => 'AND',
+                    rules => [
+                        {
+                            name => 'QUESTION_IS_NOT_ANSWERED',
+                            data => { field => $poll_questions[2]->id },
+                        },
+                    ],
+                },
+            }),
+        ;
+
+        my $tag_id = stash 'tag.id';
+
+        is_deeply(
+            [ sort $recipient_ids[2], $recipient_ids[3] ],
+            [ sort map { $_->id } $schema->resultset('Recipient')->search_by_tag_id($tag_id)->all ],
+        );
+    };
 };
+
 
 done_testing();
 
