@@ -15,22 +15,9 @@ db_transaction {
 
         # Criando três recipients.
         for (my $i = 0; $i <= 3; $i++) {
-            rest_post '/api/chatbot/citizen',
-                name                => 'create citizen',
-                stash               => 'citizen',
-                automatic_load_item => 0,
-                [
-                    name          => fake_name()->(),
-                    politician_id => $politician_id,
-                    fb_id         => "foobar",
-                    origin_dialog => fake_words(1)->(),
-                    gender        => fake_pick( qw/ M F/ )->(),
-                    cellphone     => fake_digits("+551198#######")->(),
-                    email         => fake_email()->(),
-                ]
-            ;
+            create_recipient(politician_id => $politician_id);
 
-            my $recipient_id = stash 'citizen.id';
+            my $recipient_id = stash 'recipient.id';
             push @recipient_ids, $recipient_id;
         }
     };
@@ -185,6 +172,16 @@ db_transaction {
             }),
         ;
 
+        my $rules = [
+            {
+                name => 'QUESTION_ANSWER_EQUALS',
+                data => {
+                    field => '32',
+                    value => 'Sim',
+                },
+            },
+        ];
+
         rest_post '/api/politician/tag',
             name    => 'add tag',
             headers => [ 'Content-Type' => 'application/json' ],
@@ -192,15 +189,7 @@ db_transaction {
                 name     => 'AppCivico',
                 filter   => {
                     operator => 'AND',
-                    rules => [
-                        {
-                            name => 'QUESTION_ANSWER_EQUALS',
-                            data => {
-                                field => '32',
-                                value => 'Sim',
-                            },
-                        },
-                    ]
+                    rules => $rules,
                 },
             }),
         ;
@@ -212,15 +201,7 @@ db_transaction {
                 name     => 'AppCivico',
                 filter   => {
                     operator => 'OR',
-                    rules => [
-                        {
-                            name => 'QUESTION_ANSWER_EQUALS',
-                            data => {
-                                field => '32',
-                                value => 'Sim',
-                            },
-                        },
-                    ]
+                    rules    => $rules,
                 },
             }),
         ;
