@@ -177,7 +177,7 @@ db_transaction {
             is_fail => 1,
             headers => [ 'Content-Type' => 'application/json' ],
             data    => encode_json({
-                name     => 'Junior',
+                name     => 'AppCivico',
                 filter   => {
                     operator => 'NOT_EXISTS',
                     rules    => [],
@@ -189,10 +189,18 @@ db_transaction {
             name    => 'add tag',
             headers => [ 'Content-Type' => 'application/json' ],
             data    => encode_json({
-                name     => 'Junior',
+                name     => 'AppCivico',
                 filter   => {
                     operator => 'AND',
-                    rules    => [],
+                    rules => [
+                        {
+                            name => 'QUESTION_ANSWER_EQUALS',
+                            data => {
+                                field => '32',
+                                value => 'Sim',
+                            },
+                        },
+                    ]
                 },
             }),
         ;
@@ -201,10 +209,18 @@ db_transaction {
             name    => 'add tag',
             headers => [ 'Content-Type' => 'application/json' ],
             data    => encode_json({
-                name     => 'Junior',
+                name     => 'AppCivico',
                 filter   => {
                     operator => 'OR',
-                    rules    => [],
+                    rules => [
+                        {
+                            name => 'QUESTION_ANSWER_EQUALS',
+                            data => {
+                                field => '32',
+                                value => 'Sim',
+                            },
+                        },
+                    ]
                 },
             }),
         ;
@@ -217,7 +233,7 @@ db_transaction {
             is_fail => 1,
             headers => [ 'Content-Type' => 'application/json' ],
             data    => encode_json({
-                name     => 'Junior',
+                name     => 'AppCivico',
                 filter   => {
                     operator => 'AND',
                     rules    => [
@@ -237,7 +253,7 @@ db_transaction {
             name    => 'add tag',
             headers => [ 'Content-Type' => 'application/json' ],
             data    => encode_json({
-                name     => 'Junior',
+                name     => 'AppCivico',
                 filter   => {
                     operator => 'AND',
                     rules    => [
@@ -261,7 +277,7 @@ db_transaction {
             is_fail => 1,
             headers => [ 'Content-Type' => 'application/json' ],
             data    => encode_json({
-                name     => 'Junior',
+                name     => 'AppCivico',
                 filter   => {
                     operator => 'OR',
                     rules    => [
@@ -273,6 +289,22 @@ db_transaction {
                             },
                         },
                     ],
+                },
+            }),
+        ;
+    };
+
+    subtest 'empty rules is not allowed' => sub {
+
+        rest_post '/api/politician/tag',
+            name    => 'add tag',
+            is_fail => 1,
+            headers => [ 'Content-Type' => 'application/json' ],
+            data    => encode_json({
+                name     => 'AppCivico',
+                filter   => {
+                    operator => 'AND',
+                    rules    => [],
                 },
             }),
         ;
