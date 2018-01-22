@@ -309,6 +309,21 @@ db_transaction {
             }),
         ;
     };
+
+    subtest 'list created tags' => sub {
+
+        rest_get '/api/politician/tag', name => 'list tags', stash => 'tags';
+
+        stash_test 'tags' => sub {
+            my $res = shift;
+
+            for my $tag (@{ $res->{tags} }) {
+                is( $tag->{name}, 'AppCivico', 'name=AppCivico' );
+                is( ref($tag->{filter}),          'HASH',  'filters=HASH' );
+                is( ref($tag->{filter}->{rules}), 'ARRAY', 'rules=HASH' );
+            }
+        };
+    };
 };
 
 done_testing();

@@ -7,6 +7,7 @@ BEGIN { extends 'CatalystX::Eta::Controller::REST' }
 
 with 'CatalystX::Eta::Controller::AutoBase';
 with 'CatalystX::Eta::Controller::AutoObject';
+with 'CatalystX::Eta::Controller::AutoListGET';
 with 'CatalystX::Eta::Controller::AutoListPOST';
 
 __PACKAGE__->config(
@@ -14,6 +15,20 @@ __PACKAGE__->config(
 
     object_verify_type => 'int',
     object_key         => 'tag',
+
+    list_key       => 'tags',
+    build_list_row => sub {
+        my ($r, $self, $c) = @_;
+
+        return {
+            id            => $r->id,
+            name          => $r->get_column('name'),
+            politician_id => $r->get_column('politician_id'),
+            filter        => $r->filter,
+            updated_at    => $r->get_column('updated_at'),
+            created_at    => $r->get_column('created_at'),
+        };
+    },
 
     data_from_body => 1,
     prepare_params_for_create => sub {
@@ -38,6 +53,8 @@ sub object : Chained('base') : PathPart('') : CaptureArgs(1) { }
 sub result : Chained('object') : PathPart('') : Args(0) : ActionClass('REST') { }
 
 sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }
+
+sub list_GET { }
 
 sub list_POST { }
 
