@@ -65,13 +65,7 @@ __PACKAGE__->table("tag");
   data_type: 'json'
   is_nullable: 0
 
-=head2 calc
-
-  data_type: 'boolean'
-  default_value: false
-  is_nullable: 0
-
-=head2 last_calc_at
+=head2 last_recipients_calc_at
 
   data_type: 'timestamp'
   is_nullable: 1
@@ -87,6 +81,17 @@ __PACKAGE__->table("tag");
 
   data_type: 'timestamp'
   is_nullable: 1
+
+=head2 recipients_count
+
+  data_type: 'integer'
+  is_nullable: 1
+
+=head2 status
+
+  data_type: 'text'
+  default_value: 'processing'
+  is_nullable: 0
 
 =cut
 
@@ -104,9 +109,7 @@ __PACKAGE__->add_columns(
   { data_type => "text", is_nullable => 0 },
   "filter",
   { data_type => "json", is_nullable => 0 },
-  "calc",
-  { data_type => "boolean", default_value => \"false", is_nullable => 0 },
-  "last_calc_at",
+  "last_recipients_calc_at",
   { data_type => "timestamp", is_nullable => 1 },
   "created_at",
   {
@@ -117,6 +120,10 @@ __PACKAGE__->add_columns(
   },
   "updated_at",
   { data_type => "timestamp", is_nullable => 1 },
+  "recipients_count",
+  { data_type => "integer", is_nullable => 1 },
+  "status",
+  { data_type => "text", default_value => "processing", is_nullable => 0 },
 );
 
 =head1 PRIMARY KEY
@@ -149,8 +156,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07046 @ 2018-01-16 13:13:40
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:h+h8C5njECv8CRPCWn8t1Q
+# Created by DBIx::Class::Schema::Loader v0.07046 @ 2018-01-22 18:17:03
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:GwnF0MU6PaGlbxkHkYLOFA
 
 __PACKAGE__->load_components("InflateColumn::Serializer", "Core");
 __PACKAGE__->remove_column('filter');

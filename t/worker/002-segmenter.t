@@ -3,12 +3,19 @@ use FindBin qw($Bin);
 use lib "$Bin/../lib";
 
 use MandatoAberto::Test::Further;
+use MandatoAberto::Utils;
 
-my $schema = MandatoAberto->model("DB");
+my $schema = MandatoAberto->model('DB');
 
 db_transaction {
+    use_ok 'MandatoAberto::Worker::Segmenter';
+
+    my $worker = new_ok('MandatoAberto::Worker::Segmenter', [ schema => $schema ]);
+    ok( $worker->does('MandatoAberto::Worker'), 'worker does MandatoAberto::Worker' );
+
     create_politician;
     my $politician_id = stash "politician.id";
+    api_auth_as user_id => $politician_id;
 
     my @recipient_ids = ();
     subtest 'mocking recipients' => sub {
@@ -155,128 +162,56 @@ db_transaction {
         );
     };
 
-    api_auth_as user_id => $politician_id;
-
-    use_ok 'MandatoAberto::Worker::Segmenter';
-    my $worker = new_ok('MandatoAberto::Worker::Segmenter', [ schema => $schema ]);
-
-    subtest "filter 'QUESTION_ANSWER_EQUALS" => sub {
-
-        # Neste filtro eu quero pegar quem respondeu 'Sim' para frango com catupiry e 'Talvez' para portuguesa.
-        rest_post '/api/politician/tag',
-            name    => 'add tag',
-            stash   => 'tag',
-            automatic_load_item => 0,
-            headers => [ 'Content-Type' => 'application/json' ],
-            data    => encode_json({
-                name     => 'AppCivico',
-                filter   => {
-                    operator => 'OR',
-                    rules => [
-                        {
-                            name => 'QUESTION_ANSWER_EQUALS',
-                            data => {
-                                field => $poll_questions[0]->id,
-                                value => 'Sim',
-                            },
+    # Neste filtro eu quero pegar quem respondeu 'Sim' para frango com catupiry e 'Talvez' para portuguesa.
+    rest_post '/api/politician/tag',
+        name    => 'add tag',
+        stash   => 'tag',
+        automatic_load_item => 0,
+        headers => [ 'Content-Type' => 'application/json' ],
+        data    => encode_json({
+            name     => 'AppCivico',
+            filter   => {
+                operator => 'OR',
+                rules => [
+                    {
+                        name => 'QUESTION_ANSWER_EQUALS',
+                        data => {
+                            field => $poll_questions[0]->id,
+                            value => 'Sim',
                         },
-                        {
-                            name => 'QUESTION_ANSWER_EQUALS',
-                            data => {
-                                field => $poll_questions[2]->id,
-                                value => 'Talvez',
-                            },
+                    },
+                    {
+                        name => 'QUESTION_ANSWER_EQUALS',
+                        data => {
+                            field => $poll_questions[2]->id,
+                            value => 'Talvez',
                         },
-                    ],
-                },
-            }),
-        ;
+                    },
+                ],
+            },
+        }),
+    ;
 
-        ok( $worker->run_once(), 'run once' );
+    my $tag_id = stash 'tag.id';
+    my $tag = $schema->resultset('Tag')->search( { 'me.id' => $tag_id } )->next;
 
-        my $tag_id = stash 'tag.id';
+    is( $tag->recipients_count,        undef, 'recipients_count=undef' );
+    is( $tag->last_recipients_calc_at, undef, 'last_recipients_calc_at=undef' );
+    is( $tag->status,                  'processing', 'status=processing' );
 
-        is_deeply(
-            [ sort $recipient_ids[0], $recipient_ids[1] ],
-            [ sort map { $_->id } $schema->resultset('Recipient')->search_by_tag_id($tag_id)->all ],
-        );
-    };
+    my $recipients_rs = $schema->resultset('Recipient')->search_by_tag_id($tag_id);
 
-    subtest "filter 'QUESTION_ANSWER_NOT_EQUALS" => sub {
+    is( $recipients_rs->count, '0', 'count=0' );
 
-        # Neste filtro eu quero pegar quem respondeu algo diferente de 'Talvez' e diferente de 'Sim' para 4 quejos.
-        rest_post '/api/politician/tag',
-            name    => 'add tag',
-            stash   => 'tag',
-            automatic_load_item => 0,
-            headers => [ 'Content-Type' => 'application/json' ],
-            data    => encode_json({
-                name     => 'AppCivico',
-                filter   => {
-                    operator => 'OR',
-                    rules => [
-                        {
-                            name => 'QUESTION_ANSWER_NOT_EQUALS',
-                            data => {
-                                field => $poll_questions[1]->id,
-                                value => 'Sim',
-                            },
-                        },
-                        {
-                            name => 'QUESTION_ANSWER_NOT_EQUALS',
-                            data => {
-                                field => $poll_questions[1]->id,
-                                value => 'Talvez',
-                            },
-                        },
-                    ],
-                },
-            }),
-        ;
+    ok( $worker->run_once(), 'run once' );
 
-        ok( $worker->run_once(), 'run once' );
+    ok( $tag->discard_changes,  'discard_changes' );
+    is( $tag->status,           'ready', 'status=ready' );
+    is( $tag->recipients_count, $recipients_rs->count, 'recipients_count=2' );
+    isnt( $tag->last_recipients_calc_at, undef, 'last_recipients_calc_at is not undef' );
 
-        my $tag_id = stash 'tag.id';
-
-        is_deeply(
-            [ sort $recipient_ids[0], $recipient_ids[1] ],
-            [ sort map { $_->id } $schema->resultset('Recipient')->search_by_tag_id($tag_id)->all ],
-        );
-    };
-
-    subtest "filter 'QUESTION_IS_NOT_ANSWERED" => sub {
-
-        # Neste filtro eu quero pegar quem respondeu algo diferente de 'Talvez' e diferente de 'Sim' para 4 quejos.
-        rest_post '/api/politician/tag',
-            name    => 'add tag',
-            stash   => 'tag',
-            automatic_load_item => 0,
-            headers => [ 'Content-Type' => 'application/json' ],
-            data    => encode_json({
-                name     => 'AppCivico',
-                filter   => {
-                    operator => 'AND',
-                    rules => [
-                        {
-                            name => 'QUESTION_IS_NOT_ANSWERED',
-                            data => { field => $poll_questions[2]->id },
-                        },
-                    ],
-                },
-            }),
-        ;
-
-        ok( $worker->run_once(), 'run once' );
-
-        my $tag_id = stash 'tag.id';
-
-        is_deeply(
-            [ sort $recipient_ids[2], $recipient_ids[3] ],
-            [ sort map { $_->id } $schema->resultset('Recipient')->search_by_tag_id($tag_id)->all ],
-        );
-    };
+    ok( !$worker->run_once(), 'no groups remaining' );
 };
-
 
 done_testing();
 
