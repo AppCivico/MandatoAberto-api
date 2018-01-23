@@ -26,7 +26,9 @@ sub verifiers_specs {
                     type       => "Str",
                     post_check => sub {
                         my $name = $_[0]->get_value("name");
-                        $self->result_source->schema->resultset("Poll")->search({ name => $name })->count == 0;
+                        
+                        my $count = $self->result_source->schema->resultset("Poll")->search({ name => $name })->count;
+                        die \["name", 'alredy exists'] unless $count == 0;
                     }
                 },
                 poll_questions => {
