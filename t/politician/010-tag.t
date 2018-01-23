@@ -157,6 +157,9 @@ db_transaction {
 
     api_auth_as user_id => $politician_id;
 
+    use_ok 'MandatoAberto::Worker::Segmenter';
+    my $worker = new_ok('MandatoAberto::Worker::Segmenter', [ schema => $schema ]);
+
     subtest "filter 'QUESTION_ANSWER_EQUALS" => sub {
 
         # Neste filtro eu quero pegar quem respondeu 'Sim' para frango com catupiry e 'Talvez' para portuguesa.
@@ -188,6 +191,8 @@ db_transaction {
                 },
             }),
         ;
+
+        ok( $worker->run_once(), 'run once' );
 
         my $tag_id = stash 'tag.id';
 
@@ -229,6 +234,8 @@ db_transaction {
             }),
         ;
 
+        ok( $worker->run_once(), 'run once' );
+
         my $tag_id = stash 'tag.id';
 
         is_deeply(
@@ -258,6 +265,8 @@ db_transaction {
                 },
             }),
         ;
+
+        ok( $worker->run_once(), 'run once' );
 
         my $tag_id = stash 'tag.id';
 

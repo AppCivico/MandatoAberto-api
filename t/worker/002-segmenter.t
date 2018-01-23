@@ -3,12 +3,19 @@ use FindBin qw($Bin);
 use lib "$Bin/../lib";
 
 use MandatoAberto::Test::Further;
+use MandatoAberto::Utils;
 
-my $schema = MandatoAberto->model("DB");
+my $schema = MandatoAberto->model('DB');
 
 db_transaction {
+    use_ok 'MandatoAberto::Worker::Segmenter';
+
+    my $worker = new_ok('MandatoAberto::Worker::Segmenter', [ schema => $schema ]);
+    ok( $worker->does('MandatoAberto::Worker'), 'worker does MandatoAberto::Worker' );
+
     create_politician;
     my $politician_id = stash "politician.id";
+    api_auth_as user_id => $politician_id;
 
     my @recipient_ids = ();
     subtest 'mocking recipients' => sub {
@@ -155,156 +162,55 @@ db_transaction {
         );
     };
 
-    api_auth_as user_id => $politician_id;
-
-    subtest 'validate operators' => sub {
-
-        rest_post '/api/politician/tag',
-            name    => 'add tag',
-            is_fail => 1,
-            headers => [ 'Content-Type' => 'application/json' ],
-            data    => encode_json({
-                name     => 'AppCivico',
-                filter   => {
-                    operator => 'NOT_EXISTS',
-                    rules    => [],
-                },
-            }),
-        ;
-
-        my $rules = [
-            {
-                name => 'QUESTION_ANSWER_EQUALS',
-                data => {
-                    field => '32',
-                    value => 'Sim',
-                },
+    # Neste filtro eu quero pegar quem respondeu 'Sim' para frango com catupiry e 'Talvez' para portuguesa.
+    rest_post '/api/politician/tag',
+        name    => 'add tag',
+        stash   => 'tag',
+        automatic_load_item => 0,
+        headers => [ 'Content-Type' => 'application/json' ],
+        data    => encode_json({
+            name     => 'AppCivico',
+            filter   => {
+                operator => 'OR',
+                rules => [
+                    {
+                        name => 'QUESTION_ANSWER_EQUALS',
+                        data => {
+                            field => $poll_questions[0]->id,
+                            value => 'Sim',
+                        },
+                    },
+                    {
+                        name => 'QUESTION_ANSWER_EQUALS',
+                        data => {
+                            field => $poll_questions[2]->id,
+                            value => 'Talvez',
+                        },
+                    },
+                ],
             },
-        ];
+        }),
+    ;
 
-        rest_post '/api/politician/tag',
-            name    => 'add tag',
-            headers => [ 'Content-Type' => 'application/json' ],
-            data    => encode_json({
-                name     => 'AppCivico',
-                filter   => {
-                    operator => 'AND',
-                    rules => $rules,
-                },
-            }),
-        ;
+    my $tag_id = stash 'tag.id';
+    my $tag = $schema->resultset('Tag')->search( { 'me.id' => $tag_id } )->next;
 
-        rest_post '/api/politician/tag',
-            name    => 'add tag',
-            headers => [ 'Content-Type' => 'application/json' ],
-            data    => encode_json({
-                name     => 'AppCivico',
-                filter   => {
-                    operator => 'OR',
-                    rules    => $rules,
-                },
-            }),
-        ;
-    };
+    is( $tag->recipients_count,        undef, 'recipients_count=undef' );
+    is( $tag->last_recipients_calc_at, undef, 'last_recipients_calc_at=undef' );
+    is( $tag->status,                  'processing', 'status=processing' );
 
-    subtest 'validate rules' => sub {
+    my $recipients_rs = $schema->resultset('Recipient')->search_by_tag_id($tag_id);
 
-        rest_post '/api/politician/tag',
-            name    => 'add tag with invalid filter',
-            is_fail => 1,
-            headers => [ 'Content-Type' => 'application/json' ],
-            data    => encode_json({
-                name     => 'AppCivico',
-                filter   => {
-                    operator => 'AND',
-                    rules    => [
-                        {
-                            name => 'RULE_THAT_NOT_EXISTS',
-                            data => {
-                                field => '32',
-                                value => 'Sim',
-                            },
-                        },
-                    ],
-                },
-            }),
-        ;
+    is( $recipients_rs->count, '0', 'count=0' );
 
-        rest_post '/api/politician/tag',
-            name    => 'add tag',
-            headers => [ 'Content-Type' => 'application/json' ],
-            data    => encode_json({
-                name     => 'AppCivico',
-                filter   => {
-                    operator => 'AND',
-                    rules    => [
-                        {
-                            name => 'QUESTION_ANSWER_EQUALS',
-                            data => {
-                                field => '32',
-                                value => 'Sim',
-                            },
-                        },
-                    ],
-                },
-            }),
-        ;
-    };
+    ok( $worker->run_once(), 'run once' );
 
-    subtest 'validate data keys' => sub {
+    ok( $tag->discard_changes,  'discard_changes' );
+    is( $tag->status,           'ready', 'status=ready' );
+    is( $tag->recipients_count, $recipients_rs->count, 'recipients_count=2' );
+    isnt( $tag->last_recipients_calc_at, undef, 'last_recipients_calc_at is not undef' );
 
-        rest_post '/api/politician/tag',
-            name    => 'add tag with invalid data key',
-            is_fail => 1,
-            headers => [ 'Content-Type' => 'application/json' ],
-            data    => encode_json({
-                name     => 'AppCivico',
-                filter   => {
-                    operator => 'OR',
-                    rules    => [
-                        {
-                            name => 'QUESTION_ANSWER_EQUALS',
-                            data => {
-                                foo   => 'bar',
-                                value => 'Não',
-                            },
-                        },
-                    ],
-                },
-            }),
-        ;
-    };
-
-    subtest 'empty rules is not allowed' => sub {
-
-        rest_post '/api/politician/tag',
-            name    => 'add tag',
-            is_fail => 1,
-            headers => [ 'Content-Type' => 'application/json' ],
-            data    => encode_json({
-                name     => 'AppCivico',
-                filter   => {
-                    operator => 'AND',
-                    rules    => [],
-                },
-            }),
-        ;
-    };
-
-    subtest 'list created tags' => sub {
-
-        rest_get '/api/politician/tag', name => 'list tags', stash => 'tags';
-
-        stash_test 'tags' => sub {
-            my $res = shift;
-
-            for my $tag (@{ $res->{tags} }) {
-                is( $tag->{name}, 'AppCivico', 'name=AppCivico' );
-                is( ref($tag->{filter}),          'HASH',  'filters=HASH' );
-                is( ref($tag->{filter}->{rules}), 'ARRAY', 'rules=HASH' );
-            }
-        };
-    };
+    ok( !$worker->run_once(), 'no groups remaining' );
 };
 
 done_testing();

@@ -84,10 +84,9 @@ sub action_specs {
                     name          => $values{name},
                     politician_id => $values{politician_id},
                     filter        => $values{filter},
+                    status        => 'processing',
                 }
             );
-            # TODO Atualizar o count de recipients.
-            $tag->update_recipients();
 
             return $tag;
         },
