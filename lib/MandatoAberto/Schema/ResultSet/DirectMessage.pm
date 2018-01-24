@@ -12,6 +12,8 @@ use Data::Verifier;
 use MandatoAberto::Utils;
 use MandatoAberto::Messager::Template;
 
+use Furl;
+
 sub verifiers_specs {
     my $self = shift;
 
@@ -20,8 +22,11 @@ sub verifiers_specs {
             filters => [qw(trim)],
             profile => {
                 politician_id => {
-                    required => 1,
-                    type     => "Int",
+                    required   => 1,
+                    type       => "Int",
+                    post_check => {
+                        my $politician_id = $_[0]->get_value('politician_id')
+                    }
                 },
                 content => {
                     required   => 1,
@@ -50,6 +55,10 @@ sub action_specs {
 
             my $direct_message = $self->create(\%values);
 
+            my $furl = Furl->new();
+
+            my $fb_access_token = $self->result_source->schema->resultset("Politician")->find($politician_id);
+
             # Depois de criada a messagem direta, devo adicionar uma entrada
             # na fila para cada citizen atrelado ao rep. público
             my @citizens = $self->result_source->schema->resultset("Recipient")->search(
@@ -60,11 +69,12 @@ sub action_specs {
             foreach (@citizens) {
                 my $citizen = $_;
 
+                # Construo a request para o httpcallback
                 my $message = MandatoAberto::Messager::Template->new(
                     to      => $citizen->get_column('fb_id'),
                     message => $values{content}
                 )->build_message;
-                use DDP; p $message;
+
                 my $queued = $self->result_source->schema->resultset("DirectMessageQueue")->create( { direct_message_id => $direct_message->id } );
 
                 return $queued;

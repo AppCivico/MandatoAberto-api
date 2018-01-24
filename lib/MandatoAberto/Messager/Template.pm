@@ -2,6 +2,8 @@ package MandatoAberto::Messager::Template;
 use Moose;
 use namespace::autoclean;
 
+use MandatoAberto::Utils;
+
 use JSON::MaybeXS;
 
 has to => (
@@ -25,28 +27,26 @@ has vars => (
 sub build_message {
     my ($self) = @_;
 
-    # my $facebook_message = encode_json {
-    #     recipient => { id   => $self->to },
-    #     message   => { text => $self->message },
-    # };
-
-    my $facebook_message = encode_json {
-        recipient => {
-            id => $self->to
+    my $httpcb_request = encode_json {
+        url  => $ENV{FB_API_URL},
+        body => {
+            recipient => {
+                id => $self->to
+            },
+            message => {
+                text => $self->message,
+                quick_replies => [
+                    {
+                        content_type => 'text',
+                        title        => 'Voltar para o início',
+                        payload      => 'greetings'
+                    }
+                ]
+            }
         },
-        message => {
-            text => $self->message,
-            quick_replies => [
-                {
-                    content_type => 'text',
-                    title        => 'Voltar para o início',
-                    payload      => 'greetings'
-                }
-            ]
-        }
     };
 
-    return $facebook_message;
+    return $httpcb_request;
 }
 
 __PACKAGE__->meta->make_immutable;
