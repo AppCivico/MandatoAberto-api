@@ -64,7 +64,7 @@ sub action_specs {
                     to      => $citizen->get_column('fb_id'),
                     message => $values{content}
                 )->build_message;
-
+                use DDP; p $message;
                 my $queued = $self->result_source->schema->resultset("DirectMessageQueue")->create( { direct_message_id => $direct_message->id } );
 
                 return $queued;
