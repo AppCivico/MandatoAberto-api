@@ -94,13 +94,13 @@ sub action_specs {
     };
 }
 
-sub search_by_tag_id {
-    my ($self, $tag_id) = @_;
+sub search_by_group_id {
+    my ($self, $group_id) = @_;
 
-    return $self->search( \[ 'EXIST(tags, ?)', $tag_id ] );
+    return $self->search( \[ 'EXIST(groups, ?)', $group_id ] );
 }
 
-sub search_by_tag_filter {
+sub search_by_filter {
     my ($self, $filter) = @_;
 
     my $operator = $filter->{operator} eq 'AND' ? '-and' : '-or';

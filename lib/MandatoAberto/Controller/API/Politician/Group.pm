@@ -1,4 +1,4 @@
-package MandatoAberto::Controller::API::Politician::Tag;
+package MandatoAberto::Controller::API::Politician::Group;
 use common::sense;
 use Moose;
 use namespace::autoclean;
@@ -11,12 +11,12 @@ with 'CatalystX::Eta::Controller::AutoListGET';
 with 'CatalystX::Eta::Controller::AutoListPOST';
 
 __PACKAGE__->config(
-    result => 'DB::Tag',
+    result => 'DB::Group',
 
     object_verify_type => 'int',
-    object_key         => 'tag',
+    object_key         => 'group',
 
-    list_key       => 'tags',
+    list_key       => 'groups',
     build_list_row => sub {
         my ($r, $self, $c) = @_;
 
@@ -42,7 +42,7 @@ __PACKAGE__->config(
 
 sub root : Chained('/api/politician/base') : PathPart('') : CaptureArgs(0) { }
 
-sub base : Chained('root') : PathPart('tag') : CaptureArgs(0) {
+sub base : Chained('root') : PathPart('group') : CaptureArgs(0) {
     my ($self, $c) = @_;
 
     $c->stash->{collection} = $c->stash->{collection}->search( { 'me.politician_id' => $c->user->id } );

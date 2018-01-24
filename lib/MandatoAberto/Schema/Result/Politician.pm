@@ -204,6 +204,21 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 groups
+
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::Group>
+
+=cut
+
+__PACKAGE__->has_many(
+  "groups",
+  "MandatoAberto::Schema::Result::Group",
+  { "foreign.politician_id" => "self.user_id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 office
 
 Type: belongs_to
@@ -294,21 +309,6 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 tags
-
-Type: has_many
-
-Related object: L<MandatoAberto::Schema::Result::Tag>
-
-=cut
-
-__PACKAGE__->has_many(
-  "tags",
-  "MandatoAberto::Schema::Result::Tag",
-  { "foreign.politician_id" => "self.user_id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
-
 =head2 user
 
 Type: belongs_to
@@ -325,8 +325,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07046 @ 2018-01-15 12:01:23
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:FQ74djdmxWgcvPuxXRLB3w
+# Created by DBIx::Class::Schema::Loader v0.07046 @ 2018-01-24 11:32:49
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:HlFCI1D5YN1ocKLugCv0WA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
