@@ -64,7 +64,6 @@ sub verifiers_specs {
                         $self->result_source->schema->resultset('Politician')->search( { 'me.user_id' => $politician_id } )->count;
                     },
                 },
-
             }
         ),
     };

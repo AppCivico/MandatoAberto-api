@@ -163,7 +163,7 @@ db_transaction {
     subtest "filter 'QUESTION_ANSWER_EQUALS" => sub {
 
         # Neste filtro eu quero pegar quem respondeu 'Sim' para frango com catupiry e 'Talvez' para portuguesa.
-        rest_post '/api/politician/group',
+        rest_post "/api/politician/$politician_id/group",
             name    => 'add group',
             stash   => 'group',
             automatic_load_item => 0,
@@ -205,7 +205,7 @@ db_transaction {
     subtest "filter 'QUESTION_ANSWER_NOT_EQUALS" => sub {
 
         # Neste filtro eu quero pegar quem respondeu algo diferente de 'Talvez' e diferente de 'Sim' para 4 quejos.
-        rest_post '/api/politician/group',
+        rest_post "/api/politician/$politician_id/group",
             name    => 'add group',
             stash   => 'group',
             automatic_load_item => 0,
@@ -247,7 +247,7 @@ db_transaction {
     subtest "filter 'QUESTION_IS_NOT_ANSWERED" => sub {
 
         # Neste filtro eu quero pegar quem respondeu algo diferente de 'Talvez' e diferente de 'Sim' para 4 quejos.
-        rest_post '/api/politician/group',
+        rest_post "/api/politician/$politician_id/group",
             name    => 'add group',
             stash   => 'group',
             automatic_load_item => 0,
@@ -274,6 +274,33 @@ db_transaction {
             [ sort $recipient_ids[2], $recipient_ids[3] ],
             [ sort map { $_->id } $schema->resultset('Recipient')->search_by_group_id($group_id)->all ],
         );
+    };
+
+    subtest 'count filter' => sub {
+
+        rest_post "/api/politician/$politician_id/group/count",
+            name    => 'count filter',
+            stash   => 'count_filter',
+            code    => 200,
+            headers => [ 'Content-Type' => 'application/json' ],
+            data    => encode_json({
+                filter   => {
+                    operator => 'AND',
+                    rules => [
+                        {
+                            name => 'QUESTION_IS_NOT_ANSWERED',
+                            data => { field => $poll_questions[2]->id },
+                        },
+                    ],
+                },
+            }),
+        ;
+
+        stash_test 'count_filter' => sub {
+            my $res = shift;
+
+            is( $res->{count}, '2', 'count=2' );
+        };
     };
 };
 

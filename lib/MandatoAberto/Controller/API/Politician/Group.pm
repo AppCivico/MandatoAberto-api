@@ -40,7 +40,7 @@ __PACKAGE__->config(
     },
 );
 
-sub root : Chained('/api/politician/base') : PathPart('') : CaptureArgs(0) { }
+sub root : Chained('/api/politician/object') : PathPart('') : CaptureArgs(0) { }
 
 sub base : Chained('root') : PathPart('group') : CaptureArgs(0) {
     my ($self, $c) = @_;
@@ -57,6 +57,21 @@ sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }
 sub list_GET { }
 
 sub list_POST { }
+
+sub count : Chained('base') : PathPart('count') : Args(0) : ActionClass('REST') { }
+
+sub count_POST {
+    my ($self, $c) = @_;
+
+    my $filter = $c->req->data->{filter};
+
+    return $self->status_ok(
+        $c,
+        entity => {
+            count => $c->stash->{politician}->recipients->search_by_filter($filter)->count,
+        },
+    );
+}
 
 __PACKAGE__->meta->make_immutable;
 
