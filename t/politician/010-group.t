@@ -163,9 +163,9 @@ db_transaction {
     subtest "filter 'QUESTION_ANSWER_EQUALS" => sub {
 
         # Neste filtro eu quero pegar quem respondeu 'Sim' para frango com catupiry e 'Talvez' para portuguesa.
-        rest_post '/api/politician/tag',
-            name    => 'add tag',
-            stash   => 'tag',
+        rest_post '/api/politician/group',
+            name    => 'add group',
+            stash   => 'group',
             automatic_load_item => 0,
             headers => [ 'Content-Type' => 'application/json' ],
             data    => encode_json({
@@ -194,20 +194,20 @@ db_transaction {
 
         ok( $worker->run_once(), 'run once' );
 
-        my $tag_id = stash 'tag.id';
+        my $group_id = stash 'group.id';
 
         is_deeply(
             [ sort $recipient_ids[0], $recipient_ids[1] ],
-            [ sort map { $_->id } $schema->resultset('Recipient')->search_by_tag_id($tag_id)->all ],
+            [ sort map { $_->id } $schema->resultset('Recipient')->search_by_group_id($group_id)->all ],
         );
     };
 
     subtest "filter 'QUESTION_ANSWER_NOT_EQUALS" => sub {
 
         # Neste filtro eu quero pegar quem respondeu algo diferente de 'Talvez' e diferente de 'Sim' para 4 quejos.
-        rest_post '/api/politician/tag',
-            name    => 'add tag',
-            stash   => 'tag',
+        rest_post '/api/politician/group',
+            name    => 'add group',
+            stash   => 'group',
             automatic_load_item => 0,
             headers => [ 'Content-Type' => 'application/json' ],
             data    => encode_json({
@@ -236,20 +236,20 @@ db_transaction {
 
         ok( $worker->run_once(), 'run once' );
 
-        my $tag_id = stash 'tag.id';
+        my $group_id = stash 'group.id';
 
         is_deeply(
             [ sort $recipient_ids[0], $recipient_ids[1] ],
-            [ sort map { $_->id } $schema->resultset('Recipient')->search_by_tag_id($tag_id)->all ],
+            [ sort map { $_->id } $schema->resultset('Recipient')->search_by_group_id($group_id)->all ],
         );
     };
 
     subtest "filter 'QUESTION_IS_NOT_ANSWERED" => sub {
 
         # Neste filtro eu quero pegar quem respondeu algo diferente de 'Talvez' e diferente de 'Sim' para 4 quejos.
-        rest_post '/api/politician/tag',
-            name    => 'add tag',
-            stash   => 'tag',
+        rest_post '/api/politician/group',
+            name    => 'add group',
+            stash   => 'group',
             automatic_load_item => 0,
             headers => [ 'Content-Type' => 'application/json' ],
             data    => encode_json({
@@ -268,11 +268,11 @@ db_transaction {
 
         ok( $worker->run_once(), 'run once' );
 
-        my $tag_id = stash 'tag.id';
+        my $group_id = stash 'group.id';
 
         is_deeply(
             [ sort $recipient_ids[2], $recipient_ids[3] ],
-            [ sort map { $_->id } $schema->resultset('Recipient')->search_by_tag_id($tag_id)->all ],
+            [ sort map { $_->id } $schema->resultset('Recipient')->search_by_group_id($group_id)->all ],
         );
     };
 };

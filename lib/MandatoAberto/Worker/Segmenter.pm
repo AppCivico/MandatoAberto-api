@@ -21,7 +21,7 @@ sub listen_queue {
 
     $self->logger->debug("Buscando itens na fila...") if $self->logger;
 
-    my @items = $self->schema->resultset('Tag')->search(
+    my @items = $self->schema->resultset('Group')->search(
         { 'me.status' => 'processing' },
         { for => 'update' }
     )->all;
@@ -43,7 +43,7 @@ sub listen_queue {
 sub run_once {
     my ($self, $group_id) = @_;
 
-    my $group_rs = $self->schema->resultset('Tag')->search( { 'me.status' => 'processing' }, { for => 'update' } );
+    my $group_rs = $self->schema->resultset('Group')->search( { 'me.status' => 'processing' }, { for => 'update' } );
 
     my $group;
     if ($group_id) {

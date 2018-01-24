@@ -92,7 +92,7 @@ __PACKAGE__->table("recipient");
   is_nullable: 0
   original: {default_value => \"now()"}
 
-=head2 tags
+=head2 groups
 
   data_type: 'hstore'
   default_value: (empty string)
@@ -129,7 +129,7 @@ __PACKAGE__->add_columns(
     is_nullable   => 0,
     original      => { default_value => \"now()" },
   },
-  "tags",
+  "groups",
   { data_type => "hstore", default_value => "", is_nullable => 1 },
 );
 
@@ -178,8 +178,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07046 @ 2018-01-20 00:23:14
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:4rlQUUgE77jB4kI2MQOcKw
+# Created by DBIx::Class::Schema::Loader v0.07046 @ 2018-01-24 11:32:49
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:wx5P7GWI7BDRUxQlEu98HA
 
 with 'MandatoAberto::Role::Verification';
 with 'MandatoAberto::Role::Verification::TransactionalActions::DBIC';

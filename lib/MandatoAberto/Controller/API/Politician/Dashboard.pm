@@ -126,7 +126,7 @@ sub list_GET {
                             id        => $p->get_column('id'),
                             name      => $poll_name,
 
-                            title     => "Enquete: " . $poll_name,
+                            title     => $poll_name,
 
                             questions => [
                                 map {
@@ -165,7 +165,7 @@ sub list_GET {
                                     id        => $p->get_column('id'),
                                     name      => $poll_name,
 
-                                    title     => "Enquete: " . $poll_name,
+                                    title     => $poll_name,
 
                                     questions => [
                                         map {

@@ -163,9 +163,9 @@ db_transaction {
     };
 
     # Neste filtro eu quero pegar quem respondeu 'Sim' para frango com catupiry e 'Talvez' para portuguesa.
-    rest_post '/api/politician/tag',
-        name    => 'add tag',
-        stash   => 'tag',
+    rest_post '/api/politician/group',
+        name    => 'add group',
+        stash   => 'group',
         automatic_load_item => 0,
         headers => [ 'Content-Type' => 'application/json' ],
         data    => encode_json({
@@ -192,23 +192,23 @@ db_transaction {
         }),
     ;
 
-    my $tag_id = stash 'tag.id';
-    my $tag = $schema->resultset('Tag')->search( { 'me.id' => $tag_id } )->next;
+    my $group_id = stash 'group.id';
+    my $group = $schema->resultset('Group')->search( { 'me.id' => $group_id } )->next;
 
-    is( $tag->recipients_count,        undef, 'recipients_count=undef' );
-    is( $tag->last_recipients_calc_at, undef, 'last_recipients_calc_at=undef' );
-    is( $tag->status,                  'processing', 'status=processing' );
+    is( $group->recipients_count,        undef, 'recipients_count=undef' );
+    is( $group->last_recipients_calc_at, undef, 'last_recipients_calc_at=undef' );
+    is( $group->status,                  'processing', 'status=processing' );
 
-    my $recipients_rs = $schema->resultset('Recipient')->search_by_tag_id($tag_id);
+    my $recipients_rs = $schema->resultset('Recipient')->search_by_group_id($group_id);
 
     is( $recipients_rs->count, '0', 'count=0' );
 
     ok( $worker->run_once(), 'run once' );
 
-    ok( $tag->discard_changes,  'discard_changes' );
-    is( $tag->status,           'ready', 'status=ready' );
-    is( $tag->recipients_count, $recipients_rs->count, 'recipients_count=2' );
-    isnt( $tag->last_recipients_calc_at, undef, 'last_recipients_calc_at is not undef' );
+    ok( $group->discard_changes,  'discard_changes' );
+    is( $group->status,           'ready', 'status=ready' );
+    is( $group->recipients_count, $recipients_rs->count, 'recipients_count=2' );
+    isnt( $group->last_recipients_calc_at, undef, 'last_recipients_calc_at is not undef' );
 
     ok( !$worker->run_once(), 'no groups remaining' );
 };

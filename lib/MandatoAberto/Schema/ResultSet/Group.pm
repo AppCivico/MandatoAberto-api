@@ -1,4 +1,4 @@
-package MandatoAberto::Schema::ResultSet::Tag;
+package MandatoAberto::Schema::ResultSet::Group;
 use common::sense;
 use Moose;
 use namespace::autoclean;
@@ -79,7 +79,7 @@ sub action_specs {
 
             my %values = $r->valid_values;
 
-            my $tag = $self->create(
+            return $self->create(
                 {
                     name          => $values{name},
                     politician_id => $values{politician_id},
@@ -87,8 +87,6 @@ sub action_specs {
                     status        => 'processing',
                 }
             );
-
-            return $tag;
         },
     };
 }

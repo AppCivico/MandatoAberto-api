@@ -1,12 +1,12 @@
 use utf8;
-package MandatoAberto::Schema::Result::Tag;
+package MandatoAberto::Schema::Result::Group;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
 
 =head1 NAME
 
-MandatoAberto::Schema::Result::Tag
+MandatoAberto::Schema::Result::Group
 
 =cut
 
@@ -34,11 +34,11 @@ extends 'DBIx::Class::Core';
 
 __PACKAGE__->load_components("InflateColumn::DateTime", "TimeStamp", "PassphraseColumn");
 
-=head1 TABLE: C<tag>
+=head1 TABLE: C<group>
 
 =cut
 
-__PACKAGE__->table("tag");
+__PACKAGE__->table("group");
 
 =head1 ACCESSORS
 
@@ -156,8 +156,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07046 @ 2018-01-22 18:17:03
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:GwnF0MU6PaGlbxkHkYLOFA
+# Created by DBIx::Class::Schema::Loader v0.07046 @ 2018-01-24 11:33:26
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Ff4v4jz+q/gsN6LbJG/BMA
 
 __PACKAGE__->load_components("InflateColumn::Serializer", "Core");
 __PACKAGE__->remove_column('filter');
@@ -179,23 +179,21 @@ sub update_recipients {
     my $count = 0;
     $self->result_source->schema->txn_do(sub {
         # 'Zerando' todos os contatos dessa lista antes de recalcular.
-        # TODO Testar no 010-tag.t.
         $recipients_rs
-            ->search( \[ "EXIST(tags, ?)", $self->id ] )
-            ->update( { tags => \[ "DELETE(tags, ?)", $self->id ] } );
+            ->search( \[ "EXIST(groups, ?)", $self->id ] )
+            ->update( { groups => \[ "DELETE(groups, ?)", $self->id ] } );
 
         my $filter = $self->filter;
-        my $recipients_with_filter_rs = $recipients_rs->search_by_tag_filter($filter);
+        my $recipients_with_filter_rs = $recipients_rs->search_by_filter($filter);
 
         $count = $recipients_rs->search(
             {
                 id => { '-in' => $recipients_with_filter_rs->get_column('id')->as_query }
             }
         )
-        ->update( { tags => \[ "COALESCE(tags, '') || HSTORE(?, '1')", $self->id ] } );
+        ->update( { groups => \[ "COALESCE(groups, '') || HSTORE(?, '1')", $self->id ] } );
     });
 
-    # TODO Atualizar o calculo nessa tabela.
     #$self->update( { recipients_count => $count, last_count_at => \"NOW()" } );
 
     return $count;
