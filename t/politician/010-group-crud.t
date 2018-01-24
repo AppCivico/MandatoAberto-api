@@ -159,7 +159,7 @@ db_transaction {
 
     subtest 'validate operators' => sub {
 
-        rest_post '/api/politician/group',
+        rest_post "/api/politician/$politician_id/group",
             name    => 'add group',
             is_fail => 1,
             headers => [ 'Content-Type' => 'application/json' ],
@@ -182,7 +182,7 @@ db_transaction {
             },
         ];
 
-        rest_post '/api/politician/group',
+        rest_post "/api/politician/$politician_id/group",
             name    => 'add group',
             headers => [ 'Content-Type' => 'application/json' ],
             data    => encode_json({
@@ -194,7 +194,7 @@ db_transaction {
             }),
         ;
 
-        rest_post '/api/politician/group',
+        rest_post "/api/politician/$politician_id/group",
             name    => 'add group',
             headers => [ 'Content-Type' => 'application/json' ],
             data    => encode_json({
@@ -209,7 +209,7 @@ db_transaction {
 
     subtest 'validate rules' => sub {
 
-        rest_post '/api/politician/group',
+        rest_post "/api/politician/$politician_id/group",
             name    => 'add group with invalid filter',
             is_fail => 1,
             headers => [ 'Content-Type' => 'application/json' ],
@@ -230,7 +230,7 @@ db_transaction {
             }),
         ;
 
-        rest_post '/api/politician/group',
+        rest_post "/api/politician/$politician_id/group",
             name    => 'add group',
             headers => [ 'Content-Type' => 'application/json' ],
             data    => encode_json({
@@ -253,7 +253,7 @@ db_transaction {
 
     subtest 'validate data keys' => sub {
 
-        rest_post '/api/politician/group',
+        rest_post "/api/politician/$politician_id/group",
             name    => 'add group with invalid data key',
             is_fail => 1,
             headers => [ 'Content-Type' => 'application/json' ],
@@ -277,7 +277,7 @@ db_transaction {
 
     subtest 'empty rules is not allowed' => sub {
 
-        rest_post '/api/politician/group',
+        rest_post "/api/politician/$politician_id/group",
             name    => 'add group',
             is_fail => 1,
             headers => [ 'Content-Type' => 'application/json' ],
@@ -293,7 +293,7 @@ db_transaction {
 
     subtest 'list created groups' => sub {
 
-        rest_get '/api/politician/group', name => 'list groups', stash => 'groups';
+        rest_get "/api/politician/$politician_id/group", name => 'list groups', stash => 'groups';
 
         stash_test 'groups' => sub {
             my $res = shift;
