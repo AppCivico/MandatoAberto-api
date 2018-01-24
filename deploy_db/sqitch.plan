@@ -53,3 +53,4 @@
 0049-add-tag [0048-relations-names] 2018-01-16T15:37:18Z Junior Moraes <juniorfvox@gmail.com> # add-tag
 0050-tag-hstore [0049-add-tag] 2018-01-20T02:30:40Z junior,,, <junior@fvox> # g-hstore
 0051-tag-recipients-count [0050-tag-hstore] 2018-01-23T18:32:45Z Junior Moraes <juniorfvox@gmail.com> # tag-recipients-count
+0052-rename-tags-groups [0051-tag-recipients-count] 2018-01-24T13:49:33Z Junior Moraes <juniorfvox@gmail.com> # rename-tags-groups
