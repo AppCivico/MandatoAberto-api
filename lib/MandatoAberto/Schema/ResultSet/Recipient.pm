@@ -11,6 +11,7 @@ with 'MandatoAberto::Role::Verification::TransactionalActions::DBIC';
 use MandatoAberto::Types qw(EmailAddress PhoneNumber);
 
 use Data::Verifier;
+use Data::Printer;
 
 sub verifiers_specs {
     my $self = shift;
@@ -67,11 +68,11 @@ sub action_specs {
             my %values = $r->valid_values;
             not defined $values{$_} and delete $values{$_} for keys %values;
 
-            if ($values{gender} && (length $values{gender} > 1 || !($values{gender} eq "F" || $values{gender} eq "M" )) ) {
+            if ( defined($values{gender}) && $values{gender} !~ m{^[FM]{1}$} ) {
                 die \["gender", "must be F or M"];
             }
 
-            my $existing_citizen = $self->search( { fb_id => $values{fb_id} } )->next;
+            my $existing_citizen = $self->search( { 'me.fb_id' => $values{fb_id} } )->next;
 
             if (!defined $existing_citizen) {
 
@@ -93,10 +94,88 @@ sub action_specs {
     };
 }
 
-sub search_by_filter {
+sub search_by_tag_id {
+    my ($self, $tag_id) = @_;
+
+    return $self->search( \[ 'EXIST(tags, ?)', $tag_id ] );
+}
+
+sub search_by_tag_filter {
     my ($self, $filter) = @_;
 
-    ref $filter eq 'HASH' or die "'filter' must be hashref.";
+    my $operator = $filter->{operator} eq 'AND' ? '-and' : '-or';
+
+    my @where_attrs = ();
+    for my $rule (@{ $filter->{rules } }) {
+        my $name  = $rule->{name};
+        my $field = $rule->{data}->{field};
+        my $value = $rule->{data}->{value};
+
+        if ($name eq 'QUESTION_ANSWER_EQUALS') {
+            push @where_attrs, $self->_build_rule_question_answer_equals($field, $value);
+        }
+        elsif ($name eq 'QUESTION_ANSWER_NOT_EQUALS') {
+            push @where_attrs, $self->_build_rule_question_answer_not_equals($field, $value);
+        }
+        elsif ($name eq 'QUESTION_IS_NOT_ANSWERED') {
+            push @where_attrs, $self->_build_rule_question_not_answered($field);
+        }
+        else {
+            die "rule name '$name' does not exists.";
+        }
+    }
+
+    return $self->search( { $operator => \@where_attrs } );
+}
+
+sub _build_rule_question_not_answered {
+    my ($self, $field) = @_;
+
+    return \[ <<'SQL_QUERY', $field ];
+NOT EXISTS(
+    SELECT 1
+    FROM poll_result
+    JOIN poll_question_option
+      ON poll_result.poll_question_option_id = poll_question_option.id
+    WHERE poll_result.citizen_id = me.id
+      AND poll_question_option.poll_question_id = ?
+)
+SQL_QUERY
+
+}
+
+sub _build_rule_question_answer_equals {
+    my ($self, $field, $value) = @_;
+
+    return \[ <<'SQL_QUERY', $field, $value ];
+EXISTS(
+    SELECT 1
+    FROM poll_result
+    JOIN poll_question_option
+      ON poll_result.poll_question_option_id = poll_question_option.id
+    WHERE poll_result.citizen_id = me.id
+      AND poll_question_option.poll_question_id = ?
+      AND poll_question_option.content = ?
+)
+SQL_QUERY
+}
+
+sub _build_rule_question_answer_not_equals {
+    my ($self, $field, $value) = @_;
+
+    return \[ <<'SQL_QUERY', $field, $value ];
+EXISTS(
+    SELECT 1
+    FROM poll_result
+    JOIN poll_question_option
+      ON poll_result.poll_question_option_id = poll_question_option.id
+    WHERE poll_result.citizen_id = me.id
+      AND poll_question_option.poll_question_id = ?
+      AND poll_question_option.poll_question_id IS NOT NULL
+      AND poll_question_option.content <> ?
+)
+SQL_QUERY
 }
 
 1;
+

@@ -15,22 +15,9 @@ db_transaction {
 
         # Criando três recipients.
         for (my $i = 0; $i <= 3; $i++) {
-            rest_post '/api/chatbot/citizen',
-                name                => 'create citizen',
-                stash               => 'citizen',
-                automatic_load_item => 0,
-                [
-                    name          => fake_name()->(),
-                    politician_id => $politician_id,
-                    fb_id         => "foobar",
-                    origin_dialog => fake_words(1)->(),
-                    gender        => fake_pick( qw/ M F/ )->(),
-                    cellphone     => fake_digits("+551198#######")->(),
-                    email         => fake_email()->(),
-                ]
-            ;
+            create_recipient(politician_id => $politician_id);
 
-            my $recipient_id = stash 'citizen.id';
+            my $recipient_id = stash 'recipient.id';
             push @recipient_ids, $recipient_id;
         }
     };
@@ -168,10 +155,128 @@ db_transaction {
         );
     };
 
-    # Ok, agora tenho uma base de dados suficientemente populada para testar o filtro de tags.
+    api_auth_as user_id => $politician_id;
 
-    #api_auth_as user_id => $politician_id;
+    use_ok 'MandatoAberto::Worker::Segmenter';
+    my $worker = new_ok('MandatoAberto::Worker::Segmenter', [ schema => $schema ]);
+
+    subtest "filter 'QUESTION_ANSWER_EQUALS" => sub {
+
+        # Neste filtro eu quero pegar quem respondeu 'Sim' para frango com catupiry e 'Talvez' para portuguesa.
+        rest_post '/api/politician/tag',
+            name    => 'add tag',
+            stash   => 'tag',
+            automatic_load_item => 0,
+            headers => [ 'Content-Type' => 'application/json' ],
+            data    => encode_json({
+                name     => 'AppCivico',
+                filter   => {
+                    operator => 'OR',
+                    rules => [
+                        {
+                            name => 'QUESTION_ANSWER_EQUALS',
+                            data => {
+                                field => $poll_questions[0]->id,
+                                value => 'Sim',
+                            },
+                        },
+                        {
+                            name => 'QUESTION_ANSWER_EQUALS',
+                            data => {
+                                field => $poll_questions[2]->id,
+                                value => 'Talvez',
+                            },
+                        },
+                    ],
+                },
+            }),
+        ;
+
+        ok( $worker->run_once(), 'run once' );
+
+        my $tag_id = stash 'tag.id';
+
+        is_deeply(
+            [ sort $recipient_ids[0], $recipient_ids[1] ],
+            [ sort map { $_->id } $schema->resultset('Recipient')->search_by_tag_id($tag_id)->all ],
+        );
+    };
+
+    subtest "filter 'QUESTION_ANSWER_NOT_EQUALS" => sub {
+
+        # Neste filtro eu quero pegar quem respondeu algo diferente de 'Talvez' e diferente de 'Sim' para 4 quejos.
+        rest_post '/api/politician/tag',
+            name    => 'add tag',
+            stash   => 'tag',
+            automatic_load_item => 0,
+            headers => [ 'Content-Type' => 'application/json' ],
+            data    => encode_json({
+                name     => 'AppCivico',
+                filter   => {
+                    operator => 'OR',
+                    rules => [
+                        {
+                            name => 'QUESTION_ANSWER_NOT_EQUALS',
+                            data => {
+                                field => $poll_questions[1]->id,
+                                value => 'Sim',
+                            },
+                        },
+                        {
+                            name => 'QUESTION_ANSWER_NOT_EQUALS',
+                            data => {
+                                field => $poll_questions[1]->id,
+                                value => 'Talvez',
+                            },
+                        },
+                    ],
+                },
+            }),
+        ;
+
+        ok( $worker->run_once(), 'run once' );
+
+        my $tag_id = stash 'tag.id';
+
+        is_deeply(
+            [ sort $recipient_ids[0], $recipient_ids[1] ],
+            [ sort map { $_->id } $schema->resultset('Recipient')->search_by_tag_id($tag_id)->all ],
+        );
+    };
+
+    subtest "filter 'QUESTION_IS_NOT_ANSWERED" => sub {
+
+        # Neste filtro eu quero pegar quem respondeu algo diferente de 'Talvez' e diferente de 'Sim' para 4 quejos.
+        rest_post '/api/politician/tag',
+            name    => 'add tag',
+            stash   => 'tag',
+            automatic_load_item => 0,
+            headers => [ 'Content-Type' => 'application/json' ],
+            data    => encode_json({
+                name     => 'AppCivico',
+                filter   => {
+                    operator => 'AND',
+                    rules => [
+                        {
+                            name => 'QUESTION_IS_NOT_ANSWERED',
+                            data => { field => $poll_questions[2]->id },
+                        },
+                    ],
+                },
+            }),
+        ;
+
+        ok( $worker->run_once(), 'run once' );
+
+        my $tag_id = stash 'tag.id';
+
+        is_deeply(
+            [ sort $recipient_ids[2], $recipient_ids[3] ],
+            [ sort map { $_->id } $schema->resultset('Recipient')->search_by_tag_id($tag_id)->all ],
+        );
+    };
 };
+
 
 done_testing();
 
