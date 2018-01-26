@@ -305,6 +305,46 @@ db_transaction {
             }
         };
     };
+
+    my $group_id;
+    subtest 'edit group' => sub {
+
+        $group_id = (stash 'groups')->{groups}->[0]->{id};
+
+        rest_put "/api/politician/$politician_id/group/$group_id",
+            name    => 'edit group',
+            headers => [ 'Content-Type' => 'application/json' ],
+            data    => encode_json({
+                name     => 'Edited',
+                filter   => {
+                    operator => 'AND',
+                    rules    => [
+                        {
+                            name => 'QUESTION_IS_NOT_ANSWERED',
+                            data => {
+                                field => '32',
+                            },
+                        },
+                    ],
+                },
+            }),
+        ;
+
+        rest_get "/api/politician/$politician_id/group/$group_id", name => 'get group', stash => 'group';
+
+        stash_test 'group' => sub {
+            my $res = shift;
+
+            is( ref($res->{filter}), 'HASH', 'filter=hashref' );
+            is( ref($res->{filter}->{rules}), 'ARRAY', 'rules=arrayref' );
+            isnt( $res->{updated_at}, undef, 'updated_at filled' );
+
+            is( $res->{name}, 'Edited', 'name=Edited' );
+            is( $res->{filter}->{rules}->[0]->{name}, 'QUESTION_IS_NOT_ANSWERED', 'rule_name=QUESTION_IS_NOT_ANSWERED' );
+            is( $res->{filter}->{rules}->[0]->{data}->{field}, '32', 'rule_data_field=32' );
+            is( $res->{filter}->{rules}->[0]->{data}->{value}, undef, 'rule_data_value=undef' );
+        };
+    };
 };
 
 done_testing();

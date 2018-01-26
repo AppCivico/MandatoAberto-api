@@ -9,6 +9,8 @@ with 'CatalystX::Eta::Controller::AutoBase';
 with 'CatalystX::Eta::Controller::AutoObject';
 with 'CatalystX::Eta::Controller::AutoListGET';
 with 'CatalystX::Eta::Controller::AutoListPOST';
+with 'CatalystX::Eta::Controller::AutoResultPUT';
+with 'CatalystX::Eta::Controller::AutoResultGET';
 
 __PACKAGE__->config(
     result => 'DB::Group',
@@ -16,8 +18,8 @@ __PACKAGE__->config(
     object_verify_type => 'int',
     object_key         => 'group',
 
-    list_key       => 'groups',
-    build_list_row => sub {
+    list_key  => 'groups',
+    build_row => sub {
         my ($r, $self, $c) = @_;
 
         return {
@@ -51,6 +53,10 @@ sub base : Chained('root') : PathPart('group') : CaptureArgs(0) {
 sub object : Chained('base') : PathPart('') : CaptureArgs(1) { }
 
 sub result : Chained('object') : PathPart('') : Args(0) : ActionClass('REST') { }
+
+sub result_GET { }
+
+sub result_PUT { }
 
 sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }
 
