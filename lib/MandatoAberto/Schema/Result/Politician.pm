@@ -627,7 +627,6 @@ __PACKAGE__->meta->make_immutable;
 __DATA__
 
 @@ greetings.tt
-
 <!doctype html>
 <html>
 <head>
@@ -657,7 +656,7 @@ __DATA__
 <p align="center"> <strong> </strong>Seu cadastro foi aprovado!</p>
 <p align="center"><b>Boas-vindas ao Mandato Aberto.</b></p>
 <p>Monte agora seu Chatbot (robô que simula uma ação humana em uma conversação). Em pouco tempo ele  estará  ativo e pronto para iniciar uma interação sem intervenção humana, registrando ocorrências e fornecendo informação verificada.</p>
-<p>Garanta sua presença digital eficiente e muito além do “bom dia”, 24 horas por dia, 7 dias por semana, dentro ou fora do período eleitoral.</p>
+<p>Garanta sua presença digital eficiente e muito além do "bom dia", 24 horas por dia, 7 dias por semana, dentro ou fora do período eleitoral.</p>
 <p>Transparência e inovação, coloque a tecnologia a serviço da população.</p>
 <p align="center"><b>Próximos passos</b></p>
 <p>Customize seu assistente digital. É só ir até opção de menu Diálogos e começar a preencher. </p>
@@ -669,39 +668,31 @@ __DATA__
 <p>Agora é só escolher a sua página do Facebook onde o bot ficará hospedada, para isso, vá até o item do menu Perfil, e click no botão Facebook, e é só selecionar a página. Pronto, agora seu assistente digital estará pronto para se comunicar com os cidadãos.
 </p>
 <p align="center"><b>O que mais posso fazer?</b></p>
-<p>No Mandato Aberto, você pode….</p>
+<p>No Mandato Aberto, você pode.</p>
 <p>Através da sessão Apoiadores, você pode ver todas as pessoas que interagiram com seu assistente digital.</p>
-<p>Você também pode visualizar alguns indicadores sobres as interações dos cidadãos com seu assistente digital, como ….. Além disso, você pode criar outras interações do seu assistente digital com os cidadãos.
+<p>Você também pode visualizar alguns indicadores sobres as interações dos cidadãos com seu assistente digital, como .. Além disso, você pode criar outras interações do seu assistente digital com os cidadãos.
 </p>
 <p><b>Criando enquetes</b></p>
 <p>Crie enquetes para que as pessoas que interagirem com seu assistente digital possam responder, contribuindo para as tomadas de decisão do gabinete.</p>
-<p>É muito simples, é só preencher o nome da enquete, os textos das enquetes e as duas opções de respostas que você queira que o usuário responda. Após preencher os dados, você pode avisar seu assistente digital que ele pode divulgar a enquete, clicando em “Ativar”, ou pode salvar a enquete e só liberá-la depois para seu assistente digital, para isso é só tirar a seleção “sim”, do campo “Registar enquete ativa?”, e quando quiser ativá-lá, é só ir na sessão Minhas Enquetes, selecioná-la e clicar em Ativar.
+<p>É muito simples, é só preencher o nome da enquete, os textos das enquetes e as duas opções de respostas que você queira que o usuário responda. Após preencher os dados, você pode avisar seu assistente digital que ele pode divulgar a enquete, clicando em "Ativar", ou pode salvar a enquete e só liberá-la depois para seu assistente digital, para isso é só tirar a seleção "sim", do campo "Registar enquete ativa?", e quando quiser ativá-lá, é só ir na sessão Minhas Enquetes, selecioná-la e clicar em Ativar.
 </p>
 <p>Por exemplo:</p>
 <p>[Imagem plataforma]</p>
 <p>O seu assistente digital enviará assim?</p>
 <p>[Imagem plataforma]</p>
 <p><b>Enviando notificações</b></p>
-<p>Através do Mandato Aberto é possível enviar mensagens diretas aos cidadãos que já interagiram com seu assistente digital, é só você criar seu texto e enviar, e pronto, todos os cidadão que já interagiram com o assistente digital receberão seu mensagem no Facebook Messenger. 
+<p>Através do Mandato Aberto é possível enviar mensagens diretas aos cidadãos que já interagiram com seu assistente digital, é só você criar seu texto e enviar, e pronto, todos os cidadão que já interagiram com o assistente digital receberão seu mensagem no Facebook Messenger.
 </p>
 <p>Por exemplo:</p>
 <p>[Imagem plataforma]</p>
 <p>O seu assistente digital enviará assim?</p>
 <p>[Imagem plataforma]</p>
-
 </td>
 </tr>
 <tr>
 <td height="30"></td>
 </tr>
-<tr>
-<td align="justify" style="color:#999999; font-size:13px; font-style:normal; font-weight:normal; line-height:16px">
-<strong id="docs-internal-guid-d5013b4e-a1b5-bf39-f677-7dd0712c841b">
-Equipe Mandato Aberto
-</strong>
-<a href="mailto:contato@midialibre.org.br" target="_blank" style="color:#4ab957"></a>
-</td>
-</tr>
+
 <tr>
 <td height="30"></td>
 </tr>

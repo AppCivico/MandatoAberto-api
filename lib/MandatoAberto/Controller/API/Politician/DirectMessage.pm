@@ -22,7 +22,7 @@ __PACKAGE__->config(
         my ($self, $c, $params) = @_;
 
         die \['premium', 'politician is not premium'] unless $c->stash->{politician}->premium;
-        
+
         $params->{politician_id} = $c->user->id;
 
         return $params;
