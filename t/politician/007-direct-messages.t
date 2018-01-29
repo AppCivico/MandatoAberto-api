@@ -11,10 +11,23 @@ db_transaction {
     my $politician_id = stash "politician.id";
 
     rest_post "/api/chatbot/citizen",
-        name                => "Create citizen",
+        name                => "Create first recipient",
         automatic_load_item => 0,
+        stash               => "r1",
         [
-            name          => "foobar",
+            name          => fake_name()->(),
+            politician_id => $politician_id,
+            fb_id         => "foobar",
+            origin_dialog => "enquete"
+        ]
+    ;
+
+    rest_post "/api/chatbot/citizen",
+        name                => "Create second recipient",
+        automatic_load_item => 0,
+        stash               => "r2",
+        [
+            name          => fake_name()->(),
             politician_id => $politician_id,
             fb_id         => "foobar",
             origin_dialog => "enquete"
@@ -108,6 +121,17 @@ db_transaction {
             created_at    => \'NOW()'
         }
     )->id;
+
+    # Atrelando os recipientes aos grupos
+    my $v = $schema->resultset("Recipient")->find(stash "r1.id")->update(
+        { groups => "\"$first_group_id\"=>\"1\", \"$second_group_id\"=>\"1\"" }
+    );
+
+    use DDP; p $v;
+
+    $schema->resultset("Recipient")->find(stash "r2.id")->update(
+        { groups => "\"$second_group_id\"=>\"1\"" }
+    );
 
     rest_post "/api/politician/$politician_id/direct-message",
         name                => "creating direct message",

@@ -29,10 +29,10 @@ __PACKAGE__->config(
             $c->req->params->{groups} =~ s/(\[|\]|(\s))//g;
 
             my @groups = split(',', $c->req->params->{groups});
-            
+
             $params->{groups} = \@groups;
         }
-        use DDP; p $params;
+
         return $params;
     },
 );
