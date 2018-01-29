@@ -67,7 +67,7 @@ sub verifiers_specs {
                             die \['groups', "group $group_id does not exists or does not belongs to this politician"] unless $count == 1;
                         }
 
-                        return 1;   
+                        return 1;
                     }
                 }
             }
@@ -85,36 +85,22 @@ sub action_specs {
             my %values = $r->valid_values;
             not defined $values{$_} and delete $values{$_} for keys %values;
 
-            my $furl = Furl->new();
-
             my $politician   = $self->result_source->schema->resultset("Politician")->find($values{politician_id});
             my $access_token = $politician->fb_page_access_token;
             die \['politician_id', 'politician does not have active Facebook page access_token'] if $access_token eq 'undef';
 
             # Depois de criada a messagem direta, devo adicionar uma entrada
             # na fila para cada recipient atrelado ao rep. público
-            my $recipient_rs = $self->result_source->schema->resultset("Recipient");
-            for my $group_id ( @{ $values{groups} } ) {
-                use DDP; p $group_id;
-                $recipient_rs = $recipient_rs->search_by_group_id($group_id);
-                # use DDP; p $recipient_rs->as_query;
-            }
-            use DDP; p $recipient_rs->as_query();
-            my $v = $recipient_rs->all; p $v;
-            my @recipients = $self->result_source->schema->resultset("Recipient")->search(
-                {
-                    politician_id => $values{politician_id},
-                    # groups        => []
-                },
-                { column        => [ qw(me.fb_id) ]  }
-            )->all();
+            my @group_ids = @{ $values{groups} || [] };
+            my $recipient_rs = $politician->recipients->search_by_group_ids(@group_ids);
 
-            $values{count} = scalar @recipients; 
+            my @recipients = $recipient_rs->all;
+
+            $values{count} = scalar @recipients;
+
             my $direct_message = $self->create(\%values);
 
-            foreach (@recipients) {
-                my $recipient = $_;
-
+            for my $recipient (@recipients) {
                 # Mando para o httpcallback
                 $self->_httpcb->send_message(
                     url     => $ENV{FB_API_URL} . '/me/messages?access_token=' . $access_token,

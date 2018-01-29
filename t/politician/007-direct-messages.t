@@ -17,7 +17,7 @@ db_transaction {
         [
             name          => fake_name()->(),
             politician_id => $politician_id,
-            fb_id         => "foobar",
+            fb_id         => fake_words(2)->(),
             origin_dialog => "enquete"
         ]
     ;
@@ -29,7 +29,7 @@ db_transaction {
         [
             name          => fake_name()->(),
             politician_id => $politician_id,
-            fb_id         => "foobar",
+            fb_id         => fake_words(2)->(),
             origin_dialog => "enquete"
         ]
     ;
@@ -127,7 +127,7 @@ db_transaction {
         { groups => "\"$first_group_id\"=>\"1\", \"$second_group_id\"=>\"1\"" }
     );
 
-    use DDP; p $v;
+    #use DDP; p $v;
 
     $schema->resultset("Recipient")->find(stash "r2.id")->update(
         { groups => "\"$second_group_id\"=>\"1\"" }
