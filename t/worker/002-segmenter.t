@@ -163,7 +163,7 @@ db_transaction {
     };
 
     # Neste filtro eu quero pegar quem respondeu 'Sim' para frango com catupiry e 'Talvez' para portuguesa.
-    rest_post '/api/politician/group',
+    rest_post "/api/politician/$politician_id/group",
         name    => 'add group',
         stash   => 'group',
         automatic_load_item => 0,

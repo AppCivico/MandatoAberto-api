@@ -169,7 +169,78 @@ __PACKAGE__->add_columns(
     },
 );
 
-use Data::Printer;
+use MandatoAberto::Utils;
+
+with 'MandatoAberto::Role::Verification';
+with 'MandatoAberto::Role::Verification::TransactionalActions::DBIC';
+
+sub verifiers_specs {
+    my $self = shift;
+
+    return {
+        update => Data::Verifier->new(
+            filters => [ qw/ trim / ],
+            profile => {
+                name => {
+                    required => 0,
+                    type     => 'Str',
+                },
+
+                filter => {
+                    required => 0,
+                    type     => 'HashRef',
+                    post_check => sub {
+                        my $filter = $_[0]->get_value('filter');
+
+                        my %allowed_operators = map { $_ => 1 } qw/ AND OR /;
+                        my %allowed_data      = map { $_ => 1 } qw/ field value /;
+                        my %allowed_rules     = map { $_ => 1 }
+                          qw/ QUESTION_ANSWER_EQUALS QUESTION_ANSWER_NOT_EQUALS QUESTION_IS_NOT_ANSWERED /;
+
+                        return 0 unless $allowed_operators{$filter->{operator}};
+
+                        my @rules = @{ $filter->{rules} || [] };
+                        scalar @rules >= 1 or return 0;
+
+                        for my $rule (@rules) {
+                            $allowed_rules{$rule->{name}} or return 0;
+
+                            if (defined($rule->{data})) {
+                                ref $rule->{data} eq 'HASH' or return 0;
+
+                                for my $k (keys %{ $rule->{data} }) {
+                                    $allowed_data{$k} or return 0;
+                                }
+                            }
+                        }
+
+                        return 1;
+                    },
+                },
+            }
+        )
+    };
+}
+
+sub action_specs {
+    my ($self) = @_;
+
+    return {
+        update => sub {
+            my $r = shift;
+
+            my %values = $r->valid_values;
+            not defined $values{$_} and delete $values{$_} for keys %values;
+
+            $self->update(
+                {
+                    %values,
+                    updated_at => \'NOW()',
+                },
+            );
+        },
+    };
+}
 
 sub update_recipients {
     my ($self) = @_;
@@ -193,8 +264,6 @@ sub update_recipients {
         )
         ->update( { groups => \[ "COALESCE(groups, '') || HSTORE(?, '1')", $self->id ] } );
     });
-
-    #$self->update( { recipients_count => $count, last_count_at => \"NOW()" } );
 
     return $count;
 }

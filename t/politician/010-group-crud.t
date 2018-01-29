@@ -159,7 +159,7 @@ db_transaction {
 
     subtest 'validate operators' => sub {
 
-        rest_post '/api/politician/group',
+        rest_post "/api/politician/$politician_id/group",
             name    => 'add group',
             is_fail => 1,
             headers => [ 'Content-Type' => 'application/json' ],
@@ -182,7 +182,7 @@ db_transaction {
             },
         ];
 
-        rest_post '/api/politician/group',
+        rest_post "/api/politician/$politician_id/group",
             name    => 'add group',
             headers => [ 'Content-Type' => 'application/json' ],
             data    => encode_json({
@@ -194,7 +194,7 @@ db_transaction {
             }),
         ;
 
-        rest_post '/api/politician/group',
+        rest_post "/api/politician/$politician_id/group",
             name    => 'add group',
             headers => [ 'Content-Type' => 'application/json' ],
             data    => encode_json({
@@ -209,7 +209,7 @@ db_transaction {
 
     subtest 'validate rules' => sub {
 
-        rest_post '/api/politician/group',
+        rest_post "/api/politician/$politician_id/group",
             name    => 'add group with invalid filter',
             is_fail => 1,
             headers => [ 'Content-Type' => 'application/json' ],
@@ -230,7 +230,7 @@ db_transaction {
             }),
         ;
 
-        rest_post '/api/politician/group',
+        rest_post "/api/politician/$politician_id/group",
             name    => 'add group',
             headers => [ 'Content-Type' => 'application/json' ],
             data    => encode_json({
@@ -253,7 +253,7 @@ db_transaction {
 
     subtest 'validate data keys' => sub {
 
-        rest_post '/api/politician/group',
+        rest_post "/api/politician/$politician_id/group",
             name    => 'add group with invalid data key',
             is_fail => 1,
             headers => [ 'Content-Type' => 'application/json' ],
@@ -277,7 +277,7 @@ db_transaction {
 
     subtest 'empty rules is not allowed' => sub {
 
-        rest_post '/api/politician/group',
+        rest_post "/api/politician/$politician_id/group",
             name    => 'add group',
             is_fail => 1,
             headers => [ 'Content-Type' => 'application/json' ],
@@ -293,7 +293,7 @@ db_transaction {
 
     subtest 'list created groups' => sub {
 
-        rest_get '/api/politician/group', name => 'list groups', stash => 'groups';
+        rest_get "/api/politician/$politician_id/group", name => 'list groups', stash => 'groups';
 
         stash_test 'groups' => sub {
             my $res = shift;
@@ -303,6 +303,46 @@ db_transaction {
                 is( ref($group->{filter}),          'HASH',  'filters=HASH' );
                 is( ref($group->{filter}->{rules}), 'ARRAY', 'rules=HASH' );
             }
+        };
+    };
+
+    my $group_id;
+    subtest 'edit group' => sub {
+
+        $group_id = (stash 'groups')->{groups}->[0]->{id};
+
+        rest_put "/api/politician/$politician_id/group/$group_id",
+            name    => 'edit group',
+            headers => [ 'Content-Type' => 'application/json' ],
+            data    => encode_json({
+                name     => 'Edited',
+                filter   => {
+                    operator => 'AND',
+                    rules    => [
+                        {
+                            name => 'QUESTION_IS_NOT_ANSWERED',
+                            data => {
+                                field => '32',
+                            },
+                        },
+                    ],
+                },
+            }),
+        ;
+
+        rest_get "/api/politician/$politician_id/group/$group_id", name => 'get group', stash => 'group';
+
+        stash_test 'group' => sub {
+            my $res = shift;
+
+            is( ref($res->{filter}), 'HASH', 'filter=hashref' );
+            is( ref($res->{filter}->{rules}), 'ARRAY', 'rules=arrayref' );
+            isnt( $res->{updated_at}, undef, 'updated_at filled' );
+
+            is( $res->{name}, 'Edited', 'name=Edited' );
+            is( $res->{filter}->{rules}->[0]->{name}, 'QUESTION_IS_NOT_ANSWERED', 'rule_name=QUESTION_IS_NOT_ANSWERED' );
+            is( $res->{filter}->{rules}->[0]->{data}->{field}, '32', 'rule_data_field=32' );
+            is( $res->{filter}->{rules}->[0]->{data}->{value}, undef, 'rule_data_value=undef' );
         };
     };
 };

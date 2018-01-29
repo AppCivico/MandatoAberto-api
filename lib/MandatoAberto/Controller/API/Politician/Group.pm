@@ -9,6 +9,8 @@ with 'CatalystX::Eta::Controller::AutoBase';
 with 'CatalystX::Eta::Controller::AutoObject';
 with 'CatalystX::Eta::Controller::AutoListGET';
 with 'CatalystX::Eta::Controller::AutoListPOST';
+with 'CatalystX::Eta::Controller::AutoResultPUT';
+with 'CatalystX::Eta::Controller::AutoResultGET';
 
 __PACKAGE__->config(
     result => 'DB::Group',
@@ -16,8 +18,8 @@ __PACKAGE__->config(
     object_verify_type => 'int',
     object_key         => 'group',
 
-    list_key       => 'groups',
-    build_list_row => sub {
+    list_key  => 'groups',
+    build_row => sub {
         my ($r, $self, $c) = @_;
 
         return {
@@ -40,7 +42,7 @@ __PACKAGE__->config(
     },
 );
 
-sub root : Chained('/api/politician/base') : PathPart('') : CaptureArgs(0) { }
+sub root : Chained('/api/politician/object') : PathPart('') : CaptureArgs(0) { }
 
 sub base : Chained('root') : PathPart('group') : CaptureArgs(0) {
     my ($self, $c) = @_;
@@ -52,11 +54,30 @@ sub object : Chained('base') : PathPart('') : CaptureArgs(1) { }
 
 sub result : Chained('object') : PathPart('') : Args(0) : ActionClass('REST') { }
 
+sub result_GET { }
+
+sub result_PUT { }
+
 sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }
 
 sub list_GET { }
 
 sub list_POST { }
+
+sub count : Chained('base') : PathPart('count') : Args(0) : ActionClass('REST') { }
+
+sub count_POST {
+    my ($self, $c) = @_;
+
+    my $filter = $c->req->data->{filter};
+
+    return $self->status_ok(
+        $c,
+        entity => {
+            count => $c->stash->{politician}->recipients->search_by_filter($filter)->count,
+        },
+    );
+}
 
 __PACKAGE__->meta->make_immutable;
 
