@@ -44,6 +44,14 @@ db_transaction {
     ok( $schema->resultset('Politician')->find($politician_id)->update( { premium => 1 } ) , 'politician premium');
 
     rest_post "/api/politician/$politician_id/direct-message",
+        name    => "politician without page",
+        is_fail => 1,
+        code    => 400,
+    ;
+
+    ok( $schema->resultset('Politician')->find($politician_id)->update( { fb_page_access_token => 'foobar' } ) , 'politician fb_page_access_token');
+
+    rest_post "/api/politician/$politician_id/direct-message",
         name    => "creating direct message without content",
         is_fail => 1,
         code    => 400,
@@ -63,33 +71,15 @@ db_transaction {
         [
             content => fake_words(2)->(),
             name    => "Mensagem Bacana"
-        ];
-
-    is(
-        $schema->resultset("DirectMessage")->search(
-            {
-                politician_id => $politician_id,
-                sent          => 0
-            }
-          )->count,
-        '1',
-        'one direct message not sent'
-    );
-
-    my $direct_message = $schema->resultset("DirectMessage")->search(
-        {
-            politician_id => $politician_id,
-            sent          => 0
-        }
-    )->next;
-
-    is( $schema->resultset("DirectMessageQueue")->search( { direct_message_id => $direct_message->id } )->count,
-        '1', 'one direct message in the queue' );
+        ]
+    ;
 
     rest_get "/api/politician/$politician_id/direct-message",
-      name => "search politician direct messages",
-      list => 1,
-      ;
+        name => "search politician direct messages",
+        list => 1,
+    ;
+
+
 };
 
 done_testing();

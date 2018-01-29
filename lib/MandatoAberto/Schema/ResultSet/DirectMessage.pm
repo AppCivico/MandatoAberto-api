@@ -3,6 +3,8 @@ use common::sense;
 use Moose;
 use namespace::autoclean;
 
+BEGIN { $ENV{FB_API_URL} or die "missing env 'FB_API_URL'." }
+
 extends "DBIx::Class::ResultSet";
 
 with "MandatoAberto::Role::Verification";
@@ -11,8 +13,15 @@ with 'MandatoAberto::Role::Verification::TransactionalActions::DBIC';
 use Data::Verifier;
 use MandatoAberto::Utils;
 use MandatoAberto::Messager::Template;
+use WebService::HttpCallback;
 
-use Furl;
+use JSON::MaybeXS;
+
+has _httpcb => (
+    is         => "ro",
+    isa        => "WebService::HttpCallback",
+    lazy_build => 1,
+);
 
 sub verifiers_specs {
     my $self = shift;
@@ -24,8 +33,10 @@ sub verifiers_specs {
                 politician_id => {
                     required   => 1,
                     type       => "Int",
-                    post_check => {
-                        my $politician_id = $_[0]->get_value('politician_id')
+                    post_check => sub {
+                        my $politician_id = $_[0]->get_value('politician_id');
+
+                        $self->result_source->schema->resultset("Politician")->search( { user_id => $politician_id } )->count == 1;
                     }
                 },
                 content => {
@@ -57,7 +68,9 @@ sub action_specs {
 
             my $furl = Furl->new();
 
-            my $fb_access_token = $self->result_source->schema->resultset("Politician")->find($politician_id);
+            my $politician   = $self->result_source->schema->resultset("Politician")->find($values{politician_id});
+            my $access_token = $politician->fb_page_access_token;
+            die \['politician_id', 'politician does not have active Facebook page access_token'] if $access_token eq 'undef';
 
             # Depois de criada a messagem direta, devo adicionar uma entrada
             # na fila para cada citizen atrelado ao rep. público
@@ -69,20 +82,34 @@ sub action_specs {
             foreach (@citizens) {
                 my $citizen = $_;
 
-                # Construo a request para o httpcallback
-                my $message = MandatoAberto::Messager::Template->new(
-                    to      => $citizen->get_column('fb_id'),
-                    message => $values{content}
-                )->build_message;
-
-                my $queued = $self->result_source->schema->resultset("DirectMessageQueue")->create( { direct_message_id => $direct_message->id } );
-
-                return $queued;
+                # Mando para o httpcallback
+                $self->_httpcb->send_message(
+                    url     => $ENV{FB_API_URL} . '/me/messages?access_token=' . $access_token,
+                    method  => "post",
+                    headers => [ 'Content-Type:application/json' ],
+                    body    => encode_json {
+                        recipient => {
+                            id => $citizen->fb_id
+                        },
+                        message => {
+                            text          => $values{content},
+                            quick_replies => [
+                                {
+                                    content_type => 'text',
+                                    title        => 'Voltar para o início',
+                                    payload      => 'greetings'
+                                }
+                            ]
+                        }
+                    }
+                );
             }
 
             return $direct_message;
         }
     };
 }
+
+sub _build__httpcb { WebService::HttpCallback->instance }
 
 1;
