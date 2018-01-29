@@ -48,6 +48,27 @@ sub verifiers_specs {
                     required  => 1,
                     type      => "Str",
                     max_length => 50,
+                },
+                groups => {
+                    required   => 0,
+                    type       => "ArrayRef[Int]",
+                    post_check => sub {
+                        my $groups = $_[0]->get_value('groups');
+                        
+                        for (my $i = 0; $i < @{ $groups }; $i++) {
+                            my $group_id = $groups->[$i];
+
+                            my $count = $self->result_source->schema->resultset("Group")->search(
+                                {
+                                    id            => $group_id,
+                                    politician_id => $_[0]->get_value('politician_id')
+                                }
+                            )->count;
+                            die \['groups', "group $group_id does not exists or does not belongs to this politician"] unless $count == 1;
+                        }
+
+                        return 1;   
+                    }
                 }
             }
         ),
@@ -64,8 +85,6 @@ sub action_specs {
             my %values = $r->valid_values;
             not defined $values{$_} and delete $values{$_} for keys %values;
 
-            my $direct_message = $self->create(\%values);
-
             my $furl = Furl->new();
 
             my $politician   = $self->result_source->schema->resultset("Politician")->find($values{politician_id});
@@ -73,14 +92,17 @@ sub action_specs {
             die \['politician_id', 'politician does not have active Facebook page access_token'] if $access_token eq 'undef';
 
             # Depois de criada a messagem direta, devo adicionar uma entrada
-            # na fila para cada citizen atrelado ao rep. público
-            my @citizens = $self->result_source->schema->resultset("Recipient")->search(
+            # na fila para cada recipient atrelado ao rep. público
+            my @recipients = $self->result_source->schema->resultset("Recipient")->search(
                 { politician_id => $values{politician_id} },
                 { column        => [ qw(me.fb_id) ]  }
             )->all();
 
-            foreach (@citizens) {
-                my $citizen = $_;
+            $values{count} = scalar @recipients; 
+            my $direct_message = $self->create(\%values);
+
+            foreach (@recipients) {
+                my $recipient = $_;
 
                 # Mando para o httpcallback
                 $self->_httpcb->send_message(
@@ -89,7 +111,7 @@ sub action_specs {
                     headers => [ 'Content-Type:application/json' ],
                     body    => encode_json {
                         recipient => {
-                            id => $citizen->fb_id
+                            id => $recipient->fb_id
                         },
                         message => {
                             text          => $values{content},

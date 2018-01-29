@@ -66,19 +66,73 @@ db_transaction {
     ;
 
     rest_post "/api/politician/$politician_id/direct-message",
+        name    => "creating direct message with invalid type of group",
+        is_fail => 1,
+        code    => 400,
+        [
+            name    => 'foobar',
+            content => 'foobar',
+            groups  => "['foobar']"
+        ]
+    ;
+
+    rest_post "/api/politician/$politician_id/direct-message",
+        name    => "creating direct message with unexistent group",
+        is_fail => 1,
+        code    => 400,
+        [
+            name    => 'foobar',
+            content => 'foobar',
+            groups  => "[99999999]"
+        ]
+    ;
+
+    my $content = fake_words(2)->();
+    my $name    = fake_words(1)->();
+
+    # Criando grupos
+    my $first_group_id = $schema->resultset("Group")->create(
+        {
+            politician_id => $politician_id,
+            name          => fake_words(1)->(),
+            filter        => '{}',
+            created_at    => \'NOW()'
+        }
+    )->id;
+
+    my $second_group_id = $schema->resultset("Group")->create(
+        {
+            politician_id => $politician_id,
+            name          => fake_words(1)->(),
+            filter        => '{}',
+            created_at    => \'NOW()'
+        }
+    )->id;
+
+    rest_post "/api/politician/$politician_id/direct-message",
         name                => "creating direct message",
         automatic_load_item => 0,
         [
-            content => fake_words(2)->(),
-            name    => "Mensagem Bacana"
+            name    => $name,
+            content => $content,
+            groups  => "[$first_group_id, $second_group_id]"
         ]
     ;
 
     rest_get "/api/politician/$politician_id/direct-message",
-        name => "search politician direct messages",
-        list => 1,
+        name  => "get direct messages",
+        list  => 1,
+        stash => "get_direct_messages"
     ;
 
+    stash_test "get_direct_messages" => sub {
+        my $res = shift;
+
+        is ($res->{direct_messages}->[0]->{name}, $name, 'dm name');
+        is ($res->{direct_messages}->[0]->{content}, $content, 'dm content');
+        is ($res->{direct_messages}->[0]->{count}, 1, 'dm count');
+
+    };
 
 };
 

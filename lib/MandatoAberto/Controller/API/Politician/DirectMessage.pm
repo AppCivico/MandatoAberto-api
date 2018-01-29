@@ -25,6 +25,14 @@ __PACKAGE__->config(
 
         $params->{politician_id} = $c->user->id;
 
+        if ($c->req->params->{groups}) {
+            $c->req->params->{groups} =~ s/(\[|\]|(\s))//g;
+
+            my @groups = split(',', $c->req->params->{groups});
+            
+            $params->{groups} = \@groups;
+        }
+        use DDP; p $params;
         return $params;
     },
 );
@@ -63,7 +71,8 @@ sub list_GET {
                         content    => $dm->get_column('content'),
                         sent       => $dm->get_column('sent'),
                         created_at => $dm->get_column('created_at'),
-                        name       => $dm->get_column('name')
+                        name       => $dm->get_column('name'),
+                        count      => $dm->get_column('count')
                     }
                 } $c->stash->{collection}->search( { politician_id => $politician_id } )->all()
             ]
