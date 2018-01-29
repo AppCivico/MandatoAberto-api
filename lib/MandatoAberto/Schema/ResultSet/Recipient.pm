@@ -94,12 +94,6 @@ sub action_specs {
     };
 }
 
-sub search_by_group_id {
-    my ($self, $group_id) = @_;
-
-    return $self->search( \[ 'EXIST(groups, ?)', $group_id ] );
-}
-
 sub search_by_group_ids {
     my ($self, @group_ids) = @_;
 
