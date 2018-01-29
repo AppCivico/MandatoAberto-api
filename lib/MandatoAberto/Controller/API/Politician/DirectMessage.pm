@@ -31,6 +31,8 @@ __PACKAGE__->config(
             my @groups = split(',', $c->req->params->{groups});
 
             $params->{groups} = \@groups;
+        } else {
+            $params->{groups} = [];
         }
 
         return $params;
@@ -72,9 +74,12 @@ sub list_GET {
                         sent       => $dm->get_column('sent'),
                         created_at => $dm->get_column('created_at'),
                         name       => $dm->get_column('name'),
-                        count      => $dm->get_column('count')
+                        count      => $dm->get_column('count'),
+                        groups     => $dm->get_column('groups')
                     }
-                } $c->stash->{collection}->search( { politician_id => $politician_id } )->all()
+                } $c->stash->{collection}->search(
+                    { politician_id => $politician_id }
+                )->all()
             ]
         }
     );

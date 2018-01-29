@@ -123,11 +123,9 @@ db_transaction {
     )->id;
 
     # Atrelando os recipientes aos grupos
-    my $v = $schema->resultset("Recipient")->find(stash "r1.id")->update(
+    $schema->resultset("Recipient")->find(stash "r1.id")->update(
         { groups => "\"$first_group_id\"=>\"1\", \"$second_group_id\"=>\"1\"" }
     );
-
-    #use DDP; p $v;
 
     $schema->resultset("Recipient")->find(stash "r2.id")->update(
         { groups => "\"$second_group_id\"=>\"1\"" }
@@ -139,7 +137,7 @@ db_transaction {
         [
             name    => $name,
             content => $content,
-            groups  => "[$first_group_id, $second_group_id]"
+            groups  => "[$first_group_id]"
         ]
     ;
 
@@ -155,9 +153,25 @@ db_transaction {
         is ($res->{direct_messages}->[0]->{name}, $name, 'dm name');
         is ($res->{direct_messages}->[0]->{content}, $content, 'dm content');
         is ($res->{direct_messages}->[0]->{count}, 1, 'dm count');
-
     };
 
+    rest_post "/api/politician/$politician_id/direct-message",
+        name                => "creating another direct message",
+        automatic_load_item => 0,
+        [
+            name    => 'foobar',
+            content => 'foobar',
+        ]
+    ;
+
+    rest_reload_list "get_direct_messages";
+    stash_test "get_direct_messages.list" => sub {
+        my $res = shift;
+
+        is ($res->{direct_messages}->[1]->{name}, 'foobar', 'dm name');
+        is ($res->{direct_messages}->[1]->{content}, 'foobar', 'dm content');
+        is ($res->{direct_messages}->[1]->{count}, 2, 'dm count');
+    };
 };
 
 done_testing();

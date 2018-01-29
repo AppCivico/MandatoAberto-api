@@ -91,6 +91,7 @@ sub action_specs {
 
             # Depois de criada a messagem direta, devo adicionar uma entrada
             # na fila para cada recipient atrelado ao rep. público
+            # levando em consideração os grupos, se adicionados
             my @group_ids = @{ $values{groups} || [] };
             my $recipient_rs = $politician->recipients->search_by_group_ids(@group_ids);
 
