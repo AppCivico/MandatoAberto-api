@@ -94,10 +94,18 @@ sub action_specs {
     };
 }
 
-sub search_by_group_id {
-    my ($self, $group_id) = @_;
+sub search_by_group_ids {
+    my ($self, @group_ids) = @_;
 
-    return $self->search( \[ 'EXIST(groups, ?)', $group_id ] );
+    return $self->search(
+        {
+            '-and' => [
+                '-or' => [
+                    map { \[ 'EXIST(groups, ?)', $_ ] } @group_ids
+                ],
+            ],
+        },
+    );
 }
 
 sub search_by_filter {
