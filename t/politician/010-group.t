@@ -304,7 +304,7 @@ db_transaction {
 
         is_deeply(
             [ sort $recipient_ids[0], $recipient_ids[1] ],
-            [ sort map { $_->id } $schema->resultset('Recipient')->search_by_group_id($group_id)->all ],
+            [ sort map { $_->id } $schema->resultset('Recipient')->search_by_group_ids($group_id)->all ],
         );
     };
 
