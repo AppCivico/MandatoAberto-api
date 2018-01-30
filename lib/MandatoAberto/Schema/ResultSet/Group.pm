@@ -32,7 +32,11 @@ sub verifiers_specs {
                         my %allowed_operators = map { $_ => 1 } qw/ AND OR /;
                         my %allowed_data      = map { $_ => 1 } qw/ field value /;
                         my %allowed_rules     = map { $_ => 1 }
-                          qw/ QUESTION_ANSWER_EQUALS QUESTION_ANSWER_NOT_EQUALS QUESTION_IS_NOT_ANSWERED /;
+                            qw/
+                            QUESTION_ANSWER_EQUALS QUESTION_ANSWER_NOT_EQUALS QUESTION_IS_NOT_ANSWERED
+                            QUESTION_IS_ANSWERED
+                            /
+                        ;
 
                         return 0 unless $allowed_operators{$filter->{operator}};
 
