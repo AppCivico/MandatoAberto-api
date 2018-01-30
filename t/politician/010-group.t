@@ -276,6 +276,38 @@ db_transaction {
         );
     };
 
+    subtest "filter 'QUESTION_IS_ANSWERED" => sub {
+
+        # Neste filtro eu quero pegar quem respondeu algo diferente de 'Talvez' e diferente de 'Sim' para 4 quejos.
+        rest_post "/api/politician/$politician_id/group",
+            name    => 'add group',
+            stash   => 'group',
+            automatic_load_item => 0,
+            headers => [ 'Content-Type' => 'application/json' ],
+            data    => encode_json({
+                name     => 'Question Is Answered',
+                filter   => {
+                    operator => 'AND',
+                    rules => [
+                        {
+                            name => 'QUESTION_IS_ANSWERED',
+                            data => { field => $poll_questions[2]->id },
+                        },
+                    ],
+                },
+            }),
+        ;
+
+        ok( $worker->run_once(), 'run once' );
+
+        my $group_id = stash 'group.id';
+
+        is_deeply(
+            [ sort $recipient_ids[0], $recipient_ids[1] ],
+            [ sort map { $_->id } $schema->resultset('Recipient')->search_by_group_id($group_id)->all ],
+        );
+    };
+
     subtest 'count filter' => sub {
 
         rest_post "/api/politician/$politician_id/group/count",

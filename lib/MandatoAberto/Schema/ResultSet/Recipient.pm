@@ -117,6 +117,9 @@ sub search_by_filter {
         elsif ($name eq 'QUESTION_ANSWER_NOT_EQUALS') {
             push @where_attrs, $self->_build_rule_question_answer_not_equals($field, $value);
         }
+        elsif ($name eq 'QUESTION_IS_ANSWERED') {
+            push @where_attrs, $self->_build_rule_question_is_answered($field);
+        }
         elsif ($name eq 'QUESTION_IS_NOT_ANSWERED') {
             push @where_attrs, $self->_build_rule_question_not_answered($field);
         }
@@ -126,6 +129,21 @@ sub search_by_filter {
     }
 
     return $self->search( { $operator => \@where_attrs } );
+}
+
+sub _build_rule_question_is_answered {
+    my ($self, $field) = @_;
+
+    return \[ <<'SQL_QUERY', $field ];
+EXISTS(
+    SELECT 1
+    FROM poll_result
+    JOIN poll_question_option
+      ON poll_result.poll_question_option_id = poll_question_option.id
+    WHERE poll_result.citizen_id = me.id
+      AND poll_question_option.poll_question_id = ?
+)
+SQL_QUERY
 }
 
 sub _build_rule_question_not_answered {
@@ -141,7 +159,6 @@ NOT EXISTS(
       AND poll_question_option.poll_question_id = ?
 )
 SQL_QUERY
-
 }
 
 sub _build_rule_question_answer_equals {
