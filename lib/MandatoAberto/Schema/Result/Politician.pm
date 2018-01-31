@@ -581,7 +581,7 @@ sub get_current_facebook_page {
     my $access_token = $self->fb_page_access_token;
 
     my $res = $furl->get(
-        $ENV{FB_API_URL} . "/me?fields=id,name,picture&access_token=$access_token",
+        $ENV{FB_API_URL} . "/me?fields=id,name,picture.type(large)&access_token=$access_token",
     );
     return 0 unless $res->is_success;
 
