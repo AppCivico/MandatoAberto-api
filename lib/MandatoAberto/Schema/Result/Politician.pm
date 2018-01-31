@@ -219,6 +219,21 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 issues
+
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::Issue>
+
+=cut
+
+__PACKAGE__->has_many(
+  "issues",
+  "MandatoAberto::Schema::Result::Issue",
+  { "foreign.politician_id" => "self.user_id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 office
 
 Type: belongs_to
@@ -325,8 +340,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07046 @ 2018-01-24 11:32:49
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:HlFCI1D5YN1ocKLugCv0WA
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-01-30 16:26:20
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:EC2K6UgIcUHkrTf5u5DtSg
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

@@ -147,6 +147,21 @@ __PACKAGE__->set_primary_key("id");
 
 =head1 RELATIONS
 
+=head2 issues
+
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::Issue>
+
+=cut
+
+__PACKAGE__->has_many(
+  "issues",
+  "MandatoAberto::Schema::Result::Issue",
+  { "foreign.recipient_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 politician
 
 Type: belongs_to
@@ -178,8 +193,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07046 @ 2018-01-24 11:32:49
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:wx5P7GWI7BDRUxQlEu98HA
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-01-30 16:28:28
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:H3g7A2KGOAM7I8vpGX+Z/A
 
 with 'MandatoAberto::Role::Verification';
 with 'MandatoAberto::Role::Verification::TransactionalActions::DBIC';

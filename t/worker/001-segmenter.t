@@ -199,7 +199,7 @@ db_transaction {
     is( $group->last_recipients_calc_at, undef, 'last_recipients_calc_at=undef' );
     is( $group->status,                  'processing', 'status=processing' );
 
-    my $recipients_rs = $schema->resultset('Recipient')->search_by_group_id($group_id);
+    my $recipients_rs = $schema->resultset('Recipient')->search_by_group_ids($group_id);
 
     is( $recipients_rs->count, '0', 'count=0' );
 

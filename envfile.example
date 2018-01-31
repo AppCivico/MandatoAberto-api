@@ -2,6 +2,7 @@ export API_PORT=""
 export API_WORKERS=""
 
 export MANDATOABERTO_URL=""
+export MANDATOABERTO_HTTP_CB_URL=""
 export FB_API_URL=""
 
 export POSTGRESQL_HOST=""
