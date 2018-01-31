@@ -83,6 +83,11 @@ __PACKAGE__->table("issue");
   is_nullable: 0
   original: {default_value => \"now()"}
 
+=head2 reply
+
+  data_type: 'text'
+  is_nullable: 1
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -110,6 +115,8 @@ __PACKAGE__->add_columns(
     is_nullable   => 0,
     original      => { default_value => \"now()" },
   },
+  "reply",
+  { data_type => "text", is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -157,10 +164,53 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-01-30 22:15:12
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:djCME+N3qzDCtL/Bg7UN6g
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-01-30 22:51:51
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:jmuBQd1DWywz+BwEZ+u9Lg
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
+use MandatoAberto::Utils;
+
+with 'MandatoAberto::Role::Verification';
+with 'MandatoAberto::Role::Verification::TransactionalActions::DBIC';
+
+sub verifiers_specs {
+    my $self = shift;
+
+    return {
+        update => Data::Verifier->new(
+            filters => [ qw(trim) ],
+            profile => {
+                status => {
+                    required   => 0,
+                    type       => "Str",
+                    max_lenght => 250
+                }
+            }
+        )
+    };
+}
+
+sub action_specs {
+    my ($self) = @_;
+
+    return {
+        update => sub {
+            my $r = shift;
+
+            my %values = $r->valid_values;
+            not defined $values{$_} and delete $values{$_} for keys %values;
+
+
+
+            $self->update({
+                %values,
+                updated_at => \'NOW()',
+            });
+        }
+    };
+}
+
+
 __PACKAGE__->meta->make_immutable;
 1;
