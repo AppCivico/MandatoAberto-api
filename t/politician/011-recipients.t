@@ -43,6 +43,47 @@ db_transaction {
             );
         };
     };
+
+    subtest 'get recipient' => sub {
+
+        # Adicionando um grupo.
+        rest_post "/api/politician/$politician_id/group",
+            name    => 'add group',
+            stash   => 'Fake Group',
+            headers => [ 'Content-Type' => 'application/json' ],
+            data    => encode_json({
+                name     => fake_name->(),
+                filter   => {
+                    operator => 'AND',
+                    rules    => [
+                        {
+                            name => 'QUESTION_IS_NOT_ANSWERED',
+                            data => { field => '32' },
+                        },
+                    ],
+                },
+            }),
+        ;
+
+        my $group_id = stash 'group.id';
+        my $recipient_id = stash 'recipient.id';
+
+        ok( my $recipient = $schema->resultset('Recipient')->find($recipient_id), 'get recipient' );
+        ok( $recipient->add_to_group($group_id), 'add recipient to group' );
+
+        p $recipient->discard_changes;
+
+        rest_get "/api/politician/$politician_id/recipients/$recipient_id",
+            name  => 'get recipient',
+            stash => 'get_recipient',
+        ;
+
+        stash_test 'get_recipient' => sub {
+            my $res = shift;
+
+            p $res;
+        };
+    };
 };
 
 done_testing();

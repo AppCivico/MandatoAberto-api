@@ -181,6 +181,17 @@ __PACKAGE__->has_many(
 # Created by DBIx::Class::Schema::Loader v0.07046 @ 2018-01-24 11:32:49
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:wx5P7GWI7BDRUxQlEu98HA
 
+__PACKAGE__->load_components("InflateColumn::Serializer", "Core");
+__PACKAGE__->remove_column('groups');
+__PACKAGE__->add_columns(
+    groups => {
+        'data_type'        => 'hstore',
+        is_nullable        => 1,
+        default_value      => "",
+        'serializer_class' => 'Hstore',
+    },
+);
+
 with 'MandatoAberto::Role::Verification';
 with 'MandatoAberto::Role::Verification::TransactionalActions::DBIC';
 
@@ -219,6 +230,24 @@ sub action_specs {
             $self->update(\%values);
         }
     };
+}
+
+sub add_to_group {
+    my ($self, $group_id) = @_;
+
+    return $self->update( { groups => \[ "COALESCE(groups, '') || HSTORE(?, '1')", $group_id ] } );
+}
+
+sub groups_rs {
+    my ($self) = @_;
+
+    use DDP; p $self->groups;
+
+    return $self->politician->groups->search(
+        {
+            'me.id' => { 'in' => [ keys %{ $self->groups || {} } ] }
+        }
+    );
 }
 
 __PACKAGE__->meta->make_immutable;
