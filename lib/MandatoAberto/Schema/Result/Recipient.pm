@@ -241,8 +241,6 @@ sub add_to_group {
 sub groups_rs {
     my ($self) = @_;
 
-    use DDP; p $self->groups;
-
     return $self->politician->groups->search(
         {
             'me.id' => { 'in' => [ keys %{ $self->groups || {} } ] }

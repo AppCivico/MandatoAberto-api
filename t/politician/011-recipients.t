@@ -49,10 +49,10 @@ db_transaction {
         # Adicionando um grupo.
         rest_post "/api/politician/$politician_id/group",
             name    => 'add group',
-            stash   => 'Fake Group',
+            stash   => 'group',
             headers => [ 'Content-Type' => 'application/json' ],
             data    => encode_json({
-                name     => fake_name->(),
+                name     => 'Fake Group',
                 filter   => {
                     operator => 'AND',
                     rules    => [
@@ -71,8 +71,6 @@ db_transaction {
         ok( my $recipient = $schema->resultset('Recipient')->find($recipient_id), 'get recipient' );
         ok( $recipient->add_to_group($group_id), 'add recipient to group' );
 
-        p $recipient->discard_changes;
-
         rest_get "/api/politician/$politician_id/recipients/$recipient_id",
             name  => 'get recipient',
             stash => 'get_recipient',
@@ -81,7 +79,14 @@ db_transaction {
         stash_test 'get_recipient' => sub {
             my $res = shift;
 
-            p $res;
+            is_deeply(
+                [ sort keys %{ $res } ],
+                [ sort qw/ cellphone created_at email gender groups id name origin_dialog / ],
+            );
+
+            is( ref($res->{groups}), 'ARRAY' );
+            is( $res->{groups}->[0]->{id},   $group_id,    'group_id' );
+            is( $res->{groups}->[0]->{name}, 'Fake Group', 'name=Fake Group' );
         };
     };
 };
