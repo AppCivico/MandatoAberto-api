@@ -7,7 +7,6 @@ use Furl;
 use Try::Tiny::Retry;
 use MandatoAberto::Utils;
 
-BEGIN { $ENV{MANDATOABERTO_HTTP_CB_URL} or die "missing env 'MANDATOABERTO_HTTP_CB_URL'." }
 
 has 'furl' => ( is => 'rw', lazy => 1, builder => '_build_furl' );
 

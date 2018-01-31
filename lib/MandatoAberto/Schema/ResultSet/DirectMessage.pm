@@ -3,8 +3,6 @@ use common::sense;
 use Moose;
 use namespace::autoclean;
 
-BEGIN { $ENV{FB_API_URL} or die "missing env 'FB_API_URL'." }
-
 extends "DBIx::Class::ResultSet";
 
 with "MandatoAberto::Role::Verification";
