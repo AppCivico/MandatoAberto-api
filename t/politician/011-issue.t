@@ -12,7 +12,7 @@ db_transaction {
     my $message         = fake_words(1)->();
 
     create_politician(
-        fb_page_id => $page_id 
+        fb_page_id => $page_id
     );
     my $politician_id = stash "politician.id";
 

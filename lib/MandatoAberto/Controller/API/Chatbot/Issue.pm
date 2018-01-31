@@ -30,7 +30,7 @@ __PACKAGE__->config(
         my $politician = $c->model("DB::politician")->search( { fb_page_id => $page_id } )->next;
         die \["page_id", "could not find politician with that page_id"] unless $politician;
 
-        $params->{politician_id} = $politician->id;        
+        $params->{politician_id} = $politician->id;
 
         return $params;
     },
