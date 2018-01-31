@@ -66,11 +66,6 @@ __PACKAGE__->table("issue");
   data_type: 'text'
   is_nullable: 0
 
-=head2 status
-
-  data_type: 'text'
-  is_nullable: 0
-
 =head2 updated_at
 
   data_type: 'timestamp'
@@ -88,6 +83,12 @@ __PACKAGE__->table("issue");
   data_type: 'text'
   is_nullable: 1
 
+=head2 open
+
+  data_type: 'boolean'
+  default_value: true
+  is_nullable: 0
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -104,8 +105,6 @@ __PACKAGE__->add_columns(
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "message",
   { data_type => "text", is_nullable => 0 },
-  "status",
-  { data_type => "text", is_nullable => 0 },
   "updated_at",
   { data_type => "timestamp", is_nullable => 1 },
   "created_at",
@@ -117,6 +116,8 @@ __PACKAGE__->add_columns(
   },
   "reply",
   { data_type => "text", is_nullable => 1 },
+  "open",
+  { data_type => "boolean", default_value => \"true", is_nullable => 0 },
 );
 
 =head1 PRIMARY KEY
@@ -164,8 +165,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-01-30 22:51:51
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:jmuBQd1DWywz+BwEZ+u9Lg
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-01-31 09:14:05
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:ifYVFfmRGQkBd+RJoGgejA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
@@ -190,13 +191,15 @@ sub verifiers_specs {
         update => Data::Verifier->new(
             filters => [ qw(trim) ],
             profile => {
-                status => {
+                open => {
                     required   => 1,
-                    type       => "Str",
+                    type       => "Bool",
                     post_check => sub {
-                        my $status =  $_[0]->get_value('status');
+                        my $open_boolean = $_[0]->get_value('open');
 
-                        die \["status", 'must be "closed"'] if $status ne 'closed';
+                        if (!$self->open) {
+                            die \["open", "issue is alredy closed"];
+                        }
 
                         return 1;
                     }
@@ -204,7 +207,7 @@ sub verifiers_specs {
                 reply => {
                     required   => 0,
                     type       => "Str",
-                    max_lenght => 250
+                    max_length => 250
                 }
             }
         )
@@ -221,6 +224,9 @@ sub action_specs {
             my %values = $r->valid_values;
             not defined $values{$_} and delete $values{$_} for keys %values;
 
+            my $access_token = $self->politician->fb_page_access_token;
+            my $recipient    = $self->recipient;
+
             if ($values{reply}) {
                 $self->_httpcb->add(
                     url     => $ENV{FB_API_URL} . '/me/messages?access_token=' . $access_token,
@@ -231,7 +237,7 @@ sub action_specs {
                             id => $recipient->fb_id
                         },
                         message => {
-                            text          => $values{content},
+                            text          => $values{reply},
                             quick_replies => [
                                 {
                                     content_type => 'text',

@@ -107,7 +107,7 @@ db_transaction {
 
     my $issue = $schema->resultset("Issue")->find(stash "i1.id");
 
-    ok ($issue->status eq 'open', 'Issue is created as open');
+    ok ($issue->open eq '1', 'Issue is created as open');
 };
 
 done_testing();

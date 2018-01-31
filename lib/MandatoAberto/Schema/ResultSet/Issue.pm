@@ -46,7 +46,7 @@ sub action_specs {
             not defined $values{$_} and delete $values{$_} for keys %values;
 
             # Uma issue sempre é criada como aberta
-            $values{status} = 'open';
+            $values{open} = 1;
 
             my $issue = $self->create(\%values);
 
