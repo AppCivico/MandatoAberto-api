@@ -34,7 +34,13 @@ db_transaction {
         stash_test 'recipients' => sub {
             my $res = shift;
 
+            is( ref($res->{recipients}), 'ARRAY', 'recipients=arrayref' );
             is( scalar(@{ $res->{recipients} }), '4', 'count=4' );
+
+            is_deeply(
+                [ sort keys %{ $res->{recipients}->[0] } ],
+                [ sort qw/ id name cellphone email origin_dialog created_at gender / ],
+            );
         };
     };
 };
