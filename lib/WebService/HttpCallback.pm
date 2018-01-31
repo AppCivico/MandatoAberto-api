@@ -12,7 +12,7 @@ has 'furl' => ( is => 'rw', lazy => 1, builder => '_build_furl' );
 
 sub _build_furl { Furl->new }
 
-sub send_message {
+sub add {
     my ( $self, %opts ) = @_;
 
     if (is_test()) {
@@ -25,7 +25,7 @@ sub send_message {
         eval {
             retry {
                 $res = $self->furl->post( get_mandatoaberto_httpcb_url_for('/schedule'), [], [%opts] );
-                use DDP; p $res;
+
                 die $res->decoded_content unless $res->is_success;
             }
             retry_if { shift() < 3 } catch { die $_; };

@@ -55,3 +55,6 @@
 0051-tag-recipients-count [0050-tag-hstore] 2018-01-23T18:32:45Z Junior Moraes <juniorfvox@gmail.com> # tag-recipients-count
 0052-rename-tags-groups [0051-tag-recipients-count] 2018-01-24T13:49:33Z Junior Moraes <juniorfvox@gmail.com> # rename-tags-groups
 0053-dm-groups-count [0052-rename-tags-groups] 2018-01-29T20:19:26Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding count and groups to the direct-messages table
+0054-issue-table [0053-dm-groups-count] 2018-01-31T00:14:18Z Lucas Ansei,,, <lucas@lucas-G750JX> # Creating the 'issue' table
+0055-issue-reply [0054-issue-table] 2018-01-31T00:50:50Z Lucas Ansei,,, <lucas@lucas-G750JX> # Adding the 'reply' column to the issue table
+0056-issue-open [0055-issue-reply] 2018-01-31T11:14:17Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the 'open' boolean to the issue table
