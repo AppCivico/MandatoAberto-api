@@ -24,13 +24,21 @@ __PACKAGE__->config(
 
         $params->{recipient_id} = $recipient->id;
 
+        my $page_id = $c->req->params->{page_id};
+        die \["page_id", "missing"] unless $page_id;
+
+        my $politician = $c->model("DB::politician")->search( { fb_page_id => $page_id } )->next;
+        die \["page_id", "could not find politician with that page_id"] unless $politician;
+
+        $params->{politician_id} = $politician->id;        
+
         return $params;
     },
 );
 
 sub root : Chained('/api/chatbot/base') : PathPart('') : CaptureArgs(0) { }
 
-sub base : Chained('root') : PathPart('poll-result') : CaptureArgs(0) {  }
+sub base : Chained('root') : PathPart('issue') : CaptureArgs(0) {  }
 
 sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }
 
