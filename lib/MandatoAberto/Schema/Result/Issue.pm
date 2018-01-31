@@ -170,6 +170,15 @@ __PACKAGE__->belongs_to(
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
 use MandatoAberto::Utils;
+use WebService::HttpCallback;
+
+use JSON::MaybeXS;
+
+has _httpcb => (
+    is         => "ro",
+    isa        => "WebService::HttpCallback",
+    lazy_build => 1,
+);
 
 with 'MandatoAberto::Role::Verification';
 with 'MandatoAberto::Role::Verification::TransactionalActions::DBIC';
@@ -182,6 +191,17 @@ sub verifiers_specs {
             filters => [ qw(trim) ],
             profile => {
                 status => {
+                    required   => 1,
+                    type       => "Str",
+                    post_check => sub {
+                        my $status =  $_[0]->get_value('status');
+
+                        die \["status", 'must be "closed"'] if $status ne 'closed';
+
+                        return 1;
+                    }
+                },
+                reply => {
                     required   => 0,
                     type       => "Str",
                     max_lenght => 250
@@ -201,7 +221,28 @@ sub action_specs {
             my %values = $r->valid_values;
             not defined $values{$_} and delete $values{$_} for keys %values;
 
-
+            if ($values{reply}) {
+                $self->_httpcb->add(
+                    url     => $ENV{FB_API_URL} . '/me/messages?access_token=' . $access_token,
+                    method  => "post",
+                    headers => 'Content-Type:application/json',
+                    body    => encode_json {
+                        recipient => {
+                            id => $recipient->fb_id
+                        },
+                        message => {
+                            text          => $values{content},
+                            quick_replies => [
+                                {
+                                    content_type => 'text',
+                                    title        => 'Voltar para o início',
+                                    payload      => 'greetings'
+                                }
+                            ]
+                        }
+                    }
+                );
+            }
 
             $self->update({
                 %values,
@@ -211,6 +252,7 @@ sub action_specs {
     };
 }
 
+sub _build__httpcb { WebService::HttpCallback->instance }
 
 __PACKAGE__->meta->make_immutable;
 1;

@@ -101,7 +101,7 @@ sub action_specs {
 
             for my $recipient (@recipients) {
                 # Mando para o httpcallback
-                $self->_httpcb->send_message(
+                $self->_httpcb->add(
                     url     => $ENV{FB_API_URL} . '/me/messages?access_token=' . $access_token,
                     method  => "post",
                     headers => 'Content-Type:application/json',
