@@ -98,11 +98,6 @@ __PACKAGE__->table("recipient");
   default_value: (empty string)
   is_nullable: 1
 
-=head2 picture
-
-  data_type: 'text'
-  is_nullable: 1
-
 =cut
 
 __PACKAGE__->add_columns(
@@ -136,8 +131,6 @@ __PACKAGE__->add_columns(
   },
   "groups",
   { data_type => "hstore", default_value => "", is_nullable => 1 },
-  "picture",
-  { data_type => "text", is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -200,8 +193,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-01-31 13:55:32
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:ij/P4AKV1fzPUMtWt7oh1w
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-01-30 16:28:28
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:H3g7A2KGOAM7I8vpGX+Z/A
 
 with 'MandatoAberto::Role::Verification';
 with 'MandatoAberto::Role::Verification::TransactionalActions::DBIC';
