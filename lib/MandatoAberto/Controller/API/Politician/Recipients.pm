@@ -6,7 +6,6 @@ use namespace::autoclean;
 BEGIN { extends 'CatalystX::Eta::Controller::REST' }
 
 with 'CatalystX::Eta::Controller::AutoObject';
-with 'CatalystX::Eta::Controller::AutoListGET';
 with 'CatalystX::Eta::Controller::AutoResultGET';
 
 use Data::Printer;
@@ -14,21 +13,6 @@ use Data::Printer;
 __PACKAGE__->config(
     object_verify_type => 'int',
     object_key => 'recipient',
-
-     list_key       => 'recipients',
-     build_list_row => sub {
-        my ($r, $self, $c) = @_;
-
-        return {
-            id            => $r->get_column('id'),
-            name          => $r->get_column('name'),
-            cellphone     => $r->get_column('cellphone'),
-            email         => $r->get_column('email'),
-            gender        => $r->get_column('gender'),
-            origin_dialog => $r->get_column('origin_dialog'),
-            created_at    => $r->get_column('created_at'),
-        };
-     },
 
      build_row => sub {
         my ($r, $self, $c) = @_;
@@ -67,7 +51,35 @@ sub object : Chained('base') : PathPart('') : CaptureArgs(1) { }
 
 sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }
 
-sub list_GET { }
+sub list_GET {
+    my ($self, $c) = @_;
+
+    my @rows = ();
+
+    my $page    = $c->req->params->{page}    || 1;
+    my $results = $c->req->params->{results} || 20;
+
+    $c->stash->{collection} = $c->stash->{collection}->search( {}, { page => $page, rows => $results } );
+
+    return $self->status_ok(
+        $c,
+        entity => {
+            recipients => [
+                map {
+                    +{
+                        id            => $_->get_column('id'),
+                        name          => $_->get_column('name'),
+                        cellphone     => $_->get_column('cellphone'),
+                        email         => $_->get_column('email'),
+                        gender        => $_->get_column('gender'),
+                        origin_dialog => $_->get_column('origin_dialog'),
+                        created_at    => $_->get_column('created_at'),
+                    }
+                } $c->stash->{collection}->all()
+            ],
+        },
+    );
+}
 
 sub result : Chained('object') : PathPart('') : Args(0) : ActionClass('REST') { }
 
