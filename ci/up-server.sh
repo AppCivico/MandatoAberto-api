@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 GIT_DIR=$(git rev-parse --show-toplevel)
 cd $GIT_DIR
 
@@ -59,6 +59,7 @@ sqitch deploy -t $SQITCH_DEPLOY
 export DBIC_TRACE=0
 
 echo STDERR "Restaring server...";
+set +e
 up_server "mandatoaberto.psgi" $API_PORT $API_WORKERS
 
 line
