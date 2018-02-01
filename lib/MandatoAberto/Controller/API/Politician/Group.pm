@@ -82,7 +82,7 @@ sub count_POST {
 sub structure : Chained('base') : PathPart('structure') : Args(0) : ActionClass('REST') { }
 
 sub structure_GET {
-    my ($self) = @_;
+    my ($self, $c) = @_;
 
     return $self->status_ok(
         $c,
