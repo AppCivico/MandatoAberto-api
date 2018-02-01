@@ -69,6 +69,8 @@ sub list_GET {
     my $has_dialogs       = $c->model("DB::Answer")->search( { politician_id => $politician_id } )->count > 0 ? 1 : 0;
     my $has_facebook_auth = $c->stash->{politician}->fb_page_access_token ? 1 : 0;
 
+    my $first_access = $c->model("DB::UserSession")->search( { user_id => $politician_id } )->count > 1 ? 0 : 1;
+
     # Dados de genero
     my $female_citizen_count = $c->model("DB::Recipient")->search(
         {
@@ -107,6 +109,7 @@ sub list_GET {
         entity => {
             citizens => $citizen_count,
 
+            first_access        => $first_access,
             has_greeting        => $has_greeting,
             has_contacts        => $has_contacts,
             has_dialogs         => $has_dialogs,

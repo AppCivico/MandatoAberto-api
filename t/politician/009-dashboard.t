@@ -227,6 +227,27 @@ db_transaction {
         is ($res->{has_contacts}, 1, 'politician has contacts');
         is ($res->{has_dialogs}, 1, 'politician has dialogs');
         is ($res->{has_facebook_auth}, 1, 'politician has facebook auth');
+        is ($res->{first_access}, 1, 'politician first access');
+    };
+
+    $schema->resultset("UserSession")->create({
+        user_id     => $politician_id,
+        api_key     => fake_digits("##########")->(),
+        created_at  => \'NOW()',
+        valid_until => \'NOW()',
+    });
+
+    rest_reload_list "get_politician_dashboard";
+
+    stash_test "get_politician_dashboard.list" => sub {
+        my $res = shift;
+
+        is ($res->{citizens}, 2, 'two citizens');
+        is ($res->{has_greeting}, 1, 'politician has greeting');
+        is ($res->{has_contacts}, 1, 'politician has contacts');
+        is ($res->{has_dialogs}, 1, 'politician has dialogs');
+        is ($res->{has_facebook_auth}, 1, 'politician has facebook auth');
+        is ($res->{first_access}, 0, 'politician first access');
     };
 };
 
