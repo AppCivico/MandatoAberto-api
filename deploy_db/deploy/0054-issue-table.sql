@@ -1,4 +1,4 @@
--- Deploy mandatoaberto:0054-current-db-state to pg
+-- Deploy mandatoaberto:0054-issue-table to pg
 -- requires: 0053-dm-groups-count
 
 BEGIN;
@@ -12,12 +12,5 @@ CREATE TABLE issue (
     updated_at    TIMESTAMP WITHOUT TIME ZONE,
     created_at    TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT NOW()
 );
-
-ALTER TABLE issue ADD COLUMN reply TEXT;
-
-ALTER TABLE issue DROP COLUMN status;
-ALTER TABLE issue ADD COLUMN open BOOLEAN NOT NULL DEFAULT 'true';
-
-ALTER TABLE recipient ADD COLUMN picture TEXT;
 
 COMMIT;
