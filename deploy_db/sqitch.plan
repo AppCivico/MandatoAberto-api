@@ -55,4 +55,4 @@
 0051-tag-recipients-count [0050-tag-hstore] 2018-01-23T18:32:45Z Junior Moraes <juniorfvox@gmail.com> # tag-recipients-count
 0052-rename-tags-groups [0051-tag-recipients-count] 2018-01-24T13:49:33Z Junior Moraes <juniorfvox@gmail.com> # rename-tags-groups
 0053-dm-groups-count [0052-rename-tags-groups] 2018-01-29T20:19:26Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding count and groups to the direct-messages table
-0054-current-db-state [0053-dm-groups-count] 2018-02-01T15:35:49Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Current db state
+0055-current-db-state [0053-dm-groups-count] 2018-02-01T15:35:49Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Current db state
