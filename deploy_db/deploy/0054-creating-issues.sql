@@ -1,4 +1,4 @@
--- Deploy mandatoaberto:0054-issue-table to pg
+-- Deploy mandatoaberto:0054-creating-issues to pg
 -- requires: 0053-dm-groups-count
 
 BEGIN;
