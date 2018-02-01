@@ -79,6 +79,38 @@ sub count_POST {
     );
 }
 
+sub structure : Chained('base') : PathPart('structure') : Args(0) : ActionClass('REST') { }
+
+sub structure_GET {
+    my ($self) = @_;
+
+    return $self->status_ok(
+        $c,
+        entity => {
+            valid_operators => [ qw/ AND OR / ],
+
+            valid_rules => [
+                {
+                    name      => 'QUESTION_ANSWER_EQUALS',
+                    has_value => 1,
+                },
+                {
+                    name      => 'QUESTION_ANSWER_NOT_EQUALS',
+                    has_value => 1,
+                },
+                {
+                    name      => 'QUESTION_IS_NOT_ANSWERED',
+                    has_value => 0,
+                },
+                {
+                    name      => 'QUESTION_IS_ANSWERED',
+                    has_value => 0,
+                },
+            ],
+        },
+    );
+}
+
 __PACKAGE__->meta->make_immutable;
 
 1;
