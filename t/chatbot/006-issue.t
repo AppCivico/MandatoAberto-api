@@ -7,11 +7,7 @@ use MandatoAberto::Test::Further;
 my $schema = MandatoAberto->model("DB");
 
 db_transaction {
-    my $page_id = fake_words(1)->();
-
-    create_politician(
-        fb_page_id => $page_id
-    );
+    create_politician;
     my $politician_id = stash "politician.id";
 
     my $recipient_fb_id = fake_words(1)->();
@@ -35,13 +31,13 @@ db_transaction {
         is_fail => 1,
         code    => 400,
         [
-            page_id      => $page_id,
+            politician_id => $politician_id,
             fb_id        => $recipient_fb_id
         ]
     ;
 
     rest_post "/api/chatbot/issue",
-        name    => 'issue without page_id',
+        name    => 'issue without politician_id',
         is_fail => 1,
         code    => 400,
         [
@@ -55,19 +51,19 @@ db_transaction {
         is_fail => 1,
         code    => 400,
         [
-            page_id => $page_id,
-            message => fake_words(1)->()
+            politician_id => $politician_id,
+            message       => fake_words(1)->()
         ]
     ;
 
     rest_post "/api/chatbot/issue",
-        name    => 'issue without matching page_id',
+        name    => 'issue without matching politician_id',
         is_fail => 1,
         code    => 400,
         [
-            page_id => fake_words(1)->(),
-            fb_id   => $recipient_fb_id,
-            message => fake_words(1)->()
+            politician_id => fake_words(1)->(),
+            fb_id         => $recipient_fb_id,
+            message       => fake_words(1)->()
         ]
     ;
 
@@ -76,9 +72,9 @@ db_transaction {
         is_fail => 1,
         code    => 400,
         [
-            page_id => $page_id,
-            fb_id   => fake_words(1)->(),
-            message => fake_words(1)->()
+            politician_id => $politician_id,
+            fb_id         => fake_words(1)->(),
+            message       => fake_words(1)->()
         ]
     ;
 
@@ -88,9 +84,9 @@ db_transaction {
         is_fail => 1,
         code    => 400,
         [
-            page_id => $page_id,
-            fb_id   => $recipient_fb_id,
-            message => $big_message
+            politician_id => $politician_id,
+            fb_id         => $recipient_fb_id,
+            message       => $big_message
         ]
     ;
 
@@ -99,9 +95,9 @@ db_transaction {
         automatic_load_item => 0,
         stash               => "i1",
         [
-            page_id => $page_id,
-            fb_id   => $recipient_fb_id,
-            message => fake_words(1)->()
+            politician_id => $politician_id,
+            fb_id         => $recipient_fb_id,
+            message       => fake_words(1)->()
         ]
     ;
 

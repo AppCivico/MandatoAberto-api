@@ -19,7 +19,12 @@ sub verifiers_specs {
             profile => {
                 politician_id => {
                     required   => 1,
-                    type       => "Int"
+                    type       => "Int",
+                    post_check => sub {
+                        my $politician_id = $_[0]->get_value('politician_id');
+
+                        $self->result_source->schema->resultset("Politician")->search({ user_id => $politician_id })->count;
+                    }
                 },
                 recipient_id => {
                     required => 1,
