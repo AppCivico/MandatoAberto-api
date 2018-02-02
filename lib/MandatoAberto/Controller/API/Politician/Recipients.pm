@@ -54,8 +54,6 @@ sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }
 sub list_GET {
     my ($self, $c) = @_;
 
-    my @rows = ();
-
     my $page    = $c->req->params->{page}    || 1;
     my $results = $c->req->params->{results} || 20;
 
