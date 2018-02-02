@@ -69,12 +69,11 @@ sub exec_item {
         if (my $recipients_count = $group->update_recipients()) {
             $group->update(
                 {
-                    recipients_count        => $recipients_count,
+                    recipients_count        => int($recipients_count),
                     last_recipients_calc_at => \'NOW()',
                     status                  => 'ready',
                 }
             );
-
         }
         else {
             $self->logger->logdie(sprintf("Erro ao segmentar o grupo id '%d'!", $group->id)) if $self->logger;

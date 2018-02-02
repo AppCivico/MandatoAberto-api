@@ -306,10 +306,19 @@ db_transaction {
         };
     };
 
+    use_ok 'MandatoAberto::Worker::Segmenter';
+    my $worker = new_ok('MandatoAberto::Worker::Segmenter', [ schema => $schema ]);
+
     my $group_id;
     subtest 'edit group' => sub {
 
         $group_id = (stash 'groups')->{groups}->[0]->{id};
+
+        ok(
+            $schema->resultset('Group')->search( { id => { '!=', $group_id } } )->delete,
+            'delete other groups to run worker once'
+        );
+        ok( $worker->run_once(), 'run once' );
 
         rest_put "/api/politician/$politician_id/group/$group_id",
             name    => 'edit group',
@@ -322,7 +331,7 @@ db_transaction {
                         {
                             name => 'QUESTION_IS_NOT_ANSWERED',
                             data => {
-                                field => '32',
+                                field => $poll_questions[-1]->id,
                             },
                         },
                     ],
@@ -330,20 +339,75 @@ db_transaction {
             }),
         ;
 
+        ok( $worker->run_once(), 'run once' );
+
         rest_get "/api/politician/$politician_id/group/$group_id", name => 'get group', stash => 'group';
 
         stash_test 'group' => sub {
             my $res = shift;
 
-            is( ref($res->{filter}), 'HASH', 'filter=hashref' );
-            is( ref($res->{filter}->{rules}), 'ARRAY', 'rules=arrayref' );
-            isnt( $res->{updated_at}, undef, 'updated_at filled' );
+            is(   ref($res->{filter}),          'HASH',  'filter=hashref' );
+            is(   ref($res->{filter}->{rules}), 'ARRAY', 'rules=arrayref' );
+            isnt( $res->{updated_at},           undef,   'updated_at filled' );
 
             is( $res->{name}, 'Edited', 'name=Edited' );
             is( $res->{filter}->{rules}->[0]->{name}, 'QUESTION_IS_NOT_ANSWERED', 'rule_name=QUESTION_IS_NOT_ANSWERED' );
-            is( $res->{filter}->{rules}->[0]->{data}->{field}, '32', 'rule_data_field=32' );
+            is( $res->{filter}->{rules}->[0]->{data}->{field}, $poll_questions[-1]->id, 'rule_data_field' );
             is( $res->{filter}->{rules}->[0]->{data}->{value}, undef, 'rule_data_value=undef' );
+
+            is( ref($res->{recipients}), 'ARRAY', 'recipients=arrayref' );
+
+            # Somente os dois ultimos recipients não responderam a última questão.
+            is_deeply(
+                [ $recipient_ids[2], $recipient_ids[3] ],
+                [ sort map { $_->{id} } @{ $res->{recipients} } ],
+            );
         };
+    };
+
+    subtest 'edit locked group' => sub {
+
+        rest_put "/api/politician/$politician_id/group/$group_id",
+            name    => 'edit group again',
+            headers => [ 'Content-Type' => 'application/json' ],
+            data    => encode_json({
+                name     => 'Edited',
+                filter   => {
+                    operator => 'AND',
+                    rules    => [
+                        {
+                            name => 'QUESTION_IS_ANSWERED',
+                            data => {
+                                field => $poll_questions[-1]->id,
+                            },
+                        },
+                    ],
+                },
+            }),
+        ;
+
+        # Atualmente o estado desse grupo é 'processing'. Não devemos poder editá-lo novamente enquanto não
+        # estiver 'ready'.
+        rest_put "/api/politician/$politician_id/group/$group_id",
+            name    => 'edit group again',
+            is_fail => 1,
+            code    => 400,
+            headers => [ 'Content-Type' => 'application/json' ],
+            data    => encode_json({
+                name     => 'Edited',
+                filter   => {
+                    operator => 'AND',
+                    rules    => [
+                        {
+                            name => 'QUESTION_IS_NOT_ANSWERED',
+                            data => {
+                                field => $poll_questions[-1]->id,
+                            },
+                        },
+                    ],
+                },
+            }),
+        ;
     };
 };
 

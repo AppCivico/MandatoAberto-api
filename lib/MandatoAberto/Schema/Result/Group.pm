@@ -236,10 +236,16 @@ sub action_specs {
             my %values = $r->valid_values;
             not defined $values{$_} and delete $values{$_} for keys %values;
 
+            if ($self->get_column('status') eq 'processing') {
+                die { error_code => 400, message => 'already processing.', msg => '' };
+            }
+
             $self->update(
                 {
                     %values,
-                    updated_at => \'NOW()',
+                    status           => 'processing',
+                    recipients_count => undef,
+                    updated_at       => \'NOW()',
                 },
             );
         },

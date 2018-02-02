@@ -10,7 +10,6 @@ with 'CatalystX::Eta::Controller::AutoObject';
 with 'CatalystX::Eta::Controller::AutoListGET';
 with 'CatalystX::Eta::Controller::AutoListPOST';
 with 'CatalystX::Eta::Controller::AutoResultPUT';
-with 'CatalystX::Eta::Controller::AutoResultGET';
 
 __PACKAGE__->config(
     result => 'DB::Group',
@@ -24,11 +23,11 @@ __PACKAGE__->config(
 
         return {
             id            => $r->id,
-            name          => $r->get_column('name'),
-            politician_id => $r->get_column('politician_id'),
             filter        => $r->filter,
+            name          => $r->get_column('name'),
             updated_at    => $r->get_column('updated_at'),
             created_at    => $r->get_column('created_at'),
+            politician_id => $r->get_column('politician_id'),
         };
     },
 
@@ -54,7 +53,49 @@ sub object : Chained('base') : PathPart('') : CaptureArgs(1) { }
 
 sub result : Chained('object') : PathPart('') : Args(0) : ActionClass('REST') { }
 
-sub result_GET { }
+sub result_GET {
+    my ($self, $c) = @_;
+
+    my $page    = $c->req->params->{page}    || 1;
+    my $results = $c->req->params->{results} || 20;
+
+    my $group = $c->stash->{group};
+
+    my $recipients_rs = $group->politician->recipients->search(
+        {},
+        {
+            page => $page,
+            rows => $results,
+        },
+    );
+
+    return $self->status_ok(
+        $c,
+        entity => {
+            id            => $group->id,
+            filter        => $group->filter,
+            name          => $group->get_column('name'),
+            updated_at    => $group->get_column('updated_at'),
+            created_at    => $group->get_column('created_at'),
+            politician_id => $group->get_column('politician_id'),
+
+            recipients => [
+                map {
+                    my $r = $_;
+                    +{
+                        id         => $r->id,
+                        name       => $r->get_column('name'),
+                        email      => $r->get_column('email'),
+                        gender     => $r->get_column('gender'),
+                        picture    => $r->get_column('picture'),
+                        cellphone  => $r->get_column('cellphone'),
+                        created_at => $r->get_column('created_at'),
+                    }
+                } $recipients_rs->search_by_group_ids($group->id)->all()
+            ]
+        },
+    );
+}
 
 sub result_PUT { }
 
