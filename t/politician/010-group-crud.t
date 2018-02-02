@@ -306,10 +306,19 @@ db_transaction {
         };
     };
 
+    use_ok 'MandatoAberto::Worker::Segmenter';
+    my $worker = new_ok('MandatoAberto::Worker::Segmenter', [ schema => $schema ]);
+
     my $group_id;
     subtest 'edit group' => sub {
 
         $group_id = (stash 'groups')->{groups}->[0]->{id};
+
+        ok(
+            $schema->resultset('Group')->search( { id => { '!=', $group_id } } )->delete,
+            'delete other groups to run worker once'
+        );
+        ok( $worker->run_once(), 'run once' );
 
         rest_put "/api/politician/$politician_id/group/$group_id",
             name    => 'edit group',
@@ -329,14 +338,6 @@ db_transaction {
                 },
             }),
         ;
-
-        use_ok 'MandatoAberto::Worker::Segmenter';
-        my $worker = new_ok('MandatoAberto::Worker::Segmenter', [ schema => $schema ]);
-
-        ok(
-            $schema->resultset('Group')->search( { id => { '!=', $group_id } } )->delete,
-            'delete other groups to run worker once'
-        );
 
         ok( $worker->run_once(), 'run once' );
 
@@ -362,6 +363,51 @@ db_transaction {
                 [ sort map { $_->{id} } @{ $res->{recipients} } ],
             );
         };
+    };
+
+    subtest 'edit locked group' => sub {
+
+        rest_put "/api/politician/$politician_id/group/$group_id",
+            name    => 'edit group again',
+            headers => [ 'Content-Type' => 'application/json' ],
+            data    => encode_json({
+                name     => 'Edited',
+                filter   => {
+                    operator => 'AND',
+                    rules    => [
+                        {
+                            name => 'QUESTION_IS_ANSWERED',
+                            data => {
+                                field => $poll_questions[-1]->id,
+                            },
+                        },
+                    ],
+                },
+            }),
+        ;
+
+        # Atualmente o estado desse grupo é 'processing'. Não devemos poder editá-lo novamente enquanto não
+        # estiver 'ready'.
+        rest_put "/api/politician/$politician_id/group/$group_id",
+            name    => 'edit group again',
+            is_fail => 1,
+            code    => 400,
+            headers => [ 'Content-Type' => 'application/json' ],
+            data    => encode_json({
+                name     => 'Edited',
+                filter   => {
+                    operator => 'AND',
+                    rules    => [
+                        {
+                            name => 'QUESTION_IS_NOT_ANSWERED',
+                            data => {
+                                field => $poll_questions[-1]->id,
+                            },
+                        },
+                    ],
+                },
+            }),
+        ;
     };
 };
 
