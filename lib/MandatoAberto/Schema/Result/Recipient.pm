@@ -195,13 +195,13 @@ Related object: L<MandatoAberto::Schema::Result::PollResult>
 __PACKAGE__->has_many(
   "poll_results",
   "MandatoAberto::Schema::Result::PollResult",
-  { "foreign.citizen_id" => "self.id" },
+  { "foreign.recipient_id" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-01-31 13:55:32
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:ij/P4AKV1fzPUMtWt7oh1w
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-02-02 17:43:17
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:8mX6PV0zhhbRqSgPIo33iA
 
 __PACKAGE__->load_components("InflateColumn::Serializer", "Core");
 __PACKAGE__->remove_column('groups');

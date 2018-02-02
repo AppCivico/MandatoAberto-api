@@ -152,7 +152,7 @@ EXISTS(
     FROM poll_result
     JOIN poll_question_option
       ON poll_result.poll_question_option_id = poll_question_option.id
-    WHERE poll_result.citizen_id = me.id
+    WHERE poll_result.recipient_id = me.id
       AND poll_question_option.poll_question_id = ?
 )
 SQL_QUERY
@@ -167,7 +167,7 @@ NOT EXISTS(
     FROM poll_result
     JOIN poll_question_option
       ON poll_result.poll_question_option_id = poll_question_option.id
-    WHERE poll_result.citizen_id = me.id
+    WHERE poll_result.recipient_id = me.id
       AND poll_question_option.poll_question_id = ?
 )
 SQL_QUERY
@@ -182,7 +182,7 @@ EXISTS(
     FROM poll_result
     JOIN poll_question_option
       ON poll_result.poll_question_option_id = poll_question_option.id
-    WHERE poll_result.citizen_id = me.id
+    WHERE poll_result.recipient_id = me.id
       AND poll_question_option.poll_question_id = ?
       AND poll_question_option.content = ?
 )
@@ -198,7 +198,7 @@ EXISTS(
     FROM poll_result
     JOIN poll_question_option
       ON poll_result.poll_question_option_id = poll_question_option.id
-    WHERE poll_result.citizen_id = me.id
+    WHERE poll_result.recipient_id = me.id
       AND poll_question_option.poll_question_id = ?
       AND poll_question_option.poll_question_id IS NOT NULL
       AND poll_question_option.content <> ?

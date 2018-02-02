@@ -27,8 +27,8 @@ db_transaction {
     create_politician;
     my $politician_id = stash "politician.id";
 
-    rest_post "/api/chatbot/citizen",
-        name                => "Create citizen",
+    rest_post "/api/chatbot/recipient",
+        name                => "Create recipient",
         automatic_load_item => 0,
         [
             name          => fake_name()->(),
@@ -100,8 +100,8 @@ db_transaction {
         is ($res->{citizens}, 1, 'one citizen');
     };
 
-    rest_post "/api/chatbot/citizen",
-        name                => "Create citizen",
+    rest_post "/api/chatbot/recipient",
+        name                => "Create recipient",
         automatic_load_item => 0,
         [
             name          => fake_name()->(),

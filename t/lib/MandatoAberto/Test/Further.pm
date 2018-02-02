@@ -153,7 +153,7 @@ sub create_recipient {
     my (%opts) = @_;
 
     return $obj->rest_post(
-        '/api/chatbot/citizen',
+        '/api/chatbot/recipient',
         name  => 'create recipient',
         stash => 'recipient',
         automatic_load_item => 0,

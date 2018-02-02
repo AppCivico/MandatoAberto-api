@@ -49,7 +49,7 @@ __PACKAGE__->table("poll_result");
   is_nullable: 0
   sequence: 'poll_results_id_seq'
 
-=head2 citizen_id
+=head2 recipient_id
 
   data_type: 'integer'
   is_foreign_key: 1
@@ -78,7 +78,7 @@ __PACKAGE__->add_columns(
     is_nullable       => 0,
     sequence          => "poll_results_id_seq",
   },
-  "citizen_id",
+  "recipient_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "poll_question_option_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
@@ -105,21 +105,6 @@ __PACKAGE__->set_primary_key("id");
 
 =head1 RELATIONS
 
-=head2 citizen
-
-Type: belongs_to
-
-Related object: L<MandatoAberto::Schema::Result::Recipient>
-
-=cut
-
-__PACKAGE__->belongs_to(
-  "citizen",
-  "MandatoAberto::Schema::Result::Recipient",
-  { id => "citizen_id" },
-  { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
-);
-
 =head2 poll_question_option
 
 Type: belongs_to
@@ -135,9 +120,24 @@ __PACKAGE__->belongs_to(
   { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
 );
 
+=head2 recipient
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-01-15 15:25:43
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:8AmI+ArZXydbV/MnBsU+6Q
+Type: belongs_to
+
+Related object: L<MandatoAberto::Schema::Result::Recipient>
+
+=cut
+
+__PACKAGE__->belongs_to(
+  "recipient",
+  "MandatoAberto::Schema::Result::Recipient",
+  { id => "recipient_id" },
+  { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
+);
+
+
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-02-02 17:43:17
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:70XVJ6zcU2ZqkoF/r2H8bA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

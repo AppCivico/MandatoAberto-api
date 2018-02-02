@@ -88,7 +88,7 @@ db_transaction {
         ok(
             $schema->resultset('PollResult')->create(
                 {
-                    citizen_id               => $recipient_ids[0],
+                    recipient_id               => $recipient_ids[0],
                     poll_question_option_id  => $text_to_options_id{ $poll_questions[0]->id }->{'Sim'},
                 }
             ),
@@ -98,7 +98,7 @@ db_transaction {
         ok(
             $schema->resultset('PollResult')->create(
                 {
-                    citizen_id => $recipient_ids[0],
+                    recipient_id => $recipient_ids[0],
                     poll_question_option_id  => $text_to_options_id{ $poll_questions[1]->id }->{'Não'},
                 }
             ),
@@ -108,7 +108,7 @@ db_transaction {
         ok(
             $schema->resultset('PollResult')->create(
                 {
-                    citizen_id => $recipient_ids[0],
+                    recipient_id => $recipient_ids[0],
                     poll_question_option_id  => $text_to_options_id{ $poll_questions[2]->id }->{'Talvez'},
                 }
             ),
@@ -118,7 +118,7 @@ db_transaction {
         ok(
             $schema->resultset('PollResult')->create(
                 {
-                    citizen_id => $recipient_ids[1],
+                    recipient_id => $recipient_ids[1],
                     poll_question_option_id  => $text_to_options_id{ $poll_questions[0]->id }->{'Sim'},
                 }
             ),
@@ -128,7 +128,7 @@ db_transaction {
         ok(
             $schema->resultset('PollResult')->create(
                 {
-                    citizen_id => $recipient_ids[1],
+                    recipient_id => $recipient_ids[1],
                     poll_question_option_id  => $text_to_options_id{ $poll_questions[1]->id }->{'Talvez'},
                 }
             ),
@@ -138,7 +138,7 @@ db_transaction {
         ok(
             $schema->resultset('PollResult')->create(
                 {
-                    citizen_id => $recipient_ids[1],
+                    recipient_id => $recipient_ids[1],
                     poll_question_option_id  => $text_to_options_id{ $poll_questions[2]->id }->{'Não'},
                 }
             ),
@@ -148,7 +148,7 @@ db_transaction {
         ok(
             $schema->resultset('PollResult')->create(
                 {
-                    citizen_id => $recipient_ids[2],
+                    recipient_id => $recipient_ids[2],
                     poll_question_option_id  => $text_to_options_id{ $poll_questions[0]->id }->{'Não'},
                 }
             ),
@@ -157,181 +157,34 @@ db_transaction {
 
     api_auth_as user_id => $politician_id;
 
-    subtest 'validate operators' => sub {
-
-        rest_post "/api/politician/$politician_id/group",
-            name    => 'add group',
-            is_fail => 1,
-            headers => [ 'Content-Type' => 'application/json' ],
-            data    => encode_json({
-                name     => 'AppCivico',
-                filter   => {
-                    operator => 'NOT_EXISTS',
-                    rules    => [],
-                },
-            }),
-        ;
-
-        my $rules = [
-            {
-                name => 'QUESTION_ANSWER_EQUALS',
-                data => {
-                    field => '32',
-                    value => 'Sim',
-                },
-            },
-        ];
-
-        rest_post "/api/politician/$politician_id/group",
-            name    => 'add group',
-            headers => [ 'Content-Type' => 'application/json' ],
-            data    => encode_json({
-                name     => 'AppCivico',
-                filter   => {
-                    operator => 'AND',
-                    rules => $rules,
-                },
-            }),
-        ;
-
-        rest_post "/api/politician/$politician_id/group",
-            name    => 'add group',
-            headers => [ 'Content-Type' => 'application/json' ],
-            data    => encode_json({
-                name     => 'AppCivico',
-                filter   => {
-                    operator => 'OR',
-                    rules    => $rules,
-                },
-            }),
-        ;
-    };
-
-    subtest 'validate rules' => sub {
-
-        rest_post "/api/politician/$politician_id/group",
-            name    => 'add group with invalid filter',
-            is_fail => 1,
-            headers => [ 'Content-Type' => 'application/json' ],
-            data    => encode_json({
-                name     => 'AppCivico',
-                filter   => {
-                    operator => 'AND',
-                    rules    => [
-                        {
-                            name => 'RULE_THAT_NOT_EXISTS',
-                            data => {
-                                field => '32',
-                                value => 'Sim',
-                            },
-                        },
-                    ],
-                },
-            }),
-        ;
-
-        rest_post "/api/politician/$politician_id/group",
-            name    => 'add group',
-            headers => [ 'Content-Type' => 'application/json' ],
-            data    => encode_json({
-                name     => 'AppCivico',
-                filter   => {
-                    operator => 'AND',
-                    rules    => [
-                        {
-                            name => 'QUESTION_ANSWER_EQUALS',
-                            data => {
-                                field => '32',
-                                value => 'Sim',
-                            },
-                        },
-                    ],
-                },
-            }),
-        ;
-    };
-
-    subtest 'validate data keys' => sub {
-
-        rest_post "/api/politician/$politician_id/group",
-            name    => 'add group with invalid data key',
-            is_fail => 1,
-            headers => [ 'Content-Type' => 'application/json' ],
-            data    => encode_json({
-                name     => 'AppCivico',
-                filter   => {
-                    operator => 'OR',
-                    rules    => [
-                        {
-                            name => 'QUESTION_ANSWER_EQUALS',
-                            data => {
-                                foo   => 'bar',
-                                value => 'Não',
-                            },
-                        },
-                    ],
-                },
-            }),
-        ;
-    };
-
-    subtest 'empty rules is not allowed' => sub {
-
-        rest_post "/api/politician/$politician_id/group",
-            name    => 'add group',
-            is_fail => 1,
-            headers => [ 'Content-Type' => 'application/json' ],
-            data    => encode_json({
-                name     => 'AppCivico',
-                filter   => {
-                    operator => 'AND',
-                    rules    => [],
-                },
-            }),
-        ;
-    };
-
-    subtest 'list created groups' => sub {
-
-        rest_get "/api/politician/$politician_id/group", name => 'list groups', stash => 'groups';
-
-        stash_test 'groups' => sub {
-            my $res = shift;
-
-            for my $group (@{ $res->{groups} }) {
-                is( $group->{name}, 'AppCivico', 'name=AppCivico' );
-                is( ref($group->{filter}),          'HASH',  'filters=HASH' );
-                is( ref($group->{filter}->{rules}), 'ARRAY', 'rules=HASH' );
-            }
-        };
-    };
-
     use_ok 'MandatoAberto::Worker::Segmenter';
     my $worker = new_ok('MandatoAberto::Worker::Segmenter', [ schema => $schema ]);
 
-    my $group_id;
-    subtest 'edit group' => sub {
+    subtest "filter 'QUESTION_ANSWER_EQUALS" => sub {
 
-        $group_id = (stash 'groups')->{groups}->[0]->{id};
-
-        ok(
-            $schema->resultset('Group')->search( { id => { '!=', $group_id } } )->delete,
-            'delete other groups to run worker once'
-        );
-        ok( $worker->run_once(), 'run once' );
-
-        rest_put "/api/politician/$politician_id/group/$group_id",
-            name    => 'edit group',
+        # Neste filtro eu quero pegar quem respondeu 'Sim' para frango com catupiry e 'Talvez' para portuguesa.
+        rest_post "/api/politician/$politician_id/group",
+            name    => 'add group',
+            stash   => 'group',
+            automatic_load_item => 0,
             headers => [ 'Content-Type' => 'application/json' ],
             data    => encode_json({
-                name     => 'Edited',
+                name     => 'AppCivico',
                 filter   => {
-                    operator => 'AND',
-                    rules    => [
+                    operator => 'OR',
+                    rules => [
                         {
-                            name => 'QUESTION_IS_NOT_ANSWERED',
+                            name => 'QUESTION_ANSWER_EQUALS',
                             data => {
-                                field => $poll_questions[-1]->id,
+                                field => $poll_questions[0]->id,
+                                value => 'Sim',
+                            },
+                        },
+                        {
+                            name => 'QUESTION_ANSWER_EQUALS',
+                            data => {
+                                field => $poll_questions[2]->id,
+                                value => 'Talvez',
                             },
                         },
                     ],
@@ -341,75 +194,148 @@ db_transaction {
 
         ok( $worker->run_once(), 'run once' );
 
-        rest_get "/api/politician/$politician_id/group/$group_id", name => 'get group', stash => 'group';
+        my $group_id = stash 'group.id';
 
-        stash_test 'group' => sub {
-            my $res = shift;
-
-            is(   ref($res->{filter}),          'HASH',  'filter=hashref' );
-            is(   ref($res->{filter}->{rules}), 'ARRAY', 'rules=arrayref' );
-            isnt( $res->{updated_at},           undef,   'updated_at filled' );
-
-            is( $res->{name}, 'Edited', 'name=Edited' );
-            is( $res->{filter}->{rules}->[0]->{name}, 'QUESTION_IS_NOT_ANSWERED', 'rule_name=QUESTION_IS_NOT_ANSWERED' );
-            is( $res->{filter}->{rules}->[0]->{data}->{field}, $poll_questions[-1]->id, 'rule_data_field' );
-            is( $res->{filter}->{rules}->[0]->{data}->{value}, undef, 'rule_data_value=undef' );
-
-            is( ref($res->{recipients}), 'ARRAY', 'recipients=arrayref' );
-
-            # Somente os dois ultimos recipients não responderam a última questão.
-            is_deeply(
-                [ $recipient_ids[2], $recipient_ids[3] ],
-                [ sort map { $_->{id} } @{ $res->{recipients} } ],
-            );
-        };
+        is_deeply(
+            [ sort $recipient_ids[0], $recipient_ids[1] ],
+            [ sort map { $_->id } $schema->resultset('Recipient')->search_by_group_ids($group_id)->all ],
+        );
     };
 
-    subtest 'edit locked group' => sub {
+    subtest "filter 'QUESTION_ANSWER_NOT_EQUALS" => sub {
 
-        rest_put "/api/politician/$politician_id/group/$group_id",
-            name    => 'edit group again',
+        # Neste filtro eu quero pegar quem respondeu algo diferente de 'Talvez' e diferente de 'Sim' para 4 quejos.
+        rest_post "/api/politician/$politician_id/group",
+            name    => 'add group',
+            stash   => 'group',
+            automatic_load_item => 0,
             headers => [ 'Content-Type' => 'application/json' ],
             data    => encode_json({
-                name     => 'Edited',
+                name     => 'AppCivico',
+                filter   => {
+                    operator => 'OR',
+                    rules => [
+                        {
+                            name => 'QUESTION_ANSWER_NOT_EQUALS',
+                            data => {
+                                field => $poll_questions[1]->id,
+                                value => 'Sim',
+                            },
+                        },
+                        {
+                            name => 'QUESTION_ANSWER_NOT_EQUALS',
+                            data => {
+                                field => $poll_questions[1]->id,
+                                value => 'Talvez',
+                            },
+                        },
+                    ],
+                },
+            }),
+        ;
+
+        ok( $worker->run_once(), 'run once' );
+
+        my $group_id = stash 'group.id';
+
+        is_deeply(
+            [ sort $recipient_ids[0], $recipient_ids[1] ],
+            [ sort map { $_->id } $schema->resultset('Recipient')->search_by_group_ids($group_id)->all ],
+        );
+    };
+
+    subtest "filter 'QUESTION_IS_NOT_ANSWERED" => sub {
+
+        # Neste filtro eu quero pegar quem respondeu algo diferente de 'Talvez' e diferente de 'Sim' para 4 quejos.
+        rest_post "/api/politician/$politician_id/group",
+            name    => 'add group',
+            stash   => 'group',
+            automatic_load_item => 0,
+            headers => [ 'Content-Type' => 'application/json' ],
+            data    => encode_json({
+                name     => 'AppCivico',
                 filter   => {
                     operator => 'AND',
-                    rules    => [
+                    rules => [
+                        {
+                            name => 'QUESTION_IS_NOT_ANSWERED',
+                            data => { field => $poll_questions[2]->id },
+                        },
+                    ],
+                },
+            }),
+        ;
+
+        ok( $worker->run_once(), 'run once' );
+
+        my $group_id = stash 'group.id';
+
+        is_deeply(
+            [ sort $recipient_ids[2], $recipient_ids[3] ],
+            [ sort map { $_->id } $schema->resultset('Recipient')->search_by_group_ids($group_id)->all ],
+        );
+    };
+
+    subtest "filter 'QUESTION_IS_ANSWERED" => sub {
+
+        # Neste filtro eu quero pegar quem respondeu algo diferente de 'Talvez' e diferente de 'Sim' para 4 quejos.
+        rest_post "/api/politician/$politician_id/group",
+            name    => 'add group',
+            stash   => 'group',
+            automatic_load_item => 0,
+            headers => [ 'Content-Type' => 'application/json' ],
+            data    => encode_json({
+                name     => 'Question Is Answered',
+                filter   => {
+                    operator => 'AND',
+                    rules => [
                         {
                             name => 'QUESTION_IS_ANSWERED',
-                            data => {
-                                field => $poll_questions[-1]->id,
-                            },
+                            data => { field => $poll_questions[2]->id },
                         },
                     ],
                 },
             }),
         ;
 
-        # Atualmente o estado desse grupo é 'processing'. Não devemos poder editá-lo novamente enquanto não
-        # estiver 'ready'.
-        rest_put "/api/politician/$politician_id/group/$group_id",
-            name    => 'edit group again',
-            is_fail => 1,
-            code    => 400,
+        ok( $worker->run_once(), 'run once' );
+
+        my $group_id = stash 'group.id';
+
+        is_deeply(
+            [ sort $recipient_ids[0], $recipient_ids[1] ],
+            [ sort map { $_->id } $schema->resultset('Recipient')->search_by_group_ids($group_id)->all ],
+        );
+    };
+
+    subtest 'count filter' => sub {
+
+        rest_post "/api/politician/$politician_id/group/count",
+            name    => 'count filter',
+            stash   => 'count_filter',
+            code    => 200,
             headers => [ 'Content-Type' => 'application/json' ],
             data    => encode_json({
-                name     => 'Edited',
                 filter   => {
                     operator => 'AND',
-                    rules    => [
+                    rules => [
                         {
                             name => 'QUESTION_IS_NOT_ANSWERED',
-                            data => {
-                                field => $poll_questions[-1]->id,
-                            },
+                            data => { field => $poll_questions[2]->id },
                         },
                     ],
                 },
             }),
         ;
+
+        stash_test 'count_filter' => sub {
+            my $res = shift;
+
+            is( $res->{count}, '2', 'count=2' );
+        };
     };
 };
+
 
 done_testing();
 

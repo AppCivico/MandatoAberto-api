@@ -16,13 +16,13 @@ __PACKAGE__->config(
     prepare_params_for_create => sub {
         my ($self, $c, $params) = @_;
 
-        my $citizen_fb_id = $c->req->params->{fb_id};
-        die \["fb_id", "missing"] unless $citizen_fb_id;
+        my $recipient_fb_id = $c->req->params->{fb_id};
+        die \["fb_id", "missing"] unless $recipient_fb_id;
 
-        my $citizen = $c->model("DB::Recipient")->search( { fb_id => $citizen_fb_id } )->next;
-        die \["fb_id", "could not find citizen with that fb_id"] unless $citizen;
+        my $recipient = $c->model("DB::Recipient")->search( { fb_id => $recipient_fb_id } )->next;
+        die \["fb_id", "could not find recipient with that fb_id"] unless $recipient;
 
-        $params->{citizen_id} = $citizen->id;
+        $params->{recipient_id} = $recipient->id;
 
         return $params;
     },
@@ -39,24 +39,24 @@ sub list_POST { }
 sub list_GET {
     my ($self, $c) = @_;
 
-    my $citizen_fb_id = $c->req->params->{fb_id};
-    die \["fb_id", "missing"] unless $citizen_fb_id;
+    my $recipient_fb_id = $c->req->params->{fb_id};
+    die \["fb_id", "missing"] unless $recipient_fb_id;
 
     my $poll_id = $c->req->params->{poll_id};
     die \["poll_id", "missing"] unless $poll_id;
 
-    my $citizen_answer = $c->stash->{collection}->search(
+    my $recipient_answer = $c->stash->{collection}->search(
         {
-            'citizen.fb_id' => $citizen_fb_id,
+            'recipient.fb_id' => $recipient_fb_id,
             'poll.id'       => $poll_id
         },
-        { prefetch => [ 'poll_question_option', { 'poll_question_option' => { 'poll_question' => 'poll' } }, 'citizen' ] }
+        { prefetch => [ 'poll_question_option', { 'poll_question_option' => { 'poll_question' => 'poll' } }, 'recipient' ] }
     )->count;
 
     return $self->status_ok(
         $c,
         entity => {
-            citizen_answered => $citizen_answer,
+            recipient_answered => $recipient_answer,
         }
     )
 }

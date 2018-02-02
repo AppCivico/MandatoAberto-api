@@ -28,22 +28,22 @@ db_transaction {
     ;
     my $poll_id = stash "p1.id";
 
-    my $citizen_fb_id = fake_words(1)->();
-    rest_post "/api/chatbot/citizen",
-        name                => "create citizen",
+    my $recipient_fb_id = fake_words(1)->();
+    rest_post "/api/chatbot/recipient",
+        name                => "create recipient",
         automatic_load_item => 0,
         stash               => 'c1',
         [
             origin_dialog => fake_words(1)->(),
             politician_id => $politician_id,
             name          => fake_name()->(),
-            fb_id         => $citizen_fb_id,
+            fb_id         => $recipient_fb_id,
             email         => fake_email()->(),
             cellphone     => fake_digits("+551198#######")->(),
             gender        => fake_pick( qw/F M/ )->()
         ]
     ;
-    my $citizen_id = stash "c1.id";
+    my $recipient_id = stash "c1.id";
 
     rest_get "/api/chatbot/poll",
         name  => 'get poll',
@@ -59,7 +59,7 @@ db_transaction {
     rest_post "/api/chatbot/poll-result",
         name    => "create poll without option_id",
         is_fail => 1,
-        [ fb_id     => $citizen_fb_id ]
+        [ fb_id     => $recipient_fb_id ]
     ;
 
     rest_post "/api/chatbot/poll-result",
@@ -82,7 +82,7 @@ db_transaction {
         list  => 1,
         stash => "get_poll_answer",
         [
-            fb_id     => $citizen_fb_id,
+            fb_id     => $recipient_fb_id,
             poll_id   => $poll_id,
         ]
     ;
@@ -90,7 +90,7 @@ db_transaction {
     stash_test "get_poll_answer" => sub {
         my $res = shift;
 
-        is($res->{citizen_answered}, 0, 'citizen does not have answer yet');
+        is($res->{recipient_answered}, 0, 'recipient does not have answer yet');
     };
 
     rest_post "/api/chatbot/poll-result",
@@ -98,7 +98,7 @@ db_transaction {
         automatic_load_item => 0,
         stash               => "c1",
         [
-            fb_id                   => $citizen_fb_id,
+            fb_id                   => $recipient_fb_id,
             poll_question_option_id => $chosen_option_id,
         ]
     ;
@@ -108,7 +108,7 @@ db_transaction {
         is_fail => 1,
         code    => 400,
         [
-            fb_id                   => $citizen_fb_id,
+            fb_id                   => $recipient_fb_id,
             poll_question_option_id => $chosen_option_id,
         ]
     ;
@@ -117,7 +117,7 @@ db_transaction {
     stash_test "get_poll_answer.list" => sub {
         my $res = shift;
 
-        is($res->{citizen_answered}, 1, 'citizen answered');
+        is($res->{recipient_answered}, 1, 'recipient answered');
     };
 };
 

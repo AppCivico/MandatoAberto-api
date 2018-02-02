@@ -13,7 +13,7 @@ db_transaction {
     create_politician();
     my $politician_id = stash "politician.id";
 
-    rest_post "/api/chatbot/citizen",
+    rest_post "/api/chatbot/recipient",
         name                => "create recipient",
         automatic_load_item => 0,
         stash               => 'c1',

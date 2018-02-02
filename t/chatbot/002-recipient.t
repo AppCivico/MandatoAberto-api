@@ -10,8 +10,8 @@ db_transaction {
     create_politician;
     my $politician_id = stash "politician.id";
 
-    rest_post "/api/chatbot/citizen",
-        name    => "create citizen without fb_id",
+    rest_post "/api/chatbot/recipient",
+        name    => "create recipient without fb_id",
         is_fail => 1,
         [
             politician_id => $politician_id,
@@ -20,8 +20,8 @@ db_transaction {
         ]
     ;
 
-    rest_post "/api/chatbot/citizen",
-        name    => "create citizen without name",
+    rest_post "/api/chatbot/recipient",
+        name    => "create recipient without name",
         is_fail => 1,
         [
             origin_dialog => fake_words(1)->(),
@@ -30,8 +30,8 @@ db_transaction {
         ]
     ;
 
-    rest_post "/api/chatbot/citizen",
-        name    => "create citizen without origin_dialog",
+    rest_post "/api/chatbot/recipient",
+        name    => "create recipient without origin_dialog",
         is_fail => 1,
         [
             name          => fake_name()->(),
@@ -40,7 +40,7 @@ db_transaction {
         ]
     ;
 
-    rest_post "/api/chatbot/citizen",
+    rest_post "/api/chatbot/recipient",
         name    => "email is not required but must be valid",
         is_fail => 1,
         [
@@ -52,7 +52,7 @@ db_transaction {
         ]
     ;
 
-    rest_post "/api/chatbot/citizen",
+    rest_post "/api/chatbot/recipient",
         name    => "cellphone is not required but must be valid",
         is_fail => 1,
         [
@@ -64,7 +64,7 @@ db_transaction {
         ]
     ;
 
-    rest_post "/api/chatbot/citizen",
+    rest_post "/api/chatbot/recipient",
         name    => "gender is not required but must be valid",
         is_fail => 1,
         [
@@ -81,8 +81,8 @@ db_transaction {
     my $email     = fake_email()->();
     my $gender    = fake_pick( qw/F M/ )->();
 
-    rest_post "/api/chatbot/citizen",
-        name                => "create citizen",
+    rest_post "/api/chatbot/recipient",
+        name                => "create recipient",
         automatic_load_item => 0,
         stash               => 'c1',
         [
@@ -97,14 +97,14 @@ db_transaction {
     ;
     my $citizen_id = stash "c1.id";
 
-    rest_get "/api/chatbot/citizen",
+    rest_get "/api/chatbot/recipient",
         name    => "search with missing fb_id",
         is_fail => 1,
         code    => 400,
     ;
 
-    rest_get "/api/chatbot/citizen",
-        name  => "get citizen",
+    rest_get "/api/chatbot/recipient",
+        name  => "get recipient",
         list  => 1,
         stash => "get_citizen",
         [ fb_id => $fb_id ]
@@ -120,8 +120,8 @@ db_transaction {
     };
 
     my $new_email = fake_email()->();
-    rest_post "/api/chatbot/citizen/",
-        name => "change citizen data",
+    rest_post "/api/chatbot/recipient/",
+        name => "change recipient data",
         [
             fb_id => $fb_id,
             politician_id => $politician_id,

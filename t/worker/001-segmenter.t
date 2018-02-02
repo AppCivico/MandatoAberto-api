@@ -95,7 +95,7 @@ db_transaction {
         ok(
             $schema->resultset('PollResult')->create(
                 {
-                    citizen_id               => $recipient_ids[0],
+                    recipient_id               => $recipient_ids[0],
                     poll_question_option_id  => $text_to_options_id{ $poll_questions[0]->id }->{'Sim'},
                 }
             ),
@@ -105,7 +105,7 @@ db_transaction {
         ok(
             $schema->resultset('PollResult')->create(
                 {
-                    citizen_id => $recipient_ids[0],
+                    recipient_id => $recipient_ids[0],
                     poll_question_option_id  => $text_to_options_id{ $poll_questions[1]->id }->{'Não'},
                 }
             ),
@@ -115,7 +115,7 @@ db_transaction {
         ok(
             $schema->resultset('PollResult')->create(
                 {
-                    citizen_id => $recipient_ids[0],
+                    recipient_id => $recipient_ids[0],
                     poll_question_option_id  => $text_to_options_id{ $poll_questions[2]->id }->{'Talvez'},
                 }
             ),
@@ -125,7 +125,7 @@ db_transaction {
         ok(
             $schema->resultset('PollResult')->create(
                 {
-                    citizen_id => $recipient_ids[1],
+                    recipient_id => $recipient_ids[1],
                     poll_question_option_id  => $text_to_options_id{ $poll_questions[0]->id }->{'Sim'},
                 }
             ),
@@ -135,7 +135,7 @@ db_transaction {
         ok(
             $schema->resultset('PollResult')->create(
                 {
-                    citizen_id => $recipient_ids[1],
+                    recipient_id => $recipient_ids[1],
                     poll_question_option_id  => $text_to_options_id{ $poll_questions[1]->id }->{'Talvez'},
                 }
             ),
@@ -145,7 +145,7 @@ db_transaction {
         ok(
             $schema->resultset('PollResult')->create(
                 {
-                    citizen_id => $recipient_ids[1],
+                    recipient_id => $recipient_ids[1],
                     poll_question_option_id  => $text_to_options_id{ $poll_questions[2]->id }->{'Não'},
                 }
             ),
@@ -155,7 +155,7 @@ db_transaction {
         ok(
             $schema->resultset('PollResult')->create(
                 {
-                    citizen_id => $recipient_ids[2],
+                    recipient_id => $recipient_ids[2],
                     poll_question_option_id  => $text_to_options_id{ $poll_questions[0]->id }->{'Não'},
                 }
             ),

@@ -17,13 +17,13 @@ sub verifiers_specs {
         create => Data::Verifier->new(
             filters => [qw(trim)],
             profile => {
-                citizen_id => {
+                recipient_id => {
                     required   => 1,
                     type       => "Int",
                     post_check => sub {
-                        my $citizen_id = $_[0]->get_value("citizen_id");
+                        my $recipient_id = $_[0]->get_value("recipient_id");
 
-                        $self->result_source->schema->resultset("Recipient")->search({ id => $citizen_id })->count;
+                        $self->result_source->schema->resultset("Recipient")->search({ id => $recipient_id })->count;
                     }
                 },
                 poll_question_option_id => {
@@ -56,14 +56,14 @@ sub action_specs {
                 { prefetch => [ 'poll_questions', { 'poll_questions' => "poll_question_options" } ] }
             )->next->id;
 
-            my $poll_citizen_answer = $self->result_source->schema->resultset("PollResult")->search(
+            my $poll_recipient_answer = $self->result_source->schema->resultset("PollResult")->search(
                 {
-                    'citizen.id' => $values{citizen_id},
-                    'poll.id'    => $poll_id
+                    'recipient.id' => $values{recipient_id},
+                    'poll.id'      => $poll_id
                 },
-                { prefetch => [ 'poll_question_option', { 'poll_question_option' => { 'poll_question' => 'poll' } }, 'citizen' ] }
+                { prefetch => [ 'poll_question_option', { 'poll_question_option' => { 'poll_question' => 'poll' } }, 'recipient' ] }
             )->count;
-            die \["poll_question_option_id", "citizen alredy answered poll"] if $poll_citizen_answer;
+            die \["poll_question_option_id", "recipient alredy answered poll"] if $poll_recipient_answer;
 
             my $poll_result = $self->create(\%values);
 
