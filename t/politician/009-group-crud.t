@@ -359,7 +359,7 @@ db_transaction {
 
             # Somente os dois ultimos recipients não responderam a última questão.
             is_deeply(
-                [ $recipient_ids[2], $recipient_ids[3] ],
+                [ sort $recipient_ids[2], $recipient_ids[3] ],
                 [ sort map { $_->{id} } @{ $res->{recipients} } ],
             );
         };
