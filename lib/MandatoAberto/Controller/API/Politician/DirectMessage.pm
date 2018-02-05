@@ -75,7 +75,6 @@ sub list_GET {
                         created_at => $dm->get_column('created_at'),
                         name       => $dm->get_column('name'),
                         count      => $dm->get_column('count'),
-                        # groups     => $dm->get_column('groups')
                         groups     => [
                             map {
                                 my $g = $_;

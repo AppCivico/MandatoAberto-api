@@ -174,7 +174,7 @@ sub groups_rs {
     my ($self, $c) = @_;
 
     return $self->politician->groups->search(
-        { 'me.id' => { 'in' => $self->groups } }
+        { 'me.id' => { 'in' => $self->groups || [] } }
     );
 }
 
