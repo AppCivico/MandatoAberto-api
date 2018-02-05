@@ -107,7 +107,7 @@ db_transaction {
     my $first_group_id = $schema->resultset("Group")->create(
         {
             politician_id => $politician_id,
-            name          => fake_words(1)->(),
+            name          => 'foobar',
             filter        => '{}',
             created_at    => \'NOW()'
         }
@@ -134,6 +134,7 @@ db_transaction {
     rest_post "/api/politician/$politician_id/direct-message",
         name                => "creating direct message",
         automatic_load_item => 0,
+        stash               => 'dm1',
         [
             name    => $name,
             content => $content,
@@ -153,6 +154,7 @@ db_transaction {
         is ($res->{direct_messages}->[0]->{name}, $name, 'dm name');
         is ($res->{direct_messages}->[0]->{content}, $content, 'dm content');
         is ($res->{direct_messages}->[0]->{count}, 1, 'dm count');
+        is ($res->{direct_messages}->[0]->{groups}->[0]->{name}, 'foobar', 'group name');
     };
 
     rest_post "/api/politician/$politician_id/direct-message",

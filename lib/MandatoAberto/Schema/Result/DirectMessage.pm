@@ -169,5 +169,14 @@ __PACKAGE__->belongs_to(
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
+
+sub groups_rs {
+    my ($self, $c) = @_;
+
+    return $self->politician->groups->search(
+        { 'me.id' => { 'in' => $self->groups } }
+    );
+}
+
 __PACKAGE__->meta->make_immutable;
 1;
