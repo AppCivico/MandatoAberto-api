@@ -10,7 +10,7 @@ db_transaction {
     create_politician;
     my $politician_id = stash "politician.id";
 
-    my $recipient_fb_id = fake_words(1)->();
+    my $recipient_fb_id = 'foobar';
     rest_post "/api/chatbot/recipient",
         name                => "create recipient",
         automatic_load_item => 0,
