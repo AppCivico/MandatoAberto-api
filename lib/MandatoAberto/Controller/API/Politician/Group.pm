@@ -5,7 +5,6 @@ use namespace::autoclean;
 
 BEGIN { extends 'CatalystX::Eta::Controller::REST' }
 
-with 'CatalystX::Eta::Controller::AutoBase';
 with 'CatalystX::Eta::Controller::AutoObject';
 with 'CatalystX::Eta::Controller::AutoListGET';
 with 'CatalystX::Eta::Controller::AutoListPOST';
@@ -46,7 +45,7 @@ sub root : Chained('/api/politician/object') : PathPart('') : CaptureArgs(0) { }
 sub base : Chained('root') : PathPart('group') : CaptureArgs(0) {
     my ($self, $c) = @_;
 
-    $c->stash->{collection} = $c->stash->{collection}->search( { 'me.politician_id' => $c->user->id } );
+    $c->stash->{collection} = $c->model('DB::Group')->search( { 'me.politician_id' => $c->user->id } );
 }
 
 sub object : Chained('base') : PathPart('') : CaptureArgs(1) { }
