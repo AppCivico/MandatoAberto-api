@@ -261,8 +261,8 @@ sub update_recipients {
     $self->result_source->schema->txn_do(sub {
         # 'Zerando' todos os contatos dessa lista antes de recalcular.
         $recipients_rs
-            ->search( \[ "EXIST(groups, ?)", $self->id ] )
-            ->update( { groups => \[ "DELETE(groups, ?)", $self->id ] } );
+            ->search( \[ "? = ANY(groups)", $self->id ] )
+            ->update( { groups => \[ "ARRAY_REMOVE(groups, ?)", $self->id ] } );
 
         my $filter = $self->filter;
         my $recipients_with_filter_rs = $recipients_rs->search_by_filter($filter);
@@ -272,7 +272,7 @@ sub update_recipients {
                 id => { '-in' => $recipients_with_filter_rs->get_column('id')->as_query }
             }
         )
-        ->update( { groups => \[ "COALESCE(groups, '') || HSTORE(?, '1')", $self->id ] } );
+        ->update( { groups => \[ "ARRAY_PREPEND(?, groups)", $self->id ] } );
     });
 
     return $count;

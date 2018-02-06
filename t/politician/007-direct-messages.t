@@ -123,13 +123,10 @@ db_transaction {
     )->id;
 
     # Atrelando os recipientes aos grupos
-    $schema->resultset("Recipient")->find(stash "r1.id")->update(
-        { groups => "\"$first_group_id\"=>\"1\", \"$second_group_id\"=>\"1\"" }
-    );
 
-    $schema->resultset("Recipient")->find(stash "r2.id")->update(
-        { groups => "\"$second_group_id\"=>\"1\"" }
-    );
+    $schema->resultset("Recipient")->find(stash "r1.id")->add_to_group($first_group_id);
+    $schema->resultset("Recipient")->find(stash "r1.id")->add_to_group($second_group_id);
+    $schema->resultset("Recipient")->find(stash "r2.id")->add_to_group($second_group_id);
 
     rest_post "/api/politician/$politician_id/direct-message",
         name                => "creating direct message",

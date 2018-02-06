@@ -105,7 +105,7 @@ sub search_by_group_ids {
         {
             '-and' => [
                 '-or' => [
-                    map { \[ 'EXIST(groups, ?)', $_ ] } @group_ids
+                    map { \[ '? = ANY(groups)', $_ ] } @group_ids
                 ],
             ],
         },

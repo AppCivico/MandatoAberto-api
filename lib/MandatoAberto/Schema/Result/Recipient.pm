@@ -92,16 +92,16 @@ __PACKAGE__->table("recipient");
   is_nullable: 0
   original: {default_value => \"now()"}
 
-=head2 groups
-
-  data_type: 'hstore'
-  default_value: (empty string)
-  is_nullable: 1
-
 =head2 picture
 
   data_type: 'text'
   is_nullable: 1
+
+=head2 groups
+
+  data_type: 'text[]'
+  default_value: '{}'::text[]
+  is_nullable: 0
 
 =cut
 
@@ -134,10 +134,14 @@ __PACKAGE__->add_columns(
     is_nullable   => 0,
     original      => { default_value => \"now()" },
   },
-  "groups",
-  { data_type => "hstore", default_value => "", is_nullable => 1 },
   "picture",
   { data_type => "text", is_nullable => 1 },
+  "groups",
+  {
+    data_type     => "text[]",
+    default_value => \"'{}'::text[]",
+    is_nullable   => 0,
+  },
 );
 
 =head1 PRIMARY KEY
@@ -200,19 +204,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-02-02 17:43:17
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:8mX6PV0zhhbRqSgPIo33iA
-
-__PACKAGE__->load_components("InflateColumn::Serializer", "Core");
-__PACKAGE__->remove_column('groups');
-__PACKAGE__->add_columns(
-    groups => {
-        'data_type'        => 'hstore',
-        is_nullable        => 1,
-        default_value      => "",
-        'serializer_class' => 'Hstore',
-    },
-);
+# Created by DBIx::Class::Schema::Loader v0.07046 @ 2018-02-06 14:23:44
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:61B1BZoJFcSqt+XI3x8tkQ
 
 with 'MandatoAberto::Role::Verification';
 with 'MandatoAberto::Role::Verification::TransactionalActions::DBIC';
@@ -257,7 +250,7 @@ sub action_specs {
 sub add_to_group {
     my ($self, $group_id) = @_;
 
-    return $self->update( { groups => \[ "COALESCE(groups, '') || HSTORE(?, '1')", $group_id ] } );
+    return $self->update( { groups => \[ "ARRAY_PREPEND(?, groups)", $group_id ] } );
 }
 
 sub groups_rs {
@@ -265,7 +258,7 @@ sub groups_rs {
 
     return $self->politician->groups->search(
         {
-            'me.id' => { 'in' => [ keys %{ $self->groups || {} } ] }
+            'me.id' => { 'in' => $self->groups }
         }
     );
 }
