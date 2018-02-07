@@ -93,6 +93,17 @@ __PACKAGE__->table("group");
   default_value: 'processing'
   is_nullable: 0
 
+=head2 deleted
+
+  data_type: 'boolean'
+  default_value: false
+  is_nullable: 1
+
+=head2 deleted_at
+
+  data_type: 'timestamp'
+  is_nullable: 1
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -124,6 +135,10 @@ __PACKAGE__->add_columns(
   { data_type => "integer", is_nullable => 1 },
   "status",
   { data_type => "text", default_value => "processing", is_nullable => 0 },
+  "deleted",
+  { data_type => "boolean", default_value => \"false", is_nullable => 1 },
+  "deleted_at",
+  { data_type => "timestamp", is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -156,8 +171,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07046 @ 2018-01-24 11:33:26
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Ff4v4jz+q/gsN6LbJG/BMA
+# Created by DBIx::Class::Schema::Loader v0.07046 @ 2018-02-07 11:22:25
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:FrPolk6g3E+rZVSSmHns7w
 
 __PACKAGE__->load_components("InflateColumn::Serializer", "Core");
 __PACKAGE__->remove_column('filter');

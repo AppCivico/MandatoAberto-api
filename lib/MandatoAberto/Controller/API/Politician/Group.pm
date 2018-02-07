@@ -11,7 +11,8 @@ with 'CatalystX::Eta::Controller::AutoListPOST';
 with 'CatalystX::Eta::Controller::AutoResultPUT';
 
 __PACKAGE__->config(
-    result => 'DB::Group',
+    result      => 'DB::Group',
+    result_cond => { 'me.deleted' => 'false' },
 
     object_verify_type => 'int',
     object_key         => 'group',
@@ -21,12 +22,14 @@ __PACKAGE__->config(
         my ($r, $self, $c) = @_;
 
         return {
-            id            => $r->id,
-            filter        => $r->filter,
-            name          => $r->get_column('name'),
-            updated_at    => $r->get_column('updated_at'),
-            created_at    => $r->get_column('created_at'),
-            politician_id => $r->get_column('politician_id'),
+            id               => $r->id,
+            filter           => $r->filter,
+            name             => $r->get_column('name'),
+            status           => $r->get_column('status'),
+            updated_at       => $r->get_column('updated_at'),
+            created_at       => $r->get_column('created_at'),
+            politician_id    => $r->get_column('politician_id'),
+            recipients_count => $r->get_column('recipients_count'),
         };
     },
 
@@ -71,12 +74,14 @@ sub result_GET {
     return $self->status_ok(
         $c,
         entity => {
-            id            => $group->id,
-            filter        => $group->filter,
-            name          => $group->get_column('name'),
-            updated_at    => $group->get_column('updated_at'),
-            created_at    => $group->get_column('created_at'),
-            politician_id => $group->get_column('politician_id'),
+            id               => $group->id,
+            filter           => $group->filter,
+            name             => $group->get_column('name'),
+            status           => $group->get_column('status'),
+            updated_at       => $group->get_column('updated_at'),
+            created_at       => $group->get_column('created_at'),
+            politician_id    => $group->get_column('politician_id'),
+            recipients_count => $group->get_column('recipients_count'),
 
             recipients => [
                 map {
@@ -97,6 +102,19 @@ sub result_GET {
 }
 
 sub result_PUT { }
+
+sub result_DELETE {
+    my ($self, $c) = @_;
+
+    $c->stash->{group}->update(
+        {
+            deleted => 'true',
+            deleted_at => \'NOW()',
+        }
+    );
+
+    return $self->status_no_content($c);
+}
 
 sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }
 
