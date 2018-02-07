@@ -12,7 +12,6 @@ with 'CatalystX::Eta::Controller::AutoResultPUT';
 
 __PACKAGE__->config(
     result      => 'DB::Group',
-    result_cond => { 'me.deleted' => 'false' },
 
     object_verify_type => 'int',
     object_key         => 'group',
@@ -48,7 +47,12 @@ sub root : Chained('/api/politician/object') : PathPart('') : CaptureArgs(0) { }
 sub base : Chained('root') : PathPart('group') : CaptureArgs(0) {
     my ($self, $c) = @_;
 
-    $c->stash->{collection} = $c->model('DB::Group')->search( { 'me.politician_id' => $c->user->id } );
+    $c->stash->{collection} = $c->model('DB::Group')->search(
+        {
+            'me.politician_id' => $c->user->id,
+            'me.deleted'       => 'false',
+        }
+    );
 }
 
 sub object : Chained('base') : PathPart('') : CaptureArgs(1) { }
@@ -108,7 +112,7 @@ sub result_DELETE {
 
     $c->stash->{group}->update(
         {
-            deleted => 'true',
+            deleted    => 'true',
             deleted_at => \'NOW()',
         }
     );
