@@ -409,6 +409,17 @@ db_transaction {
             }),
         ;
     };
+
+    subtest 'delete group' => sub {
+
+        rest_delete "/api/politician/$politician_id/group/$group_id", name => 'delete group';
+
+        rest_get "/api/politician/$politician_id/group/$group_id",
+            name    => 'get deleted group',
+            is_fail => 1,
+            code    => 404,
+        ;
+    };
 };
 
 done_testing();
