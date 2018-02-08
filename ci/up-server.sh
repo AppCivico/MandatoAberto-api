@@ -67,5 +67,9 @@ line
 # Daemons.
 ./script/daemon/Emailsd restart
 ./script/daemon/Emailsd status
+
+./script/daemon/Segmenterd restart
+./script/daemon/Segmenterd status
 #./script/daemon/DirectMessagesd restart
 #./script/daemon/DirectMessagesd status
+
