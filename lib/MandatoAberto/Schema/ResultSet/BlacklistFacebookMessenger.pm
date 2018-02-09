@@ -36,7 +36,7 @@ sub action_specs {
             my %values = $r->valid_values;
             not defined $values{$_} and delete $values{$_} for keys %values;
 
-            my $existing_entry = $self->search( recipient_id => $values{recipient_id} )->next;
+            my $existing_entry = $self->search( { 'me.recipient_id' => $values{recipient_id} } )->next;
 
             if ($existing_entry) {
                 return $existing_entry;
