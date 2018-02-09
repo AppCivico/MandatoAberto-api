@@ -8,7 +8,7 @@ use DDP;
 
 has timer => (
     is      => "rw",
-    default => 60,
+    default => 10,
 );
 
 has schema => (
