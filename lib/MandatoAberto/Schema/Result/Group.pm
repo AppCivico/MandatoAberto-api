@@ -272,7 +272,7 @@ sub update_recipients {
 
     my $recipients_rs = $self->politician->recipients;
 
-    my $count = 0;
+    my $count;
     $self->result_source->schema->txn_do(sub {
         # 'Zerando' todos os contatos dessa lista antes de recalcular.
         $recipients_rs

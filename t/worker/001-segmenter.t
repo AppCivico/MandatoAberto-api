@@ -192,25 +192,54 @@ db_transaction {
         }),
     ;
 
-    my $group_id = stash 'group.id';
-    my $group = $schema->resultset('Group')->search( { 'me.id' => $group_id } )->next;
+    subtest 'right flow' => sub {
 
-    is( $group->recipients_count,        undef, 'recipients_count=undef' );
-    is( $group->last_recipients_calc_at, undef, 'last_recipients_calc_at=undef' );
-    is( $group->status,                  'processing', 'status=processing' );
+        my $group_id = stash 'group.id';
+        my $group = $schema->resultset('Group')->search( { 'me.id' => $group_id } )->next;
 
-    my $recipients_rs = $schema->resultset('Recipient')->search_by_group_ids($group_id);
+        is( $group->recipients_count,        undef, 'recipients_count=undef' );
+        is( $group->last_recipients_calc_at, undef, 'last_recipients_calc_at=undef' );
+        is( $group->status,                  'processing', 'status=processing' );
 
-    is( $recipients_rs->count, '0', 'count=0' );
+        my $recipients_rs = $schema->resultset('Recipient')->search_by_group_ids($group_id);
 
-    ok( $worker->run_once(), 'run once' );
+        is( $recipients_rs->count, '0', 'count=0' );
 
-    ok( $group->discard_changes,  'discard_changes' );
-    is( $group->status,           'ready', 'status=ready' );
-    is( $group->recipients_count, $recipients_rs->count, 'recipients_count=2' );
-    isnt( $group->last_recipients_calc_at, undef, 'last_recipients_calc_at is not undef' );
+        ok( $worker->run_once(), 'run once' );
 
-    ok( !$worker->run_once(), 'no groups remaining' );
+        ok( $group->discard_changes,  'discard_changes' );
+        is( $group->status,           'ready', 'status=ready' );
+        is( $group->recipients_count, $recipients_rs->count, 'recipients_count=2' );
+        isnt( $group->last_recipients_calc_at, undef, 'last_recipients_calc_at is not undef' );
+
+        ok( !$worker->run_once(), 'no groups remaining' );
+    };
+
+    subtest 'broken filter' => sub {
+
+        # Teste de situação imprevista.
+        # Criando um filtro com uma estrutura inválida.
+        ok(
+            my $group = $schema->resultset('Group')->create(
+                {
+                    name          => fake_name->(),
+                    politician_id => $politician_id,
+                    filter => {
+                        this => [ 'is' ],
+                        an   => { invalid => 'filter' },
+                    },
+                },
+            ),
+            'add invalid group',
+        );
+
+        ok( $worker->run_once(), 'run once' );
+
+        p $group->discard_changes;
+
+
+
+    };
 };
 
 done_testing();

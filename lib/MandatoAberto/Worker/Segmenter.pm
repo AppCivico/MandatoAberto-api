@@ -66,18 +66,30 @@ sub exec_item {
     $self->logger->info(sprintf("Contabilizando o grupo id '%d'.", $group->id)) if $self->logger;
 
     $self->schema->txn_do(sub {
-        if (my $recipients_count = $group->update_recipients()) {
+        my $recipients_count;
+        eval {
+            $recipients_count = $group->update_recipients();
+        };
+        if ($@) {
+            $self->logger->logdie(sprintf("Erro ao segmentar o grupo id '%d'!", $group->id)) if $self->logger;
+
             $group->update(
                 {
-                    recipients_count        => int($recipients_count),
+                    recipients_count        => undef,
                     last_recipients_calc_at => \'NOW()',
-                    status                  => 'ready',
-                }
+                    status                  => \'error',
+                },
             );
+            return 0;
         }
-        else {
-            $self->logger->logdie(sprintf("Erro ao segmentar o grupo id '%d'!", $group->id)) if $self->logger;
-        }
+
+        $group->update(
+            {
+                recipients_count        => int($recipients_count),
+                last_recipients_calc_at => \'NOW()',
+                status                  => 'ready',
+            }
+        );
     });
 
     return 1;
