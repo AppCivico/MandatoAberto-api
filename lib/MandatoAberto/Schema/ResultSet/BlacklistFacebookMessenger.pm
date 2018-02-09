@@ -39,7 +39,7 @@ sub action_specs {
             my $existing_entry = $self->search( recipient_id => $values{recipient_id} )->next;
 
             if ($existing_entry) {
-                return 1;
+                return $existing_entry;
             } else {
                 my $blacklist_entry = $self->create(\%values);
 
