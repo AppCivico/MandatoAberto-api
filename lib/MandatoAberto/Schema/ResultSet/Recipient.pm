@@ -140,6 +140,16 @@ sub search_by_filter {
         }
     }
 
+    # TODO Validar esse hack que evita que, em filtros sem regras, o resultset busque todos os recipients da base, pois
+    # não haverá nenhuma condição em @where_attrs.
+    #return $self->search(
+    #    {
+    #        '-or' => [
+    #            { $operator => \@where_attrs },
+    #            \[ "TRUE = FALSE" ],
+    #        ],
+    #    },
+    #);
     return $self->search( { $operator => \@where_attrs } );
 }
 
