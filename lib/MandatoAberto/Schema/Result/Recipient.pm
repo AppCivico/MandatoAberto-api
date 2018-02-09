@@ -154,6 +154,21 @@ __PACKAGE__->set_primary_key("id");
 
 =head1 RELATIONS
 
+=head2 blacklist_facebook_messengers
+
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::BlacklistFacebookMessenger>
+
+=cut
+
+__PACKAGE__->has_many(
+  "blacklist_facebook_messengers",
+  "MandatoAberto::Schema::Result::BlacklistFacebookMessenger",
+  { "foreign.recipient_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 issues
 
 Type: has_many
@@ -200,8 +215,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-02-02 17:43:17
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:8mX6PV0zhhbRqSgPIo33iA
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-02-07 10:09:56
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:+gOq+q88M3ymkiiud2RqiQ
 
 __PACKAGE__->load_components("InflateColumn::Serializer", "Core");
 __PACKAGE__->remove_column('groups');

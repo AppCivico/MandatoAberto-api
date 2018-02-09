@@ -51,6 +51,7 @@ sub verifiers_specs {
 
                                 for my $k (keys %{ $rule->{data} }) {
                                     $allowed_data{$k} or return 0;
+                                    ref($rule->{data}->{$k}) eq "" or return 0;
                                 }
                             }
                         }

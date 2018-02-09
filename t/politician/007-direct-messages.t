@@ -174,6 +174,29 @@ db_transaction {
         is ($res->{direct_messages}->[1]->{content}, 'foobar', 'dm content');
         is ($res->{direct_messages}->[1]->{count}, 2, 'dm count');
     };
+
+    ok (
+        $schema->resultset("BlacklistFacebookMessenger")->create( { recipient_id => stash "r2.id" } ),
+        'adding second recipient to the blacklist'
+    );
+
+    rest_post "/api/politician/$politician_id/direct-message",
+        name                => "creating yet another direct message",
+        automatic_load_item => 0,
+        [
+            name    => 'foobar',
+            content => 'foobar',
+        ]
+    ;
+
+    rest_reload_list "get_direct_messages";
+    stash_test "get_direct_messages.list" => sub {
+        my $res = shift;
+
+        is ($res->{direct_messages}->[2]->{name}, 'foobar', 'dm name');
+        is ($res->{direct_messages}->[2]->{content}, 'foobar', 'dm content');
+        is ($res->{direct_messages}->[2]->{count}, 1, 'dm count');
+    };
 };
 
 done_testing();

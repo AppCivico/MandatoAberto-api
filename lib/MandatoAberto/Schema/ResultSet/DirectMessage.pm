@@ -95,33 +95,43 @@ sub action_specs {
 
             my @recipients = $recipient_rs->all;
 
-            $values{count} = scalar @recipients;
-
-            my $direct_message = $self->create(\%values);
+            my $count = 0;
 
             for my $recipient (@recipients) {
-                # Mando para o httpcallback
-                $self->_httpcb->add(
-                    url     => $ENV{FB_API_URL} . '/me/messages?access_token=' . $access_token,
-                    method  => "post",
-                    headers => 'Content-Type:application/json',
-                    body    => encode_json {
-                        recipient => {
-                            id => $recipient->fb_id
-                        },
-                        message => {
-                            text          => $values{content},
-                            quick_replies => [
-                                {
-                                    content_type => 'text',
-                                    title        => 'Voltar para o início',
-                                    payload      => 'greetings'
-                                }
-                            ]
+                # Tratando se o recipient está com opt_in
+                # TODO passar para uma coluna na tabela recipient por hora
+                my $blacklist_entry = $self->result_source->schema->resultset("BlacklistFacebookMessenger")->search( { recipient_id => $recipient->id } )->next;
+                
+                if (!$blacklist_entry) {
+                    # Mando para o httpcallback
+                    $self->_httpcb->add(
+                        url     => $ENV{FB_API_URL} . '/me/messages?access_token=' . $access_token,
+                        method  => "post",
+                        headers => 'Content-Type:application/json',
+                        body    => encode_json {
+                            recipient => {
+                                id => $recipient->fb_id
+                            },
+                            message => {
+                                text          => $values{content},
+                                quick_replies => [
+                                    {
+                                        content_type => 'text',
+                                        title        => 'Voltar para o início',
+                                        payload      => 'greetings'
+                                    }
+                                ]
+                            }
                         }
-                    }
-                );
+                    );
+
+                    $count++;
+                }
             }
+
+            $values{count} = $count;
+
+            my $direct_message = $self->create(\%values);
 
             return $direct_message;
         }
