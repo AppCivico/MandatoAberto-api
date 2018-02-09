@@ -234,11 +234,10 @@ db_transaction {
         );
 
         ok( $worker->run_once(), 'run once' );
+        ok( $group->discard_changes, 'discard_changes' );
 
-        p $group->discard_changes;
-
-
-
+        is( $group->get_column('recipients_count'), undef, 'recipients_count=undef' );
+        is( $group->get_column('status'), 'error', 'status=error' );
     };
 };
 

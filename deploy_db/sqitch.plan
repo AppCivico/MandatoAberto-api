@@ -60,3 +60,4 @@
 0056-pollresult-citizen-to-recipient [0055-current-db-state] 2018-02-02T19:43:30Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Renaming the 'citizen_id' column on the 'poll_result' table to 'recipient_id'
 0057-group-deleted-at [0056-pollresult-citizen-to-recipient] 2018-02-07T13:38:58Z Junior Moraes <juniorfvox@gmail.com> # group-deleted-at
 0058-blacklist-facebook-messenger [0057-group-deleted-at] 2018-02-09T14:55:58Z Lucas Ansei,,, <lucas@lucas-G750JX> # Creating the 'blacklist_facebook_messenger' table
+0059-add-group-status-error [0058-blacklist-facebook-messenger] 2018-02-09T17:56:32Z junior,,, <junior@fvox> # d-group-status-error

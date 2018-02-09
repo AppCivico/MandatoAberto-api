@@ -115,6 +115,10 @@ sub search_by_group_ids {
 sub search_by_filter {
     my ($self, $filter) = @_;
 
+    ref($filter)          eq 'HASH'  or die 'invalid filter';
+    ref($filter->{rules}) eq 'ARRAY' or die 'invalid rules';
+    defined($filter->{operator})     or die 'invalid operator';
+
     my $operator = $filter->{operator} eq 'AND' ? '-and' : '-or';
 
     my @where_attrs = ();

@@ -76,8 +76,8 @@ sub exec_item {
             $group->update(
                 {
                     recipients_count        => undef,
+                    status                  => 'error',
                     last_recipients_calc_at => \'NOW()',
-                    status                  => \'error',
                 },
             );
             return 0;
