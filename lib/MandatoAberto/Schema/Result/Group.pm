@@ -218,10 +218,9 @@ sub verifiers_specs {
 
                         return 0 unless $allowed_operators{$filter->{operator}};
 
-                        my @rules = @{ $filter->{rules} || [] };
-                        scalar @rules >= 1 or return 0;
+                        ref($filter->{rules}) eq 'ARRAY' or return 0;
 
-                        for my $rule (@rules) {
+                        for my $rule (@{ $filter->{rules} }) {
                             $allowed_rules{$rule->{name}} or return 0;
 
                             if (defined($rule->{data})) {
