@@ -61,3 +61,4 @@
 0057-group-deleted-at [0056-pollresult-citizen-to-recipient] 2018-02-07T13:38:58Z Junior Moraes <juniorfvox@gmail.com> # group-deleted-at
 0058-blacklist-facebook-messenger [0057-group-deleted-at] 2018-02-09T14:55:58Z Lucas Ansei,,, <lucas@lucas-G750JX> # Creating the 'blacklist_facebook_messenger' table
 0059-add-group-status-error [0058-blacklist-facebook-messenger] 2018-02-09T17:56:32Z junior,,, <junior@fvox> # d-group-status-error
+0060-recipient-opt_in-column [0059-add-group-status-error] 2018-02-14T14:25:54Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the 'fb_opt_in' column to the 'recipient' table

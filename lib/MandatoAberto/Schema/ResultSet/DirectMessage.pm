@@ -99,34 +99,31 @@ sub action_specs {
 
             for my $recipient (@recipients) {
                 # Tratando se o recipient está com opt_in
-                # TODO passar para uma coluna na tabela recipient por hora
-                my $blacklist_entry = $self->result_source->schema->resultset("BlacklistFacebookMessenger")->search( { recipient_id => $recipient->id } )->next;
-                
-                if (!$blacklist_entry) {
-                    # Mando para o httpcallback
-                    $self->_httpcb->add(
-                        url     => $ENV{FB_API_URL} . '/me/messages?access_token=' . $access_token,
-                        method  => "post",
-                        headers => 'Content-Type:application/json',
-                        body    => encode_json {
-                            recipient => {
-                                id => $recipient->fb_id
-                            },
-                            message => {
-                                text          => $values{content},
-                                quick_replies => [
-                                    {
-                                        content_type => 'text',
-                                        title        => 'Voltar para o início',
-                                        payload      => 'greetings'
-                                    }
-                                ]
-                            }
-                        }
-                    );
 
-                    $count++;
-                }
+                # Por enquanto esse tratamento deverá ser feito via uma coluna na própria tabela de recipient
+                # my $blacklist_entry = $self->result_source->schema->resultset("BlacklistFacebookMessenger")->search( { recipient_id => $recipient->id } )->next;
+
+                # Mando para o httpcallback
+                $self->_httpcb->add(
+                    url     => $ENV{FB_API_URL} . '/me/messages?access_token=' . $access_token,
+                    method  => "post",
+                    headers => 'Content-Type:application/json',
+                    body    => encode_json {
+                        recipient => {
+                            id => $recipient->fb_id
+                        },
+                        message => {
+                            text          => $values{content},
+                            quick_replies => [
+                                {
+                                    content_type => 'text',
+                                    title        => 'Voltar para o início',
+                                    payload      => 'greetings'
+                                }
+                            ]
+                        }
+                    }
+                ) and $count++ unless !$recipient->fb_opt_in;
             }
 
             $values{count} = $count;

@@ -43,6 +43,9 @@ sub action_specs {
             } else {
                 my $blacklist_entry = $self->create(\%values);
 
+                # Por enquanto o controle será feito com uma flag na própria tabela de recipient
+                $self->result_source->schema->resultset("Recipient")->find($values{recipient_id})->update( { fb_opt_in => 0 } );
+
                 return $blacklist_entry;
             }
         },

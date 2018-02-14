@@ -103,6 +103,12 @@ __PACKAGE__->table("recipient");
   data_type: 'text'
   is_nullable: 1
 
+=head2 fb_opt_in
+
+  data_type: 'boolean'
+  default_value: true
+  is_nullable: 0
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -138,6 +144,8 @@ __PACKAGE__->add_columns(
   { data_type => "hstore", default_value => "", is_nullable => 1 },
   "picture",
   { data_type => "text", is_nullable => 1 },
+  "fb_opt_in",
+  { data_type => "boolean", default_value => \"true", is_nullable => 0 },
 );
 
 =head1 PRIMARY KEY
@@ -215,8 +223,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-02-07 10:09:56
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:+gOq+q88M3ymkiiud2RqiQ
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-02-14 12:07:38
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:sBku1k4P+joEGMVd/apImA
 
 __PACKAGE__->load_components("InflateColumn::Serializer", "Core");
 __PACKAGE__->remove_column('groups');

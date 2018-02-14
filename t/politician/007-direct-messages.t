@@ -175,10 +175,13 @@ db_transaction {
         is ($res->{direct_messages}->[1]->{count}, 2, 'dm count');
     };
 
-    ok (
-        $schema->resultset("BlacklistFacebookMessenger")->create( { recipient_id => stash "r2.id" } ),
-        'adding second recipient to the blacklist'
-    );
+    # Por enquanto o controle de opt_in será feito numa coluna na própria tabela de recipient
+    # ok (
+    #     $schema->resultset("BlacklistFacebookMessenger")->create( { recipient_id => stash "r2.id" } ),
+    #     'adding second recipient to the blacklist'
+    # );
+
+    $schema->resultset("Recipient")->find(stash "r2.id")->update( { fb_opt_in => 0 } );
 
     rest_post "/api/politician/$politician_id/direct-message",
         name                => "creating yet another direct message",
