@@ -25,8 +25,8 @@ sub add {
     return $self->_async->add(
         HTTP::Request->new(
             POST => get_mandatoaberto_httpcb_url_for('/schedule'),
-            ['Content-Type' => 'application/json; charset=UTF-8'],
-            encode_utf8(encode_json(\%opts)),
+            [],
+            [ %opts ],
         ),
     );
 }
