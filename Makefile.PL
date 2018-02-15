@@ -73,6 +73,7 @@ my %WriteMakefileArgs = (
     "File::MimeInfo" => 0,
     "FindBin" => 0,
     "Furl" => 0,
+    "HTTP::Async" => 0,
     "HTTP::Request" => 0,
     "IO::Socket::SSL" => 0,
     "JSON::MaybeXS" => 0,
@@ -116,7 +117,7 @@ my %WriteMakefileArgs = (
     "blib" => "1.01",
     "lib" => 0
   },
-  "VERSION" => 20180214,
+  "VERSION" => 20180215,
   "test" => {
     "TESTS" => "t/*.t t/admin/*.t t/chatbot/*.t t/dialog/*.t t/politician/*.t t/polls/*.t t/worker/*.t"
   }
@@ -185,6 +186,7 @@ my %FallbackPrereqs = (
   "File::Spec" => 0,
   "FindBin" => 0,
   "Furl" => 0,
+  "HTTP::Async" => 0,
   "HTTP::Request" => 0,
   "IO::Handle" => 0,
   "IO::Socket::SSL" => 0,
