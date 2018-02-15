@@ -98,6 +98,12 @@ sub action_specs {
     };
 }
 
+sub only_opt_in {
+    my ($self) = @_;
+
+    return $self->search( { 'me.fb_opt_in' => 'true' } );
+}
+
 sub search_by_group_ids {
     my ($self, @group_ids) = @_;
 

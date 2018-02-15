@@ -91,18 +91,11 @@ sub action_specs {
             # na fila para cada recipient atrelado ao rep. público
             # levando em consideração os grupos, se adicionados
             my @group_ids = @{ $values{groups} || [] };
-            my $recipient_rs = $politician->recipients->search_by_group_ids(@group_ids);
-
-            my @recipients = $recipient_rs->all;
+            my $recipient_rs = $politician->recipients->only_opt_in->search_by_group_ids(@group_ids);
 
             my $count = 0;
 
-            for my $recipient (@recipients) {
-                # Tratando se o recipient está com opt_in
-
-                # Por enquanto esse tratamento deverá ser feito via uma coluna na própria tabela de recipient
-                # my $blacklist_entry = $self->result_source->schema->resultset("BlacklistFacebookMessenger")->search( { recipient_id => $recipient->id } )->next;
-
+            while (my $recipient = $recipient_rs->next()) {
                 # Mando para o httpcallback
                 $self->_httpcb->add(
                     url     => $ENV{FB_API_URL} . '/me/messages?access_token=' . $access_token,
@@ -123,7 +116,8 @@ sub action_specs {
                             ]
                         }
                     }
-                ) and $count++ unless !$recipient->fb_opt_in;
+                );
+                $count++;
             }
 
             $values{count} = $count;
