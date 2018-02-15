@@ -11,13 +11,13 @@ with 'MandatoAberto::Role::Verification::TransactionalActions::DBIC';
 use Data::Verifier;
 use MandatoAberto::Utils;
 use MandatoAberto::Messager::Template;
-use WebService::HttpCallback;
+use WebService::HttpCallback::Async;
 
 use JSON::MaybeXS;
 
 has _httpcb => (
     is         => "ro",
-    isa        => "WebService::HttpCallback",
+    isa        => "WebService::HttpCallback::Async",
     lazy_build => 1,
 );
 
@@ -120,15 +120,15 @@ sub action_specs {
                 $count++;
             }
 
+            $self->_httpcb->wait_all_responses();
+
             $values{count} = $count;
 
-            my $direct_message = $self->create(\%values);
-
-            return $direct_message;
+            return $self->create(\%values);
         }
     };
 }
 
-sub _build__httpcb { WebService::HttpCallback->instance }
+sub _build__httpcb { WebService::HttpCallback::Async->instance }
 
 1;

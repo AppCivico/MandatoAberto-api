@@ -18,6 +18,7 @@ sub add {
     my ($self, %opts) = @_;
 
     if (is_test()) {
+        $MandatoAberto::Test::Further::http_callback = \%opts;
         return int(rand(1000));
     }
 

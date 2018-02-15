@@ -7,7 +7,6 @@ use Furl;
 use Try::Tiny::Retry;
 use MandatoAberto::Utils;
 
-
 has 'furl' => ( is => 'rw', lazy => 1, builder => '_build_furl' );
 
 sub _build_furl { Furl->new }
