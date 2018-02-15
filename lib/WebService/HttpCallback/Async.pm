@@ -2,8 +2,10 @@ package WebService::HttpCallback::Async;
 use common::sense;
 use MooseX::Singleton;
 
+use URI;
 use HTTP::Async;
 use JSON::MaybeXS;
+use URI::QueryParam;
 use MandatoAberto::Utils;
 use Encode qw(encode_utf8);
 
@@ -22,11 +24,15 @@ sub add {
         return int(rand(1000));
     }
 
+    my $uri = URI->new(get_mandatoaberto_httpcb_url_for('/schedule'));
+    my @old = %opts;
+    while (my ($k, $v) = splice(@old, 0, 2)) {
+        $uri->query_param_append($k, $v);
+    }
+
     return $self->_async->add(
         HTTP::Request->new(
-            POST => get_mandatoaberto_httpcb_url_for('/schedule'),
-            [],
-            [ %opts ],
+            POST => $uri->as_string,
         ),
     );
 }
