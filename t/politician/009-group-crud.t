@@ -275,6 +275,22 @@ db_transaction {
         ;
     };
 
+    subtest 'empty rules is not allowed' => sub {
+
+        rest_post "/api/politician/$politician_id/group",
+            name    => 'add group',
+            is_fail => 1,
+            headers => [ 'Content-Type' => 'application/json' ],
+            data    => encode_json({
+                name     => 'AppCivico',
+                filter   => {
+                    operator => 'AND',
+                    rules    => [],
+                },
+            }),
+        ;
+    };
+
     subtest 'list created groups' => sub {
 
         rest_get "/api/politician/$politician_id/group", name => 'list groups', stash => 'groups';
