@@ -104,7 +104,6 @@ sub action_specs {
             ;
 
             while (my $recipient = $recipient_rs->next()) {
-                use DDP; p $recipient->get_column('total');
                 # Mando para o httpcallback
                 $self->_httpcb->add(
                     url     => $ENV{FB_API_URL} . '/me/messages?access_token=' . $access_token,
