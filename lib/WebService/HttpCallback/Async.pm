@@ -37,7 +37,7 @@ sub add {
     );
 }
 
-sub wait_all_responses {
+sub wait_for_all_responses {
     my ($self) = @_;
 
     while ($self->_async->not_empty()) {

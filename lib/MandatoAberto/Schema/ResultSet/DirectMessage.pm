@@ -91,11 +91,20 @@ sub action_specs {
             # na fila para cada recipient atrelado ao rep. público
             # levando em consideração os grupos, se adicionados
             my @group_ids = @{ $values{groups} || [] };
-            my $recipient_rs = $politician->recipients->only_opt_in->search_by_group_ids(@group_ids);
-
-            my $count = 0;
+            my $recipient_rs = $politician->recipients
+                ->only_opt_in
+                ->search_by_group_ids(@group_ids)
+                ->search(
+                    {},
+                    {
+                        '+select' => [ \"COUNT(1) OVER(PARTITION BY 1)" ],
+                        '+as'     => [ 'total' ],
+                    }
+                )
+            ;
 
             while (my $recipient = $recipient_rs->next()) {
+                use DDP; p $recipient->get_column('total');
                 # Mando para o httpcallback
                 $self->_httpcb->add(
                     url     => $ENV{FB_API_URL} . '/me/messages?access_token=' . $access_token,
@@ -117,12 +126,11 @@ sub action_specs {
                         }
                     }
                 );
-                $count++;
+
+                $values{count} //= $recipient->get_column('total');
             }
 
-            $self->_httpcb->wait_all_responses();
-
-            $values{count} = $count;
+            $self->_httpcb->wait_for_all_responses();
 
             return $self->create(\%values);
         }
