@@ -56,13 +56,15 @@ sub verifiers_specs {
                         for (my $i = 0; $i < @{ $groups }; $i++) {
                             my $group_id = $groups->[$i];
 
-                            my $count = $self->result_source->schema->resultset("Group")->search(
+                            my $group = $self->result_source->schema->resultset("Group")->search(
                                 {
-                                    id            => $group_id,
-                                    politician_id => $_[0]->get_value('politician_id')
+                                   'me.id'            => $group_id,
+                                   'me.politician_id' => $_[0]->get_value('politician_id'),
                                 }
-                            )->count;
-                            die \['groups', "group $group_id does not exists or does not belongs to this politician"] unless $count == 1;
+                            )->next;
+
+                            die \['groups', "group $group_id does not exists or does not belongs to this politician"] unless ref $group;
+                            die \['groups', "group $group_id isn't ready"] unless $group->get_column('status') eq 'ready';
                         }
 
                         return 1;

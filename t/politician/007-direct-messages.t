@@ -109,7 +109,7 @@ db_transaction {
             politician_id => $politician_id,
             name          => 'foobar',
             filter        => '{}',
-            created_at    => \'NOW()'
+            status        => 'ready',
         }
     )->id;
 
@@ -118,7 +118,7 @@ db_transaction {
             politician_id => $politician_id,
             name          => fake_words(1)->(),
             filter        => '{}',
-            created_at    => \'NOW()'
+            status        => 'ready',
         }
     )->id;
 
@@ -175,12 +175,6 @@ db_transaction {
         is ($res->{direct_messages}->[1]->{count}, 2, 'dm count');
     };
 
-    # Por enquanto o controle de opt_in será feito numa coluna na própria tabela de recipient
-    # ok (
-    #     $schema->resultset("BlacklistFacebookMessenger")->create( { recipient_id => stash "r2.id" } ),
-    #     'adding second recipient to the blacklist'
-    # );
-
     $schema->resultset("Recipient")->find(stash "r2.id")->update( { fb_opt_in => 0 } );
 
     rest_post "/api/politician/$politician_id/direct-message",
@@ -199,6 +193,28 @@ db_transaction {
         is ($res->{direct_messages}->[2]->{name}, 'foobar', 'dm name');
         is ($res->{direct_messages}->[2]->{content}, 'foobar', 'dm content');
         is ($res->{direct_messages}->[2]->{count}, 1, 'dm count');
+    };
+
+    subtest 'some group is not ready' => sub {
+        my $third_group = $schema->resultset("Group")->create(
+            {
+                politician_id => $politician_id,
+                name          => 'foobar',
+                filter        => '{}',
+            }
+        );
+
+        my $third_group_id = $third_group->id;
+
+        rest_post "/api/politician/$politician_id/direct-message",
+            name    => "creating direct message when group is not ready --fail",
+            is_fail => 1,
+            [
+                name    => $name,
+                content => $content,
+                groups  => "[$third_group_id]"
+            ]
+        ;
     };
 };
 
