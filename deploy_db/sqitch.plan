@@ -63,3 +63,4 @@
 0059-add-group-status-error [0058-blacklist-facebook-messenger] 2018-02-09T17:56:32Z junior,,, <junior@fvox> # d-group-status-error
 0060-recipient-opt_in-column [0059-add-group-status-error] 2018-02-14T14:25:54Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the 'fb_opt_in' column to the 'recipient' table
 0061-private_reply [0060-recipient-opt_in-column] 2018-02-19T13:22:10Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Creating the 'private_reply' table and adding the 'private_reply_activated' column on the 'politician' table.
+0062-private_reply-permalink [0061-private_reply] 2018-02-19T17:41:14Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Droping 'not null' for permalink on 'private_reply'

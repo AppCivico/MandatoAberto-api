@@ -73,11 +73,12 @@ __PACKAGE__->table("private_reply");
 =head2 permalink
 
   data_type: 'text'
-  is_nullable: 0
+  is_nullable: 1
 
 =head2 reply_sent
 
   data_type: 'boolean'
+  default_value: false
   is_nullable: 0
 
 =head2 created_at
@@ -106,9 +107,9 @@ __PACKAGE__->add_columns(
   "comment_id",
   { data_type => "text", is_nullable => 1 },
   "permalink",
-  { data_type => "text", is_nullable => 0 },
+  { data_type => "text", is_nullable => 1 },
   "reply_sent",
-  { data_type => "boolean", is_nullable => 0 },
+  { data_type => "boolean", default_value => \"false", is_nullable => 0 },
   "created_at",
   {
     data_type     => "timestamp",
@@ -148,8 +149,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-02-19 10:13:44
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:i0ydkpFP7Yg7BT5AOcu8zw
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-02-19 14:40:34
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:cXdyfdmwwWGMLhg/zT2o7A
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

@@ -55,7 +55,7 @@ sub verifiers_specs {
                     type       => "Str",
                 },
                 permalink => {
-                    required   => 1,
+                    required   => 0,
                     type       => "Str",
                 }
             }
