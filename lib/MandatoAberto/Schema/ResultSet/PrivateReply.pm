@@ -56,13 +56,6 @@ sub verifiers_specs {
                 permalink => {
                     required   => 1,
                     type       => "Str",
-                    post_check => sub {
-                        my $permalink = $_[0]->get_value('permalink');
-
-                        $self->search({ permalink => $permalink })->count and die \['permalink', 'permalink alredy exists'];
-
-                        return 1;
-                    }
                 }
             }
         ),
