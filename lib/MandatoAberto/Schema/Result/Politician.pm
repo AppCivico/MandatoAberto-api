@@ -309,6 +309,21 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 private_replies
+
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::PrivateReply>
+
+=cut
+
+__PACKAGE__->has_many(
+  "private_replies",
+  "MandatoAberto::Schema::Result::PrivateReply",
+  { "foreign.politician_id" => "self.user_id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 recipients
 
 Type: has_many
@@ -340,8 +355,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-02-14 12:07:38
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:E2mpPIgAy+DFbz8ob7Y8KQ
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-02-18 23:11:16
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:SX//dvG9WFcFOlEfwjLG3A
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
