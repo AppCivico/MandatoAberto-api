@@ -11,6 +11,7 @@ with 'MandatoAberto::Role::Verification::TransactionalActions::DBIC';
 use WebService::HttpCallback::Async;
 
 use JSON::MaybeXS;
+use URI::Escape;
 
 use Data::Verifier;
 
@@ -99,13 +100,11 @@ sub action_specs {
             my $access_token = $politician->fb_page_access_token;
 
             if ($politician->private_reply_activated) {
+                my $message = uri_escape( $ENV{PRIVATE_REPLY_MESSAGE} );
+
                 $self->_httpcb->add(
-                    url     => "$ENV{FB_API_URL}/$item_id/private_replies?access_token=$access_token",
+                    url     => "$ENV{FB_API_URL}/$item_id/private_replies?access_token=$access_token&message=$message",
                     method  => "post",
-                    headers => 'Content-Type: application/json',
-                    body    => encode_json {
-                        message => $ENV{PRIVATE_REPLY_MESSAGE }
-                    }
                 );
 
                 $values{reply_sent} = 1;
