@@ -103,7 +103,7 @@ sub action_specs {
                 my $message = uri_escape( $ENV{PRIVATE_REPLY_MESSAGE} );
 
                 $self->_httpcb->add(
-                    url     => "$ENV{FB_API_URL}/$item_id/private_replies?access_token=$access_token&message=$message",
+                    url     => "$ENV{FB_API_URL}/$item_id/private_replies?access_token=$access_token&message=mensagem%20de%20dev",
                     method  => "post",
                 );
 
