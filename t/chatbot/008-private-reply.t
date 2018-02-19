@@ -131,19 +131,6 @@ db_transaction {
     ;
 
     rest_post "/api/chatbot/private-reply",
-        name    => 'private reply for a post with comment_id',
-        is_fail => 1,
-        code    => 400,
-        [
-            page_id    => $page_id,
-            post_id    => $post_id,
-            item       => 'post',
-            comment_id => $comment_id,
-            permalink  => $permalink
-        ]
-    ;
-
-    rest_post "/api/chatbot/private-reply",
         name    => 'private reply for a post',
         automatic_load_item => 0,
         [

@@ -89,8 +89,6 @@ sub action_specs {
             if ($item eq 'post') {
                 $item_id = $values{post_id};
 
-                $values{comment_id} ? die \['comment_id', "shouldn't have comment_id"] : ();
-
                 $self->search(
                     {
                         item    => $item,
