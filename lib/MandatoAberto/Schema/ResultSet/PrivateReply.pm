@@ -103,16 +103,22 @@ sub action_specs {
                 $self->search( { comment_id => $item_id } )->count == 1 ? die \['comment_id', 'comment alredy replied to'] : ()
             }
 
-            my $access_token = $self->result_source->schema->resultset("Politician")->find($values{politician_id})->fb_page_access_token;
+            my $politician = $self->result_source->schema->resultset("Politician")->find($values{politician_id});
 
-            $self->_httpcb->add(
-                url     => "$ENV{FB_API_URL}/me/$item_id/private_replies?access_token=$access_token",
-                method  => "post",
-                headers => 'Content-Type: application/json',
-                body    => encode_json {
-                    message => $ENV{PRIVATE_REPLY_MESSAGE }
-                }
-            );
+            my $access_token = $politician->fb_page_access_token;
+
+            if ($politician->private_reply_activated) {
+                $self->_httpcb->add(
+                    url     => "$ENV{FB_API_URL}/me/$item_id/private_replies?access_token=$access_token",
+                    method  => "post",
+                    headers => 'Content-Type: application/json',
+                    body    => encode_json {
+                        message => $ENV{PRIVATE_REPLY_MESSAGE }
+                    }
+                );
+
+                $values{reply_sent} = 1;
+            }
 
             my $private_reply = $self->create(\%values);
 

@@ -103,6 +103,12 @@ __PACKAGE__->table("politician");
   data_type: 'timestamp'
   is_nullable: 1
 
+=head2 private_reply_activated
+
+  data_type: 'boolean'
+  default_value: true
+  is_nullable: 0
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -128,6 +134,8 @@ __PACKAGE__->add_columns(
   { data_type => "boolean", default_value => \"false", is_nullable => 0 },
   "premium_updated_at",
   { data_type => "timestamp", is_nullable => 1 },
+  "private_reply_activated",
+  { data_type => "boolean", default_value => \"true", is_nullable => 0 },
 );
 
 =head1 PRIMARY KEY
@@ -355,8 +363,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-02-18 23:11:16
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:SX//dvG9WFcFOlEfwjLG3A
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-02-19 10:05:14
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:I0B6NPOq5TlSIsw8ltJC8A
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
@@ -429,6 +437,10 @@ sub verifiers_specs {
                     required => 0,
                     type     => "Str"
                 },
+                private_reply_activated => {
+                    required => 0,
+                    type     => "Bool"
+                }
             }
         ),
     };

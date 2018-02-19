@@ -59,7 +59,7 @@ sub result_GET {
         $c,
         entity => {
             ( map { $_ => $c->stash->{politician}->$_ } qw/
-                name fb_page_id gender premium/ ),
+                name fb_page_id gender premium private_reply_activated/ ),
 
             ( state => { map { $_ => $c->stash->{politician}->address_state->$_ } qw/name code/  } ),
 
