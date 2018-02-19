@@ -107,7 +107,7 @@ sub action_specs {
 
             if ($politician->private_reply_activated) {
                 $self->_httpcb->add(
-                    url     => "$ENV{FB_API_URL}/me/$item_id/private_replies?access_token=$access_token",
+                    url     => "$ENV{FB_API_URL}/$item_id/private_replies?access_token=$access_token",
                     method  => "post",
                     headers => 'Content-Type: application/json',
                     body    => encode_json {
