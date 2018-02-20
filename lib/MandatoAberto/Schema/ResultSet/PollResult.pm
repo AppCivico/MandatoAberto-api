@@ -34,6 +34,15 @@ sub verifiers_specs {
 
                         $self->result_source->schema->resultset("PollQuestionOption")->search({ id => $option_id })->count;
                     }
+                },
+                origin => {
+                    required   => 1,
+                    type       => "Str",
+                    post_check => sub {
+                        my $origin = $_[0]->get_value("origin");
+
+                        die \["origin", "must be 'dialog' or 'propagate'"] unless $origin ~ m{^(propagate|dialog){1}$};
+                    }
                 }
             }
         ),
