@@ -5,7 +5,6 @@ use namespace::autoclean;
 BEGIN { extends 'CatalystX::Eta::Controller::REST' }
 
 with "CatalystX::Eta::Controller::AutoBase";
-with "CatalystX::Eta::Controller::AutoListGET";
 with "CatalystX::Eta::Controller::AutoResultPUT";
 
 __PACKAGE__->config(
@@ -14,9 +13,6 @@ __PACKAGE__->config(
 
     # AutoListGET
     list_key  => "issues",
-    build_row => sub {
-        return { $_[0]->get_columns() };
-    },
 
     # AutoResultPUT.
     object_key                => "issue",
@@ -56,7 +52,40 @@ sub object : Chained('base') : PathPart('') : CaptureArgs(1) {
 
 sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }
 
-sub list_GET { }
+sub list_GET {
+    my ($self, $c) = @_;
+
+    my $politician_id = $c->stash->{politician}->id;
+
+    return $self->status_ok(
+        $c,
+        entity => {
+            issues => [
+                map {
+                    my $i = $_;
+
+                    {
+                        id           => $i->get_column('id'),
+                        reply        => $i->get_column('reply'),
+                        open         => $i->get_column('open'),
+                        message      => $i->get_column('message'),
+                        created_at   => $i->get_column('created_at'),
+                        recipient    => {
+                            id   => $i->get_column('recipient_id'),
+                            name => $i->recipient->get_column('name')
+                        }
+                    }
+                } $c->stash->{collection}->search(
+                    {
+                        'me.politician_id' => $politician_id,
+                        open          => 1
+                    },
+                    { prefetch => 'recipient' }
+                  )->all()
+            ]
+        }
+    );
+}
 
 sub result : Chained('object') : PathPart('') : Args(0) : ActionClass('REST') { }
 
