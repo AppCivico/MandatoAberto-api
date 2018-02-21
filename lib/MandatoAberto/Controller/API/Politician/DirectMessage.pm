@@ -69,13 +69,13 @@ sub list_GET {
                     my $dm = $_;
 
                     +{
-                        id         => $dm->get_column('id'),
-                        content    => $dm->get_column('content'),
-                        sent       => $dm->get_column('sent'),
-                        created_at => $dm->get_column('created_at'),
-                        name       => $dm->get_column('name'),
-                        count      => $dm->get_column('count'),
-                        groups     => [
+                        campaign_id => $dm->get_column('campaign_id'),
+                        content     => $dm->get_column('content'),
+                        sent        => $dm->get_column('sent'),
+                        created_at  => $dm->get_column('created_at'),
+                        name        => $dm->get_column('name'),
+                        count       => $dm->get_column('count'),
+                        groups      => [
                             map {
                                 my $g = $_;
 

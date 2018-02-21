@@ -32,7 +32,7 @@ sub verifiers_specs {
                     required => 1,
                     type     => "Int",
                     post_check => sub {
-                        my $poll_id = $_[0]->get_value("Politician");
+                        my $politician_id = $_[0]->get_value("Politician");
                         $self->result_source->schema->resultset("Politician")->search({ user_id => $politician_id })->count;
                     },
                 },

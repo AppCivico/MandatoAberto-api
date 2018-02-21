@@ -88,7 +88,7 @@ db_transaction {
         is_fail => 1,
         [
             poll_question_option_id => $chosen_option_id,
-            fb_id                   => 'foobar'
+            fb_id                   => 'foobar',
             origin                  => 'dialog'
 
         ]
@@ -117,6 +117,7 @@ db_transaction {
         [
             fb_id                   => $recipient_fb_id,
             poll_question_option_id => $chosen_option_id,
+            origin                  => fake_pick( qw / propagate dialog / )->()
         ]
     ;
 

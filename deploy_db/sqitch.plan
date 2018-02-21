@@ -65,3 +65,4 @@
 0061-private_reply [0060-recipient-opt_in-column] 2018-02-19T13:22:10Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Creating the 'private_reply' table and adding the 'private_reply_activated' column on the 'politician' table.
 0062-private_reply-permalink [0061-private_reply] 2018-02-19T17:41:14Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Droping 'not null' for permalink on 'private_reply'
 0063-poll_propagate [0062-private_reply-permalink] 2018-02-20T21:28:24Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Creating the 'poll_propagate' table and adding the 'origin' column to the 'poll_result' table
+0064-add-campaign [0063-poll_propagate] 2018-02-21T21:02:37Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Creating the campaign table

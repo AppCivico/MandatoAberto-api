@@ -85,6 +85,9 @@ sub action_specs {
             my %values = $r->valid_values;
             not defined $values{$_} and delete $values{$_} for keys %values;
 
+            my $campaign = $self->result_source->schema->resultset("Campaign")->create( { type_id => 1 } );
+            $values{campaign_id} = $campaign->id;
+
             my $politician   = $self->result_source->schema->resultset("Politician")->find($values{politician_id});
             my $access_token = $politician->fb_page_access_token;
             die \['politician_id', 'politician does not have active Facebook page access_token'] if $access_token eq 'undef';

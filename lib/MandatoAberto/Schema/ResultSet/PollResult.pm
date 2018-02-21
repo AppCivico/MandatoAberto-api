@@ -41,7 +41,7 @@ sub verifiers_specs {
                     post_check => sub {
                         my $origin = $_[0]->get_value("origin");
 
-                        die \["origin", "must be 'dialog' or 'propagate'"] unless $origin ~ m{^(propagate|dialog){1}$};
+                        die \["origin", "must be 'dialog' or 'propagate'"] unless $origin =~ m{^(propagate|dialog){1}$};
                     }
                 }
             }

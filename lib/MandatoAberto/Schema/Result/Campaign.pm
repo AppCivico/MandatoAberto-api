@@ -1,12 +1,12 @@
 use utf8;
-package MandatoAberto::Schema::Result::PollPropagate;
+package MandatoAberto::Schema::Result::Campaign;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
 
 =head1 NAME
 
-MandatoAberto::Schema::Result::PollPropagate
+MandatoAberto::Schema::Result::Campaign
 
 =cut
 
@@ -34,28 +34,25 @@ extends 'DBIx::Class::Core';
 
 __PACKAGE__->load_components("InflateColumn::DateTime", "TimeStamp", "PassphraseColumn");
 
-=head1 TABLE: C<poll_propagate>
+=head1 TABLE: C<campaign>
 
 =cut
 
-__PACKAGE__->table("poll_propagate");
+__PACKAGE__->table("campaign");
 
 =head1 ACCESSORS
 
-=head2 poll_id
+=head2 id
+
+  data_type: 'integer'
+  is_auto_increment: 1
+  is_nullable: 0
+  sequence: 'campaign_id_seq'
+
+=head2 type_id
 
   data_type: 'integer'
   is_foreign_key: 1
-  is_nullable: 0
-
-=head2 groups
-
-  data_type: 'integer[]'
-  is_nullable: 1
-
-=head2 count
-
-  data_type: 'integer'
   is_nullable: 0
 
 =head2 created_at
@@ -65,21 +62,18 @@ __PACKAGE__->table("poll_propagate");
   is_nullable: 0
   original: {default_value => \"now()"}
 
-=head2 campaign_id
-
-  data_type: 'integer'
-  is_foreign_key: 1
-  is_nullable: 0
-
 =cut
 
 __PACKAGE__->add_columns(
-  "poll_id",
+  "id",
+  {
+    data_type         => "integer",
+    is_auto_increment => 1,
+    is_nullable       => 0,
+    sequence          => "campaign_id_seq",
+  },
+  "type_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
-  "groups",
-  { data_type => "integer[]", is_nullable => 1 },
-  "count",
-  { data_type => "integer", is_nullable => 0 },
   "created_at",
   {
     data_type     => "timestamp",
@@ -87,57 +81,70 @@ __PACKAGE__->add_columns(
     is_nullable   => 0,
     original      => { default_value => \"now()" },
   },
-  "campaign_id",
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
 );
 
 =head1 PRIMARY KEY
 
 =over 4
 
-=item * L</campaign_id>
+=item * L</id>
 
 =back
 
 =cut
 
-__PACKAGE__->set_primary_key("campaign_id");
+__PACKAGE__->set_primary_key("id");
 
 =head1 RELATIONS
 
-=head2 campaign
+=head2 direct_message
 
-Type: belongs_to
+Type: might_have
 
-Related object: L<MandatoAberto::Schema::Result::Campaign>
+Related object: L<MandatoAberto::Schema::Result::DirectMessage>
 
 =cut
 
-__PACKAGE__->belongs_to(
-  "campaign",
-  "MandatoAberto::Schema::Result::Campaign",
-  { id => "campaign_id" },
-  { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
+__PACKAGE__->might_have(
+  "direct_message",
+  "MandatoAberto::Schema::Result::DirectMessage",
+  { "foreign.campaign_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 poll
+=head2 poll_propagate
+
+Type: might_have
+
+Related object: L<MandatoAberto::Schema::Result::PollPropagate>
+
+=cut
+
+__PACKAGE__->might_have(
+  "poll_propagate",
+  "MandatoAberto::Schema::Result::PollPropagate",
+  { "foreign.campaign_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+=head2 type
 
 Type: belongs_to
 
-Related object: L<MandatoAberto::Schema::Result::Poll>
+Related object: L<MandatoAberto::Schema::Result::CampaignType>
 
 =cut
 
 __PACKAGE__->belongs_to(
-  "poll",
-  "MandatoAberto::Schema::Result::Poll",
-  { id => "poll_id" },
+  "type",
+  "MandatoAberto::Schema::Result::CampaignType",
+  { id => "type_id" },
   { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
 );
 
 
 # Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-02-21 18:02:29
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:2SFqS5Dso/QT5NXLNJeMEg
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:365pElh9l4iZwARRGH03Jw
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
