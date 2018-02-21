@@ -592,6 +592,11 @@ sub get_citizen_interaction {
         $treated_data->{subtitle} = "Gráfico de acessos únicos por dia";
     }
 
+    # Forçando métricas para a conta de demonstração
+    if ($self->id == 255) {
+        $treated_data->{data} = [132, 167, 89, 178, 246, 359, 478];
+    }
+
     return $treated_data;
 }
 
