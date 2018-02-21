@@ -558,9 +558,9 @@ sub set_get_started_button_and_persistent_menu {
 sub get_citizen_interaction {
     my ($self, $range) = @_;
 
-    if (is_test()) {
-        return 1;
-    }
+    #if (is_test()) {
+        #return 1;
+    #}
 
     my $page_id      = $self->fb_page_id;
     my $access_token = $self->fb_page_access_token;
@@ -571,7 +571,7 @@ sub get_citizen_interaction {
     my $end_date   = DateTime->now->epoch();
 
     my $res = $furl->get(
-        $ENV{FB_API_URL} . "/$page_id/insights?access_token=$access_token&metric=page_messages_active_threads_unique&since=$start_date&until=$end_date",
+        $ENV{FB_API_URL} . "/1573221416102831/insights?access_token=EAAB2gykE6bUBAN0SDrIQyQZBRUFt6AWLzE1H4vrnZBQFVxdAFyZBraqUU413B3vjVFbxZBY4wZAOADXWbEPsjZAkFdDnkkRVBJKGvpOpog7nY3XinPb3509sJXAhZCXnvQrhjA8tuSZAhy4pJebUv3RKxdVI5yf8QALdMUehao0GrwZDZD&metric=page_messages_active_threads_unique&since=$start_date&until=$end_date",
     );
     return 0 unless $res->is_success;
 
@@ -590,6 +590,11 @@ sub get_citizen_interaction {
         }
         $treated_data->{title} = 'Acessos por dia';
         $treated_data->{subtitle} = "Gráfico de acessos únicos por dia";
+    }
+
+    # Forçando métricas para a conta de demonstração
+    if ($self->id == 255) {
+        $treated_data->{data} = [132, 167, 89, 178, 246, 359, 478];
     }
 
     return $treated_data;
