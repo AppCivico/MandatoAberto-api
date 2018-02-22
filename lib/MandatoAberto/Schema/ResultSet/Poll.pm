@@ -25,9 +25,15 @@ sub verifiers_specs {
                     required   => 1,
                     type       => "Str",
                     post_check => sub {
-                        my $name = $_[0]->get_value("name");
+                        my $name          = $_[0]->get_value("name");
+                        my $politician_id = $_[0]->get_value('politician_id');
 
-                        my $count = $self->result_source->schema->resultset("Poll")->search({ name => $name })->count;
+                        my $count = $self->result_source->schema->resultset("Poll")->search(
+                            {
+                                name          => $name,
+                                politician_id => $politician_id
+                            }
+                        )->count;
                         die \["name", 'alredy exists'] unless $count == 0;
                     }
                 },
