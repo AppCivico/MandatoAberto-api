@@ -32,7 +32,7 @@ sub verifiers_specs {
                     required => 1,
                     type     => "Int",
                     post_check => sub {
-                        my $politician_id = $_[0]->get_value("Politician");
+                        my $politician_id = $_[0]->get_value("politician_id");
                         $self->result_source->schema->resultset("Politician")->search({ user_id => $politician_id })->count;
                     },
                 },
@@ -87,7 +87,6 @@ sub action_specs {
 
             my $politician   = $self->result_source->schema->resultset("Politician")->find($values{politician_id});
             my $access_token = $politician->fb_page_access_token;
-            die \['politician_id', 'politician does not have active Facebook page access_token'] if $access_token eq 'undef';
 
             # Depois de criada a messagem direta, devo adicionar uma entrada
             # na fila para cada recipient atrelado ao rep. público
@@ -107,28 +106,37 @@ sub action_specs {
 
             while (my $recipient = $recipient_rs->next()) {
                 # Mando para o httpcallback
-                $self->_httpcb->add(
-                    url     => $ENV{FB_API_URL} . '/me/messages?access_token=' . $access_token,
-                    method  => "post",
-                    headers => 'Content-Type: application/json',
-                    body    => encode_json {
-                        recipient => {
-                            id => $recipient->fb_id
-                        },
-                        message => {
-                            text          => $values{content},
-                            quick_replies => [
-                                {
-                                    content_type => 'text',
-                                    title        => 'Voltar para o início',
-                                    payload      => 'greetings'
-                                }
-                            ]
-                        }
-                    }
-                );
 
-                $values{count} //= $recipient->get_column('total');
+                if (is_test()) {
+                    next;
+                } else {
+                    $self->_httpcb->add(
+                        url     => $ENV{FB_API_URL} . '/me/messages?access_token=' . $access_token,
+                        method  => "post",
+                        headers => 'Content-Type: application/json',
+                        body    => encode_json {
+                            recipient => {
+                                id => $recipient->fb_id
+                            },
+                            message => {
+                                text          => $values{content},
+                                quick_replies => [
+                                    {
+                                        content_type => 'text',
+                                        title        => 'Voltar para o início',
+                                        payload      => 'greetings'
+                                    }
+                                ]
+                            }
+                        }
+                    );
+
+                    $values{count} //= $recipient->get_column('total');
+                }
+            }
+
+            if (!$values{count}) {
+                $values{count} = 0;
             }
 
             $self->_httpcb->wait_for_all_responses();

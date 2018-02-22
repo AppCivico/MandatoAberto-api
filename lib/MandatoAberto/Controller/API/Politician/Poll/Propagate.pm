@@ -18,6 +18,7 @@ __PACKAGE__->config(
         die \['premium', 'politician is not premium'] unless $c->stash->{politician}->premium;
 
         $params->{politician_id} = $c->user->id;
+        $params->{poll_id}       = $c->stash->{poll}->id;
 
         if ($c->req->params->{groups}) {
             $c->req->params->{groups} =~ s/(\[|\]|(\s))//g;
