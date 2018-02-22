@@ -171,15 +171,16 @@ __PACKAGE__->belongs_to(
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
 use MandatoAberto::Utils;
-use WebService::HttpCallback;
+use WebService::HttpCallback::Async;
 
 use JSON::MaybeXS;
 
 has _httpcb => (
     is         => "ro",
-    isa        => "WebService::HttpCallback",
+    isa        => "WebService::HttpCallback::Async",
     lazy_build => 1,
 );
+
 
 with 'MandatoAberto::Role::Verification';
 with 'MandatoAberto::Role::Verification::TransactionalActions::DBIC';
@@ -208,6 +209,10 @@ sub verifiers_specs {
                     required   => 0,
                     type       => "Str",
                     max_length => 250
+                },
+                ignore => {
+                    required => 1,
+                    type     => "Bool"
                 }
             }
         )
@@ -223,6 +228,13 @@ sub action_specs {
 
             my %values = $r->valid_values;
             not defined $values{$_} and delete $values{$_} for keys %values;
+
+            if ($values{ignore} == 1 && $values{reply}) {
+                die \['ignore', 'must not have reply'];
+            } elsif ($values{ignore} == 0 && !$values{reply}) {
+                die \['reply', 'missing'];
+            }
+            delete $values{ignore};
 
             my $access_token = $self->politician->fb_page_access_token || '';
             my $recipient    = $self->recipient;
@@ -250,6 +262,8 @@ sub action_specs {
                 );
             }
 
+            $self->_httpcb->wait_for_all_responses();
+
             $self->update({
                 %values,
                 updated_at => \'NOW()',
@@ -258,7 +272,7 @@ sub action_specs {
     };
 }
 
-sub _build__httpcb { WebService::HttpCallback->instance }
+sub _build__httpcb { WebService::HttpCallback::Async->instance }
 
 __PACKAGE__->meta->make_immutable;
 1;

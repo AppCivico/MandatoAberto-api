@@ -71,7 +71,24 @@ db_transaction {
     ;
 
     rest_put "/api/politician/$politician_id/issue/$first_issue_id",
+        name    => "ignoring issue without flag",
+        is_fail => 1,
+        code    => 400,
+    ;
+
+    rest_put "/api/politician/$politician_id/issue/$first_issue_id",
+        name    => "updating issue (ignoring) with reply",
+        is_fail => 1,
+        code    => 400,
+        [
+            ignore => 1,
+            reply  => 'foobar'
+        ]
+    ;
+
+    rest_put "/api/politician/$politician_id/issue/$first_issue_id",
         name => "updating issue without reply",
+        [ ignore => 1 ]
     ;
 
     rest_put "/api/politician/$politician_id/issue/$first_issue_id",

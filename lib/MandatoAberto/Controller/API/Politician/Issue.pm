@@ -20,6 +20,9 @@ __PACKAGE__->config(
     prepare_params_for_update => sub {
         my ($self, $c, $params) = @_;
 
+        my $ignore_flag = $c->req->params->{ignore} || 0;
+        $params->{ignore} = $ignore_flag;
+
         $params->{open} = 0;
 
         return $params;
