@@ -237,6 +237,15 @@ db_transaction {
         valid_until => \'NOW()',
     });
 
+    # Criando grupo
+    $schema->resultset("Group")->create(
+        {
+            politician_id => $politician_id,
+            name          => 'foobar',
+            filter        => '{}',
+        }
+    );
+
     rest_reload_list "get_politician_dashboard";
 
     stash_test "get_politician_dashboard.list" => sub {
@@ -248,6 +257,7 @@ db_transaction {
         is ($res->{has_dialogs}, 1, 'politician has dialogs');
         is ($res->{has_facebook_auth}, 1, 'politician has facebook auth');
         is ($res->{first_access}, 0, 'politician first access');
+        is ($res->{group_count}, 1, 'group count');
     };
 };
 

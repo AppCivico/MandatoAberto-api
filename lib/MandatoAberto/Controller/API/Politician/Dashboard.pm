@@ -104,6 +104,8 @@ sub list_GET {
         $citizen_interaction = $c->stash->{politician}->get_citizen_interaction($range);
     }
 
+    my $group_count = $c->stash->{politician}->groups->count;
+
     return $self->status_ok(
         $c,
         entity => {
@@ -118,6 +120,7 @@ sub list_GET {
             ever_had_poll       => $ever_had_poll,
             citizen_interaction => $citizen_interaction,
             citizen_gender      => $citizen_gender,
+            group_count         => $group_count,
 
             poll => $active_poll ?
                     map {
