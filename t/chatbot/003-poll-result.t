@@ -59,21 +59,38 @@ db_transaction {
     rest_post "/api/chatbot/poll-result",
         name    => "create poll without option_id",
         is_fail => 1,
-        [ fb_id     => $recipient_fb_id ]
+        [
+            fb_id  => $recipient_fb_id,
+            origin => 'dialog'
+        ]
     ;
 
     rest_post "/api/chatbot/poll-result",
         name    => "create poll without fb_id",
         is_fail => 1,
-        [ poll_question_option_id => $chosen_option_id ]
+        [
+            poll_question_option_id => $chosen_option_id,
+            origin                  => 'dialog'
+        ]
+    ;
+
+    rest_post "/api/chatbot/poll-result",
+        name    => "create poll result without origin",
+        is_fail => 1,
+        [
+            poll_question_option_id => $chosen_option_id,
+            fb_id                   => $recipient_fb_id,
+        ]
     ;
 
     rest_post "/api/chatbot/poll-result",
         name    => "create poll with unexistent fb_id",
         is_fail => 1,
         [
-            option_id => $chosen_option_id,
-            fb_id     => 'foobar'
+            poll_question_option_id => $chosen_option_id,
+            fb_id                   => 'foobar',
+            origin                  => 'dialog'
+
         ]
     ;
 
@@ -100,6 +117,7 @@ db_transaction {
         [
             fb_id                   => $recipient_fb_id,
             poll_question_option_id => $chosen_option_id,
+            origin                  => fake_pick( qw / propagate dialog / )->()
         ]
     ;
 

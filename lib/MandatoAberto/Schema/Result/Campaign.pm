@@ -1,12 +1,12 @@
 use utf8;
-package MandatoAberto::Schema::Result::PollResult;
+package MandatoAberto::Schema::Result::Campaign;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
 
 =head1 NAME
 
-MandatoAberto::Schema::Result::PollResult
+MandatoAberto::Schema::Result::Campaign
 
 =cut
 
@@ -34,11 +34,11 @@ extends 'DBIx::Class::Core';
 
 __PACKAGE__->load_components("InflateColumn::DateTime", "TimeStamp", "PassphraseColumn");
 
-=head1 TABLE: C<poll_result>
+=head1 TABLE: C<campaign>
 
 =cut
 
-__PACKAGE__->table("poll_result");
+__PACKAGE__->table("campaign");
 
 =head1 ACCESSORS
 
@@ -47,15 +47,9 @@ __PACKAGE__->table("poll_result");
   data_type: 'integer'
   is_auto_increment: 1
   is_nullable: 0
-  sequence: 'poll_results_id_seq'
+  sequence: 'campaign_id_seq'
 
-=head2 recipient_id
-
-  data_type: 'integer'
-  is_foreign_key: 1
-  is_nullable: 0
-
-=head2 poll_question_option_id
+=head2 type_id
 
   data_type: 'integer'
   is_foreign_key: 1
@@ -68,11 +62,6 @@ __PACKAGE__->table("poll_result");
   is_nullable: 0
   original: {default_value => \"now()"}
 
-=head2 origin
-
-  data_type: 'text'
-  is_nullable: 0
-
 =cut
 
 __PACKAGE__->add_columns(
@@ -81,11 +70,9 @@ __PACKAGE__->add_columns(
     data_type         => "integer",
     is_auto_increment => 1,
     is_nullable       => 0,
-    sequence          => "poll_results_id_seq",
+    sequence          => "campaign_id_seq",
   },
-  "recipient_id",
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
-  "poll_question_option_id",
+  "type_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "created_at",
   {
@@ -94,8 +81,6 @@ __PACKAGE__->add_columns(
     is_nullable   => 0,
     original      => { default_value => \"now()" },
   },
-  "origin",
-  { data_type => "text", is_nullable => 0 },
 );
 
 =head1 PRIMARY KEY
@@ -112,39 +97,54 @@ __PACKAGE__->set_primary_key("id");
 
 =head1 RELATIONS
 
-=head2 poll_question_option
+=head2 direct_message
+
+Type: might_have
+
+Related object: L<MandatoAberto::Schema::Result::DirectMessage>
+
+=cut
+
+__PACKAGE__->might_have(
+  "direct_message",
+  "MandatoAberto::Schema::Result::DirectMessage",
+  { "foreign.campaign_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+=head2 poll_propagate
+
+Type: might_have
+
+Related object: L<MandatoAberto::Schema::Result::PollPropagate>
+
+=cut
+
+__PACKAGE__->might_have(
+  "poll_propagate",
+  "MandatoAberto::Schema::Result::PollPropagate",
+  { "foreign.campaign_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+=head2 type
 
 Type: belongs_to
 
-Related object: L<MandatoAberto::Schema::Result::PollQuestionOption>
+Related object: L<MandatoAberto::Schema::Result::CampaignType>
 
 =cut
 
 __PACKAGE__->belongs_to(
-  "poll_question_option",
-  "MandatoAberto::Schema::Result::PollQuestionOption",
-  { id => "poll_question_option_id" },
-  { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
-);
-
-=head2 recipient
-
-Type: belongs_to
-
-Related object: L<MandatoAberto::Schema::Result::Recipient>
-
-=cut
-
-__PACKAGE__->belongs_to(
-  "recipient",
-  "MandatoAberto::Schema::Result::Recipient",
-  { id => "recipient_id" },
+  "type",
+  "MandatoAberto::Schema::Result::CampaignType",
+  { id => "type_id" },
   { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-02-20 17:53:18
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:lNs0wId+FVZxl19zFt4uRQ
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-02-21 18:02:29
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:365pElh9l4iZwARRGH03Jw
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
