@@ -95,8 +95,9 @@ db_transaction {
         ok(
             $schema->resultset('PollResult')->create(
                 {
-                    recipient_id               => $recipient_ids[0],
-                    poll_question_option_id  => $text_to_options_id{ $poll_questions[0]->id }->{'Sim'},
+                    recipient_id            => $recipient_ids[0],
+                    poll_question_option_id => $text_to_options_id{ $poll_questions[0]->id }->{'Sim'},
+                    origin                  => fake_pick( qw/origin propagate/ )->()
                 }
             ),
         );
@@ -105,8 +106,9 @@ db_transaction {
         ok(
             $schema->resultset('PollResult')->create(
                 {
-                    recipient_id => $recipient_ids[0],
-                    poll_question_option_id  => $text_to_options_id{ $poll_questions[1]->id }->{'Não'},
+                    recipient_id            => $recipient_ids[0],
+                    poll_question_option_id => $text_to_options_id{ $poll_questions[1]->id }->{'Não'},
+                    origin                  => fake_pick( qw/origin propagate/ )->()
                 }
             ),
         );
@@ -115,8 +117,9 @@ db_transaction {
         ok(
             $schema->resultset('PollResult')->create(
                 {
-                    recipient_id => $recipient_ids[0],
-                    poll_question_option_id  => $text_to_options_id{ $poll_questions[2]->id }->{'Talvez'},
+                    recipient_id            => $recipient_ids[0],
+                    poll_question_option_id => $text_to_options_id{ $poll_questions[2]->id }->{'Talvez'},
+                    origin                  => fake_pick( qw/origin propagate/ )->()
                 }
             ),
         );
@@ -125,8 +128,9 @@ db_transaction {
         ok(
             $schema->resultset('PollResult')->create(
                 {
-                    recipient_id => $recipient_ids[1],
-                    poll_question_option_id  => $text_to_options_id{ $poll_questions[0]->id }->{'Sim'},
+                    recipient_id            => $recipient_ids[1],
+                    poll_question_option_id => $text_to_options_id{ $poll_questions[0]->id }->{'Sim'},
+                    origin                  => fake_pick( qw/origin propagate/ )->()
                 }
             ),
         );
@@ -135,8 +139,9 @@ db_transaction {
         ok(
             $schema->resultset('PollResult')->create(
                 {
-                    recipient_id => $recipient_ids[1],
-                    poll_question_option_id  => $text_to_options_id{ $poll_questions[1]->id }->{'Talvez'},
+                    recipient_id            => $recipient_ids[1],
+                    poll_question_option_id => $text_to_options_id{ $poll_questions[1]->id }->{'Talvez'},
+                    origin                  => fake_pick( qw/origin propagate/ )->()
                 }
             ),
         );
@@ -145,8 +150,9 @@ db_transaction {
         ok(
             $schema->resultset('PollResult')->create(
                 {
-                    recipient_id => $recipient_ids[1],
-                    poll_question_option_id  => $text_to_options_id{ $poll_questions[2]->id }->{'Não'},
+                    recipient_id            => $recipient_ids[1],
+                    poll_question_option_id => $text_to_options_id{ $poll_questions[2]->id }->{'Não'},
+                    origin                  => fake_pick( qw/origin propagate/ )->()
                 }
             ),
         );
@@ -155,8 +161,9 @@ db_transaction {
         ok(
             $schema->resultset('PollResult')->create(
                 {
-                    recipient_id => $recipient_ids[2],
-                    poll_question_option_id  => $text_to_options_id{ $poll_questions[0]->id }->{'Não'},
+                    recipient_id            => $recipient_ids[2],
+                    poll_question_option_id => $text_to_options_id{ $poll_questions[0]->id }->{'Não'},
+                    origin                  => fake_pick( qw/origin propagate/ )->()
                 }
             ),
         );
