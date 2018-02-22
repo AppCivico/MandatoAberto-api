@@ -88,6 +88,17 @@ sub action_specs {
             my $politician   = $self->result_source->schema->resultset("Politician")->find($values{politician_id});
             my $access_token = $politician->fb_page_access_token;
 
+            my $poll_id                 = $values{poll_id};
+            my $poll_question_option_rs = $self->result_source->schema->resultset("PollQuestionOption");
+            my @poll_question_options   = $poll_question_option_rs->search(
+                { 'poll.id' => $poll_id },
+                { prefetch => [ 'poll_question' , { 'poll_question' => "poll" } ] }
+            )->all();
+
+            my $question      = $poll_question_options[0]->poll_question->content;
+            my $first_option  = $poll_question_options[0];
+            my $second_option = $poll_question_options[1];
+
             # Depois de criada a messagem direta, devo adicionar uma entrada
             # na fila para cada recipient atrelado ao rep. público
             # levando em consideração os grupos, se adicionados
@@ -119,13 +130,24 @@ sub action_specs {
                                 id => $recipient->fb_id
                             },
                             message => {
-                                text          => $values{content},
+                                text          => $question,
                                 quick_replies => [
                                     {
                                         content_type => 'text',
-                                        title        => 'Voltar para o início',
-                                        payload      => 'greetings'
-                                    }
+                                        title        => $first_option->content,
+                                        payload      => {
+                                            dialog    => 'pollAnswer',
+                                            option_id => $first_option->id
+                                        }
+                                    },
+                                    {
+                                        content_type => 'text',
+                                        title        => $second_option->content,
+                                        payload      => {
+                                            dialog    => 'pollAnswer',
+                                            option_id => $second_option->id
+                                        }
+                                    },
                                 ]
                             }
                         }

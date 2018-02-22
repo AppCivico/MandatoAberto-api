@@ -22,10 +22,6 @@ db_transaction {
             'questions[0]'             => 'Você está bem?',
             'questions[0][options][0]' => 'Sim',
             'questions[0][options][1]' => 'Não',
-            'questions[1]'             => 'foobar?',
-            'questions[1][options][0]' => 'foo',
-            'questions[1][options][1]' => 'bar',
-            'questions[1][options][2]' => 'não',
         ]
     ;
     my $poll_id = stash "p1.id";
