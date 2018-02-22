@@ -74,8 +74,9 @@ sub list_GET {
                         message      => $i->get_column('message'),
                         created_at   => $i->get_column('created_at'),
                         recipient    => {
-                            id   => $i->get_column('recipient_id'),
-                            name => $i->recipient->get_column('name')
+                            id              => $i->get_column('recipient_id'),
+                            name            => $i->recipient->get_column('name'),
+                            profile_picture => $i->recipient->get_column('picture')
                         }
                     }
                 } $c->stash->{collection}->search(
