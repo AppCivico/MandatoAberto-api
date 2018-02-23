@@ -6,17 +6,10 @@ BEGIN { extends "CatalystX::Eta::Controller::REST" }
 
 with "CatalystX::Eta::Controller::AutoBase";
 with "CatalystX::Eta::Controller::AutoListPOST";
-with "CatalystX::Eta::Controller::AutoListGET";
 
 __PACKAGE__->config(
     # AutoBase.
     result => "DB::PollPropagate",
-
-    # AutoListGET
-    list_key => "poll_propagate",
-    build_row  => sub {
-        return { $_[0]->get_columns() };
-    },
 
     # AutoListPOST
     prepare_params_for_create => sub {
@@ -48,8 +41,6 @@ sub base : Chained('root') : PathPart('propagate') : CaptureArgs(0) { }
 sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }
 
 sub list_POST { }
-
-sub list_GET { }
 
 __PACKAGE__->meta->make_immutable;
 

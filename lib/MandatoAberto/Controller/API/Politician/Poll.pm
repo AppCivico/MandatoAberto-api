@@ -85,6 +85,75 @@ sub result : Chained('object') : PathPart('') : Args(0) : ActionClass('REST') { 
 
 sub result_GET { }
 
+sub propagate_list : Chained('base') : PathPart('propagate') : Args(0) : ActionClass('REST') { }
+
+sub propagate_list_GET {
+    my ($self, $c) = @_;
+
+    my $politician_id = $c->stash->{politician}->id;
+
+    return $self->status_ok(
+        $c,
+        entity => {
+            poll_propagations => [
+                map {
+                    my $pp = $_;
+
+                    +{
+                        id              => $pp->get_column('campaign_id'),
+                        recipient_count => $pp->get_column('count'),
+                        groups          => [
+                            map {
+                                my $g = $_;
+
+                                +{
+                                    id   => $g->get_column('id'),
+                                    name => $g->get_column('name')
+                                }
+                            } $pp->groups_rs->all()
+                        ],
+
+                        poll => {
+                            id => $pp->get_column('poll_id'),
+
+                            map {
+                                my $p = $_;
+
+                                name      => $p->get_column('name'),
+                                questions => [
+                                    map {
+                                        my $pq = $_;
+                                        +{
+                                            id      => $pq->get_column('id'),
+                                            content => $pq->get_column('content'),
+
+                                            options => [
+                                                map {
+                                                    my $qo = $_;
+
+                                                    +{
+                                                        id      => $qo->get_column('id'),
+                                                        content => $qo->get_column('content'),
+                                                        count   => $qo->poll_results->search( { origin => 'propagate' } )->count,
+                                                    }
+                                                } $pq->poll_question_options->all()
+                                            ]
+                                        }
+
+                                    } $p->poll_questions->all()
+                                ]
+                            } $pp->poll
+                        }
+                    }
+                } $c->model("DB::PollPropagate")->search(
+                    { 'me.politician_id'    => $politician_id },
+                    { prefetch => [ 'poll', { 'poll' => { 'poll_questions' => { 'poll_question_options' => 'poll_results' } } } ] }
+                )->all()
+            ],
+        }
+    );
+}
+
 __PACKAGE__->meta->make_immutable;
 
 1;
