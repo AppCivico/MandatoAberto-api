@@ -149,7 +149,7 @@ sub list_GET {
                                                 +{
                                                     id      => $o->get_column('id'),
                                                     content => $o->get_column('content'),
-                                                    count   => $o->poll_results->search()->count,
+                                                    count   => $o->poll_results->search( { origin => 'propagate' } )->count,
                                                 }
                                             } $q->poll_question_options->all()
                                         ]
@@ -188,7 +188,7 @@ sub list_GET {
                                                         +{
                                                             id      => $o->get_column('id'),
                                                             content => $o->get_column('content'),
-                                                            count   => $o->poll_results->search()->count,
+                                                            count   => $o->poll_results->search( { origin => 'propagate' } )->count,
                                                         }
                                                     } $q->poll_question_options->all()
                                                 ]
