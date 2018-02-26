@@ -121,16 +121,6 @@ db_transaction {
         ]
     ;
 
-    rest_post "/api/chatbot/poll-result",
-        name    => "Alredy answered poll",
-        is_fail => 1,
-        code    => 400,
-        [
-            fb_id                   => $recipient_fb_id,
-            poll_question_option_id => $chosen_option_id,
-        ]
-    ;
-
     rest_reload_list "get_poll_answer";
     stash_test "get_poll_answer.list" => sub {
         my $res = shift;
