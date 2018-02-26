@@ -140,7 +140,7 @@ sub action_specs {
                                     {
                                         content_type => 'text',
                                         title        => $second_option->content,
-                                        payload      => 'pollAnswerPropagate_' . $first_option->id
+                                        payload      => 'pollAnswerPropagate_' . $second_option->id
                                     },
                                 ]
                             }
