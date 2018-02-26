@@ -249,7 +249,7 @@ sub action_specs {
                             id => $recipient->fb_id
                         },
                         message => {
-                            text          => "Você enviou: " . $self->message . "\n\nResposta: " . $values{reply},
+                            text          => "Voc\ê enviou: " . $self->message . "\n\nResposta: " . $values{reply},
                             quick_replies => [
                                 {
                                     content_type => 'text',
