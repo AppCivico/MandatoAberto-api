@@ -72,7 +72,9 @@ sub action_specs {
                 },
                 { prefetch => [ 'poll_question_option', { 'poll_question_option' => { 'poll_question' => 'poll' } }, 'recipient' ] }
             )->count;
-            die \["poll_question_option_id", "recipient alredy answered poll"] if $poll_recipient_answer;
+            
+            # Por enquanto um recipient poderá responder tanto via dialog quanto via propagate
+            # die \["poll_question_option_id", "recipient alredy answered poll"] if $poll_recipient_answer;
 
             my $poll_result = $self->create(\%values);
 
