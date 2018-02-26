@@ -243,7 +243,7 @@ sub action_specs {
                 $self->_httpcb->add(
                     url     => $ENV{FB_API_URL} . '/me/messages?access_token=' . $access_token,
                     method  => "post",
-                    headers => 'Content-Type:application/json',
+                    headers => 'Content-Type: application/json',
                     body    => encode_json {
                         recipient => {
                             id => $recipient->fb_id
