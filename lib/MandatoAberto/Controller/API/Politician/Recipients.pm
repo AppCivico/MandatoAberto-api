@@ -55,7 +55,7 @@ sub list_GET {
     my ($self, $c) = @_;
 
     my $page    = $c->req->params->{page}    || 1;
-    my $results = $c->req->params->{results};
+    my $results = $c->req->params->{results} || 20;
 
     $c->stash->{collection} = $c->stash->{collection}->search( {}, { page => $page, rows => $results } );
 
