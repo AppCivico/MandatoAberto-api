@@ -135,18 +135,12 @@ sub action_specs {
                                     {
                                         content_type => 'text',
                                         title        => $first_option->content,
-                                        payload      => {
-                                            dialog    => 'pollAnswer',
-                                            option_id => $first_option->id
-                                        }
+                                        payload      => 'pollAnswerPropagate_' . $first_option->id
                                     },
                                     {
                                         content_type => 'text',
                                         title        => $second_option->content,
-                                        payload      => {
-                                            dialog    => 'pollAnswer',
-                                            option_id => $second_option->id
-                                        }
+                                        payload      => 'pollAnswerPropagate_' . $first_option->id
                                     },
                                 ]
                             }
