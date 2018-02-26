@@ -123,7 +123,7 @@ sub action_specs {
                             quick_replies => [
                                 {
                                     content_type => 'text',
-                                    title        => 'Voltar para o início',
+                                    title        => "Voltar para o in\ício",
                                     payload      => 'greetings'
                                 }
                             ]
