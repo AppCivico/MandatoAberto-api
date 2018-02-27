@@ -20,26 +20,15 @@ __PACKAGE__->config(
     build_row => sub {
         my ($r, $self, $c) = @_;
 
-        my $politician_id = $c->stash->{politician}->id;
-
         return {
-            map {
-                my $g = $_;
-
-                id               => $g->id,
-                filter           => $g->filter,
-                name             => $g->get_column('name'),
-                status           => $g->get_column('status'),
-                updated_at       => $g->get_column('updated_at'),
-                created_at       => $g->get_column('created_at'),
-                politician_id    => $g->get_column('politician_id'),
-                recipients_count => $g->get_column('recipients_count'),
-            } $c->stash->{collection}->search(
-                {
-                    politician_id => $politician_id,
-                    deleted       => 0
-                }
-              )->all()
+            id               => $r->id,
+            filter           => $r->filter,
+            name             => $r->get_column('name'),
+            status           => $r->get_column('status'),
+            updated_at       => $r->get_column('updated_at'),
+            created_at       => $r->get_column('created_at'),
+            politician_id    => $r->get_column('politician_id'),
+            recipients_count => $r->get_column('recipients_count'),
         };
     },
 
