@@ -104,7 +104,7 @@ sub list_GET {
         $citizen_interaction = $c->stash->{politician}->get_citizen_interaction($range);
     }
 
-    my $group_count = $c->stash->{politician}->groups->count;
+    my $group_count = $c->stash->{politician}->groups->search( { deleted => 0 } )->count;
 
     return $self->status_ok(
         $c,
