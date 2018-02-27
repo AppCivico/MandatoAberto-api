@@ -19,12 +19,6 @@ db_transaction {
 
     api_auth_as user_id => $politician_id;
 
-    rest_post "/api/politician/$politician_id/contact",
-        name    => "politician without any contact",
-        is_fail => 1,
-        code    => 400
-    ;
-
     # Facebook must be an URI
     rest_post "/api/politician/$politician_id/contact",
         name    => "politician with invalid Facebook",
@@ -126,6 +120,23 @@ db_transaction {
         is ($res->{politician_contact}->{facebook},  'https://facebook.com/aaaa', 'facebook');
         is ($res->{politician_contact}->{twitter},   '@foobar', 'twitter');
         is ($res->{politician_contact}->{email},     'foobar@aaaaa.com', 'email');
+        is ($res->{politician_contact}->{cellphone}, undef, 'cellphone');
+    };
+
+    rest_post "/api/politician/$politician_id/contact",
+        name  => 'removing contacts',
+        stash => 'c3',
+        code  => 200,
+    ;
+
+    rest_reload_list "get_politician_contact";
+    stash_test "get_politician_contact.list" => sub {
+        my $res = shift;
+
+        is ($res->{politician_contact}->{id},        $contact->{id}, 'id');
+        is ($res->{politician_contact}->{facebook},  undef, 'facebook');
+        is ($res->{politician_contact}->{twitter},   undef, 'twitter');
+        is ($res->{politician_contact}->{email},     undef, 'email');
         is ($res->{politician_contact}->{cellphone}, undef, 'cellphone');
     };
 };

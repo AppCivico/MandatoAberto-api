@@ -97,6 +97,10 @@ db_transaction {
         code    => 400
     ;
 
+    rest_get "/api/politician/$politician_id/issue/$first_issue_id",
+        name => "get only one issue",
+    ;
+
     # Por enquanto apenas os issues abertos serão listados
 
     # rest_reload_list "get_issues";

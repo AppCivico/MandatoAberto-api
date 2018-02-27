@@ -56,11 +56,6 @@ sub action_specs {
             my $r = shift;
 
             my %values = $r->valid_values;
-            not defined $values{$_} and delete $values{$_} for keys %values;
-
-            if (!$values{twitter} && !$values{facebook} && !$values{email} && !$values{cellphone}) {
-                die \["contact", "Must have at least one contact mean"];
-            }
 
             my $existent_politician_contact = $self->search(
                 { politician_id => $values{politician_id} }
