@@ -6,6 +6,7 @@ BEGIN { extends 'CatalystX::Eta::Controller::REST' }
 
 with "CatalystX::Eta::Controller::AutoBase";
 with "CatalystX::Eta::Controller::AutoResultPUT";
+with "CatalystX::Eta::Controller::AutoResultGET";
 
 __PACKAGE__->config(
     # AutoBase.
@@ -26,7 +27,11 @@ __PACKAGE__->config(
         $params->{open} = 0;
 
         return $params;
-    }
+    },
+
+    build_row => sub {
+        return { $_[0]->get_columns() };
+    },
 );
 
 sub root : Chained('/api/politician/object') : PathPart('') : CaptureArgs(0) {
@@ -94,6 +99,8 @@ sub list_GET {
 sub result : Chained('object') : PathPart('') : Args(0) : ActionClass('REST') { }
 
 sub result_PUT { }
+
+sub result_GET { }
 
 __PACKAGE__->meta->make_immutable;
 
