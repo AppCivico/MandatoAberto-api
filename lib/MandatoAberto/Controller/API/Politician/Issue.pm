@@ -100,7 +100,28 @@ sub result : Chained('object') : PathPart('') : Args(0) : ActionClass('REST') { 
 
 sub result_PUT { }
 
-sub result_GET { }
+sub result_GET {
+    my ($self, $c) = @_;
+
+    my $issue     = $c->stash->{issue};
+    my $recipient = $c->stash->{issue}->recipient;
+
+    return $self->status_ok(
+        $c,
+        entity => {
+            id         => $issue->id,
+            reply      => $issue->reply,
+            open       => $issue->open,
+            message    => $issue->message,
+            created_at => $issue->created_at,
+            recipient  => {
+                id              => $recipient->id,
+                name            => $recipient->name,
+                profile_picture => $recipient->picture
+            }
+        }
+    );
+}
 
 __PACKAGE__->meta->make_immutable;
 
