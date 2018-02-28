@@ -105,8 +105,69 @@ sub api_auth_as {
     $obj->fixed_headers([ 'x-api-key' => $auth_user->{api_key} ]);
 }
 
-sub create_user {
-    # body...
+sub create_politician {
+    my (%opts) = @_;
+
+    my %params = (
+        email            => fake_email()->(),
+        password         => 'foobarpass',
+        name             => fake_name()->(),
+        address_state_id => 26,
+        address_city_id  => 9508,
+        party_id         => fake_int(1, 35)->(),
+        office_id        => fake_int(1, 8)->(),
+        gender           => fake_pick(qw/F M/)->(),
+        %opts
+    );
+
+    return $obj->rest_post(
+        '/api/register/politician',
+        name                => 'add politician',
+        automatic_load_item => 0,
+        stash               => "politician",
+        [ %params ],
+    );
+}
+
+sub create_dialog {
+    my (%opts) = @_;
+
+    api_auth_as user_id => 1;
+
+    my %params = (
+        name        => fake_words(1)->(),
+        description => fake_words(1)->(),
+        %opts
+    );
+
+    return $obj->rest_post(
+        "/api/register/dialog",
+        name                => 'add dialog',
+        automatic_load_item => 0,
+        stash               => "dialog",
+        [ %params ]
+    );
+}
+
+sub create_recipient {
+    my (%opts) = @_;
+
+    return $obj->rest_post(
+        '/api/chatbot/recipient',
+        name  => 'create recipient',
+        stash => 'recipient',
+        automatic_load_item => 0,
+        [
+            name          => fake_name()->(),
+            fb_id         => fake_words(3)->(),
+            origin_dialog => fake_words(1)->(),
+            gender        => fake_pick( qw/ M F/ )->(),
+            cellphone     => fake_digits("+551198#######")->(),
+            email         => fake_email()->(),
+            %opts,
+        ]
+    );
 }
 
 1;
+

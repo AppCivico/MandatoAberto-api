@@ -30,7 +30,7 @@ Standard 404 error page
 
 sub default :Path {
     my ( $self, $c ) = @_;
-    
+
     return $c->detach("/error_404");
 }
 

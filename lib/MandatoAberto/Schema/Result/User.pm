@@ -66,6 +66,17 @@ __PACKAGE__->table("user");
   is_nullable: 0
   original: {default_value => \"now()"}
 
+=head2 approved
+
+  data_type: 'boolean'
+  default_value: false
+  is_nullable: 0
+
+=head2 approved_at
+
+  data_type: 'timestamp'
+  is_nullable: 1
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -87,6 +98,10 @@ __PACKAGE__->add_columns(
     is_nullable   => 0,
     original      => { default_value => \"now()" },
   },
+  "approved",
+  { data_type => "boolean", default_value => \"false", is_nullable => 0 },
+  "approved_at",
+  { data_type => "timestamp", is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -117,6 +132,36 @@ __PACKAGE__->add_unique_constraint("user_email_key", ["email"]);
 
 =head1 RELATIONS
 
+=head2 politician
+
+Type: might_have
+
+Related object: L<MandatoAberto::Schema::Result::Politician>
+
+=cut
+
+__PACKAGE__->might_have(
+  "politician",
+  "MandatoAberto::Schema::Result::Politician",
+  { "foreign.user_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+=head2 user_forgot_passwords
+
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::UserForgotPassword>
+
+=cut
+
+__PACKAGE__->has_many(
+  "user_forgot_passwords",
+  "MandatoAberto::Schema::Result::UserForgotPassword",
+  { "foreign.user_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 user_roles
 
 Type: has_many
@@ -132,6 +177,21 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 user_sessions
+
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::UserSession>
+
+=cut
+
+__PACKAGE__->has_many(
+  "user_sessions",
+  "MandatoAberto::Schema::Result::UserSession",
+  { "foreign.user_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 roles
 
 Type: many_to_many
@@ -143,8 +203,8 @@ Composing rels: L</user_roles> -> role
 __PACKAGE__->many_to_many("roles", "user_roles", "role");
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2017-10-18 11:01:51
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:dSB8NLq8gfxmjHgTM0Hc+Q
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-01-15 01:02:39
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:VYs2Z9pRL/rBk4rxF6IeIw
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
@@ -163,5 +223,133 @@ __PACKAGE__->add_column(
     },
 );
 
+use MandatoAberto::Mailer::Template;
+use MandatoAberto::Utils;
+
+sub new_session {
+    my ($self) = @_;
+
+    my $schema = $self->result_source->schema;
+
+    my $session = $schema->resultset('UserSession')->search({
+        user_id      => $self->id,
+        valid_until  => { '>=' => \"NOW()" },
+    })->next;
+
+    my $roles = [ map { $_->name } $self->roles ];
+
+    if ( !defined($session) ) {
+        $session = $self->user_sessions->create({
+            api_key      => random_string(128),
+            valid_until  => \"(NOW() + '20 minutes'::interval)",
+        });
+    }
+
+    return {
+        user_id => $self->id,
+        roles   => [ map { $_->name } $self->roles ],
+        api_key => $session->api_key,
+    };
+}
+
+sub send_email_forgot_password {
+    my ($self, $token) = @_;
+
+    my $email = MandatoAberto::Mailer::Template->new(
+        to       => $self->email,
+        from     => 'no-reply@mandatoaberto.org.br',
+        subject  => "Mandato Aberto - Recuperação de senha",
+        template => get_data_section('forgot_password.tt'),
+        vars     => {
+            name  => $self->politician->name,
+            token => $token,
+        },
+    )->build_email();
+
+    my $queued = $self->result_source->schema->resultset("EmailQueue")->create({ body => $email->as_string });
+
+    return $queued;
+}
+
 __PACKAGE__->meta->make_immutable;
 1;
+
+__DATA__
+
+@@ forgot_password.tt
+
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+</head>
+<body>
+<div leftmargin="0" marginheight="0" marginwidth="0" topmargin="0" style="background-color:#f5f5f5; font-family:'Montserrat',Arial,sans-serif; margin:0; padding:0; width:100%">
+<table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse:collapse">
+<tbody>
+<tr>
+<td>
+<table align="center" border="0" cellpadding="0" cellspacing="0" class="x_deviceWidth" width="600" style="border-collapse:collapse">
+<tbody>
+<tr>
+<td height="50"></td>
+</tr>
+<tr>
+<td bgcolor="#ffffff" colspan="2" style="background-color:rgb(255,255,255); border-radius:0 0 7px 7px; font-family:'Montserrat',Arial,sans-serif; font-size:13px; font-weight:normal; line-height:24px; padding:30px 0; text-align:center; vertical-align:top">
+<table align="center" border="0" cellpadding="0" cellspacing="0" width="84%" style="border-collapse:collapse">
+<tbody>
+<tr>
+<td align="justify" style="color:#666666; font-family:'Montserrat',Arial,sans-serif; font-size:16px; font-weight:300; line-height:23px; margin:0">
+<p style="text-align: center;"><a href="https://mandatoaberto.com.br/"><img src="https://gallery.mailchimp.com/3db402cdd48dbf45ea97bd7da/images/940adc5a-6e89-468e-9a03-2a4769245c79.png" class="x_deviceWidth" style="border-radius:7px 7px 0 0; align: center"></a></p>
+<p><b>Olá, [% name %]. </b></p>
+<p> <strong> </strong>Recebemos a sua solicitação para uma nova senha de acesso ao Mandato Aberto.
+É muito simples, clique no botão abaixo para trocar sua senha.</p>
+  </td>
+</tr>
+<tr>
+<td height="30"></td>
+</tr>
+<tr>
+<td align="center" bgcolor="#ffffff" valign="top" style="padding-top:20px">
+<table align="center" border="0" cellpadding="0" cellspacing="0" style="border-collapse:separate; border-radius:7px; margin:0">
+<tbody>
+<tr>
+<td align="center" valign="middle"><a href="http://devcp.mandatoaberto.com.br/reset-password/[% token %]" target="_blank" class="x_btn" style="background:#B04783; border-radius:8px; color:#ffffff; font-family:'Montserrat',Arial,sans-serif; font-size:15px; padding:16px 24px 15px 24px; text-decoration:none; text-transform:uppercase"><strong>TROCAR MINHA SENHA</strong></a></td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<td height="40"></td>
+</tr>
+<tr>
+<td align="justify" style="color:#999999; font-size:13px; font-style:normal; font-weight:normal; line-height:16px"><strong id="docs-internal-guid-d5013b4e-a1b5-bf39-f677-7dd0712c841b">
+  <p>Caso você não tenha solicitado esta alteração de senha, por favor desconsidere esta mensagem, nenhuma alteração foi feita na sua conta.</p>
+  Equipe Libre</strong><a href="mailto:contato@midialibre.org.br" target="_blank" style="color:#4ab957"></a></td>
+</tr>
+<tr>
+<td height="30"></td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+<table align="center" border="0" cellpadding="0" cellspacing="0" class="x_deviceWidth" width="540" style="border-collapse:collapse">
+  <tbody>
+<tr>
+<td align="center" style="color:#666666; font-family:'Montserrat',Arial,sans-serif; font-size:11px; font-weight:300; line-height:16px; margin:0; padding:30px 0px">
+<span><strong>Mandato Aberto</strong></span></td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+</div>
+</div></div>

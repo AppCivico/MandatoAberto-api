@@ -2,3 +2,68 @@
 %project=mandatoaberto
 
 0000-appschema 2017-10-18T12:16:55Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Appschema
+0001-politian-party-office-tables [0000-appschema] 2017-10-19T15:24:45Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the following tables: politian, office and party
+0002-state-and-city [0001-politian-party-office-tables] 2017-10-19T18:28:50Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the state and city tables
+0003-user_session [0002-state-and-city] 2017-10-24T16:28:44Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the user_session table
+0004-forgot-password [0003-user_session] 2017-10-24T17:13:07Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the forgot password table
+0005-dialog [0004-forgot-password] 2017-10-24T19:57:15Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Creating the dialog table
+0006-question [0005-dialog] 2017-10-26T17:05:11Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the question table
+0007-question-content [0006-question] 2017-10-26T18:16:10Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the content field to the question table
+0008-politician_answers [0007-question-content] 2017-10-29T15:58:58Z Lucas Ansei,,, <lucas@lucas-G750JX> # Adding the politician_answers table
+0009-answers [0008-politician_answers] 2017-10-29T17:15:25Z Lucas Ansei,,, <lucas@lucas-G750JX> # Changing politician_answers to answers
+0010-politician_id-answers [0009-answers] 2017-10-29T17:22:19Z Lucas Ansei,,, <lucas@lucas-G750JX> # Adding the politician_id column to the answers table
+0011-politician-gender [0010-politician_id-answers] 2017-11-06T15:23:15Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the gender column to the politician table
+0012-polls-questions-and-options [0011-politician-gender] 2017-11-07T19:44:50Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Creating the following tables: poll, poll_questions and question_options
+0013-politician_contact [0012-polls-questions-and-options] 2017-11-12T16:41:21Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Creating the politician_contact table
+0014-poll_name [0013-politician_contact] 2017-11-13T12:13:20Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the name column to the poll table
+0015-politician-greetings [0014-poll_name] 2017-11-16T15:35:12Z Jordan V. <jordan@eokoe.com> # Greetings table for each politician
+0016-poll-active-boolean [0015-politician-greetings] 2017-11-16T16:09:09Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the active boolean field to the poll table
+0017-politician-biography [0016-poll-active-boolean] 2017-11-17T18:27:25Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Creating the politician_biography table
+0018-email_queue [0017-politician-biography] 2017-11-21T12:46:16Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Creating the email queue table
+0019-politician-greetings [0018-email_queue] 2017-11-16T18:23:35Z Jordan V. <jordan@eokoe.com> # Change table name to singular -> politician_greetings
+0020-question-citizen-input [0019-politician-greetings] 2017-11-23T18:34:31Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the citizen input to the question table
+0021-drop-politician-biography [0020-question-citizen-input] 2017-11-28T16:15:23Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Droping the politician_biography table
+0022-user_approved_bool [0021-drop-politician-biography] 2017-11-29T18:29:41Z Lucas Ansei,,, <lucas@lucas-G750JX> # Moving the approved and approved_at fields to the "user" table
+0023-citizen [0022-user_approved_bool] 2017-11-29T20:08:21Z Lucas Ansei,,, <lucas@lucas-G750JX> # Creating the citizen table
+0024-direct_message_queue [0023-citizen] 2017-12-01T03:14:52Z Lucas Ansei,,, <lucas@lucas-G750JX> # Creating the direct message queue table
+0025-direct-message-table [0024-direct_message_queue] 2017-12-03T15:47:44Z Lucas Ansei,,, <lucas@lucas-G750JX> # Adding the direct_message table and fixing the direct_message_queue table
+0026-removing-politicianid-dmqueue [0025-direct-message-table] 2017-12-03T16:32:27Z Lucas Ansei,,, <lucas@lucas-G750JX> # Removing the politician_id of the direct message queue table
+0027-rename-page-acess-token [0026-removing-politicianid-dmqueue] 2017-12-04T02:35:54Z Lucas Ansei,,, <lucas@lucas-G750JX> # Renaming the 'page_acess_token' to 'page_access_token'
+0028-chatbot-role [0027-rename-page-acess-token] 2017-12-04T03:23:02Z Lucas Ansei,,, <lucas@lucas-G750JX> # Adding the chatbot role
+0029-politician_chatbot-table [0028-chatbot-role] 2017-12-06T18:02:32Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Creating the politician_chatbot table
+0030-politician-addresses-id [0029-politician_chatbot-table] 2017-12-07T16:20:08Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Changing the politician table to register IDs instead of texts
+0031-office-gender [0030-politician-addresses-id] 2017-12-07T17:30:52Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding gender to the office table
+0032-citizen-contact-fields [0031-office-gender] 2017-12-10T23:06:03Z Lucas Ansei,,, <lucas@lucas-G750JX> # Adding contact fields to the citizen table
+0033-dialog-description [0032-citizen-contact-fields] 2017-12-11T03:15:00Z Lucas Ansei,,, <lucas@lucas-G750JX> # Adding the description field to the dialog table
+0034-poll-results [0033-dialog-description] 2017-12-11T12:22:15Z Lucas Ansei,,, <lucas@lucas-G750JX> # Creating the poll results table
+0035-poll-timestamps [0034-poll-results] 2017-12-17T19:30:12Z Lucas Ansei,,, <lucas@lucas-G750JX> # Adding created_at and activated_at timestamps to the poll table
+0036-dm-created_at [0035-poll-timestamps] 2017-12-17T19:39:07Z Lucas Ansei,,, <lucas@lucas-G750JX> # Adding the created_at column to the direct_message table
+0037-add-answer-name [0036-dm-created_at] 2017-12-11T20:03:37Z Jordan V. <jordan@eokoe.com> # add-answer-name
+0038-poll-status [0037-add-answer-name] 2017-12-19T01:40:52Z Lucas Ansei,,, <lucas@lucas-G750JX> # Creating the poll_status table and adding a FK id to the poll table
+0039-greetings-correction [0038-poll-status] 2018-01-03T18:21:52Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Changing the politician_greetings table to receive fks and creating the greeting table
+0040-greetings-update [0039-greetings-correction] 2018-01-04T13:19:26Z Lucas Ansei,,, <lucas@lucas-G750JX> # Updating the content of the greetings
+0041-poll-updated_at [0040-greetings-update] 2018-01-04T15:18:36Z Lucas Ansei,,, <lucas@lucas-G750JX> # Adding the 'updated_at' column to the poll table
+0042-deleting-politician_chatbot-table [0041-poll-updated_at] 2018-01-10T19:05:48Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Deleting the politician_chatbot table
+0043-updating-party [0042-deleting-politician_chatbot-table] 2018-01-12T10:25:06Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Updating party acronym and name
+0044-adding-url-to-politician_contact [0043-updating-party] 2018-01-12T10:30:07Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the 'URL' col to the politician_contact table
+0045-removing-fb_app_secret-fb_app_id [0044-adding-url-to-politician_contact] 2018-01-12T10:42:09Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Removing the 'fb_app_id' and 'fb_app_secret' from the politician table
+0046-politician-premium [0045-removing-fb_app_secret-fb_app_id] 2018-01-15T03:08:45Z Lucas Ansei,,, <lucas@lucas-G750JX> # Adding 'premium' and 'premium_updated_at' columns to the politician table
+0047-rename-citizen-to-recipient [0046-politician-premium] 2018-01-15T13:30:05Z Junior Moraes <juniorfvox@gmail.com> # rename-citizen-to-recipient
+0048-relations-names [0047-rename-citizen-to-recipient] 2018-01-15T17:11:34Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Updating the relations names and removing plurals
+0049-add-tag [0048-relations-names] 2018-01-16T15:37:18Z Junior Moraes <juniorfvox@gmail.com> # add-tag
+0050-tag-hstore [0049-add-tag] 2018-01-20T02:30:40Z junior,,, <junior@fvox> # g-hstore
+0051-tag-recipients-count [0050-tag-hstore] 2018-01-23T18:32:45Z Junior Moraes <juniorfvox@gmail.com> # tag-recipients-count
+0052-rename-tags-groups [0051-tag-recipients-count] 2018-01-24T13:49:33Z Junior Moraes <juniorfvox@gmail.com> # rename-tags-groups
+0053-dm-groups-count [0052-rename-tags-groups] 2018-01-29T20:19:26Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding count and groups to the direct-messages table
+0054-creating-issues [0053-dm-groups-count] 2018-01-31T00:14:18Z Lucas Ansei,,, <lucas@lucas-G750JX> # Creating the 'issue' table
+0055-current-db-state [0054-creating-issues] 2018-02-01T16:32:19Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Current db state
+0056-pollresult-citizen-to-recipient [0055-current-db-state] 2018-02-02T19:43:30Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Renaming the 'citizen_id' column on the 'poll_result' table to 'recipient_id'
+0057-group-deleted-at [0056-pollresult-citizen-to-recipient] 2018-02-07T13:38:58Z Junior Moraes <juniorfvox@gmail.com> # group-deleted-at
+0058-blacklist-facebook-messenger [0057-group-deleted-at] 2018-02-09T14:55:58Z Lucas Ansei,,, <lucas@lucas-G750JX> # Creating the 'blacklist_facebook_messenger' table
+0059-add-group-status-error [0058-blacklist-facebook-messenger] 2018-02-09T17:56:32Z junior,,, <junior@fvox> # d-group-status-error
+0060-recipient-opt_in-column [0059-add-group-status-error] 2018-02-14T14:25:54Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the 'fb_opt_in' column to the 'recipient' table
+0061-private_reply [0060-recipient-opt_in-column] 2018-02-19T13:22:10Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Creating the 'private_reply' table and adding the 'private_reply_activated' column on the 'politician' table.
+0062-private_reply-permalink [0061-private_reply] 2018-02-19T17:41:14Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Droping 'not null' for permalink on 'private_reply'
+0063-poll_propagate [0062-private_reply-permalink] 2018-02-20T21:28:24Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Creating the 'poll_propagate' table and adding the 'origin' column to the 'poll_result' table
+0064-add-campaign [0063-poll_propagate] 2018-02-21T21:02:37Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Creating the campaign table
+0065-add-politician_id-poll_propagate [0064-add-campaign] 2018-02-22T17:07:41Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the 'politician_id' on the 'poll_propagate' table

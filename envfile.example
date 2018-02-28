@@ -1,7 +1,19 @@
+export API_PORT=""
+export API_WORKERS=""
+
 export MANDATOABERTO_URL=""
+export MANDATOABERTO_HTTP_CB_URL=""
+export FB_API_URL=""
 
 export POSTGRESQL_HOST=""
 export POSTGRESQL_PORT=""
 export POSTGRESQL_DBNAME=""
 export POSTGRESQL_USER=""
 export POSTGRESQL_PASSWORD=""
+
+export SMTP_SERVER=""
+export SMTP_PORT=""
+export SMTP_USERNAME=""
+export SMTP_PASSWORD=""
+
+export PRIVATE_REPLY_MESSAGE=""

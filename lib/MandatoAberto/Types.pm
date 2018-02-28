@@ -6,6 +6,7 @@ use MooseX::Types -declare => [
         NotTooBigString Int CEP
         CPF CNPJ RG PositiveInt
         EmailAddress PhoneNumber
+        URI Twitter
     )
 ];
 
@@ -19,6 +20,7 @@ use MooseX::Types::DateTime::MoreCoercions qw( DateTime );
 use Business::BR::CEP qw(test_cep);
 use Business::BR::CPF qw(test_cpf);
 use Business::BR::CNPJ qw(test_cnpj);
+use Data::Validate::URI qw(is_uri);
 
 use DateTime;
 use DateTime::Format::Pg;
@@ -53,7 +55,7 @@ coerce CEP, from Str, via {
 };
 
 subtype EmailAddress,as Str,
-  where   { Email::Valid->address(-address => $_) eq $_ },
+  where   { ( Email::Valid->address(-address => $_) || '' ) eq $_ },
   message {'Must be a valid email address'}
 ;
 
@@ -68,5 +70,17 @@ subtype PhoneNumber, as Str,
   where   { $is_mobile_number->($_) },
   message { "$_ phone number invalido" }
 ;
+
+subtype URI, as Str, where {
+    my $uri = $_;
+
+    return is_uri($uri);
+};
+
+subtype Twitter, as Str, where {
+    my $twitter = $_;
+
+    return $twitter =~ /^(@\S{0,15}+)/;
+}, message { "$_[0] is not a valid Twitter" };
 
 1;
