@@ -280,6 +280,32 @@ sub action_specs {
 sub add_to_group {
     my ($self, $group_id) = @_;
 
+    # Verificando se este recipient já estava no grupo.
+    my $recipients_rs = $self->politician->recipients;
+
+    my $already_in_this_group = $recipients_rs->search(
+        {
+            '-and' => [
+                'me.id' => $self->id,
+                \[ 'EXIST(groups, ?)', $group_id ],
+            ],
+        },
+        { select => [ \1 ] },
+    )->next;
+
+    if ($already_in_this_group) {
+        return 1;
+    }
+
+    my $group = $self->politician->groups
+    ->search( { 'me.id' => $group_id } )
+    ->update(
+        {
+            recipients_count        => \'recipients_count + 1',
+            last_recipients_calc_at => \'NOW()',
+        }
+    );
+
     return $self->update( { groups => \[ "COALESCE(groups, '') || HSTORE(?, '1')", $group_id ] } );
 }
 
