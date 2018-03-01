@@ -41,7 +41,7 @@ sub verifiers_specs {
                     post_check => sub {
                         my $origin = $_[0]->get_value("origin");
 
-                        die \["origin", "must be 'dialog' or 'propagate'"] unless $origin =~ m{^(propagate|dialog){1}$};
+                        die \["origin", "must be 'dialog' or 'propagate'"] unless $origin =~ m{^(propagate|dialog)$};
                     }
                 }
             }
@@ -77,6 +77,26 @@ sub action_specs {
             # die \["poll_question_option_id", "recipient alredy answered poll"] if $poll_recipient_answer;
 
             my $poll_result = $self->create(\%values);
+
+            my $recipient     = $poll_result->recipient;
+            my $group_rs      = $recipient->politician->groups;
+            my $recipients_rs = $recipient->politician->recipients;
+
+            while (my $group = $group_rs->next()) {
+                my $filter = $group->filter;
+
+                my $should_add_to_this_group = $recipients_rs
+                ->search_by_filter($filter)
+                ->search(
+                    { 'me.id' => $recipient->id },
+                    { select => [ \'1' ] }
+                )
+                ->next;
+
+                if ($should_add_to_this_group) {
+                    $recipient->add_to_group($group->id);
+                }
+            }
 
             return $poll_result;
         }

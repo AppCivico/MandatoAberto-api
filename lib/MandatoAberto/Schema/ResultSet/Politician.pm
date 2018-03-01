@@ -151,6 +151,7 @@ sub action_specs {
             );
 
             $politician->send_greetings_email();
+            $user->send_email_confirmation();
 
             return $politician
         }

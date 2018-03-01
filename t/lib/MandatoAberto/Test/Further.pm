@@ -157,7 +157,7 @@ sub create_recipient {
         name  => 'create recipient',
         stash => 'recipient',
         automatic_load_item => 0,
-        [
+        params => {
             name          => fake_name()->(),
             fb_id         => fake_words(3)->(),
             origin_dialog => fake_words(1)->(),
@@ -165,7 +165,7 @@ sub create_recipient {
             cellphone     => fake_digits("+551198#######")->(),
             email         => fake_email()->(),
             %opts,
-        ]
+        }
     );
 }
 

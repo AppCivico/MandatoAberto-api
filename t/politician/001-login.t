@@ -35,8 +35,17 @@ db_transaction {
         ],
     ;
 
-    # Validação de aprovação desativada por enquanto
-    $schema->resultset("User")->find($politician_id)->update({ approved => 0 });
+    api_auth_as user_id => 1;
+
+    is ($schema->resultset('EmailQueue')->count, "2", "only greetings and confirm emails queued");
+
+    rest_post "/api/politician/$politician_id/approve",
+        name => "approving politician",
+        code => 200,
+        [ approved => 1 ]
+    ;
+
+    is ($schema->resultset('EmailQueue')->count, "3", "all emails queued");
 
     $schema->resultset("User")->find($politician_id)->update({ approved => 1 });
 
