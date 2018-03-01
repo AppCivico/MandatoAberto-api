@@ -35,3 +35,9 @@ RUN /tmp/install-cpan-extra-modules.sh
 USER root
 RUN mkdir /etc/service/mandatoaberto
 COPY mandatoaberto.sh /etc/service/mandatoaberto/run
+
+RUN mkdir /etc/service/mandatoaberto-email
+COPY mandatoaberto-email.sh /etc/service/mandatoaberto-email/run
+
+RUN mkdir /etc/service/mandatoaberto-segmenter
+COPY mandatoaberto-segmenter.sh /etc/service/mandatoaberto-segmenter/run
