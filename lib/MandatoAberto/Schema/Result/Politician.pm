@@ -641,7 +641,7 @@ sub send_greetings_email {
     my $email = MandatoAberto::Mailer::Template->new(
         to       => $self->user->email,
         from     => 'no-reply@mandatoaberto.com.br',
-        subject  => "Mandato Aberto - Boas vindas",
+        subject  => "Mandato Aberto - Como o Mandato Aberto trabalha a seu favor?",
         template => get_data_section('greetings.tt'),
         vars     => {
             name  => $self->name,
@@ -692,7 +692,7 @@ __DATA__
 <!doctype html>
 <html>
 <head>
-<meta charset="UTF-8">
+<meta http-equiv="Content-Type" content="text/html charset=UTF-8">
 </head>
 <body>
 <div leftmargin="0" marginheight="0" marginwidth="0" topmargin="0" style="background-color:#f5f5f5; font-family:'Montserrat',Arial,sans-serif; margin:0; padding:0; width:100%">
@@ -715,40 +715,21 @@ __DATA__
 <br>
 </span>
 </p>
-<p align="center"> <strong> </strong>Seu cadastro foi aprovado!</p>
-<p align="center"><b>Boas-vindas ao Mandato Aberto.</b></p>
-<p>Monte agora seu Chatbot (robô que simula uma ação humana em uma conversação). Em pouco tempo ele  estará  ativo e pronto para iniciar uma interação sem intervenção humana, registrando ocorrências e fornecendo informação verificada.</p>
-<p>Garanta sua presença digital eficiente e muito além do "bom dia", 24 horas por dia, 7 dias por semana, dentro ou fora do período eleitoral.</p>
-<p>Transparência e inovação, coloque a tecnologia a serviço da população.</p>
-<p align="center"><b>Próximos passos</b></p>
-<p>Customize seu assistente digital. É só ir até opção de menu Diálogos e começar a preencher. </p>
+<p align="center"> <strong> </strong>Como o Mandato Aberto trabalha a seu favor?</p>
+<p>A equipe Mandato Aberto te deseja boas vindas!
+Acreditamos que o diálogo transparente entre pessoas e governos é o caminho para inovar e impactar positivamente a realidade de todos.
+</p>
+<p>Conheça algumas funções da plataforma Mandato Aberto:</p>
 <ul>
-<li>Escolha a saudação do seu assistente social, essa será a primeira mensagem que seu assistente enviara para os cidadãos que interagirem com ele. Para isso é só selecionar uma das opções disponíveis.</li>
-<li>Preencha os dados seus dados de contato para que seu assistente digital possa informar para os cidadãos.</li>
-<li>Responda as perguntas feitas na página de diálogos e seu bot irá incorporar mais diálogos.</li>
+<li>Ferramenta analítica de sua rede social.</li>
+<li>Painel de controle para monitorar em tempo real todas sua interações.</li>
+<li>Notificações para rede de contatos sem custos adicionais no Facebook.</li>
+<li>Criação de fluxos no assistente digital para descrever informações sobre o perfil.</li>
 </ul>
-<p>Agora é só escolher a sua página do Facebook onde o bot ficará hospedada, para isso, vá até o item do menu Perfil, e click no botão Facebook, e é só selecionar a página. Pronto, agora seu assistente digital estará pronto para se comunicar com os cidadãos.
-</p>
-<p align="center"><b>O que mais posso fazer?</b></p>
-<p>No Mandato Aberto, você pode.</p>
-<p>Através da sessão Apoiadores, você pode ver todas as pessoas que interagiram com seu assistente digital.</p>
-<p>Você também pode visualizar alguns indicadores sobres as interações dos cidadãos com seu assistente digital, como .. Além disso, você pode criar outras interações do seu assistente digital com os cidadãos.
-</p>
-<p><b>Criando enquetes</b></p>
-<p>Crie enquetes para que as pessoas que interagirem com seu assistente digital possam responder, contribuindo para as tomadas de decisão do gabinete.</p>
-<p>É muito simples, é só preencher o nome da enquete, os textos das enquetes e as duas opções de respostas que você queira que o usuário responda. Após preencher os dados, você pode avisar seu assistente digital que ele pode divulgar a enquete, clicando em "Ativar", ou pode salvar a enquete e só liberá-la depois para seu assistente digital, para isso é só tirar a seleção "sim", do campo "Registar enquete ativa?", e quando quiser ativá-lá, é só ir na sessão Minhas Enquetes, selecioná-la e clicar em Ativar.
-</p>
-<p>Por exemplo:</p>
-<p>[Imagem plataforma]</p>
-<p>O seu assistente digital enviará assim?</p>
-<p>[Imagem plataforma]</p>
-<p><b>Enviando notificações</b></p>
-<p>Através do Mandato Aberto é possível enviar mensagens diretas aos cidadãos que já interagiram com seu assistente digital, é só você criar seu texto e enviar, e pronto, todos os cidadão que já interagiram com o assistente digital receberão seu mensagem no Facebook Messenger.
-</p>
-<p>Por exemplo:</p>
-<p>[Imagem plataforma]</p>
-<p>O seu assistente digital enviará assim?</p>
-<p>[Imagem plataforma]</p>
+<p>Mandato Aberto é uma plataforma livre de chatbot (assistente digital) que irá auxiliar na comunicação e segmentação de contatos.
+A plataforma foi desenvolvida para atender lideranças políticas em exercício de cargos públicos ou não.</p>
+<p>*Consulte um de nossos especialistas, para saber sobre o uso da plataforma durante o período eleitoral.</p>
+<p><a href="https://docs.google.com/document/d/1kl6pHYeYBA-lV8626g0DJRTUdy9Xk3EUw5FynXxXhlU/edit">Saiba mais</a></p>
 </td>
 </tr>
 <tr>
@@ -788,7 +769,7 @@ __DATA__
 <!doctype html>
 <html>
 <head>
-<meta charset="UTF-8">
+<meta http-equiv="Content-Type" content="text/html charset=UTF-8">
 </head>
 <body>
 <div leftmargin="0" marginheight="0" marginwidth="0" topmargin="0" style="background-color:#f5f5f5; font-family:'Montserrat',Arial,sans-serif; margin:0; padding:0; width:100%">
@@ -807,7 +788,7 @@ __DATA__
 <tbody>
 <tr>
 <td align="justify" style="color:#666666; font-family:'Montserrat',Arial,sans-serif; font-size:16px; font-weight:300; line-height:23px; margin:0">
-<p style="text-align: center;"><a href="https://midialibre.org.br/"><img src="https://gallery.mailchimp.com/af2df78bcac96c77cfa3aae07/images/c75c64c5-c400-4c18-9564-16b4a7116b03.png" class="x_deviceWidth" style="border-radius:7px 7px 0 0; align: center"></a></p>
+<p style="text-align: center;"><a href="https://mandatoaberto.com.br/"><img src="https://gallery.mailchimp.com/af2df78bcac96c77cfa3aae07/images/c75c64c5-c400-4c18-9564-16b4a7116b03.png" class="x_deviceWidth" style="border-radius:7px 7px 0 0; align: center"></a></p>
 <p><b>Olá, [% name %]. </b></p>
 <br></span>
 </p>
