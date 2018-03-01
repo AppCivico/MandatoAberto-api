@@ -33,7 +33,6 @@ sub verifiers_specs {
                 message => {
                     required   => 1,
                     type       => "Str",
-                    max_length => 250
                 },
             }
         ),

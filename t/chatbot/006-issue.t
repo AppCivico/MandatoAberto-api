@@ -78,18 +78,6 @@ db_transaction {
         ]
     ;
 
-    my $big_message = fake_paragraphs(3)->();
-    rest_post "/api/chatbot/issue",
-        name    => 'issue with message bigger than 250 chars',
-        is_fail => 1,
-        code    => 400,
-        [
-            politician_id => $politician_id,
-            fb_id         => $recipient_fb_id,
-            message       => $big_message
-        ]
-    ;
-
     rest_post "/api/chatbot/issue",
         name                => "issue creation",
         automatic_load_item => 0,
