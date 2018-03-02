@@ -307,15 +307,15 @@ sub send_email_forgot_password {
 sub send_email_approved {
     my ($self) = @_;
 
-    my $email = MandatoAberto::Mailer::Template->new(
-        to       => $self->email,
-        from     => 'no-reply@mandatoaberto.com.br',
-        subject  => "Mandato Aberto - Boas vindas",
-        template => get_data_section('approved.tt'),
-        vars     => { name  => $self->politician->name },
-    )->build_email();
+    # my $email = MandatoAberto::Mailer::Template->new(
+    #     to       => $self->email,
+    #     from     => 'no-reply@mandatoaberto.com.br',
+    #     subject  => "Mandato Aberto - Boas vindas",
+    #     template => get_data_section('approved.tt'),
+    #     vars     => { name  => $self->politician->name },
+    # )->build_email();
 
-    return $self->result_source->schema->resultset('EmailQueue')->create({ body => $email->as_string });
+    #return $self->result_source->schema->resultset('EmailQueue')->create({ body => $email->as_string });
 }
 
 sub send_email_confirmation {
@@ -506,7 +506,7 @@ __DATA__
 <td>
 <table align="center" border="0" cellpadding="0" cellspacing="0" class="x_deviceWidth" width="600" style="border-collapse:collapse">
 <tbody>
-<td colspan="2"><img src="https://saveh.com.br/images/emails/header.jpg" class="x_deviceWidth" style="border-radius:7px 7px 0 0; float:left"></td>
+<td colspan="2"><img src="https://gallery.mailchimp.com/3db402cdd48dbf45ea97bd7da/images/940adc5a-6e89-468e-9a03-2a4769245c79.png" class="x_deviceWidth" style="border-radius:7px 7px 0 0; float:left"></td>
 </tr>
 <tr>
 <td bgcolor="#ffffff" colspan="2" style="background-color:rgb(255,255,255); border-radius:0 0 7px 7px; font-family:'Montserrat',Arial,sans-serif; font-size:13px; font-weight:normal; line-height:24px; padding:30px 0; text-align:center; vertical-align:top">
