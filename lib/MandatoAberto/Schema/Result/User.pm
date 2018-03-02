@@ -258,6 +258,11 @@ use MandatoAberto::Utils;
 
 use Digest::SHA1 qw(sha1_hex);
 use Digest::SHA qw(sha256_hex);
+use Convert::Base32;
+use Data::UUID;
+use URI::Escape;
+use URI::URL;
+use Authen::OATH;
 
 sub new_session {
     my ($self) = @_;
@@ -338,6 +343,32 @@ sub send_email_confirmation {
     )->build_email();
 
     return $self->result_source->schema->resultset('EmailQueue')->create({ body => $email->as_string });
+}
+
+sub get_2fa_qrcode_url {
+    my ($self) = @_;
+
+    my $ug = Data::UUID->new;
+    my $secret = encode_base32($ug->create_hex);
+
+    $self->update( { 'secret_2fa' => $secret } );
+
+    my $email   = $self->email;
+    my $otpauth = uri_escape("otpauth://totp/$email?secret=$secret&issuer=MandatoAberto");
+
+    return URI::URL->new("https://www.google.com/chart?chs=200x200&chld=M|0&cht=qr&chl=$otpauth");
+}
+
+sub verify_2fa_code {
+    my ($self, $code) = @_;
+
+    my $secret = $self->get_column('secret_2fa');
+    my $oath   = Authen::OATH->new();
+
+    if ($code == $oath->totp($secret)) {
+        return 1;
+    }
+    return 0;
 }
 
 __PACKAGE__->meta->make_immutable;

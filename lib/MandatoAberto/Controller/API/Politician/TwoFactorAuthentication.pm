@@ -5,10 +5,6 @@ use utf8;
 use Moose;
 use namespace::autoclean;
 
-use URI::Escape;
-use Convert::Base32;
-use Authen::OATH;
-
 BEGIN { extends 'CatalystX::Eta::Controller::REST' }
 
 with "CatalystX::Eta::Controller::TypesValidation";
@@ -22,16 +18,10 @@ sub enable : Chained('base') : PathPart('enable') : Args(0) : ActionClass('REST'
 sub enable_POST {
     my ($self, $c) = @_;
 
-    my $secret  = encode_base32("12345678901234567890");
-    my $email   = $c->user->obj()->email;
-    my $otpauth = "otpauth://totp/$email?secret=$secret&issuer=MandatoAberto";
-
-    my $url = "https://www.google.com/chart?chs=200x200&chld=M|0&cht=qr&chl=" . uri_escape($otpauth);
-
     $self->status_ok(
         $c,
         entity => {
-            url => $url,
+            url => $c->user->obj->get_2fa_qrcode_url(),
         },
     );
 }
@@ -49,12 +39,11 @@ sub verify_POST {
         },
     );
 
-    my $secret = encode_base32("12345678901234567890");
-    my $oath   = Authen::OATH->new();
-
     my $code = $c->req->params->{code};
-    if ($code == $oath->totp($secret)) {
-        #$c->stash->{session}->update( { '2fa' => 'true' } );
+    my $user = $c->user->obj; # TODO Passar o user na stash.
+    if ($user->verify_2fa_code($code)) {
+        # TODO Validar se devemos destruir a sessão para o usuário logar de novo, já com o 2fa.
+        $c->stash->{user_session}->update( { require_2fa => 'false' } );
     }
 
     return $self->status_ok($c, entity => { ok => 1 });
