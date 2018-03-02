@@ -638,17 +638,17 @@ sub get_current_facebook_page {
 sub send_greetings_email {
     my ($self) = @_;
 
-    my $email = MandatoAberto::Mailer::Template->new(
-        to       => $self->user->email,
-        from     => 'no-reply@mandatoaberto.com.br',
-        subject  => "Mandato Aberto - Como o Mandato Aberto trabalha a seu favor?",
-        template => get_data_section('greetings.tt'),
-        vars     => {
-            name  => $self->name,
-        },
-    )->build_email();
+    # my $email = MandatoAberto::Mailer::Template->new(
+    #     to       => $self->user->email,
+    #     from     => 'no-reply@mandatoaberto.com.br',
+    #     subject  => "Mandato Aberto - Como o Mandato Aberto trabalha a seu favor?",
+    #     template => get_data_section('greetings.tt'),
+    #     vars     => {
+    #         name  => $self->name,
+    #     },
+    # )->build_email();
 
-    return $self->result_source->schema->resultset('EmailQueue')->create({ body => $email->as_string });
+    # return $self->result_source->schema->resultset('EmailQueue')->create({ body => $email->as_string });
 }
 
 sub send_premium_activated_email {
