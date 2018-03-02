@@ -349,7 +349,7 @@ sub get_2fa_qrcode_url {
     my ($self) = @_;
 
     my $ug = Data::UUID->new;
-    my $secret = encode_base32($ug->create_hex);
+    my $secret = encode_base32($ug->create_str);
 
     $self->update( { 'secret_2fa' => $secret } );
 
