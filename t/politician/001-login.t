@@ -45,7 +45,7 @@ db_transaction {
         [ approved => 1 ]
     ;
 
-    is ($schema->resultset('EmailQueue')->count, "1", "all emails queued");
+    is ($schema->resultset('EmailQueue')->count, "2", "all emails queued");
 
     $schema->resultset("User")->find($politician_id)->update({ approved => 1 });
 
