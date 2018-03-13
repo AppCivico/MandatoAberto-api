@@ -124,6 +124,21 @@ sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }
 
 sub list_GET { }
 
+around 'list_GET' => sub {
+    my $orig = shift;
+    my $self = shift;
+    my ($c)  = @_;
+
+    my $page    = $c->req->params->{page}    || 1;
+    my $results = $c->req->params->{results} || 20;
+
+    $results = $results > 20 ? 20 : $results;
+
+    $c->stash->{collection} = $c->stash->{collection}->search( {}, { page => $page, rows => $results } );
+
+    $self->$orig(@_);
+};
+
 sub list_POST { }
 
 sub count : Chained('base') : PathPart('count') : Args(0) : ActionClass('REST') { }
