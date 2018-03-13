@@ -427,6 +427,55 @@ db_transaction {
             code    => 404,
         ;
     };
+
+    subtest 'paginate groups' => sub {
+
+        # Criando 25 grupos.
+        for my $i ( 1 .. 25 ) {
+            rest_post "/api/politician/$politician_id/group",
+                headers => [ 'Content-Type' => 'application/json' ],
+                data    => encode_json({
+                    name     => "AppCivico $i",
+                    filter   => {
+                        operator => fake_pick(qw/ AND OR /)->(),
+                        rules    => [
+                            {
+                                name => 'QUESTION_ANSWER_EQUALS',
+                                data => {
+                                    field => fake_int(1, 99)->(),
+                                    value => fake_pick(qw/ Sim Não Talvez /)->(),
+                                },
+                            },
+                        ],
+                    },
+                }),
+            ;
+        }
+
+        rest_get "/api/politician/$politician_id/group", name => 'list groups', stash => 'groups';
+
+        stash_test 'groups' => sub {
+            my $res = shift;
+
+            # O default é 20 itens sem parâmetros 'page' e 'results'.
+            is( scalar(@{ $res->{groups} }), 20, 'count=20' );
+        };
+
+        rest_get "/api/politician/$politician_id/group?results=3&page=2",
+            name  => 'list groups with pagination',
+            stash => 'groups_pagination'
+        ;
+
+        stash_test 'groups_pagination' => sub {
+            my $res = shift;
+
+            is( scalar(@{ $res->{groups} }), 3, 'count=3' );
+            is_deeply(
+                [ sort map { $_->{name} } @{ $res->{groups } } ],
+                [ 'AppCivico 4', 'AppCivico 5', 'AppCivico 6' ],
+            );
+        };
+    };
 };
 
 done_testing();
