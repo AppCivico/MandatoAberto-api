@@ -470,6 +470,7 @@ db_transaction {
             my $res = shift;
 
             is( scalar(@{ $res->{groups} }), 3, 'count=3' );
+            is( $res->{total}, 25, 'total=25' );
             is_deeply(
                 [ sort map { $_->{name} } @{ $res->{groups } } ],
                 [ 'AppCivico 4', 'AppCivico 5', 'AppCivico 6' ],
