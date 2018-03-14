@@ -443,10 +443,22 @@ sub verifiers_specs {
                 fb_page_id => {
                     required   => 0,
                     type       => "Str",
+                    post_check => sub {
+                        my $fb_page_id = $_[0]->get_value('fb_page_id');
+                        $self->result_source->schema->resultset("Politician")->search( { fb_page_id => $fb_page_id } )->count and die \["fb_page_id", "alredy exists"];
+
+                        return 1;
+                    }
                 },
                 fb_page_access_token => {
                     required   => 0,
                     type       => "Str",
+                    post_check => sub {
+                        my $fb_page_access_token = $_[0]->get_value('fb_page_access_token');
+                        $self->result_source->schema->resultset("Politician")->search( { fb_page_access_token => $fb_page_access_token } )->count and die \["fb_page_access_token", "alredy exists"];
+
+                        return 1;
+                    }
                 },
                 new_password => {
                     required => 0,
