@@ -39,6 +39,10 @@ sub verifiers_specs {
                     required => 0,
                     type     => PhoneNumber
                 },
+                instagram => {
+                    required => 0,
+                    type     => URI
+                },
                 url => {
                     required => 0,
                     type     => URI

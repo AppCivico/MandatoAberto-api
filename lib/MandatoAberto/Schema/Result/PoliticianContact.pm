@@ -80,6 +80,11 @@ __PACKAGE__->table("politician_contact");
   data_type: 'text'
   is_nullable: 1
 
+=head2 instagram
+
+  data_type: 'text'
+  is_nullable: 1
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -101,6 +106,8 @@ __PACKAGE__->add_columns(
   "cellphone",
   { data_type => "text", is_nullable => 1 },
   "url",
+  { data_type => "text", is_nullable => 1 },
+  "instagram",
   { data_type => "text", is_nullable => 1 },
 );
 
@@ -134,8 +141,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-01-15 01:02:39
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:8GBvox0YUcbaIdRdv4HShg
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-03-12 14:49:32
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:598Jnk7Bhr4/l9NhV2vkrg
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
