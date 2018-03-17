@@ -288,6 +288,8 @@ sub new_session {
 sub send_email_forgot_password {
     my ($self, $token) = @_;
 
+    my $url = $ENV{MANDATOABERTO_URL} . 'reset-password/';
+
     my $email = MandatoAberto::Mailer::Template->new(
         to       => $self->email,
         from     => 'no-reply@mandatoaberto.org.br',
@@ -296,6 +298,7 @@ sub send_email_forgot_password {
         vars     => {
             name  => $self->politician->name,
             token => $token,
+            url   => $url
         },
     )->build_email();
 
@@ -1385,7 +1388,7 @@ Este projeto é distribuído sob a licença Affero General Public License.
 <table align="center" border="0" cellpadding="0" cellspacing="0" style="border-collapse:separate; border-radius:7px; margin:0">
 <tbody>
 <tr>
-<td align="center" valign="middle"><a href="http://devcp.mandatoaberto.com.br/reset-password/[% token %]" target="_blank" class="x_btn" style="background:#B04783; border-radius:8px; color:#ffffff; font-family:'Montserrat',Arial,sans-serif; font-size:15px; padding:16px 24px 15px 24px; text-decoration:none; text-transform:uppercase"><strong>TROCAR MINHA SENHA</strong></a></td>
+<td align="center" valign="middle"><a href="[% url %][% token %]" target="_blank" class="x_btn" style="background:#B04783; border-radius:8px; color:#ffffff; font-family:'Montserrat',Arial,sans-serif; font-size:15px; padding:16px 24px 15px 24px; text-decoration:none; text-transform:uppercase"><strong>TROCAR MINHA SENHA</strong></a></td>
 </tr>
 </tbody>
 </table>
