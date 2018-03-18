@@ -57,7 +57,10 @@ sub list_GET {
     my $page    = $c->req->params->{page}    || 1;
     my $results = $c->req->params->{results} || 20;
 
-    $c->stash->{collection} = $c->stash->{collection}->search( {}, { page => $page, rows => $results } );
+    $c->stash->{collection} = $c->stash->{collection}->search(
+        { page_id => $c->stash->{politician}->fb_page_id },
+        { page => $page, rows => $results }
+    );
 
     return $self->status_ok(
         $c,
