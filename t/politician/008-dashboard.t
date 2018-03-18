@@ -7,6 +7,8 @@ use MandatoAberto::Test::Further;
 my $schema = MandatoAberto->model("DB");
 
 db_transaction {
+    my $security_token = $ENV{CHATBOT_SECURITY_TOKEN};
+
     api_auth_as user_id => 1;
 
     create_dialog;
@@ -24,20 +26,23 @@ db_transaction {
     ;
     my $question_id = stash "q1.id";
 
-    create_politician;
+    create_politician(
+        fb_page_id => fake_words(1)->()
+    );
     my $politician_id = stash "politician.id";
 
     rest_post "/api/chatbot/recipient",
         name                => "Create recipient",
         automatic_load_item => 0,
         [
-            name          => fake_name()->(),
-            fb_id         => "foobar",
-            origin_dialog => fake_words(1)->(),
-            gender        => fake_pick( qw/M F/ )->(),
-            cellphone     => fake_digits("+551198#######")->(),
-            email         => fake_email()->(),
-            politician_id => $politician_id
+            name           => fake_name()->(),
+            fb_id          => "foobar",
+            origin_dialog  => fake_words(1)->(),
+            gender         => fake_pick( qw/M F/ )->(),
+            cellphone      => fake_digits("+551198#######")->(),
+            email          => fake_email()->(),
+            politician_id  => $politician_id,
+            security_token => $security_token
         ]
     ;
 
@@ -104,13 +109,14 @@ db_transaction {
         name                => "Create recipient",
         automatic_load_item => 0,
         [
-            name          => fake_name()->(),
-            fb_id         => "FOOBAR",
-            origin_dialog => fake_words(1)->(),
-            gender        => fake_pick( qw/M F/ )->(),
-            cellphone     => fake_digits("+551198#######")->(),
-            email         => fake_email()->(),
-            politician_id => $politician_id
+            name           => fake_name()->(),
+            fb_id          => "FOOBAR",
+            origin_dialog  => fake_words(1)->(),
+            gender         => fake_pick( qw/M F/ )->(),
+            cellphone      => fake_digits("+551198#######")->(),
+            email          => fake_email()->(),
+            politician_id  => $politician_id,
+            security_token => $security_token
         ]
     ;
 

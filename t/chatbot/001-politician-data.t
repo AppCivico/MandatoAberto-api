@@ -13,6 +13,8 @@ db_transaction {
     my $email    = fake_email()->();
     my $password = "foobar";
 
+    my $security_token = $ENV{CHATBOT_SECURITY_TOKEN};
+
     create_politician(
         email                   => $email,
         password                => $password,
@@ -43,7 +45,10 @@ db_transaction {
         name  => "get politician data",
         list  => 1,
         stash => "get_politician_data",
-        [ fb_page_id => "FOO" ]
+        [
+            fb_page_id     => "FOO",
+            security_token => $security_token
+        ]
     ;
 
     stash_test "get_politician_data" => sub {

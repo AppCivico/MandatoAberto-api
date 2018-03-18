@@ -56,6 +56,15 @@ sub verifiers_specs {
                 picture => {
                     required => 0,
                     type     => URI
+                },
+                page_id => {
+                    required   => 1,
+                    type       => "Str",
+                    post_check => sub {
+                        my $page_id = $_[0]->get_value("page_id");
+
+                        $self->result_source->schema->resultset("Politician")->search({ fb_page_id => $page_id })->count;
+                    }
                 }
             }
         ),

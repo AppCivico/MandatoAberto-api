@@ -7,7 +7,9 @@ use MandatoAberto::Test::Further;
 my $schema = MandatoAberto->model('DB');
 
 db_transaction {
-    create_politician;
+    create_politician(
+        fb_page_id => fake_words(1)->()
+    );
     my $politician_id = stash 'politician.id';
 
     my @recipient_ids = ();

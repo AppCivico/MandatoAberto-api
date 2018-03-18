@@ -152,18 +152,21 @@ sub create_dialog {
 sub create_recipient {
     my (%opts) = @_;
 
+    my $security_token = $ENV{CHATBOT_SECURITY_TOKEN};
+
     return $obj->rest_post(
         '/api/chatbot/recipient',
         name  => 'create recipient',
         stash => 'recipient',
         automatic_load_item => 0,
         params => {
-            name          => fake_name()->(),
-            fb_id         => fake_words(3)->(),
-            origin_dialog => fake_words(1)->(),
-            gender        => fake_pick( qw/ M F/ )->(),
-            cellphone     => fake_digits("+551198#######")->(),
-            email         => fake_email()->(),
+            name           => fake_name()->(),
+            fb_id          => fake_words(3)->(),
+            origin_dialog  => fake_words(1)->(),
+            gender         => fake_pick( qw/ M F/ )->(),
+            cellphone      => fake_digits("+551198#######")->(),
+            email          => fake_email()->(),
+            security_token => $security_token,
             %opts,
         }
     );

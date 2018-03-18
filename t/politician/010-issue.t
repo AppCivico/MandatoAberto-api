@@ -7,10 +7,14 @@ use MandatoAberto::Test::Further;
 my $schema = MandatoAberto->model("DB");
 
 db_transaction {
+    my $security_token = $ENV{CHATBOT_SECURITY_TOKEN};
+
     my $recipient_fb_id = fake_words(1)->();
     my $message         = fake_words(1)->();
 
-    create_politician();
+    create_politician(
+        fb_page_id => fake_words(1)->()
+    );
     my $politician_id = stash "politician.id";
 
     rest_post "/api/chatbot/recipient",
@@ -18,13 +22,14 @@ db_transaction {
         automatic_load_item => 0,
         stash               => 'c1',
         [
-            origin_dialog => fake_words(1)->(),
-            politician_id => $politician_id,
-            name          => fake_name()->(),
-            fb_id         => $recipient_fb_id,
-            email         => fake_email()->(),
-            cellphone     => fake_digits("+551198#######")->(),
-            gender        => fake_pick( qw/F M/ )->()
+            origin_dialog  => fake_words(1)->(),
+            politician_id  => $politician_id,
+            name           => fake_name()->(),
+            fb_id          => $recipient_fb_id,
+            email          => fake_email()->(),
+            cellphone      => fake_digits("+551198#######")->(),
+            gender         => fake_pick( qw/F M/ )->(),
+            security_token => $security_token
         ]
     ;
 
@@ -33,9 +38,10 @@ db_transaction {
         automatic_load_item => 0,
         stash               => "i1",
         [
-            politician_id => $politician_id,
-            fb_id         => $recipient_fb_id,
-            message       => $message
+            politician_id  => $politician_id,
+            fb_id          => $recipient_fb_id,
+            message        => $message,
+            security_token => $security_token
         ]
     ;
     my $first_issue_id = stash "i1.id";

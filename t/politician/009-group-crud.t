@@ -7,7 +7,11 @@ use MandatoAberto::Test::Further;
 my $schema = MandatoAberto->model("DB");
 
 db_transaction {
-    create_politician;
+    my $security_token = $ENV{CHATBOT_SECURITY_TOKEN};
+
+    create_politician(
+        fb_page_id => 'foo'
+    );
     my $politician_id = stash "politician.id";
 
     my @recipient_ids = ();
@@ -15,7 +19,10 @@ db_transaction {
 
         # Criando três recipients.
         for (my $i = 0; $i <= 3; $i++) {
-            create_recipient(politician_id => $politician_id);
+            create_recipient(
+                politician_id  => $politician_id,
+                security_token => $security_token
+            );
 
             my $recipient_id = stash 'recipient.id';
             push @recipient_ids, $recipient_id;

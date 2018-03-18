@@ -7,6 +7,8 @@ use MandatoAberto::Test::Further;
 my $schema = MandatoAberto->model("DB");
 
 db_transaction {
+    my $security_token = $ENV{CHATBOT_SECURITY_TOKEN};
+
     create_politician(
         fb_page_id => 'foobar'
     );
@@ -34,13 +36,14 @@ db_transaction {
         automatic_load_item => 0,
         stash               => 'c1',
         [
-            origin_dialog => fake_words(1)->(),
-            politician_id => $politician_id,
-            name          => fake_name()->(),
-            fb_id         => $recipient_fb_id,
-            email         => fake_email()->(),
-            cellphone     => fake_digits("+551198#######")->(),
-            gender        => fake_pick( qw/F M/ )->()
+            origin_dialog  => fake_words(1)->(),
+            politician_id  => $politician_id,
+            name           => fake_name()->(),
+            fb_id          => $recipient_fb_id,
+            email          => fake_email()->(),
+            cellphone      => fake_digits("+551198#######")->(),
+            gender         => fake_pick( qw/F M/ )->(),
+            security_token => $security_token
         ]
     ;
     my $recipient_id = stash "c1.id";
@@ -49,7 +52,10 @@ db_transaction {
         name  => 'get poll',
         list  => 1,
         stash => "get_poll",
-        [ fb_page_id => 'foobar' ]
+        [
+            fb_page_id     => 'foobar',
+            security_token => $security_token
+        ]
     ;
     my $poll = stash "get_poll";
 
@@ -60,8 +66,9 @@ db_transaction {
         name    => "create poll without option_id",
         is_fail => 1,
         [
-            fb_id  => $recipient_fb_id,
-            origin => 'dialog'
+            fb_id          => $recipient_fb_id,
+            origin         => 'dialog',
+            security_token => $security_token
         ]
     ;
 
@@ -70,7 +77,8 @@ db_transaction {
         is_fail => 1,
         [
             poll_question_option_id => $chosen_option_id,
-            origin                  => 'dialog'
+            origin                  => 'dialog',
+            security_token          => $security_token
         ]
     ;
 
@@ -80,6 +88,7 @@ db_transaction {
         [
             poll_question_option_id => $chosen_option_id,
             fb_id                   => $recipient_fb_id,
+            security_token          => $security_token
         ]
     ;
 
@@ -89,8 +98,8 @@ db_transaction {
         [
             poll_question_option_id => $chosen_option_id,
             fb_id                   => 'foobar',
-            origin                  => 'dialog'
-
+            origin                  => 'dialog',
+            security_token          => $security_token
         ]
     ;
 
@@ -99,8 +108,9 @@ db_transaction {
         list  => 1,
         stash => "get_poll_answer",
         [
-            fb_id     => $recipient_fb_id,
-            poll_id   => $poll_id,
+            fb_id          => $recipient_fb_id,
+            poll_id        => $poll_id,
+            security_token => $security_token
         ]
     ;
 
@@ -117,7 +127,8 @@ db_transaction {
         [
             fb_id                   => $recipient_fb_id,
             poll_question_option_id => $chosen_option_id,
-            origin                  => fake_pick( qw / propagate dialog / )->()
+            origin                  => fake_pick( qw / propagate dialog / )->(),
+            security_token          => $security_token
         ]
     ;
 

@@ -13,7 +13,16 @@ __PACKAGE__->config(
 
 sub root : Chained('/api/root') : PathPart('') : CaptureArgs(0) { }
 
-sub base : Chained('root') : PathPart('chatbot') : CaptureArgs(0) { }
+sub base : Chained('root') : PathPart('chatbot') : CaptureArgs(0) {
+    my ( $self, $c ) = @_;
+
+    die \[ "missing env", $ENV{CHATBOT_SECURITY_TOKEN} ] unless $ENV{CHATBOT_SECURITY_TOKEN};
+
+    my $security_token = $c->req->params->{security_token};
+    die \[ "missing", 'security_token' ] unless $security_token;
+
+    $c->detach("/error_403") unless $security_token eq $ENV{CHATBOT_SECURITY_TOKEN};
+}
 
 sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }
 

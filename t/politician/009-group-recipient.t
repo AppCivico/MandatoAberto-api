@@ -7,11 +7,13 @@ use MandatoAberto::Test::Further;
 my $schema = MandatoAberto->model("DB");
 
 db_transaction {
+    my $security_token = $ENV{CHATBOT_SECURITY_TOKEN};
+
     create_politician( fb_page_id => 'politician_foobar' );
     my $politician_id = stash 'politician.id';
 
     # Adicionando um recipient.
-    create_recipient( politician_id => $politician_id, fb_id => 'recipient_foobar' );
+    create_recipient( politician_id => $politician_id, fb_id => 'recipient_foobar', security_token => $security_token );
     my $recipient_id = stash 'recipient.id';
 
     # Criando uma pool.
@@ -33,7 +35,10 @@ db_transaction {
         name  => 'get poll',
         list  => 1,
         stash => 'get_poll',
-        [ fb_page_id => 'politician_foobar' ]
+        [
+            fb_page_id     => 'politician_foobar',
+            security_token => $security_token
+        ]
     ;
     my $poll = stash 'get_poll';
 
@@ -45,6 +50,7 @@ db_transaction {
             fb_id                   => 'recipient_foobar',
             poll_question_option_id => $poll->{questions}->[0]->{options}->[1]->{id},
             origin                  => 'dialog',
+            security_token          => $security_token
         ]
     ;
 
@@ -91,6 +97,7 @@ db_transaction {
                 fb_id                   => 'recipient2',
                 poll_question_option_id => $poll->{questions}->[0]->{options}->[0]->{id},
                 origin                  => 'dialog',
+                security_token          => $security_token
             ]
         ;
 
@@ -108,6 +115,7 @@ db_transaction {
                 fb_id                   => 'recipient3',
                 poll_question_option_id => $poll->{questions}->[0]->{options}->[1]->{id},
                 origin                  => 'dialog',
+                security_token          => $security_token
             ]
         ;
 
