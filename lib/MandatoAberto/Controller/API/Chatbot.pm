@@ -16,8 +16,6 @@ sub root : Chained('/api/root') : PathPart('') : CaptureArgs(0) { }
 sub base : Chained('root') : PathPart('chatbot') : CaptureArgs(0) {
     my ( $self, $c ) = @_;
 
-    die \[ "missing env", $ENV{CHATBOT_SECURITY_TOKEN} ] unless $ENV{CHATBOT_SECURITY_TOKEN};
-
     my $security_token = $c->req->params->{security_token};
     die \[ "missing", 'security_token' ] unless $security_token;
 
