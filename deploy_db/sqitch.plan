@@ -69,3 +69,4 @@
 0065-add-politician_id-poll_propagate [0064-add-campaign] 2018-02-22T17:07:41Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the 'politician_id' on the 'poll_propagate' table
 0066-user-confirmation [0065-add-politician_id-poll_propagate] 2018-03-01T00:49:03Z Lucas Ansei,,, <lucas@lucas-G750JX> # Adding the 'user_confirmation' table and necessary columns
 0067-add-instagram-politician_contact [0066-user-confirmation] 2018-03-12T17:45:32Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the 'instagram' column to the 'politician_contact' table.
+0068-add-recipient-page_id [0067-add-instagram-politician_contact] 2018-03-18T16:58:06Z Lucas Ansei,,, <lucas@lucas-G750JX> # Adding the 'page_id' column to the 'recipient' table
