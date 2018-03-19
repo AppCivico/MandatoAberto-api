@@ -235,5 +235,17 @@ EXISTS(
 SQL_QUERY
 }
 
+sub get_recipient_by_gender {
+    my ($self) = @_;
+
+    my $male_recipients   = $self->search( { gender => "M" } )->count;
+    my $female_recipients = $self->search( { gender => "F" } )->count;
+
+    return {
+        male_recipient_count   => $male_recipients,
+        female_recipient_count => $female_recipients
+    };
+}
+
 1;
 
