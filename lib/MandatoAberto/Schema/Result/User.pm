@@ -1143,7 +1143,7 @@ __DATA__
 <br>
 A plataforma foi desenvolvida para atender lideranças políticas em exercício de cargos públicos ou não. </span></span><br>
 <br>
-<span style="font-family:open sans,helvetica neue,helvetica,arial,sans-serif"><a href="http://link aqui" target="_blank"><span style="color:#bc3984">Saiba mais</span></a></span>
+<span style="font-family:open sans,helvetica neue,helvetica,arial,sans-serif"><a href="https://mandatoaberto.com.br/sobre/" target="_blank"><span style="color:#bc3984">Saiba mais</span></a></span>
         </td>
     </tr>
 </tbody></table>
