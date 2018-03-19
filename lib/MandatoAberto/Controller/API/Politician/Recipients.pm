@@ -54,11 +54,16 @@ sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }
 sub list_GET {
     my ($self, $c) = @_;
 
+    my $politician = $c->stash->{politician};
+
     my $page    = $c->req->params->{page}    || 1;
     my $results = $c->req->params->{results} || 20;
 
     $c->stash->{collection} = $c->stash->{collection}->search(
-        { page_id => $c->stash->{politician}->fb_page_id },
+        {
+            politician_id => $politician->user_id,
+            page_id       => $politician->fb_page_id
+        },
         { page => $page, rows => $results }
     );
 
