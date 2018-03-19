@@ -12,6 +12,7 @@ use Data::Verifier;
 use MandatoAberto::Utils;
 use MandatoAberto::Messager::Template;
 use WebService::HttpCallback::Async;
+use Encode qw /encode_utf8/;
 
 use JSON::MaybeXS;
 
@@ -108,6 +109,9 @@ sub action_specs {
                 )
             ;
 
+            $values{content} = encode_utf8($values{content});
+            my $button_text  = encode_utf8('Voltar para o início');
+
             while (my $recipient = $recipient_rs->next()) {
                 # Mando para o httpcallback
                 $self->_httpcb->add(
@@ -123,7 +127,7 @@ sub action_specs {
                             quick_replies => [
                                 {
                                     content_type => 'text',
-                                    title        => "Voltar para o in\ício",
+                                    title        => $button_text,
                                     payload      => 'greetings'
                                 }
                             ]
