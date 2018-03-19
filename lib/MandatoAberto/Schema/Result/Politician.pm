@@ -594,17 +594,25 @@ sub get_citizen_interaction {
 
     my $furl = Furl->new();
 
-    my $start_date = DateTime->now->subtract( days => $range )->epoch();
-    my $end_date   = DateTime->now->epoch();
+    my $start_date = DateTime->now->subtract( days => $range );
+    my $end_date   = DateTime->now;
+
+    my $start_date_epoch = $start_date->epoch();
+    my $end_date_epoch   = $end_date->epoch();
 
     my $res = $furl->get(
-        $ENV{FB_API_URL} . "/$page_id/insights?access_token=$access_token&metric=page_messages_active_threads_unique&since=$start_date&until=$end_date",
+        $ENV{FB_API_URL} . "/$page_id/insights?access_token=$access_token&metric=page_messages_active_threads_unique&since=$start_date_epoch&until=$end_date_epoch",
     );
     return 0 unless $res->is_success;
 
-    my $decoded_res = decode_json $res->decoded_content;
+    my $decoded_res    = decode_json $res->decoded_content;
     my $untreated_data = $decoded_res->{data}->[0]->{values};
-    my $treated_data = {};
+
+    # Setando o título e subtítulo do gráfico
+    my $treated_data = {
+        title    => 'Acessos por dia',
+        subtitle => "Gráfico de acessos únicos por dia"
+    };
 
     if ($untreated_data) {
         for (my $i = 0; $i < scalar @{ $untreated_data } ; $i++) {
@@ -615,8 +623,16 @@ sub get_citizen_interaction {
             $treated_data->{labels}->[$i] = $day->day() . '/' . $day->month();
             $treated_data->{data}->[$i]   = $data_per_day->{value};
         }
-        $treated_data->{title} = 'Acessos por dia';
-        $treated_data->{subtitle} = "Gráfico de acessos únicos por dia";
+    } else {
+        # Caso não retorne nada do Facebook devo retornar um gráfico
+        # com os gráficos em 0 para o range determinado.
+        for (my $j = 0; $j < $range; $j++) {
+
+            my $day = $start_date->add( days => 1 );
+
+            $treated_data->{labels}->[$j] = $day->day() . '/' . $day->month();
+            $treated_data->{data}->[$j]   = 0;
+        }
     }
 
     # Forçando métricas para a conta de demonstração
