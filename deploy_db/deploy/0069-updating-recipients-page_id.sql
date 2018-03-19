@@ -9,6 +9,6 @@ UPDATE recipient AS r SET page_id = p.page_id FROM
              recipient AS r
         WHERE p.user_id = r.politician_id
     ) AS p
-    WHERE p.user_id = r.user_id;
+    WHERE p.user_id = r.politician_id;
 
 COMMIT;
