@@ -22,7 +22,7 @@ db_transaction {
     rest_get "/api/chatbot/",
         name    => "get on chatbot with wrong security_token",
         is_fail => 1,
-        code    => 403,
+        code    => 400,
         [ security_token => fake_words(3)->() ]
     ;
 
