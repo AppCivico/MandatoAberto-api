@@ -3158,9 +3158,9 @@ Este projeto é distribuído sob a licença Affero General Public License.
 
                         <td valign="top" class="mcnTextContent" style="padding-top:0; padding-right:18px; padding-bottom:9px; padding-left:18px;">
 
-                            <h4>Recebemos o &nbsp;pedido de cancelamento da assinatura&nbsp;premium da plataforma.</h4>
+                            <h4>Não recebemos a confirmação de pagamento para sua assinatura&nbsp;premium da plataforma.</h4>
 
-<h1><span style="font-size:20px">Sua assinatura foi cancelada.</span></h1>
+<h1><span style="font-size:20px">Sua assinatura não foi realizada.</span></h1>
 
                         </td>
                     </tr>
@@ -3173,24 +3173,6 @@ Este projeto é distribuído sob a licença Affero General Public License.
         </tr>
         </table>
         <![endif]-->
-            </td>
-        </tr>
-    </tbody>
-</table><table border="0" cellpadding="0" cellspacing="0" width="100%" class="mcnDividerBlock" style="min-width:100%;">
-    <tbody class="mcnDividerBlockOuter">
-        <tr>
-            <td class="mcnDividerBlockInner" style="min-width: 100%; padding: 9px 18px 0px;">
-                <table class="mcnDividerContent" border="0" cellpadding="0" cellspacing="0" width="100%" style="min-width:100%;">
-                    <tbody><tr>
-                        <td>
-                            <span></span>
-                        </td>
-                    </tr>
-                </tbody></table>
-<!--
-                <td class="mcnDividerBlockInner" style="padding: 18px;">
-                <hr class="mcnDividerContent" style="border-bottom-color:none; border-left-color:none; border-right-color:none; border-bottom-width:0; border-left-width:0; border-right-width:0; margin-top:0; margin-right:0; margin-bottom:0; margin-left:0;" />
--->
             </td>
         </tr>
     </tbody>
@@ -3211,8 +3193,9 @@ Este projeto é distribuído sob a licença Affero General Public License.
 
                         <td valign="top" class="mcnTextContent" style="padding-top:0; padding-right:18px; padding-bottom:9px; padding-left:18px;">
 
-                            <p dir="ltr" style="text-align: center;"><span style="font-size:15px">Agradecemos seu contato.<br>
-Gostaríamos de saber seus motivos para o cancelamento da plataforma.</span></p>
+                            <p dir="ltr" style="text-align: center;"><span style="font-size:18px">Agradecemos seu contato.<br>
+Mas, não&nbsp;identificamos seu pagamento.<br>
+Pedimos para que verifique com sua operadora &nbsp;e retorne o contato conosco.</span></p>
 
                         </td>
                     </tr>
@@ -3268,11 +3251,11 @@ Gostaríamos de saber seus motivos para o cancelamento da plataforma.</span></p>
     <tbody class="mcnButtonBlockOuter">
         <tr>
             <td style="padding-top:0; padding-right:18px; padding-bottom:18px; padding-left:18px;" valign="top" align="center" class="mcnButtonBlockInner">
-                <table border="0" cellpadding="0" cellspacing="0" class="mcnButtonContentContainer" style="border-collapse: separate !important;border-radius: 3px;background-color: #E0629A;">
+                <table border="0" cellpadding="0" cellspacing="0" class="mcnButtonContentContainer" style="border-collapse: separate !important;border-top-left-radius: 3px;border-top-right-radius: 3px;border-bottom-right-radius: 3px;border-bottom-left-radius: 3px;background-color: #E0629A;">
                     <tbody>
                         <tr>
                             <td align="center" valign="middle" class="mcnButtonContent" style="font-family: Helvetica; font-size: 18px; padding: 18px;">
-                                <a class="mcnButton " title="Conte como foi sua experiência" href="mailto:contato@mandatoaberto.com.br" target="_self" style="font-weight: bold;letter-spacing: -0.5px;line-height: 100%;text-align: center;text-decoration: none;color: #FFFFFF;">Conte como foi sua experiência</a>
+                                <a class="mcnButton " title="Fale com a gente" href="http://contato@mandatoaberto.com.br" target="_self" style="font-weight: bold;letter-spacing: -0.5px;line-height: 100%;text-align: center;text-decoration: none;color: #FFFFFF;">Fale com a gente</a>
                             </td>
                         </tr>
                     </tbody>
