@@ -46,8 +46,22 @@ db_transaction {
     is ($schema->resultset('EmailQueue')->count, "2", "premium active email queued");
 
     rest_post "/api/politician/$politician_id/premium",
+        name    => "politician alredy premium",
+        is_fail => 1,
+        code    => 400,
+        [ premium => 1 ]
+    ;
+
+    rest_post "/api/politician/$politician_id/premium",
         name => "activating premium",
         code => 200,
+        [ premium => 0 ]
+    ;
+
+    rest_post "/api/politician/$politician_id/premium",
+        name    => "politician alredy non-premium",
+        is_fail => 1,
+        code    => 400,
         [ premium => 0 ]
     ;
 
