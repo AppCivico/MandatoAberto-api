@@ -38,7 +38,7 @@ sub add {
         ),
     );
 
-    print $res;
+    print STDERR "httpcb_res: $res";
 
     return $res;
 }
