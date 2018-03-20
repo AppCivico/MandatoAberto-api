@@ -28,12 +28,18 @@ sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }
 sub list_POST {
     my ($self, $c) = @_;
 
+    my $politician = $c->{stash}->{politician};
+
     # Posteriormente será implementado um método de pagamento
     # e a renovação/contratação do serviço premium
     # será automatizada
     my $premium = $c->req->params->{premium};
     die \["premium", 'missing'] unless defined $premium;
-    my $politician = $c->stash->{politician}->update(
+
+    my $current_premium_status = $politician->premium;
+    die \["premium", "politician alredy is premium: $current_premium_status"] if $current_premium_status == $premium;
+
+    $politician->update(
         {
             premium            => $premium,
             premium_updated_at => \'NOW()'

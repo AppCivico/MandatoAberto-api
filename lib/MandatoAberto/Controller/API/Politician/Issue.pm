@@ -65,6 +65,9 @@ sub list_GET {
 
     my $politician_id = $c->stash->{politician}->id;
 
+    my $page    = $c->req->params->{page}    || 1;
+    my $results = $c->req->params->{results} || 20;
+
     return $self->status_ok(
         $c,
         entity => {
@@ -89,7 +92,11 @@ sub list_GET {
                         'me.politician_id' => $politician_id,
                         open          => 1
                     },
-                    { prefetch => 'recipient' }
+                    {
+                        prefetch => 'recipient',
+                        page     => $page,
+                        rows     => $results
+                    }
                   )->all()
             ]
         }
