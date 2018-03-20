@@ -32,11 +32,15 @@ sub add {
         $uri->query_param_append($k, $v);
     }
 
-    return $self->_async->add(
+    my $res = $self->_async->add(
         HTTP::Request->new(
             POST => $uri->as_string,
         ),
     );
+
+    print $res;
+
+    return $res;
 }
 
 sub wait_for_all_responses {
