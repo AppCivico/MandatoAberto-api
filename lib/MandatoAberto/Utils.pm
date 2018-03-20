@@ -33,7 +33,7 @@ sub get_mandatoaberto_httpcb_url_for {
     my $mandatoaberto_httpcb_url = $ENV{MANDATOABERTO_HTTP_CB_URL};
     $mandatoaberto_httpcb_url =~ s/\/$//;
 
-    return ( ( is_test() ? "http://localhost" : $mandatoaberto_httpcb_url ) . $args );
+    return ( ( is_test() ? "http://localhost" : $ENV{MANDATOABERTO_HTTP_CB_URL} ) . $args );
 }
 
 1;
