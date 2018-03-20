@@ -7,6 +7,8 @@ use MandatoAberto::Test::Further;
 my $schema = MandatoAberto->model("DB");
 
 db_transaction {
+    my $security_token = $ENV{CHATBOT_SECURITY_TOKEN};
+
     create_politician(
         fb_page_id => "foobar"
     );
@@ -34,7 +36,10 @@ db_transaction {
         name  => 'get poll',
         list  => 1,
         stash => "get_poll",
-        [ fb_page_id => 'foobar' ]
+        [
+            fb_page_id     => 'foobar',
+            security_token => $security_token
+        ]
     ;
 };
 

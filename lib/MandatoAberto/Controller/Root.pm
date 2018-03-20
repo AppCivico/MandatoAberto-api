@@ -40,6 +40,12 @@ sub error_404 : Private {
     return $self->status_not_found($c, message => "Endpoint not found.");
 }
 
+sub error_403 : Private {
+    my ($self, $c) = @_;
+
+    return $self->status_forbidden($c, message => "Endpoint forbidden.");
+}
+
 =head1 AUTHOR
 
 lucas-eokoe,,,

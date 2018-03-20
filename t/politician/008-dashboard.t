@@ -7,6 +7,8 @@ use MandatoAberto::Test::Further;
 my $schema = MandatoAberto->model("DB");
 
 db_transaction {
+    my $security_token = $ENV{CHATBOT_SECURITY_TOKEN};
+
     api_auth_as user_id => 1;
 
     create_dialog;
@@ -24,20 +26,24 @@ db_transaction {
     ;
     my $question_id = stash "q1.id";
 
-    create_politician;
+    create_politician(
+        fb_page_id           => fake_words(1)->(),
+        fb_page_access_token => fake_words(1)->()
+    );
     my $politician_id = stash "politician.id";
 
     rest_post "/api/chatbot/recipient",
         name                => "Create recipient",
         automatic_load_item => 0,
         [
-            name          => fake_name()->(),
-            fb_id         => "foobar",
-            origin_dialog => fake_words(1)->(),
-            gender        => fake_pick( qw/M F/ )->(),
-            cellphone     => fake_digits("+551198#######")->(),
-            email         => fake_email()->(),
-            politician_id => $politician_id
+            name           => fake_name()->(),
+            fb_id          => "foobar",
+            origin_dialog  => fake_words(1)->(),
+            gender         => fake_pick( qw/M F/ )->(),
+            cellphone      => fake_digits("+551198#######")->(),
+            email          => fake_email()->(),
+            politician_id  => $politician_id,
+            security_token => $security_token
         ]
     ;
 
@@ -104,13 +110,14 @@ db_transaction {
         name                => "Create recipient",
         automatic_load_item => 0,
         [
-            name          => fake_name()->(),
-            fb_id         => "FOOBAR",
-            origin_dialog => fake_words(1)->(),
-            gender        => fake_pick( qw/M F/ )->(),
-            cellphone     => fake_digits("+551198#######")->(),
-            email         => fake_email()->(),
-            politician_id => $politician_id
+            name           => fake_name()->(),
+            fb_id          => "FOOBAR",
+            origin_dialog  => fake_words(1)->(),
+            gender         => fake_pick( qw/M F/ )->(),
+            cellphone      => fake_digits("+551198#######")->(),
+            email          => fake_email()->(),
+            politician_id  => $politician_id,
+            security_token => $security_token
         ]
     ;
 
@@ -124,7 +131,7 @@ db_transaction {
         is ($res->{has_contacts}, 0, 'politician does not have contacts');
         is ($res->{has_dialogs}, 0, 'politician does not have dialogs');
         is ($res->{has_active_poll}, 1, 'politician has active poll');
-        is ($res->{has_facebook_auth}, 0, 'politician does not have facebook auth');
+        is ($res->{has_facebook_auth}, 1, 'politician does have facebook auth');
     };
 
     rest_put "/api/poll/$poll_id",
@@ -143,7 +150,7 @@ db_transaction {
         is ($res->{has_dialogs}, 0, 'politician does not have dialogs');
         is ($res->{has_active_poll}, 0, 'politician does not have active poll');
         is ($res->{ever_had_poll}, 1, 'politician has at least one poll');
-        is ($res->{has_facebook_auth}, 0, 'politician does not have facebook auth');
+        is ($res->{has_facebook_auth}, 1, 'politician does  have facebook auth');
     };
 
     rest_post "/api/politician/$politician_id/greeting",
@@ -162,7 +169,7 @@ db_transaction {
         is ($res->{has_greeting}, 1, 'politician has greeting');
         is ($res->{has_contacts}, 0, 'politician does not have contacts');
         is ($res->{has_dialogs}, 0, 'politician does not have dialogs');
-        is ($res->{has_facebook_auth}, 0, 'politician does not have facebook auth');
+        is ($res->{has_facebook_auth}, 1, 'politician does have facebook auth');
     };
 
     rest_post "/api/politician/$politician_id/contact",
@@ -186,7 +193,7 @@ db_transaction {
         is ($res->{has_greeting}, 1, 'politician has greeting');
         is ($res->{has_contacts}, 1, 'politician has contacts');
         is ($res->{has_dialogs}, 0, 'politician does not have dialogs');
-        is ($res->{has_facebook_auth}, 0, 'politician does not have facebook auth');
+        is ($res->{has_facebook_auth}, 1, 'politician does have facebook auth');
     };
 
     rest_post "/api/politician/$politician_id/answers",
@@ -204,18 +211,8 @@ db_transaction {
         is ($res->{has_greeting}, 1, 'politician has greeting');
         is ($res->{has_contacts}, 1, 'politician has contacts');
         is ($res->{has_dialogs}, 1, 'politician has dialogs');
-        is ($res->{has_facebook_auth}, 0, 'politician does not have facebook auth');
+        is ($res->{has_facebook_auth}, 1, 'politician does have facebook auth');
     };
-
-    ok(
-        $schema->resultset("Politician")->find($politician_id)->update(
-            {
-                fb_page_id => 'aa',
-                fb_page_access_token => "aa"
-            }
-        ) ,
-        'facebook_auth'
-    );
 
     rest_reload_list "get_politician_dashboard";
 

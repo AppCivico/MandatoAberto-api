@@ -7,7 +7,11 @@ use MandatoAberto::Test::Further;
 my $schema = MandatoAberto->model("DB");
 
 db_transaction {
-    create_politician;
+    my $security_token = $ENV{CHATBOT_SECURITY_TOKEN};
+
+    create_politician(
+        fb_page_id => 'foo'
+    );
     my $politician_id = stash "politician.id";
 
     rest_post "/api/chatbot/recipient",
@@ -15,10 +19,11 @@ db_transaction {
         automatic_load_item => 0,
         stash               => "r1",
         [
-            name          => fake_name()->(),
-            politician_id => $politician_id,
-            fb_id         => fake_words(2)->(),
-            origin_dialog => "enquete"
+            name           => fake_name()->(),
+            politician_id  => $politician_id,
+            fb_id          => fake_words(2)->(),
+            origin_dialog  => "enquete",
+            security_token => $security_token
         ]
     ;
 
@@ -27,10 +32,11 @@ db_transaction {
         automatic_load_item => 0,
         stash               => "r2",
         [
-            name          => fake_name()->(),
-            politician_id => $politician_id,
-            fb_id         => fake_words(2)->(),
-            origin_dialog => "enquete"
+            name           => fake_name()->(),
+            politician_id  => $politician_id,
+            fb_id          => fake_words(2)->(),
+            origin_dialog  => "enquete",
+            security_token => $security_token
         ]
     ;
 

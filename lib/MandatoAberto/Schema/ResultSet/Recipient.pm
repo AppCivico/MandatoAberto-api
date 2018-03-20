@@ -56,6 +56,15 @@ sub verifiers_specs {
                 picture => {
                     required => 0,
                     type     => URI
+                },
+                page_id => {
+                    required   => 1,
+                    type       => "Str",
+                    post_check => sub {
+                        my $page_id = $_[0]->get_value("page_id");
+
+                        $self->result_source->schema->resultset("Politician")->search({ fb_page_id => $page_id })->count;
+                    }
                 }
             }
         ),
@@ -224,6 +233,18 @@ EXISTS(
       AND poll_question_option.content <> ?
 )
 SQL_QUERY
+}
+
+sub get_recipient_by_gender {
+    my ($self) = @_;
+
+    my $male_recipients   = $self->search( { gender => "M" } )->count;
+    my $female_recipients = $self->search( { gender => "F" } )->count;
+
+    return {
+        male_recipient_count   => $male_recipients,
+        female_recipient_count => $female_recipients
+    };
 }
 
 1;

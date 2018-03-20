@@ -7,7 +7,11 @@ use MandatoAberto::Test::Further;
 my $schema = MandatoAberto->model("DB");
 
 db_transaction {
-    create_politician;
+    my $security_token = $ENV{CHATBOT_SECURITY_TOKEN};
+
+    create_politician(
+        fb_page_id => 'foo',
+    );
     my $politician_id = stash "politician.id";
 
     my $recipient_fb_id = 'foobar';
@@ -16,13 +20,14 @@ db_transaction {
         automatic_load_item => 0,
         stash               => 'c1',
         [
-            origin_dialog => fake_words(1)->(),
-            politician_id => $politician_id,
-            name          => fake_name()->(),
-            fb_id         => $recipient_fb_id,
-            email         => fake_email()->(),
-            cellphone     => fake_digits("+551198#######")->(),
-            gender        => fake_pick( qw/F M/ )->()
+            origin_dialog  => fake_words(1)->(),
+            politician_id  => $politician_id,
+            name           => fake_name()->(),
+            fb_id          => $recipient_fb_id,
+            email          => fake_email()->(),
+            cellphone      => fake_digits("+551198#######")->(),
+            gender         => fake_pick( qw/F M/ )->(),
+            security_token => $security_token
         ]
     ;
 
@@ -31,8 +36,9 @@ db_transaction {
         is_fail => 1,
         code    => 400,
         [
-            politician_id => $politician_id,
-            fb_id        => $recipient_fb_id
+            politician_id  => $politician_id,
+            fb_id          => $recipient_fb_id,
+            security_token => $security_token
         ]
     ;
 
@@ -41,8 +47,9 @@ db_transaction {
         is_fail => 1,
         code    => 400,
         [
-            fb_id   => $recipient_fb_id,
-            message => fake_words(1)->()
+            fb_id          => $recipient_fb_id,
+            message        => fake_words(1)->(),
+            security_token => $security_token
         ]
     ;
 
@@ -51,8 +58,9 @@ db_transaction {
         is_fail => 1,
         code    => 400,
         [
-            politician_id => $politician_id,
-            message       => fake_words(1)->()
+            politician_id  => $politician_id,
+            message        => fake_words(1)->(),
+            security_token => $security_token
         ]
     ;
 
@@ -61,9 +69,10 @@ db_transaction {
         is_fail => 1,
         code    => 400,
         [
-            politician_id => fake_words(1)->(),
-            fb_id         => $recipient_fb_id,
-            message       => fake_words(1)->()
+            politician_id  => fake_words(1)->(),
+            fb_id          => $recipient_fb_id,
+            message        => fake_words(1)->(),
+            security_token => $security_token
         ]
     ;
 
@@ -72,9 +81,10 @@ db_transaction {
         is_fail => 1,
         code    => 400,
         [
-            politician_id => $politician_id,
-            fb_id         => fake_words(1)->(),
-            message       => fake_words(1)->()
+            politician_id  => $politician_id,
+            fb_id          => fake_words(1)->(),
+            message        => fake_words(1)->(),
+            security_token => $security_token
         ]
     ;
 
@@ -83,9 +93,10 @@ db_transaction {
         automatic_load_item => 0,
         stash               => "i1",
         [
-            politician_id => $politician_id,
-            fb_id         => $recipient_fb_id,
-            message       => fake_words(1)->()
+            politician_id  => $politician_id,
+            fb_id          => $recipient_fb_id,
+            message        => fake_words(1)->(),
+            security_token => $security_token
         ]
     ;
 

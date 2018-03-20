@@ -7,16 +7,21 @@ use MandatoAberto::Test::Further;
 my $schema = MandatoAberto->model("DB");
 
 db_transaction {
-    create_politician;
+    my $security_token = $ENV{CHATBOT_SECURITY_TOKEN};
+
+    create_politician(
+        fb_page_id => 'foo',
+    );
     my $politician_id = stash "politician.id";
 
     rest_post "/api/chatbot/recipient",
         name    => "create recipient without fb_id",
         is_fail => 1,
         [
-            politician_id => $politician_id,
-            origin_dialog => fake_words(1)->(),
-            name          => fake_name()->()
+            politician_id  => $politician_id,
+            origin_dialog  => fake_words(1)->(),
+            name           => fake_name()->(),
+            security_token => $security_token
         ]
     ;
 
@@ -27,6 +32,7 @@ db_transaction {
             origin_dialog => fake_words(1)->(),
             fb_id         => "foobar",
             politician_id => $politician_id,
+            security_token => $security_token
         ]
     ;
 
@@ -36,7 +42,8 @@ db_transaction {
         [
             name          => fake_name()->(),
             politician_id => $politician_id,
-            fb_id         => "foobar"
+            fb_id         => "foobar",
+            security_token => $security_token
         ]
     ;
 
@@ -48,7 +55,8 @@ db_transaction {
             name          => fake_name()->(),
             politician_id => $politician_id,
             fb_id         => "foobar",
-            email         => "foobar"
+            email         => "foobar",
+            security_token => $security_token
         ]
     ;
 
@@ -60,7 +68,8 @@ db_transaction {
             name          => fake_name()->(),
             politician_id => $politician_id,
             fb_id         => "foobar",
-            cellphone     => "foobar"
+            cellphone     => "foobar",
+            security_token => $security_token
         ]
     ;
 
@@ -72,7 +81,8 @@ db_transaction {
             name          => fake_name()->(),
             politician_id => $politician_id,
             fb_id         => "foobar",
-            gender        => "foobar"
+            gender        => "foobar",
+            security_token => $security_token
         ]
     ;
 
@@ -92,7 +102,8 @@ db_transaction {
             fb_id         => $fb_id,
             email         => $email,
             cellphone     => $cellphone,
-            gender        => $gender
+            gender        => $gender,
+            security_token => $security_token
         ]
     ;
     my $citizen_id = stash "c1.id";
@@ -101,13 +112,17 @@ db_transaction {
         name    => "search with missing fb_id",
         is_fail => 1,
         code    => 400,
+        [ security_token => $security_token ]
     ;
 
     rest_get "/api/chatbot/recipient",
         name  => "get recipient",
         list  => 1,
         stash => "get_citizen",
-        [ fb_id => $fb_id ]
+        [
+            fb_id          => $fb_id,
+            security_token => $security_token
+        ]
     ;
 
     stash_test "get_citizen" => sub {
@@ -123,9 +138,10 @@ db_transaction {
     rest_post "/api/chatbot/recipient/",
         name => "change recipient data",
         [
-            fb_id => $fb_id,
-            politician_id => $politician_id,
-            email => $new_email
+            fb_id          => $fb_id,
+            politician_id  => $politician_id,
+            email          => $new_email,
+            security_token => $security_token
         ]
     ;
 

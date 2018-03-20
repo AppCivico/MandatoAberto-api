@@ -36,7 +36,14 @@ sub list_GET {
 
     my $politician_id = $c->stash->{politician}->id;
 
-    my $citizen_count = $c->model("DB::Recipient")->search( { politician_id => $politician_id } )->count;
+    my $recipient_rs = $c->model("DB::Recipient")->search(
+        {
+            politician_id => $politician_id,
+            page_id       => $c->stash->{politician}->fb_page_id
+        }
+    );
+
+    my $citizen_count = $recipient_rs->count;
 
     my $ever_had_poll = $c->model("DB::Poll")->search( { politician_id => $politician_id } )->count > 0 ? 1 : 0;
 
@@ -72,26 +79,14 @@ sub list_GET {
     my $first_access = $c->model("DB::UserSession")->search( { user_id => $politician_id } )->count > 1 ? 0 : 1;
 
     # Dados de genero
-    my $female_citizen_count = $c->model("DB::Recipient")->search(
-        {
-            politician_id => $politician_id,
-            gender        => 'F'
-        }
-    )->count;
-
-    my $male_citizen_count = $c->model("DB::Recipient")->search(
-        {
-            politician_id => $politician_id,
-            gender        => 'M'
-        }
-    )->count;
+    my $recipients_by_gender = $recipient_rs->get_recipient_by_gender;
 
     my $citizen_gender = {
         name     => "Gênero",
         title    => "Gênero",
         subtitle => "Número de pessoas por gênero",
         labels   => [ 'Feminino', 'Masculino' ],
-        data     => [ $female_citizen_count, $male_citizen_count ]
+        data     => [ $recipients_by_gender->{female_recipient_count}, $recipients_by_gender->{male_citizen_count} ]
     };
 
     # Pegando dados do analytics do Facebook

@@ -13,7 +13,11 @@ db_transaction {
     my $worker = new_ok('MandatoAberto::Worker::Segmenter', [ schema => $schema ]);
     ok( $worker->does('MandatoAberto::Worker'), 'worker does MandatoAberto::Worker' );
 
-    create_politician;
+    my $security_token = $ENV{CHATBOT_SECURITY_TOKEN};
+
+    create_politician(
+        fb_page_id => fake_words(1)->()
+    );
     my $politician_id = stash "politician.id";
     api_auth_as user_id => $politician_id;
 
@@ -22,7 +26,10 @@ db_transaction {
 
         # Criando três recipients.
         for (my $i = 0; $i <= 3; $i++) {
-            create_recipient(politician_id => $politician_id);
+            create_recipient(
+                politician_id  => $politician_id,
+                security_token => $security_token
+            );
 
             my $recipient_id = stash 'recipient.id';
             push @recipient_ids, $recipient_id;

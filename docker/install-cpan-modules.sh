@@ -92,6 +92,4 @@ cpanm -n App::Sqitch \
  Template \
  Test::More \
  Time::HiRes \
- HTTP::Async \
  Try::Tiny::Retry
-

@@ -17,3 +17,5 @@ export SMTP_USERNAME=""
 export SMTP_PASSWORD=""
 
 export PRIVATE_REPLY_MESSAGE=""
+
+export CHATBOT_SECURITY_TOKEN=""
