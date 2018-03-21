@@ -31,7 +31,7 @@ sub list_POST {
     my $approved = $c->req->params->{approved};
     die \["approved", 'missing'] unless defined $approved;
 
-    my $politician_id = $c->req->params{politician_id};
+    my $politician_id = $c->req->params->{politician_id};
     die \["politician_id", 'missing'] unless defined $politician_id;
 
     my $politician = $c->model("DB::Politician")->find($politician_id);
