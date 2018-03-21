@@ -34,7 +34,10 @@ db_transaction {
     rest_post "/api/politician/$politician_id/approve",
         name => "approving politician",
         code => 200,
-        [ approved => 1 ]
+        [
+            approved      => 1,
+            politician_id => $politician_id
+        ]
     ;
 
     $politician_user = $politician_user->discard_changes;
@@ -50,7 +53,10 @@ db_transaction {
     rest_post "/api/politician/$politician_id/approve",
         name => "disapproving politician",
         code => 200,
-        [ approved => 0 ]
+        [
+            approved => 0,
+            politician_id => $politician_id
+        ]
     ;
 
     $politician_user = $politician_user->discard_changes;

@@ -42,7 +42,10 @@ db_transaction {
     rest_post "/api/politician/$politician_id/approve",
         name => "approving politician",
         code => 200,
-        [ approved => 1 ]
+        [
+            approved      => 1,
+            politician_id => $politician_id
+        ]
     ;
 
     is ($schema->resultset('EmailQueue')->count, "2", "all emails queued");
