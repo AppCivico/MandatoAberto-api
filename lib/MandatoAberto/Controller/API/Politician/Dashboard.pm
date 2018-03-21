@@ -86,7 +86,7 @@ sub list_GET {
         title    => "Gênero",
         subtitle => "Número de pessoas por gênero",
         labels   => [ 'Feminino', 'Masculino' ],
-        data     => [ $recipients_by_gender->{female_recipient_count}, $recipients_by_gender->{male_citizen_count} ]
+        data     => [ $recipients_by_gender->{female_recipient_count}, $recipients_by_gender->{male_recipient_count} ]
     };
 
     # Pegando dados do analytics do Facebook
