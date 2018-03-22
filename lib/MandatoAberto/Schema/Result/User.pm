@@ -343,6 +343,30 @@ sub send_email_confirmation {
     # return $self->result_source->schema->resultset('EmailQueue')->create({ body => $email->as_string });
 }
 
+sub approve {
+    my ($self) = @_;
+
+    $self->send_email_approved();
+
+    return $self->update(
+        {
+            approved    => 1,
+            approved_at => \'NOW()'
+        }
+    );
+}
+
+sub disapprove {
+    my ($self) = @_;
+
+    return $self->update(
+        {
+            approved    => 0,
+            approved_at => \'NOW()'
+        }
+    );
+}
+
 __PACKAGE__->meta->make_immutable;
 1;
 

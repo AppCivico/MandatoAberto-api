@@ -10,33 +10,54 @@ db_transaction {
     create_politician;
     my $politician_id = stash "politician.id";
 
+    is ($schema->resultset('EmailQueue')->count, "1", "only greetings email queued");
+
     my $politician_user = $schema->resultset("User")->find($politician_id);
 
     api_auth_as user_id => $politician_id;
 
-    rest_post "/api/politician/$politician_id/approve",
+    rest_post "/api/admin/approve-politician",
         name    => "approving as politician",
         is_fail => 1,
         code    => 403,
-        [ approved => 1 ]
+        [
+            politician_id => $politician_id,
+            approved      => 1
+        ]
     ;
-
-    is (
-        $politician_user->approved,
-        0,
-        "politician isn't approved"
-    );
-
-    is ($schema->resultset('EmailQueue')->count, "1", "only greetings email queued");
 
     api_auth_as user_id => 1;
 
-    rest_post "/api/politician/$politician_id/approve",
-        name => "approving politician",
+    rest_post "/api/admin/approve-politician",
+        name    => 'approving politician without politician_id',
+        is_fail => 1,
+        code    => 400,
+        [ approved => 1 ]
+    ;
+
+    rest_post "/api/admin/approve-politician",
+        name    => 'approving politician without approved bool',
+        is_fail => 1,
+        code    => 400,
+        [ politician_id => $politician_id ]
+    ;
+
+    rest_post "/api/admin/approve-politician",
+        name    => 'approving politician with invalid politician_id',
+        is_fail => 1,
+        code    => 400,
+        [
+            politician_id => 99999,
+            approved      => 1
+        ]
+    ;
+
+    rest_post "/api/admin/approve-politician",
+        name => 'approving politician',
         code => 200,
         [
-            approved      => 1,
-            politician_id => $politician_id
+            politician_id => $politician_id,
+            approved      => 1
         ]
     ;
 
@@ -48,24 +69,7 @@ db_transaction {
         "politician is approved"
     );
 
-    is ($schema->resultset('EmailQueue')->count, "2", "approved email queued");
-
-    rest_post "/api/politician/$politician_id/approve",
-        name => "disapproving politician",
-        code => 200,
-        [
-            approved => 0,
-            politician_id => $politician_id
-        ]
-    ;
-
-    $politician_user = $politician_user->discard_changes;
-
-    is (
-        $politician_user->approved,
-        0,
-        "politician is approved"
-    );
+    is ($schema->resultset('EmailQueue')->count, "2", "only greetings email queued");
 };
 
 done_testing();
