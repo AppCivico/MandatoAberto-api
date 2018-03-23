@@ -59,4 +59,10 @@ sub action_specs {
     };
 }
 
+sub get_politician_open_issues {
+    my ($self) = @_;
+
+    return $self->search( { open => 1 } );
+}
+
 1;

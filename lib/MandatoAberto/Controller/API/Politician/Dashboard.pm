@@ -34,8 +34,6 @@ sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }
 sub list_GET {
     my ($self, $c) = @_;
 
-    my $politician_id = $c->stash->{politician}->id;
-
     my $politician = $c->stash->{politician};
 
     my $citizen_count = $politician->recipients->all;
@@ -85,6 +83,8 @@ sub list_GET {
 
     my $group_count = $politician->groups->search( { deleted => 0 } )->count;
 
+    my $open_issue_count = $politician->issues->get_politician_open_issues->count;
+
     return $self->status_ok(
         $c,
         entity => {
@@ -100,6 +100,7 @@ sub list_GET {
             citizen_interaction => $citizen_interaction,
             citizen_gender      => $citizen_gender,
             group_count         => $group_count,
+            open_issue_count    => $open_issue_count,
 
             poll => $active_poll ?
                     map {
