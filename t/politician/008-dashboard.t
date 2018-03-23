@@ -35,6 +35,7 @@ db_transaction {
     rest_post "/api/chatbot/recipient",
         name                => "Create recipient",
         automatic_load_item => 0,
+        stash               => 'r1',
         [
             name           => fake_name()->(),
             fb_id          => "foobar",
@@ -43,6 +44,20 @@ db_transaction {
             cellphone      => fake_digits("+551198#######")->(),
             email          => fake_email()->(),
             politician_id  => $politician_id,
+            security_token => $security_token
+        ]
+    ;
+
+    # Criando uma issue
+    my $recipient = $schema->resultset("Recipient")->find(stash "r1.id");
+
+    rest_post "/api/chatbot/issue",
+        name                => 'creating issue',
+        automatic_load_item => 0,
+        [
+            politician_id  => $politician_id,
+            fb_id          => 'foobar',
+            message        => fake_words(1)->(),
             security_token => $security_token
         ]
     ;
@@ -255,6 +270,7 @@ db_transaction {
         is ($res->{has_facebook_auth}, 1, 'politician has facebook auth');
         is ($res->{first_access}, 0, 'politician first access');
         is ($res->{group_count}, 1, 'group count');
+        is ($res->{open_issue_count}, 1, 'open issues count');
     };
 };
 

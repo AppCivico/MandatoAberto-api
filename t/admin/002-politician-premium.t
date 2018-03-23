@@ -12,11 +12,14 @@ db_transaction {
 
     api_auth_as user_id => $politician_id;
 
-    rest_post "/api/politician/$politician_id/premium",
+    rest_post "/api/admin/politician/premium",
         name    => "activating premium as politician",
         is_fail => 1,
         code    => 403,
-        [ premium => 1 ]
+        [
+            premium       => 1,
+            politician_id => $politician_id
+        ]
     ;
 
     api_auth_as user_id => $politician_id;
@@ -31,10 +34,27 @@ db_transaction {
 
     api_auth_as user_id => 1;
 
-    rest_post "/api/politician/$politician_id/premium",
+    rest_post "/api/admin/politician/premium",
+        name    => "post without premium bool",
+        is_fail => 1,
+        code    => 400,
+        [ politician_id => $politician_id ]
+    ;
+
+    rest_post "/api/admin/politician/premium",
+        name    => "post without politician_id",
+        is_fail => 1,
+        code    => 400,
+        [ premium => 1 ]
+    ;
+
+    rest_post "/api/admin/politician/premium",
         name => "activating premium",
         code => 200,
-        [ premium => 1 ]
+        [
+            premium       => 1,
+            politician_id => $politician_id
+        ]
     ;
 
     is (
@@ -45,24 +65,33 @@ db_transaction {
 
     is ($schema->resultset('EmailQueue')->count, "2", "premium active email queued");
 
-    rest_post "/api/politician/$politician_id/premium",
+    rest_post "/api/admin/politician/premium",
         name    => "politician alredy premium",
         is_fail => 1,
         code    => 400,
-        [ premium => 1 ]
+        [
+            premium       => 1,
+            politician_id => $politician_id
+        ]
     ;
 
-    rest_post "/api/politician/$politician_id/premium",
+    rest_post "/api/admin/politician/premium",
         name => "activating premium",
         code => 200,
-        [ premium => 0 ]
+        [
+            premium       => 0,
+            politician_id => $politician_id
+        ]
     ;
 
-    rest_post "/api/politician/$politician_id/premium",
+    rest_post "/api/admin/politician/premium",
         name    => "politician alredy non-premium",
         is_fail => 1,
         code    => 400,
-        [ premium => 0 ]
+        [
+            premium       => 0,
+            politician_id => $politician_id
+        ]
     ;
 
     is (

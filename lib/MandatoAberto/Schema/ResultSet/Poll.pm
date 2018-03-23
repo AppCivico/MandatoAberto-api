@@ -94,4 +94,13 @@ sub action_specs {
     };
 }
 
+sub get_active_politician_poll_with_data {
+    my ($self) = @_;
+
+    return $self->search(
+        { status_id => 1 },
+        { prefetch => [ 'poll_questions' , { 'poll_questions' => { "poll_question_options" => 'poll_results' } } ] }
+    )->next;
+}
+
 1;
