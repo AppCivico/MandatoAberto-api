@@ -70,6 +70,33 @@ db_transaction {
     );
 
     is ($schema->resultset('EmailQueue')->count, "2", "only greetings email queued");
+
+    rest_post "/api/admin/approve-politician",
+        name    => 'approving politician once again',
+        is_fail => 1,
+        code    => 400,
+        [
+            politician_id => $politician_id,
+            approved      => 1
+        ]
+    ;
+
+    rest_post "/api/admin/approve-politician",
+        name => 'disapproving politician',
+        code => 200,
+        [
+            politician_id => $politician_id,
+            approved      => 0
+        ]
+    ;
+
+    $politician_user = $politician_user->discard_changes;
+
+    is (
+        $politician_user->approved,
+        0,
+        "politician is not approved"
+    );
 };
 
 done_testing();
