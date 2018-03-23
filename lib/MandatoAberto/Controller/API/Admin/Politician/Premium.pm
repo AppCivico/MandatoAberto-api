@@ -13,7 +13,7 @@ __PACKAGE__->config(
 
 sub root : Chained('/api/admin/politician/base') : PathPart('') : CaptureArgs(0) { }
 
-sub base : Chained('root') : PathPart('approve') : CaptureArgs(0) { }
+sub base : Chained('root') : PathPart('premium') : CaptureArgs(0) { }
 
 sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }
 
@@ -26,16 +26,19 @@ sub list_POST {
     my $politician = $c->stash->{collection}->find($politician_id);
     die \['politician_id', 'could not find politician with that id'] unless $politician;
 
-    die \['approved', 'missing'] unless exists $c->req->params->{approved};
-    my $approved = $c->req->params->{approved};
+    die \['premium', 'missing'] unless exists $c->req->params->{premium};
+    my $premium = $c->req->params->{premium};
 
-    my $current_approved_status = $politician->user->approved;
-    die \["approved", "politician current alredy is: $current_approved_status"] if $current_approved_status == $approved;
+    my $current_premium_status = $politician->premium;
+    die \[
+        "premium",
+        "politician current premium status alredy is: $current_premium_status"
+    ] if $current_premium_status == $premium;
 
-    if ( $approved ) {
-        $politician->user->approve;
+    if ( $premium ) {
+        $politician->activate_premium;
     } else {
-        $politician->user->disapprove;
+        $politician->deactivate_premium;
     }
 
     return $self->status_ok(
