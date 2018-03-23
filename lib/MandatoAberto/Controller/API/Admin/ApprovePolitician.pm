@@ -26,8 +26,8 @@ sub list_POST {
     my $politician = $c->stash->{collection}->find($politician_id);
     die \['politician_id', 'could not find politician with that id'] unless $politician;
 
+    die \['approved', 'missing'] unless exists $c->req->params->{approved};
     my $approved = $c->req->params->{approved};
-    die \['approved', 'missing'] unless $approved;
 
     my $current_approved_status = $politician->user->approved;
     die \["approved", "politician current alredy is: $current_approved_status"] if $current_approved_status == $approved;

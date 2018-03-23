@@ -36,34 +36,18 @@ sub list_GET {
 
     my $politician_id = $c->stash->{politician}->id;
 
-    my $recipient_rs = $c->model("DB::Recipient")->search(
-        {
-            politician_id => $politician_id,
-            page_id       => $c->stash->{politician}->fb_page_id
-        }
-    );
+    my $politician = $c->stash->{politician};
 
-    my $citizen_count = $recipient_rs->count;
+    my $citizen_count = $politician->recipients->all;
 
-    my $ever_had_poll = $c->model("DB::Poll")->search( { politician_id => $politician_id } )->count > 0 ? 1 : 0;
+    my $ever_had_poll = $politician->polls->count > 0 ? 1 : 0;
 
-    # Sempre haverá apenas uma única enquete ativa 't/polls/000-register.t'
-    # logo posso apenas contar quantas enquetes ativas (status_id 1) existem
-    my $active_poll = $c->model("DB::Poll")->search(
-        {
-            politician_id => $politician_id,
-            status_id     => 1
-        },
-        { prefetch => [ 'poll_questions' , { 'poll_questions' => { "poll_question_options" => 'poll_results' } } ] }
-    )->next;
+    my $active_poll = $politician->polls->get_active_politician_poll_with_data;
 
     my $last_active_poll;
     if ($ever_had_poll && !$active_poll) {
-        $last_active_poll = $c->model("DB::Poll")->search(
-            {
-                politician_id => $politician_id,
-                status_id     => 3,
-            },
+        $last_active_poll = $politician->polls->search(
+            { status_id => 3 },
             {
                 order_by => { -desc => qw/updated_at/ },
                 prefetch => [ 'poll_questions' , { 'poll_questions' => { "poll_question_options" => 'poll_results' } } ]
@@ -71,15 +55,15 @@ sub list_GET {
         )->next;
     }
 
-    my $has_greeting      = $c->model("DB::PoliticianGreeting")->search( { politician_id => $politician_id } )->count;
-    my $has_contacts      = $c->model("DB::PoliticianContact")->search( { politician_id => $politician_id } )->count;
-    my $has_dialogs       = $c->model("DB::Answer")->search( { politician_id => $politician_id } )->count > 0 ? 1 : 0;
-    my $has_facebook_auth = $c->stash->{politician}->fb_page_access_token ? 1 : 0;
+    my $has_greeting      = $politician->politicians_greeting->count;
+    my $has_contacts      = $politician->politician_contacts->count;
+    my $has_dialogs       = $politician->answers->count > 0 ? 1 : 0;
+    my $has_facebook_auth = $politician->fb_page_access_token ? 1 : 0;
 
-    my $first_access = $c->model("DB::UserSession")->search( { user_id => $politician_id } )->count > 1 ? 0 : 1;
+    my $first_access = $politician->user->user_sessions->count > 1 ? 0 : 1;
 
     # Dados de genero
-    my $recipients_by_gender = $recipient_rs->get_recipient_by_gender;
+    my $recipients_by_gender = $politician->recipients->get_recipient_by_gender;
 
     my $citizen_gender = {
         name     => "Gênero",
@@ -96,10 +80,10 @@ sub list_GET {
 
     my $citizen_interaction;
     if ($has_facebook_auth) {
-        $citizen_interaction = $c->stash->{politician}->get_citizen_interaction($range);
+        $citizen_interaction = $politician->get_citizen_interaction($range);
     }
 
-    my $group_count = $c->stash->{politician}->groups->search( { deleted => 0 } )->count;
+    my $group_count = $politician->groups->search( { deleted => 0 } )->count;
 
     return $self->status_ok(
         $c,
