@@ -161,10 +161,10 @@ sub action_specs {
 sub get_politicians_with_pendencies {
     my ($self) = @_;
 
-    return map {
-        my $p = $_;
+    return politicians => [
+        map {
+            my $p = $_;
 
-        politicians => [
             {
                 id                 => $p->user_id,
                 email              => $p->user->email,
@@ -179,15 +179,15 @@ sub get_politicians_with_pendencies {
                 premium            => $p->premium,
                 premium_updated_at => $p->premium_updated_at,
             }
-        ]
 
-    } $self->search(
-        {
-            premium         => 0,
-            'user.approved' => 0,
-        },
-        { prefetch => qw/ user address_state address_city office party/ }
-      )->all()
+        } $self->search(
+            {
+                premium         => 0,
+                'user.approved' => 0,
+            },
+            { prefetch => qw/ user address_state address_city office party/ }
+          )->all()
+    ]
 }
 
 1;
