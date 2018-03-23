@@ -158,4 +158,36 @@ sub action_specs {
     }
 }
 
+sub get_politicians_with_pendencies {
+    my ($self) = @_;
+
+    return map {
+        my $p = $_;
+
+        politicians => [
+            {
+                id                 => $p->user_id,
+                email              => $p->user->email,
+                name               => $p->name,
+                gender             => $p->gender,
+                address_state      => $p->address_state->name,
+                address_city       => $p->address_city->name,
+                office             => $p->office->name,
+                party              => $p->party->name,
+                approved           => $p->user->approved,
+                approved_at        => $p->user->approved_at,
+                premium            => $p->premium,
+                premium_updated_at => $p->premium_updated_at,
+            }
+        ]
+
+    } $self->search(
+        {
+            premium         => 0,
+            'user.approved' => 0,
+        },
+        { prefetch => qw/ user address_state address_city office party/ }
+      )->all()
+}
+
 1;

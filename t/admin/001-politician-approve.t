@@ -16,7 +16,7 @@ db_transaction {
 
     api_auth_as user_id => $politician_id;
 
-    rest_post "/api/admin/approve-politician",
+    rest_post "/api/admin/politician/approve",
         name    => "approving as politician",
         is_fail => 1,
         code    => 403,
@@ -28,21 +28,21 @@ db_transaction {
 
     api_auth_as user_id => 1;
 
-    rest_post "/api/admin/approve-politician",
+    rest_post "/api/admin/politician/approve",
         name    => 'approving politician without politician_id',
         is_fail => 1,
         code    => 400,
         [ approved => 1 ]
     ;
 
-    rest_post "/api/admin/approve-politician",
+    rest_post "/api/admin/politician/approve",
         name    => 'approving politician without approved bool',
         is_fail => 1,
         code    => 400,
         [ politician_id => $politician_id ]
     ;
 
-    rest_post "/api/admin/approve-politician",
+    rest_post "/api/admin/politician/approve",
         name    => 'approving politician with invalid politician_id',
         is_fail => 1,
         code    => 400,
@@ -52,7 +52,7 @@ db_transaction {
         ]
     ;
 
-    rest_post "/api/admin/approve-politician",
+    rest_post "/api/admin/politician/approve",
         name => 'approving politician',
         code => 200,
         [
@@ -71,7 +71,7 @@ db_transaction {
 
     is ($schema->resultset('EmailQueue')->count, "2", "only greetings email queued");
 
-    rest_post "/api/admin/approve-politician",
+    rest_post "/api/admin/politician/approve",
         name    => 'approving politician once again',
         is_fail => 1,
         code    => 400,
@@ -81,7 +81,7 @@ db_transaction {
         ]
     ;
 
-    rest_post "/api/admin/approve-politician",
+    rest_post "/api/admin/politician/approve",
         name => 'disapproving politician',
         code => 200,
         [
