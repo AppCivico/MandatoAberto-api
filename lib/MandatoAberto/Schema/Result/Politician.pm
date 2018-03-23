@@ -734,6 +734,23 @@ sub deactivate_premium {
     );
 }
 
+sub get_current_pendency {
+    my ($self) = @_;
+
+    my $approved = $self->user->approved;
+    my $premium  = $self->premium;
+
+    if ( !$approved ) {
+        return 'Pendente aprovação';
+    }
+    elsif ( $approved && !$premium ) {
+        return 'Premium não ativado';
+    }
+    else {
+        return 'Sem pendências';
+    }
+}
+
 
 __PACKAGE__->meta->make_immutable;
 1;

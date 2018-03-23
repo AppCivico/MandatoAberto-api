@@ -23,7 +23,7 @@ sub list_GET {
     return $self->status_ok(
         $c,
         entity => {
-            $c->stash->{collection}->get_politicians_with_pendencies
+            $c->stash->{collection}->get_politicians
         }
     )
 }
