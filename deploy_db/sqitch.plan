@@ -72,3 +72,4 @@
 0068-add-recipient-page_id [0067-add-instagram-politician_contact] 2018-03-18T16:58:06Z Lucas Ansei,,, <lucas@lucas-G750JX> # Adding the 'page_id' column to the 'recipient' table
 0069-updating-recipients-page_id [0068-add-recipient-page_id] 2018-03-19T14:07:32Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Updating recipients 'page_id'
 0070-updating-dialog [0069-updating-recipients-page_id] 2018-03-23T13:40:21Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Updating the 'issue' dialog
+0071-updating-dialog-texts [0070-updating-dialog] 2018-03-24T18:38:40Z Lucas Ansei,,, <lucas@lucas-G750JX> # Updating dialog texts
