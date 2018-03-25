@@ -39,7 +39,7 @@ db_transaction {
 
     is ($schema->resultset('EmailQueue')->count, "1", "only greetings and confirm emails queued");
 
-    rest_post "/api/politician/$politician_id/approve",
+    rest_post "/api/admin/politician/approve",
         name => "approving politician",
         code => 200,
         [

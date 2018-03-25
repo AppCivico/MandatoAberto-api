@@ -158,4 +158,38 @@ sub action_specs {
     }
 }
 
+sub get_politicians {
+    my ($self) = @_;
+
+    return politicians => [
+        map {
+            my $p = $_;
+
+            {
+                status             => $p->get_current_pendency,
+                id                 => $p->user_id,
+                email              => $p->user->email,
+                name               => $p->name,
+                gender             => $p->gender,
+                address_state      => $p->address_state->name,
+                address_city       => $p->address_city->name,
+                office             => $p->office->name,
+                party              => $p->party->name,
+                approved           => $p->user->approved,
+                approved_at        => $p->user->approved_at,
+                premium            => $p->premium,
+                premium_updated_at => $p->premium_updated_at,
+                created_at         => $p->user->created_at
+            }
+
+        } $self->search(
+            {},
+            {
+                prefetch => qw/ user address_state address_city office party/,
+                order_by => 'user.created_at'
+            }
+          )->all()
+    ]
+}
+
 1;

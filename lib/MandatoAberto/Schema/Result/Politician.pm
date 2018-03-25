@@ -708,6 +708,50 @@ sub send_premium_deactivated_email {
     return $self->result_source->schema->resultset('EmailQueue')->create({ body => $email->as_string });
 }
 
+sub activate_premium {
+    my ($self) = @_;
+
+    $self->send_premium_activated_email();
+
+    return $self->update(
+        {
+            premium            => 1,
+            premium_updated_at => \'NOW()'
+        }
+    );
+}
+
+sub deactivate_premium {
+    my ($self) = @_;
+
+    $self->send_premium_deactivated_email();
+
+    return $self->update(
+        {
+            premium            => 0,
+            premium_updated_at => \'NOW()'
+        }
+    );
+}
+
+sub get_current_pendency {
+    my ($self) = @_;
+
+    my $approved = $self->user->approved;
+    my $premium  = $self->premium;
+
+    if ( !$approved ) {
+        return 'Pendente aprovação';
+    }
+    elsif ( $approved && !$premium ) {
+        return 'Premium não ativado';
+    }
+    else {
+        return 'Sem pendências';
+    }
+}
+
+
 __PACKAGE__->meta->make_immutable;
 1;
 
