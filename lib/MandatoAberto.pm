@@ -4,6 +4,12 @@ use namespace::autoclean;
 
 use Catalyst::Runtime 5.80;
 
+BEGIN {
+    for (qw/ MANDATOABERTO_SLACK_WEBHOOK_URL MANDATOABERTO_SLACK_CHANNEL MANDATOABERTO_SLACK_USERNAME /) {
+        defined($ENV{$_}) or die "missing env '$_'.";
+    }
+};
+
 use Catalyst qw/
     -Debug
     ConfigLoader
@@ -24,6 +30,34 @@ __PACKAGE__->config(
     disable_component_resolution_regex_fallback => 1,
     enable_catalyst_header => 0,
 );
+
+use WebService::Slack::IncomingWebHook;
+
+has _slack_webhook => (
+    is      => "ro",
+    lazy    => 1,
+    default => sub {
+        WebService::Slack::IncomingWebHook->new(
+            webhook_url => $ENV{MANDATOABERTO_SLACK_WEBHOOK_URL},
+            channel     => "#" . $ENV{MANDATOABERTO_SLACK_CHANNEL},
+            username    => $ENV{MANDATOABERTO_SLACK_USERNAME},
+            icon_emoji  => ":robot_face:",
+        );
+    },
+    handles => { slack_notify => [ post => "text" ] }
+);
+
+around 'slack_notify' => sub {
+    my $orig = shift;
+    my $self = shift;
+    my $message = shift;
+
+    my $project = lc(__PACKAGE__);
+    chomp(my $hostname = `hostname`);
+
+    eval { $self->$orig("[$project] [$hostname] " . $message, @_) };
+    warn $@ if $@;
+};
 
 # Start the application
 __PACKAGE__->setup();
