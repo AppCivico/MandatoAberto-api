@@ -4,12 +4,6 @@ use namespace::autoclean;
 
 use Catalyst::Runtime 5.80;
 
-BEGIN {
-    for (qw/ MANDATOABERTO_SLACK_WEBHOOK_URL MANDATOABERTO_SLACK_CHANNEL MANDATOABERTO_SLACK_USERNAME /) {
-        defined($ENV{$_}) or die "missing env '$_'.";
-    }
-};
-
 use Catalyst qw/
     -Debug
     ConfigLoader
