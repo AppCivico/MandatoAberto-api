@@ -3,11 +3,12 @@ use common::sense;
 use Moose;
 use namespace::autoclean;
 
+use MandatoAberto::Utils qw/ is_test /;
+
 BEGIN { extends 'CatalystX::Eta::Controller::REST' }
 
 with "CatalystX::Eta::Controller::AutoBase";
 with "CatalystX::Eta::Controller::AutoListGET";
-with "CatalystX::Eta::Controller::AutoListPOST";
 
 __PACKAGE__->config(
     # AutoBase.
@@ -18,25 +19,6 @@ __PACKAGE__->config(
         return { $_[0]->get_columns() };
     },
 
-    prepare_params_for_create => sub {
-        my ($self, $c, $params) = @_;
-
-        die \['premium', 'politician is not premium'] unless $c->stash->{politician}->premium;
-
-        $params->{politician_id} = $c->user->id;
-
-        if ($c->req->params->{groups}) {
-            $c->req->params->{groups} =~ s/(\[|\]|(\s))//g;
-
-            my @groups = split(',', $c->req->params->{groups});
-
-            $params->{groups} = \@groups;
-        } else {
-            $params->{groups} = [];
-        }
-
-        return $params;
-    },
 );
 
 sub root : Chained('/api/politician/object') : PathPart('') : CaptureArgs(0) {
@@ -54,7 +36,43 @@ sub base : Chained('root') : PathPart('direct-message') : CaptureArgs(0) { }
 
 sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }
 
-sub list_POST { }
+sub list_POST {
+    my ($self, $c) = @_;
+
+    die \['premium', 'politician is not premium'] unless $c->stash->{politician}->premium;
+
+    my $groups;
+    if ($c->req->params->{groups}) {
+        $c->req->params->{groups} =~ s/(\[|\]|(\s))//g;
+
+        my @groups = split(',', $c->req->params->{groups});
+
+        $groups = \@groups;
+    } else {
+        $groups = [];
+    }
+
+    my $direct_message = $c->stash->{collection}->execute(
+        $c,
+        for  => "create",
+        with => {
+            politician_id => $c->stash->{politician}->id,
+            groups        => $groups,
+            content       => $c->req->params->{content},
+            name          => $c->req->params->{name},
+        },
+    );
+
+    my $politician_name = $c->stash->{politician}->name;
+
+    $c->slack_notify("O usuário ${\($politician_name)} disparou uma campanha para ${\($direct_message->count)} recipiente(s)") unless is_test();
+
+    return $self->status_created(
+        $c,
+        location => $c->uri_for($c->controller("API::Politician::DirectMessage")->action_for('result'), [ $direct_message->id ]),
+        entity   => { id => $direct_message->id }
+    );
+}
 
 sub list_GET {
     my ($self, $c) = @_;
