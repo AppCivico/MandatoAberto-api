@@ -3,6 +3,8 @@ use common::sense;
 use Moose;
 use namespace::autoclean;
 
+use MandatoAberto::Utils qw/ is_test /;
+
 BEGIN { extends "CatalystX::Eta::Controller::REST" }
 
 __PACKAGE__->config(
@@ -26,6 +28,8 @@ sub create_POST {
         for  => "create",
         with => $c->req->params,
     );
+
+    $c->slack_notify("O usuário ${\($user->name)} se cadastrou na plataforma.") unless is_test();
 
     $self->status_created(
         $c,
