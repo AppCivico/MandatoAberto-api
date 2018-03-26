@@ -14,8 +14,6 @@ use JSON::MaybeXS;
 use URI::Escape;
 
 use Data::Verifier;
-use Encode qw(encode_utf8);
-
 
 has _httpcb => (
     is         => "ro",
@@ -106,11 +104,14 @@ sub action_specs {
             my $article         = $politician->gender eq 'F' ? 'da' : 'do';
 
             if ($politician->private_reply_activated) {
-                my $message = encode_utf8( "Olá sou o Assistente virtual $article $office_name $politician_name. Vi que você comentou em nossa página, você gostaria de enviar uma mensagem, dúvidas, perguntas ou denúncias? Faça isso a qualquer momento que eu entrego para nossa equipe." );
 
                 $self->_httpcb->add(
-                    url     => "$ENV{FB_API_URL}/$item_id/private_replies?access_token=$access_token&message=$message",
+                    url     => "$ENV{FB_API_URL}/$item_id/private_replies?access_token=$access_token",
                     method  => "post",
+                    headers => 'Content-Type: application/json',
+                    body    => encode_json {
+                        message => "Olá sou o Assistente virtual $article $office_name $politician_name. Vi que você comentou em nossa página, você gostaria de enviar uma mensagem, dúvidas, perguntas ou denúncias? Faça isso a qualquer momento que eu entrego para nossa equipe."
+                    }
                 );
 
                 $values{reply_sent} = 1;
