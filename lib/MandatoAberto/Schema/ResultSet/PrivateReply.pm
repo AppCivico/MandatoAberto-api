@@ -99,8 +99,12 @@ sub action_specs {
 
             my $access_token = $politician->fb_page_access_token;
 
+            my $politician_name = $politician->name;
+            my $office_name     = $politician->office->name;
+            my $article         = $politician->gender eq 'F' ? 'da' : 'do';
+
             if ($politician->private_reply_activated) {
-                my $message = uri_escape( $ENV{PRIVATE_REPLY_MESSAGE} );
+                my $message = uri_escape( "Olá sou o Assistente virtual $article $office_name $politician_name. Vi que você comentou em nossa página, você gostaria de enviar uma mensagem, dúvidas, perguntas ou denúncias? Faça isso a qualquer momento que eu entrego para nossa equipe." );
 
                 $self->_httpcb->add(
                     url     => "$ENV{FB_API_URL}/$item_id/private_replies?access_token=$access_token&message=mensagem%20de%20dev",
