@@ -62,7 +62,7 @@ db_transaction {
         is ($res->{contact}->{twitter}, '@foobar', 'twitter');
         is ($res->{contact}->{email}, $email, 'email');
         is ($res->{contact}->{url}, "https://www.google.com", 'url');
-        is ($res->{greeting}, 'Olá, sou assistente digital do(a) ${user.office.name} ${user.name} Seja benvindo a nossa Rede! Queremos um Brasil a melhor e precisamos de sua ajuda.', 'greeting content');
+        is ($res->{greeting}, 'Olá, sou assistente digital do(a) ${user.office.name} ${user.name} Seja bem-vindo a nossa Rede! Queremos um Brasil a melhor e precisamos de sua ajuda.', 'greeting content');
     };
 };
 
