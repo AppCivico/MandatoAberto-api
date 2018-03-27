@@ -24,7 +24,7 @@ sub root : Chained('/') : PathPart('api') : CaptureArgs(0) {
             $c->set_authenticated($user);
         }
         else {
--            $c->forward('forbidden');
+            $c->forward('forbidden');
         }
     }
 }
