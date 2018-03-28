@@ -20,6 +20,8 @@ sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }
 sub list_POST {
     my ($self, $c) = @_;
 
+    my $admin_id = $c->user->id;
+
     my $politician_id = $c->req->params->{politician_id};
     die \['politician_id', 'missing'] unless $politician_id;
 
@@ -33,9 +35,9 @@ sub list_POST {
     die \["approved", "politician current alredy is: $current_approved_status"] if $current_approved_status == $approved;
 
     if ( $approved ) {
-        $politician->user->approve;
+        $politician->user->approve($admin_id);
     } else {
-        $politician->user->disapprove;
+        $politician->user->disapprove($admin_id);
     }
 
     return $self->status_ok(

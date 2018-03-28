@@ -447,25 +447,27 @@ sub send_email_confirmation {
 }
 
 sub approve {
-    my ($self) = @_;
+    my ($self, $admin_id) = @_;
 
     $self->send_email_approved();
 
     return $self->update(
         {
-            approved    => 1,
-            approved_at => \'NOW()'
+            approved             => 1,
+            approved_at          => \'NOW()',
+            approved_by_admin_id => $admin_id
         }
     );
 }
 
 sub disapprove {
-    my ($self) = @_;
+    my ($self, $admin_id) = @_;
 
     return $self->update(
         {
-            approved    => 0,
-            approved_at => \'NOW()'
+            approved             => 0,
+            approved_at          => \'NOW()',
+            approved_by_admin_id => $admin_id
         }
     );
 }

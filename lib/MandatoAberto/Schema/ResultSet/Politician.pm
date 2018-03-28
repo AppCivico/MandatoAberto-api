@@ -177,6 +177,7 @@ sub get_politicians {
                 party              => $p->party->name,
                 approved           => $p->user->approved,
                 approved_at        => $p->user->approved_at,
+                approved_by        => $p->user->approved_by_admin->email,
                 premium            => $p->premium,
                 premium_updated_at => $p->premium_updated_at,
                 created_at         => $p->user->created_at
