@@ -59,6 +59,32 @@ __PACKAGE__->table("dialog");
   data_type: 'text'
   is_nullable: 0
 
+=head2 created_at
+
+  data_type: 'timestamp'
+  default_value: current_timestamp
+  is_nullable: 0
+  original: {default_value => \"now()"}
+
+=head2 created_by_admin_id
+
+  data_type: 'integer'
+  is_foreign_key: 1
+  is_nullable: 0
+
+=head2 updated_at
+
+  data_type: 'timestamp'
+  default_value: current_timestamp
+  is_nullable: 1
+  original: {default_value => \"now()"}
+
+=head2 updated_by_admin_id
+
+  data_type: 'integer'
+  is_foreign_key: 1
+  is_nullable: 1
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -73,6 +99,24 @@ __PACKAGE__->add_columns(
   { data_type => "text", is_nullable => 0 },
   "description",
   { data_type => "text", is_nullable => 0 },
+  "created_at",
+  {
+    data_type     => "timestamp",
+    default_value => \"current_timestamp",
+    is_nullable   => 0,
+    original      => { default_value => \"now()" },
+  },
+  "created_by_admin_id",
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
+  "updated_at",
+  {
+    data_type     => "timestamp",
+    default_value => \"current_timestamp",
+    is_nullable   => 1,
+    original      => { default_value => \"now()" },
+  },
+  "updated_by_admin_id",
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -89,6 +133,21 @@ __PACKAGE__->set_primary_key("id");
 
 =head1 RELATIONS
 
+=head2 created_by_admin
+
+Type: belongs_to
+
+Related object: L<MandatoAberto::Schema::Result::User>
+
+=cut
+
+__PACKAGE__->belongs_to(
+  "created_by_admin",
+  "MandatoAberto::Schema::Result::User",
+  { id => "created_by_admin_id" },
+  { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
+);
+
 =head2 questions
 
 Type: has_many
@@ -104,9 +163,29 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 updated_by_admin
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2017-12-11 01:15:29
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:pEvo2FsAAqGni5VqVY3oXw
+Type: belongs_to
+
+Related object: L<MandatoAberto::Schema::Result::User>
+
+=cut
+
+__PACKAGE__->belongs_to(
+  "updated_by_admin",
+  "MandatoAberto::Schema::Result::User",
+  { id => "updated_by_admin_id" },
+  {
+    is_deferrable => 0,
+    join_type     => "LEFT",
+    on_delete     => "NO ACTION",
+    on_update     => "NO ACTION",
+  },
+);
+
+
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-03-28 15:41:22
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:bRsoGLqojpM4kAlhN4i7fA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
