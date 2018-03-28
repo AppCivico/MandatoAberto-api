@@ -177,7 +177,7 @@ sub get_politicians {
                 party              => $p->party->name,
                 approved           => $p->user->approved,
                 approved_at        => $p->user->approved_at,
-                approved_by        => $p->user->approved_by_admin->email,
+                approved_by        => $p->user->approved_by_admin_id ? $p->user->approved_by_admin->email : undef,
                 premium            => $p->premium,
                 premium_updated_at => $p->premium_updated_at,
                 created_at         => $p->user->created_at
@@ -186,7 +186,7 @@ sub get_politicians {
         } $self->search(
             {},
             {
-                prefetch => qw/ user address_state address_city office party/,
+                prefetch => qw/ user address_state address_city office party /,
                 order_by => 'user.created_at'
             }
           )->all()

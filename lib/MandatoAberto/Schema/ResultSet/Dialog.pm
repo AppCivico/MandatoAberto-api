@@ -28,6 +28,10 @@ sub verifiers_specs {
                 description => {
                     required => 1,
                     type     => "Str"
+                },
+                admin_id => {
+                    required   => 1,
+                    type       => "Int",
                 }
             }
         ),
@@ -44,13 +48,54 @@ sub action_specs {
             my %values = $r->valid_values;
             not defined $values{$_} and delete $values{$_} for keys %values;
 
-            my $dialog = $self->create(
-                { ( map { $_ => $values{$_} } qw(name description) ) }
-            );
+            $values{created_by_admin_id} = delete $values{admin_id};
+
+            my $dialog = $self->create(\%values);
 
             return $dialog;
         }
     };
+}
+
+sub get_dialogs_with_data {
+    my ($self) = @_;
+
+    return dialogs => [
+        map {
+            my $d = $_;
+
+            {
+                id          => $d->id,
+                name        => $d->name,
+                description => $d->description,
+                created_at  => $d->created_at,
+                created_by  => $d->created_by_admin->email,
+                updated_at  => $d->updated_at,
+                updated_by  => $d->updated_by_admin_id ? $d->updated_by_admin->email : undef,
+
+                questions   => [
+                    map {
+                        my $q = $_;
+
+                        {
+                            id            => $q->id,
+                            content       => $q->content,
+                            citizen_input => $q->citizen_input,
+                            created_at    => $q->created_at,
+                            created_by    => $q->created_by_admin->email,
+                            updated_at    => $q->updated_at,
+                            updated_by    => $q->updated_by_admin_id ? $q->updated_by_admin->email : undef,
+                        }
+                    } $d->questions->all()
+                ]
+            }
+        } $self->search(
+            { },
+            {
+                prefetch => 'questions'
+            }
+          )->all()
+    ]
 }
 
 1;

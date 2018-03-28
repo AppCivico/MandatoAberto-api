@@ -15,7 +15,7 @@ db_transaction {
     create_dialog;
     my $dialog_id = stash "dialog.id";
 
-    rest_post "/api/dialog/$dialog_id/question",
+    rest_post "/api/admin/dialog/$dialog_id/question",
         name                => "question",
         automatic_load_item => 0,
         stash               => "q1",
@@ -27,7 +27,7 @@ db_transaction {
     ;
     my $first_question_id = stash "q1.id";
 
-    rest_post "/api/dialog/$dialog_id/question",
+    rest_post "/api/admin/dialog/$dialog_id/question",
         name                => "second question",
         automatic_load_item => 0,
         stash               => "q2",

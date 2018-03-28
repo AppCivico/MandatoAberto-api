@@ -141,7 +141,7 @@ sub create_dialog {
     );
 
     return $obj->rest_post(
-        "/api/register/dialog",
+        "/api/admin/dialog",
         name                => 'add dialog',
         automatic_load_item => 0,
         stash               => "dialog",
@@ -156,10 +156,10 @@ sub create_recipient {
 
     return $obj->rest_post(
         '/api/chatbot/recipient',
-        name  => 'create recipient',
-        stash => 'recipient',
+        name                => 'create recipient',
+        stash               => 'recipient',
         automatic_load_item => 0,
-        params => {
+        params              => {
             name           => fake_name()->(),
             fb_id          => fake_words(3)->(),
             origin_dialog  => fake_words(1)->(),
