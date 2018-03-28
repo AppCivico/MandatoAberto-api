@@ -1,4 +1,4 @@
-package MandatoAberto::Controller::API::Dialog::Question;
+package MandatoAberto::Controller::API::Admin::Dialog::Question;
 use Moose;
 use namespace::autoclean;
 
@@ -6,7 +6,6 @@ BEGIN { extends "CatalystX::Eta::Controller::REST" }
 
 with "CatalystX::Eta::Controller::AutoBase";
 with "CatalystX::Eta::Controller::AutoResultPUT";
-with "CatalystX::Eta::Controller::AutoResultGET";
 with "CatalystX::Eta::Controller::AutoListPOST";
 
 __PACKAGE__->config(
@@ -14,20 +13,25 @@ __PACKAGE__->config(
     no_user => 1,
 
     object_key => "question",
-    build_row  => sub {
-        return { $_[0]->get_columns() };
+    prepare_params_for_update => sub {
+        my ($self, $c, $params) = @_;
+
+        $params->{admin_id} = $c->user->id;
+
+        return $params;
     },
 
     prepare_params_for_create => sub {
         my ($self, $c, $params) = @_;
 
+        $params->{admin_id}  = $c->user->id;
         $params->{dialog_id} = $c->stash->{dialog}->id;
 
         return $params;
     },
 );
 
-sub root : Chained('/api/dialog/object') : PathPart('') : CaptureArgs(0) { }
+sub root : Chained('/api/admin/dialog/object') : PathPart('') : CaptureArgs(0) { }
 
 sub base : Chained('root') : PathPart('question') : CaptureArgs(0) { }
 
@@ -42,27 +46,11 @@ sub object : Chained('base') : PathPart('') : CaptureArgs(1) {
     $c->stash->{question} = $question;
 }
 
-sub result : Chained('object') : PathPart('') : Args(0) : ActionClass('REST') {
-    my ($self, $c) = @_;
-
-    eval { $c->assert_user_roles(qw/admin/) };
-    if ($@) {
-        $c->forward("/api/forbidden");
-    }
-}
+sub result : Chained('object') : PathPart('') : Args(0) : ActionClass('REST') { }
 
 sub result_PUT { }
 
-sub result_GET { }
-
-sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') {
-    my ($self, $c) = @_;
-
-    eval { $c->assert_user_roles(qw/admin/) };
-    if ($@) {
-        $c->forward("/api/forbidden");
-    }
-}
+sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }
 
 sub list_POST { }
 

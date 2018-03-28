@@ -81,14 +81,12 @@ __PACKAGE__->table("question");
 
   data_type: 'integer'
   is_foreign_key: 1
-  is_nullable: 1
+  is_nullable: 0
 
 =head2 updated_at
 
   data_type: 'timestamp'
-  default_value: current_timestamp
   is_nullable: 1
-  original: {default_value => \"now()"}
 
 =head2 updated_by_admin_id
 
@@ -122,14 +120,9 @@ __PACKAGE__->add_columns(
     original      => { default_value => \"now()" },
   },
   "created_by_admin_id",
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "updated_at",
-  {
-    data_type     => "timestamp",
-    default_value => \"current_timestamp",
-    is_nullable   => 1,
-    original      => { default_value => \"now()" },
-  },
+  { data_type => "timestamp", is_nullable => 1 },
   "updated_by_admin_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
 );
@@ -175,12 +168,7 @@ __PACKAGE__->belongs_to(
   "created_by_admin",
   "MandatoAberto::Schema::Result::User",
   { id => "created_by_admin_id" },
-  {
-    is_deferrable => 0,
-    join_type     => "LEFT",
-    on_delete     => "NO ACTION",
-    on_update     => "NO ACTION",
-  },
+  { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
 );
 
 =head2 dialog
@@ -219,8 +207,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-03-28 15:41:22
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:RSoeFXG3JuRx5cWsYRb3pw
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-03-28 17:17:01
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:hlTlDIT4uNiebkjnXF7u1g
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
@@ -262,6 +250,10 @@ sub verifiers_specs {
                 content => {
                     required => 0,
                     type     => "Str",
+                },
+                admin_id => {
+                    required   => 1,
+                    type       => "Int",
                 }
             },
         ),
@@ -278,7 +270,12 @@ sub action_specs {
             my %values = $r->valid_values;
             not defined $values{$_} and delete $values{$_} for keys %values;
 
-            $self->update(\%values);
+            $values{updated_by_admin_id} = delete $values{admin_id};
+
+            $self->update(
+                \%values,
+                updated_at => \'NOW()'
+            );
         }
     };
 }
