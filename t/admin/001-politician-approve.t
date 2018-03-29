@@ -69,6 +69,8 @@ db_transaction {
         "politician is approved"
     );
 
+    is($politician_user->approved_by_admin_id, 1, 'approved by admin id 1');
+
     is ($schema->resultset('EmailQueue')->count, "2", "only greetings email queued");
 
     rest_post "/api/admin/politician/approve",

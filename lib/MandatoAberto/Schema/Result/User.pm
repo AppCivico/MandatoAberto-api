@@ -88,6 +88,12 @@ __PACKAGE__->table("user");
   data_type: 'timestamp'
   is_nullable: 1
 
+=head2 approved_by_admin_id
+
+  data_type: 'integer'
+  is_foreign_key: 1
+  is_nullable: 1
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -117,6 +123,8 @@ __PACKAGE__->add_columns(
   { data_type => "boolean", default_value => \"false", is_nullable => 0 },
   "confirmed_at",
   { data_type => "timestamp", is_nullable => 1 },
+  "approved_by_admin_id",
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -147,6 +155,56 @@ __PACKAGE__->add_unique_constraint("user_email_key", ["email"]);
 
 =head1 RELATIONS
 
+=head2 approved_by_admin
+
+Type: belongs_to
+
+Related object: L<MandatoAberto::Schema::Result::User>
+
+=cut
+
+__PACKAGE__->belongs_to(
+  "approved_by_admin",
+  "MandatoAberto::Schema::Result::User",
+  { id => "approved_by_admin_id" },
+  {
+    is_deferrable => 0,
+    join_type     => "LEFT",
+    on_delete     => "NO ACTION",
+    on_update     => "NO ACTION",
+  },
+);
+
+=head2 dialogs_created_by_admin
+
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::Dialog>
+
+=cut
+
+__PACKAGE__->has_many(
+  "dialogs_created_by_admin",
+  "MandatoAberto::Schema::Result::Dialog",
+  { "foreign.created_by_admin_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+=head2 dialogs_updated_by_admin
+
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::Dialog>
+
+=cut
+
+__PACKAGE__->has_many(
+  "dialogs_updated_by_admin",
+  "MandatoAberto::Schema::Result::Dialog",
+  { "foreign.updated_by_admin_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 politician
 
 Type: might_have
@@ -159,6 +217,36 @@ __PACKAGE__->might_have(
   "politician",
   "MandatoAberto::Schema::Result::Politician",
   { "foreign.user_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+=head2 questions_created_by_admin
+
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::Question>
+
+=cut
+
+__PACKAGE__->has_many(
+  "questions_created_by_admin",
+  "MandatoAberto::Schema::Result::Question",
+  { "foreign.created_by_admin_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+=head2 questions_updated_by_admin
+
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::Question>
+
+=cut
+
+__PACKAGE__->has_many(
+  "questions_updated_by_admin",
+  "MandatoAberto::Schema::Result::Question",
+  { "foreign.updated_by_admin_id" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
@@ -222,6 +310,21 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 users
+
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::User>
+
+=cut
+
+__PACKAGE__->has_many(
+  "users",
+  "MandatoAberto::Schema::Result::User",
+  { "foreign.approved_by_admin_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 roles
 
 Type: many_to_many
@@ -233,8 +336,8 @@ Composing rels: L</user_roles> -> role
 __PACKAGE__->many_to_many("roles", "user_roles", "role");
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-02-28 21:49:52
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:RbfhRtgVoY/6rRy5TJRjdg
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-03-28 15:41:22
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:tHN7T56eqAUi4KFwi+HY+g
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
@@ -344,25 +447,27 @@ sub send_email_confirmation {
 }
 
 sub approve {
-    my ($self) = @_;
+    my ($self, $admin_id) = @_;
 
     $self->send_email_approved();
 
     return $self->update(
         {
-            approved    => 1,
-            approved_at => \'NOW()'
+            approved             => 1,
+            approved_at          => \'NOW()',
+            approved_by_admin_id => $admin_id
         }
     );
 }
 
 sub disapprove {
-    my ($self) = @_;
+    my ($self, $admin_id) = @_;
 
     return $self->update(
         {
-            approved    => 0,
-            approved_at => \'NOW()'
+            approved             => 0,
+            approved_at          => \'NOW()',
+            approved_by_admin_id => $admin_id
         }
     );
 }

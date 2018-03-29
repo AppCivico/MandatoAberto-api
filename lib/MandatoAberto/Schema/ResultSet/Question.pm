@@ -46,6 +46,10 @@ sub verifiers_specs {
                     required => 1,
                     type     => "Str"
                     # TODO validar citizen_input de acordo com o tamanho e se já existe um no banco
+                },
+                admin_id => {
+                    required   => 1,
+                    type       => "Int",
                 }
             }
         ),
@@ -61,6 +65,8 @@ sub action_specs {
 
             my %values = $r->valid_values;
             not defined $values{$_} and delete $values{$_} for keys %values;
+
+            $values{created_by_admin_id} = delete $values{admin_id};
 
             if (length $values{content} > 640 ) {
                 die \["content", "Mustn't be longer than 640 chars"];
