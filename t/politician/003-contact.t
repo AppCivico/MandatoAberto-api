@@ -150,7 +150,7 @@ db_transaction {
     rest_reload_list "get_politician_contact";
     stash_test "get_politician_contact.list" => sub {
         my $res = shift;
-        use DDP; p $res;
+
         is ($res->{politician_contact}->{id},        $contact->{id}, 'id');
         is ($res->{politician_contact}->{facebook},  undef, 'facebook');
         is ($res->{politician_contact}->{twitter},   undef, 'twitter');
