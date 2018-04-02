@@ -226,14 +226,14 @@ sub verifiers_specs {
             filters => [ qw(trim) ],
             profile => {
                 name => {
-                    required => 0,
-                    type     => "Str",
+                    required   => 0,
+                    type       => "Str",
                     post_check => sub {
-                        my $r = shift;
+                        my $name = $_[0]->get_value("name");
 
-                        $self->result_source->schema->resultset('Dialog')
-                            ->search({ name => $r->get_value('name') })
-                            ->count and die \["name", "alredy exists"];
+                        $self->result_source->schema->resultset('Question')->search({
+                            name => $name,
+                        })->count and die \["name", "alredy exists"];
 
                         return 1;
                     }
@@ -241,11 +241,11 @@ sub verifiers_specs {
                 dialog_id => {
                     required   => 0,
                     type       => "Int",
-                    post_check => sub {
-                        my $r = shift;
-
-                        $self->result_source
-                    }
+                },
+                citizen_input => {
+                    required   => 0,
+                    type       => "Str",
+                    max_length => 20
                 },
                 content => {
                     required => 0,

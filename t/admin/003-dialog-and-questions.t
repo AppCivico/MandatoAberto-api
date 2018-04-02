@@ -84,6 +84,17 @@ db_transaction {
     ;
 
     rest_post "/api/admin/dialog/$dialog_id/question",
+        name    => "Question with citizen input with more than 20 chars",
+        is_fail => 1,
+        code    => 400,
+        [
+            name          => 'foo',
+            content       => "Foobar",
+            citizen_input => fake_paragraphs(3)->()
+        ]
+    ;
+
+    rest_post "/api/admin/dialog/$dialog_id/question",
         name                => "Sucessful question",
         automatic_load_item => 0,
         stash               => "q1",
@@ -94,6 +105,17 @@ db_transaction {
         ]
     ;
     my $question_id = stash "q1.id";
+
+    rest_post "/api/admin/dialog/$dialog_id/question",
+        name    => "Question with name that alredy exists",
+        is_fail => 1,
+        code    => 400,
+        [
+            name          => 'foo',
+            content       => "Foobar",
+            citizen_input => 'bazbar'
+        ]
+    ;
 
     rest_get "/api/admin/dialog",
         name  => 'get dialogs',
@@ -133,6 +155,15 @@ db_transaction {
         name => 'updating dialog name',
         [
             name => 'fake dialog'
+        ]
+    ;
+
+    rest_put "/api/admin/dialog/$dialog_id/question/$question_id",
+        name    => 'updating question with repeated name',
+        is_fail => 1,
+        code    => 400,
+        [
+            name => 'foo'
         ]
     ;
 

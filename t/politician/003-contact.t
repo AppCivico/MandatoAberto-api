@@ -138,6 +138,25 @@ db_transaction {
         is ($res->{politician_contact}->{twitter},   undef, 'twitter');
         is ($res->{politician_contact}->{email},     undef, 'email');
         is ($res->{politician_contact}->{cellphone}, undef, 'cellphone');
+        is ($res->{politician_contact}->{instagram}, undef, 'instagram');
+    };
+
+    rest_post "/api/politician/$politician_id/contact",
+        name => 'adding instagram',
+        code => 200,
+        [ instagram => 'https://www.instagram.com/lucasansei/' ]
+    ;
+
+    rest_reload_list "get_politician_contact";
+    stash_test "get_politician_contact.list" => sub {
+        my $res = shift;
+
+        is ($res->{politician_contact}->{id},        $contact->{id}, 'id');
+        is ($res->{politician_contact}->{facebook},  undef, 'facebook');
+        is ($res->{politician_contact}->{twitter},   undef, 'twitter');
+        is ($res->{politician_contact}->{email},     undef, 'email');
+        is ($res->{politician_contact}->{cellphone}, undef, 'cellphone');
+        is ($res->{politician_contact}->{instagram}, 'https://www.instagram.com/lucasansei/', 'instagram');
     };
 };
 

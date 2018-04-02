@@ -64,6 +64,7 @@ sub list_POST {
             twitter   => $politician_contact->twitter,
             cellphone => $politician_contact->cellphone,
             email     => $politician_contact->email,
+            instagram => $politician_contact->instagram
         }
     );
 }
@@ -71,13 +72,13 @@ sub list_POST {
 sub list_GET {
     my ($self, $c) = @_;
 
-    my $politician_id = $c->user->id;
+    my $politician = $c->stash->{politician};
 
     return $self->status_ok(
         $c,
         entity => {
             politician_contact => {
-                politician_id => $politician_id,
+                politician_id => $politician->id,
 
                 map {
                     my $c = $_;
@@ -87,7 +88,8 @@ sub list_GET {
                     email     => $c->get_column('email'),
                     cellphone => $c->get_column('cellphone'),
                     url       => $c->get_column('url'),
-                } $c->stash->{collection}->search( { politician_id => $politician_id } )->all()
+                    instagram => $c->get_column('instagram')
+                } $politician->politician_contacts->all()
             }
         }
     );

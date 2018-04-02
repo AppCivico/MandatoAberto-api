@@ -43,9 +43,9 @@ sub verifiers_specs {
                     type       => "Str",
                 },
                 citizen_input => {
-                    required => 1,
-                    type     => "Str"
-                    # TODO validar citizen_input de acordo com o tamanho e se já existe um no banco
+                    required   => 1,
+                    type       => "Str",
+                    max_length => 20,
                 },
                 admin_id => {
                     required   => 1,
