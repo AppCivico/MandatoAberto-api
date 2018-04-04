@@ -236,7 +236,7 @@ sub action_specs {
             }
             delete $values{ignore};
 
-            my $access_token = $self->politician->fb_page_access_token || '';
+            my $access_token = $self->politician->fb_page_access_token;
             my $recipient    = $self->recipient;
 
             if ($values{reply}) {
