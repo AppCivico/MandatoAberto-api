@@ -53,6 +53,23 @@ db_transaction {
 
     my $dialog_id = stash "d1.id";
 
+    rest_get "/api/admin/dialog/$dialog_id",
+        name  => 'get only one dialog',
+        list  => 1,
+        stash => "get_result_dialog"
+    ;
+
+    stash_test "get_result_dialog" => sub {
+        my $res = shift;
+
+        is ($res->{id},                  $dialog_id,         'dialog id');
+        is ($res->{name},                $dialog_name,       'dialog name');
+        is ($res->{description},         $dialog_desciption, 'dialog description');
+        is ($res->{created_by_admin_id}, 1,                  'dialog admin id');
+        is ($res->{updated_at},          undef,              'dialog updated_at ts undefined');
+        is ($res->{updated_by_admin_id}, undef,              'dialog updated by admin id undefined');
+    };
+
     rest_post "/api/admin/dialog/$dialog_id/question",
         name    => 'question without name',
         is_fail => 1,

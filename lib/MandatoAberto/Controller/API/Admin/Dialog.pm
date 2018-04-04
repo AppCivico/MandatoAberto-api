@@ -6,6 +6,7 @@ BEGIN { extends 'CatalystX::Eta::Controller::REST' }
 
 with "CatalystX::Eta::Controller::AutoBase";
 with "CatalystX::Eta::Controller::AutoResultPUT";
+with "CatalystX::Eta::Controller::AutoResultGET";
 with "CatalystX::Eta::Controller::AutoListPOST";
 
 __PACKAGE__->config(
@@ -22,6 +23,9 @@ __PACKAGE__->config(
 
         return $params;
     },
+
+    # AutoResultGET
+    build_row => sub { return { $_[0]->get_columns() } },
 
     # AutoListPOST
     prepare_params_for_create => sub {
@@ -66,6 +70,8 @@ sub list_POST { }
 sub result : Chained('object') : PathPart('') : Args(0) : ActionClass('REST') { }
 
 sub result_PUT { }
+
+sub result_GET { }
 
 __PACKAGE__->meta->make_immutable;
 
