@@ -1,12 +1,12 @@
 use utf8;
-package MandatoAberto::Schema::Result::PoliticianChatbotDialog;
+package MandatoAberto::Schema::Result::PoliticianChatbotConversation;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
 
 =head1 NAME
 
-MandatoAberto::Schema::Result::PoliticianChatbotDialog
+MandatoAberto::Schema::Result::PoliticianChatbotConversation
 
 =cut
 
@@ -34,11 +34,11 @@ extends 'DBIx::Class::Core';
 
 __PACKAGE__->load_components("InflateColumn::DateTime", "TimeStamp", "PassphraseColumn");
 
-=head1 TABLE: C<politician_chatbot_dialog>
+=head1 TABLE: C<politician_chatbot_conversation>
 
 =cut
 
-__PACKAGE__->table("politician_chatbot_dialog");
+__PACKAGE__->table("politician_chatbot_conversation");
 
 =head1 ACCESSORS
 
@@ -47,7 +47,7 @@ __PACKAGE__->table("politician_chatbot_dialog");
   data_type: 'integer'
   is_auto_increment: 1
   is_nullable: 0
-  sequence: 'politician_chatbot_dialog_id_seq'
+  sequence: 'politician_chatbot_conversation_id_seq'
 
 =head2 politician_id
 
@@ -55,7 +55,7 @@ __PACKAGE__->table("politician_chatbot_dialog");
   is_foreign_key: 1
   is_nullable: 0
 
-=head2 dialog_model
+=head2 conversation_model
 
   data_type: 'text'
   is_nullable: 0
@@ -80,11 +80,11 @@ __PACKAGE__->add_columns(
     data_type         => "integer",
     is_auto_increment => 1,
     is_nullable       => 0,
-    sequence          => "politician_chatbot_dialog_id_seq",
+    sequence          => "politician_chatbot_conversation_id_seq",
   },
   "politician_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
-  "dialog_model",
+  "conversation_model",
   { data_type => "text", is_nullable => 0 },
   "created_at",
   {
@@ -127,8 +127,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-04-03 15:18:51
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Cq19ua/oWSPjV0XwEOBKNw
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-04-05 14:49:09
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:ucrfAW63e9nmlR9LraGGEg
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
