@@ -305,6 +305,18 @@ db_transaction {
         ;
     };
 
+    db_transaction {
+        # group without filter is allowed
+        rest_post "/api/politician/$politician_id/group",
+            name    => 'add group',
+            headers => [ 'Content-Type' => 'application/json' ],
+            data    => encode_json({
+                name     => 'AppCivico',
+                filter   => {},
+            }),
+        ;
+    };
+
     subtest 'list created groups' => sub {
 
         rest_get "/api/politician/$politician_id/group", name => 'list groups', stash => 'groups';
