@@ -1,0 +1,16 @@
+---
+  send: greetings
+  options:
+    dialog_id:
+      send: 'Mas que legal! Tem outra coisa que posso fazer por você?'
+      options:
+        dialog_id:
+        back_to_start:
+    dialog_id:
+      send: 'Legal, vou falar com o gabinete!'
+      options:
+        back_to_start:
+    dialog_id:
+      prompt: 'Qual é o seu e-mail?'
+      options:
+        cancel:

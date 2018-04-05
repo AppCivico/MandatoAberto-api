@@ -272,6 +272,21 @@ __PACKAGE__->belongs_to(
   { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
 );
 
+=head2 politician_chatbot_conversations
+
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::PoliticianChatbotConversation>
+
+=cut
+
+__PACKAGE__->has_many(
+  "politician_chatbot_conversations",
+  "MandatoAberto::Schema::Result::PoliticianChatbotConversation",
+  { "foreign.politician_id" => "self.user_id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 politician_contacts
 
 Type: has_many
@@ -378,8 +393,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-02-22 14:07:18
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:uBFkZPRKtqZkCPdQd4rzLw
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-04-05 14:49:09
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:zs7FJR2GG1+IK/NoKVlIaw
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
