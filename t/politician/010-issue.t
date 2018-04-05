@@ -13,14 +13,15 @@ db_transaction {
     my $message         = fake_words(1)->();
 
     create_politician(
-        fb_page_id => fake_words(1)->()
+        fb_page_id           => fake_words(1)->(),
+        fb_page_access_token => fake_words(1)->()
     );
     my $politician_id = stash "politician.id";
 
     rest_post "/api/chatbot/recipient",
         name                => "create recipient",
         automatic_load_item => 0,
-        stash               => 'c1',
+        stash               => 'r1',
         [
             origin_dialog  => fake_words(1)->(),
             politician_id  => $politician_id,
@@ -32,6 +33,8 @@ db_transaction {
             security_token => $security_token
         ]
     ;
+
+    my $recipient = $schema->resultset("Recipient")->find(stash "r1.id");
 
     rest_post "/api/chatbot/issue",
         name                => "issue creation",
@@ -106,6 +109,45 @@ db_transaction {
     rest_get "/api/politician/$politician_id/issue/$first_issue_id",
         name => "get only one issue",
     ;
+
+    rest_post "/api/chatbot/issue",
+        name                => "issue creation",
+        automatic_load_item => 0,
+        stash               => "i2",
+        [
+            politician_id  => $politician_id,
+            fb_id          => $recipient_fb_id,
+            message        => fake_words(1)->(),
+            security_token => $security_token
+        ]
+    ;
+    my $second_issue_id = stash "i2.id";
+
+    # Criando um grupo para adicionar o recipiente
+    # no fechamento da segunda issue
+    my $group = $schema->resultset("Group")->create(
+        {
+            politician_id    => $politician_id,
+            name             => 'foobar',
+            filter           => '{}',
+            status           => 'ready',
+            recipients_count => 0
+        }
+    );
+
+    my $group_id = $group->id;
+
+    # Fechando uma issue e segmentando o recipient
+    rest_put "/api/politician/$politician_id/issue/$second_issue_id",
+        name => "updating issue without reply",
+        [
+            ignore => 0,
+            groups => "[$group_id]",
+            reply  => fake_words(1)->()
+        ]
+    ;
+
+    is ($group->discard_changes->recipients_count, 1, 'one recipient on group');
 
     # Por enquanto apenas os issues abertos serão listados
 
