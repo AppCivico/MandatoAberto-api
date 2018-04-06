@@ -66,10 +66,11 @@ db_transaction {
     stash_test "get_issues" => sub {
         my $res = shift;
 
-        is ($res->{issues}->[0]->{message}, $message, 'issue message');
-        is ($res->{issues}->[0]->{open},  1, 'issue status');
-        is ($res->{issues}->[0]->{reply}, undef, 'issue reply');
-        is ($res->{issues}->[0]->{updated_at}, undef, 'issue updated timestamp');
+        my $open_issue = $res->{recipients}->[0]->{open_issues}->[0];
+
+        is ($open_issue->{message},    $message, 'issue message');
+        is ($open_issue->{reply},      undef,    'issue reply');
+        is ($open_issue->{updated_at}, undef,    'issue updated timestamp');
     };
 
     rest_put "/api/politician/$politician_id/issue/$first_issue_id",
@@ -123,6 +124,19 @@ db_transaction {
     ;
     my $second_issue_id = stash "i2.id";
 
+    rest_post "/api/chatbot/issue",
+        name                => "issue creation",
+        automatic_load_item => 0,
+        stash               => "i3",
+        [
+            politician_id  => $politician_id,
+            fb_id          => $recipient_fb_id,
+            message        => fake_words(1)->(),
+            security_token => $security_token
+        ]
+    ;
+    my $third_issue_id = stash "i3.id";
+
     # Criando um grupo para adicionar o recipiente
     # no fechamento da segunda issue
     my $group = $schema->resultset("Group")->create(
@@ -138,66 +152,50 @@ db_transaction {
     my $group_id = $group->id;
 
     # Fechando uma issue e segmentando o recipient
+    my $reply = fake_words(1)->();
+
     rest_put "/api/politician/$politician_id/issue/$second_issue_id",
         name => "updating issue without reply",
         [
             ignore => 0,
             groups => "[$group_id]",
-            reply  => fake_words(1)->()
+            reply  => $reply
         ]
     ;
 
     is ($group->discard_changes->recipients_count, 1, 'one recipient on group');
 
-    # Por enquanto apenas os issues abertos serão listados
+    rest_reload_list "get_issues";
 
-    # rest_reload_list "get_issues";
+    stash_test "get_issues.list" => sub {
+        my $res = shift;
 
-    # stash_test "get_issues.list" => sub {
-    #     my $res = shift;
+        my $replied_issues = $res->{recipients}->[0]->{replied_issues};
+        my $replied_issue  = $replied_issues->[0];
 
-    #     is ($res->{issues}->[0]->{message}, $message, 'issue message');
-    #     is ($res->{issues}->[0]->{open},  0, 'issue status');
-    #     is ($res->{issues}->[0]->{reply}, undef, 'issue reply');
-    # };
+        my $ignored_issues = $res->{recipients}->[0]->{ignored_issues};
+        my $ignored_issue  = $ignored_issues->[0];
 
-    # rest_post "/api/chatbot/issue",
-    #     name                => "issue creation",
-    #     automatic_load_item => 0,
-    #     stash               => "i2",
-    #     [
-    #         politician_id => $politician_id,
-    #         fb_id         => $recipient_fb_id,
-    #         message       => $message
-    #     ]
-    # ;
-    # my $second_issue_id = stash "i2.id";
+        my $open_issues = $res->{recipients}->[0]->{open_issues};
+        my $open_issue  = $open_issues->[0];
 
-    # rest_reload_list "get_issues";
+        my $groups = $res->{recipients}->[0]->{groups};
+        my $group  = $groups->[0];
 
-    # stash_test "get_issues.list" => sub {
-    #     my $res = shift;
+        is (scalar @{ $ignored_issues }, 1,               'one ignored issue');
+        is ($ignored_issue->{id},        $first_issue_id, 'ignored issue id');
 
-    #     is ($res->{issues}->[1]->{message}, $message, 'issue message');
-    #     is ($res->{issues}->[1]->{open},  1, 'issue status');
-    #     is ($res->{issues}->[1]->{reply}, undef, 'issue reply');
-    # };
+        is (scalar @{ $replied_issues }, 1,                'one replied issue');
+        is ($replied_issue->{id},        $second_issue_id, 'replied issue id');
+        is ($replied_issue->{reply},     $reply,           'replied issue reply text');
 
-    # my $reply = fake_words(2)->();
-    # rest_put "/api/politician/$politician_id/issue/$second_issue_id",
-    #     name => 'updating second issue',
-    #     [ reply => $reply ]
-    # ;
+        is (scalar @{ $open_issues }, 1,               'one open issue');
+        is ($open_issue->{id},        $third_issue_id, 'open issue id');
 
-    # rest_reload_list "get_issues";
-
-    # stash_test "get_issues.list" => sub {
-    #     my $res = shift;
-
-    #     is ($res->{issues}->[1]->{message}, $message, 'issue message');
-    #     is ($res->{issues}->[1]->{open},  0, 'issue status');
-    #     is ($res->{issues}->[1]->{reply}, $reply, 'issue reply');
-    # };
+        is (scalar @{ $groups },   1,         'one group');
+        is ($group->{id},          $group_id, 'group id');
+        is ($group->{name},        'foobar',  'group name');
+    };
 };
 
 done_testing();

@@ -247,5 +247,79 @@ sub get_recipient_by_gender {
     };
 }
 
+sub get_recipients_by_issues {
+    my ($self, $page, $results) = @_;
+
+    return recipients => [
+        map {
+            my $r = $_;
+
+            +{
+                id      => $r->id,
+                name    => $r->name,
+                email   => $r->email,
+                gender  => $r->gender,
+                picture => $r->picture,
+
+                groups  => [
+                    map {
+                        {
+                            id               => $_->id,
+                            name             => $_->get_column('name'),
+                            recipients_count => $_->get_column('recipients_count'),
+                            status           => $_->get_column('status'),
+                        }
+                    } $r->groups_rs->all()
+                ],
+
+                open_issues => [
+                    map {
+                        my $i = $_;
+
+                        +{
+                            id         => $i->id,
+                            message    => $i->message,
+                            created_at => $i->get_column('created_at')
+                        }
+                    } $r->issues->get_recipient_open_issues->all()
+                ],
+
+                replied_issues => [
+                    map {
+                        my $i = $_;
+
+                        +{
+                            id         => $i->id,
+                            message    => $i->message,
+                            reply      => $i->reply,
+                            created_at => $i->get_column('created_at'),
+                            updated_at => $i->get_column('updated_at')
+                        }
+                    } $r->issues->get_recipient_replied_issues->all()
+                ],
+
+                ignored_issues => [
+                    map {
+                        my $i = $_;
+
+                        +{
+                            id         => $i->id,
+                            message    => $i->message,
+                            created_at => $i->get_column('created_at'),
+                            updated_at => $i->get_column('updated_at')
+                        }
+                    } $r->issues->get_recipient_ignored_issues->all()
+                ]
+            }
+        } $self->search(
+            { },
+            {
+                prefetch => 'issues',
+                order_by => [ { -asc => [ qw/me.created_at recipient_id/ ] } ],
+            }
+          )->all()
+    ]
+}
+
 1;
 

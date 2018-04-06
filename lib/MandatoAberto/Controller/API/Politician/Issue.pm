@@ -79,37 +79,12 @@ sub list_GET {
     my $page    = $c->req->params->{page}    || 1;
     my $results = $c->req->params->{results} || 20;
 
+    my $recipients_by_issues = $c->stash->{politician}->recipients->get_recipients_by_issues($page, $results);
+
     return $self->status_ok(
         $c,
         entity => {
-            issues => [
-                map {
-                    my $i = $_;
-
-                    {
-                        id           => $i->get_column('id'),
-                        reply        => $i->get_column('reply'),
-                        open         => $i->get_column('open'),
-                        message      => $i->get_column('message'),
-                        created_at   => $i->get_column('created_at'),
-                        recipient    => {
-                            id              => $i->get_column('recipient_id'),
-                            name            => $i->recipient->get_column('name'),
-                            profile_picture => $i->recipient->get_column('picture')
-                        }
-                    }
-                } $c->stash->{collection}->search(
-                    {
-                        'me.politician_id' => $politician_id,
-                        open          => 1
-                    },
-                    {
-                        prefetch => 'recipient',
-                        page     => $page,
-                        rows     => $results
-                    }
-                  )->all()
-            ]
+            recipients => $recipients_by_issues
         }
     );
 }

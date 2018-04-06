@@ -59,10 +59,43 @@ sub action_specs {
     };
 }
 
-sub get_politician_open_issues {
+sub get_politician_open_issues_count {
     my ($self) = @_;
 
-    return $self->search( { open => 1 } );
+    return $self->search( { open => 1 } )->count;
+}
+
+sub get_recipient_open_issues {
+    my ($self) = @_;
+
+    return $self->search(
+            { open => 1 },
+            { order_by => 'created_at' }
+        );
+}
+
+sub get_recipient_replied_issues {
+    my ($self) = @_;
+
+    return $self->search(
+            {
+                open  => 0,
+                reply => \"IS NOT NULL"
+            },
+            { order_by => 'created_at' }
+        );
+}
+
+sub get_recipient_ignored_issues {
+    my ($self) = @_;
+
+    return $self->search(
+            {
+                open  => 0,
+                reply => \"IS NULL"
+            },
+            { order_by => 'created_at' }
+        );
 }
 
 1;

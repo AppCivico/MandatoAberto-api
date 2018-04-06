@@ -83,7 +83,7 @@ sub list_GET {
 
     my $group_count = $politician->groups->search( { deleted => 0 } )->count;
 
-    my $open_issue_count = $politician->issues->get_politician_open_issues->count;
+    my $open_issue_count = $politician->issues->get_politician_open_issues_count;
 
     return $self->status_ok(
         $c,
