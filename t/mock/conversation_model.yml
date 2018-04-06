@@ -1,16 +1,8 @@
 ---
-  send: greetings
-  options:
-    dialog_id:
-      send: 'Mas que legal! Tem outra coisa que posso fazer por você?'
-      options:
-        dialog_id:
-        back_to_start:
-    dialog_id:
-      send: 'Legal, vou falar com o gabinete!'
-      options:
-        back_to_start:
-    dialog_id:
-      prompt: 'Qual é o seu e-mail?'
-      options:
-        cancel:
+  send: 'A equipe do(a) ${office} ${name} está com um canal novo de comunicação.'
+  send: 'A qualquer momento você pode digitar uma mensagem e eu enviarei para o gabinete.'
+    options:
+      'Sobre ${article} ${office}':
+        send: 'Melhorar a cidade'
+      'Contatos':
+        send: 'Entre em contato no seguinte número: (##) ####-####'
