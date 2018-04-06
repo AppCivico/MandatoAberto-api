@@ -106,7 +106,8 @@ sub list_GET {
                     {
                         prefetch => 'recipient',
                         page     => $page,
-                        rows     => $results
+                        rows     => $results,
+                        order_by => 'recipient_id'
                     }
                   )->all()
             ]
