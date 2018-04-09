@@ -33,16 +33,54 @@ db_transaction {
     my $chatbot_conversation_model = read_file("$Bin/../mock/conversation_model.json");
     my $decoded_conversation_model = decode_json($chatbot_conversation_model);
 
-    my $wrong_chatbot_conversation_model = read_file("$Bin/../mock/conversation_model_wrong.json");
-    my $decoded_wrong_conversation_model = decode_json($wrong_chatbot_conversation_model);
+    subtest 'First node' => sub {
+        rest_post "/api/politician/$politician_id/chatbot-conversation",
+            name    => 'First node is not root',
+            is_fail => 1,
+            code    => 400,
+            headers => [ 'Content-Type' => 'application/json' ],
+            data    => encode_json(
+                {
+                    conversation_model => [
+                        {
+                            name     => 'node_10',
+                            messages => [ 'Bem vindo' ],
+                            options  => [
+                                {
+                                    text    => 'Voltar para o início',
+                                    payload => 'root'
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ),
+        ;
 
-    rest_post "/api/politician/$politician_id/chatbot-conversation",
-        name    => 'First node is not root',
-        is_fail => 1,
-        code    => 400,
-        headers => [ 'Content-Type' => 'application/json' ],
-        data    => encode_json( { conversation_model => $decoded_wrong_conversation_model } ),
-    ;
+        rest_post "/api/politician/$politician_id/chatbot-conversation",
+            name    => 'First node with parent',
+            is_fail => 1,
+            code    => 400,
+            headers => [ 'Content-Type' => 'application/json' ],
+            data    => encode_json(
+                {
+                    conversation_model => [
+                        {
+                            name     => 'root',
+                            parent   => 'node_10',
+                            messages => [ 'Bem vindo' ],
+                            options  => [
+                                {
+                                    text    => 'Voltar para o início',
+                                    payload => 'root'
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ),
+        ;
+    };
 
     rest_post "/api/politician/$politician_id/chatbot-conversation",
         name    => 'Create chatbot conversation model',

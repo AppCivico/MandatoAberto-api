@@ -33,19 +33,33 @@ sub verifiers_specs {
 
                         # Um modelo de conversação deve sempre
                         # ter o seu primeiro node tipo root
-                        if ($conversation_model->[0]->{name} ne 'root') {
-                            die \['conversation_model', 'First node must be root']
-                        }
+                        # e não deve ter parent
+                        die \["conversation_model", "First node must be root"] unless $conversation_model->[0]->{name} eq 'root';
+                        die \["conversation_model", "First node must not have parent"] if $conversation_model->[0]->{parent};
+
                         use DDP;
                         for (my $i = 0; $i < scalar @{ $conversation_model }; $i++) {
                             my $node      = $conversation_model->[$i];
                             my $node_name = $node->{name};
+                            my $node_type = $node->{type};
                             use DDP;
-                            #p $node;
+                            p $node;
 
-                            die \["$node_name", 'messages[] missing'] unless $node->{messages};
-                            die \["$node_name", 'messages[] must be an array'] unless ref $node->{messages} eq 'ARRAY';
+                            die \['name', "missing on conversation_model[$i]"] if !$node_name;
+                            die \['type', "missing on $node_name"] if !$node_type;
+                            die \['messages[]', "missing on $node_name"] unless $node->{messages};
+                            die \['messages[]', "must be an array on $node_name"] unless ref $node->{messages} eq 'ARRAY';
 
+                            die \["$node_name", 'options[] missing'] if $node_type eq 'quick_reply' && !$node->{options};
+
+                            if ($node_type eq 'prompt') {
+                                die \["$node_name", 'prompt type missing'] if !$node->{prompt}->{type};
+
+                                die \["$node_name", 'prompt type missing'] if !$node->{prompt}->{type};
+                            } else {
+
+                            }
+                            die \["$node_name", 'prompt object missing'] if $node_type eq 'prompt' && !$node->{};
                         }
                         return 1;
                     },
