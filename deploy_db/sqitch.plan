@@ -78,3 +78,4 @@
 0074-adding-admin-timestamps-and-ids [0073-updating-greetings-texts] 2018-03-28T18:39:15Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the creation and update timestamps for the 'dialog' and 'question' table and adding the 'approved_by_admin_id' column to the '"user"' table
 0075-setting-created_by_admin_id-notnull [0074-adding-admin-timestamps-and-ids] 2018-03-28T20:11:09Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Setting the 'created_by_admin_id' on the 'question' table to not null
 0076-politician-chatbot-conversation [0075-setting-created_by_admin_id-notnull] 2018-04-05T17:48:23Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Creating the 'politician_chatbot_conversation' table and adding the 'session' column on the 'recipient' table.
+0077-chatbot-conversation-model-json [0076-politician-chatbot-conversation] 2018-04-09T02:21:28Z Lucas Ansei,,, <lucas@lucas-G750JX> # Updating the 'conversation_model' column to support JSON

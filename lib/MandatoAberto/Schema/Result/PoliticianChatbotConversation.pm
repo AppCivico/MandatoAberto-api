@@ -57,7 +57,7 @@ __PACKAGE__->table("politician_chatbot_conversation");
 
 =head2 conversation_model
 
-  data_type: 'text'
+  data_type: 'json'
   is_nullable: 0
 
 =head2 created_at
@@ -85,7 +85,7 @@ __PACKAGE__->add_columns(
   "politician_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "conversation_model",
-  { data_type => "text", is_nullable => 0 },
+  { data_type => "json", is_nullable => 0 },
   "created_at",
   {
     data_type     => "timestamp",
@@ -127,8 +127,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-04-05 14:49:09
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:ucrfAW63e9nmlR9LraGGEg
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-04-08 23:21:59
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:iy6m8pSwN0M+A5I/+ZxnkQ
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

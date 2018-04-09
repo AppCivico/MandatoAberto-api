@@ -17,6 +17,7 @@ __PACKAGE__->config(
     result => "DB::PoliticianChatbotConversation",
 
     # AutoListPOST
+    data_from_body            => 1,
     prepare_params_for_create => sub {
         my ($self, $c, $params) = @_;
 

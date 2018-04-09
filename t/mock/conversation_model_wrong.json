@@ -1,0 +1,71 @@
+[{
+    "name": "node_134",
+    "messages": ["greetings"],
+    "options": [{
+        "text": "Sobre o prefeito",
+        "payload": "node_1"
+    }, {
+        "payload": "node_2",
+        "text": "Contatos"
+    }]
+}, {
+    "name": "node_1",
+    "parent": "root",
+    "messages": ["eu sou um prefeito"],
+    "options": [{
+        "text": "Voltar para o inÃ­cio",
+        "payload": "root"
+    }]
+}, {
+    "name": "node_2",
+    "parent": "root",
+    "options": [{
+        "payload": "node_3",
+        "text": "TrajetÃ³ria"
+    }],
+    "messages": ["entre em contato pelo nÃºmero: ########"]
+}, {
+    "messages": ["Fiz isso e aquilo"],
+    "options": [{
+        "payload": "node_4",
+        "text": "DÃª seu e-mail"
+    }, {
+        "text": "Entrar em contato",
+        "payload": "node_5"
+    }],
+    "parent": "node_2",
+    "name": "node_3"
+}, {
+    "prompt": {
+        "name": "node_6",
+        "field": "email",
+        "type": "extra_field"
+    },
+    "name": "node_4",
+    "parent": "node_3",
+    "messages": ["Digite seu e-mail:"]
+}, {
+    "messages": ["Digite sua mensagem:"],
+        "parent": "node_3",
+        "name": "node_5",
+    "prompt": {
+        "type": "issue",
+        "name": "node_7"
+    }
+}, {
+    "options": {
+        "payload": "root",
+        "text": "Voltar para o inÃ­cio"
+    },
+    "messages": ["Obrigado pelo seu e-mail!"],
+        "parent": "node_4",
+        "name": "node_6"
+}, {
+    "options": {
+        "text": "Voltar para o inÃ­cio",
+        "payload": "root"
+    },
+    "messages": ["Obrigado pelo seu e-mail!"],
+    "parent": "node_5",
+    "name": "node_7"
+}]

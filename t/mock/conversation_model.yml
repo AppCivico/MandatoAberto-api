@@ -1,8 +1,0 @@
----
-  send: 'A equipe do(a) ${office} ${name} está com um canal novo de comunicação.'
-  send: 'A qualquer momento você pode digitar uma mensagem e eu enviarei para o gabinete.'
-    options:
-      'Sobre ${article} ${office}':
-        send: 'Melhorar a cidade'
-      'Contatos':
-        send: 'Entre em contato no seguinte número: (##) ####-####'
