@@ -213,5 +213,23 @@ sub create_recipient {
     );
 }
 
+sub create_issue {
+    my (%opts) = @_;
+
+    my $security_token = $ENV{CHATBOT_SECURITY_TOKEN};
+
+    return $obj->rest_post(
+        '/api/chatbot/issue',
+        name                => 'create issue',
+        stash               => 'issue',
+        automatic_load_item => 0,
+        params              => {
+            message        => fake_words(4)->(),
+            security_token => $security_token,
+            %opts,
+        }
+    );
+}
+
 1;
 

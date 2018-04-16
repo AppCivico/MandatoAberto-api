@@ -26,9 +26,20 @@ __PACKAGE__->config(
 
         $params->{open} = 0;
 
+        if ($c->req->params->{groups}) {
+            $c->req->params->{groups} =~ s/(\[|\]|(\s))//g;
+
+            my @groups = split(',', $c->req->params->{groups});
+
+            $params->{groups} = \@groups;
+        } else {
+            $params->{groups} = [];
+        }
+
         return $params;
     },
 
+    # AutoResultGET
     build_row => sub {
         return { $_[0]->get_columns() };
     },
@@ -95,7 +106,8 @@ sub list_GET {
                     {
                         prefetch => 'recipient',
                         page     => $page,
-                        rows     => $results
+                        rows     => $results,
+                        order_by => 'recipient_id'
                     }
                   )->all()
             ]

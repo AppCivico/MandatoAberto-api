@@ -213,6 +213,29 @@ sub verifiers_specs {
                 ignore => {
                     required => 1,
                     type     => "Bool"
+                },
+                groups => {
+                    required   => 0,
+                    type       => "ArrayRef[Int]",
+                    post_check => sub {
+                        my $groups = $_[0]->get_value('groups');
+
+                        for (my $i = 0; $i < @{ $groups }; $i++) {
+                            my $group_id = $groups->[$i];
+
+                            my $group = $self->result_source->schema->resultset("Group")->search(
+                                {
+                                   'me.id'            => $group_id,
+                                   'me.politician_id' => $self->politician_id,
+                                }
+                            )->next;
+
+                            die \['groups', "group $group_id does not exists or does not belongs to this politician"] unless ref $group;
+                            die \['groups', "group $group_id isn't ready"] unless $group->get_column('status') eq 'ready';
+                        }
+
+                        return 1;
+                    }
                 }
             }
         )
@@ -239,12 +262,24 @@ sub action_specs {
             my $access_token = $self->politician->fb_page_access_token;
             my $recipient    = $self->recipient;
 
+            # Adicionando recipient à um grupo
+            if ($values{groups}) {
+                my @group_ids = @{ $values{groups} || [] };
+
+                for my $group_id (@group_ids) {
+                    $recipient->add_to_group($group_id);
+                }
+
+                delete $values{groups};
+            }
+
             if ($values{reply}) {
                 $self->_httpcb->add(
                     url     => $ENV{FB_API_URL} . '/me/messages?access_token=' . $access_token,
                     method  => "post",
                     headers => 'Content-Type: application/json',
                     body    => encode_json {
+                        messaging_type => "UPDATE",
                         recipient => {
                             id => $recipient->fb_id
                         },
