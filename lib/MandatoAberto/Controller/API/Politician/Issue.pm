@@ -95,7 +95,18 @@ sub list_GET {
                         recipient    => {
                             id              => $i->get_column('recipient_id'),
                             name            => $i->recipient->get_column('name'),
-                            profile_picture => $i->recipient->get_column('picture')
+                            profile_picture => $i->recipient->get_column('picture'),
+
+                            groups => [
+                                map {
+                                    {
+                                        id               => $_->id,
+                                        name             => $_->get_column('name'),
+                                        recipients_count => $_->get_column('recipients_count'),
+                                        status           => $_->get_column('status'),
+                                    }
+                                } $i->recipient->groups_rs->all()
+                            ]
                         }
                     }
                 } $c->stash->{collection}->search(
