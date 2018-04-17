@@ -284,22 +284,7 @@ sub action_specs {
                             id => $recipient->fb_id
                         },
                         message => {
-                            text => "Voc\ê enviou: " . $self->message,
-                        }
-                    }
-                );
-
-                $self->_httpcb->add(
-                    url     => $ENV{FB_API_URL} . '/me/messages?access_token=' . $access_token,
-                    method  => "post",
-                    headers => 'Content-Type: application/json',
-                    body    => encode_json {
-                        messaging_type => "UPDATE",
-                        recipient => {
-                            id => $recipient->fb_id
-                        },
-                        message => {
-                            text          => "Resposta: " . $values{reply},
+                            text          => "Voc\ê enviou: " . $self->message . "\n\nResposta: " . $values{reply},
                             quick_replies => [
                                 {
                                     content_type => 'text',
