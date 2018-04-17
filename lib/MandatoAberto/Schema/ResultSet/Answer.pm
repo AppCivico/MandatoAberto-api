@@ -70,4 +70,22 @@ sub action_specs {
     };
 }
 
+sub get_answered_dialogs {
+    my ($self) = @_;
+
+    return available_dialogs => [
+        map {
+            my $a = $_;
+
+            +{
+                id   => $a->question->dialog->id,
+                name => $a->question->dialog->name,
+            }
+        } $self->search(
+            { },
+            { prefetch => { 'question' => 'dialog' }  }
+          )
+    ]
+}
+
 1;

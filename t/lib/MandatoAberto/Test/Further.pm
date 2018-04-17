@@ -149,6 +149,47 @@ sub create_dialog {
     );
 }
 
+sub create_question {
+    my (%opts) = @_;
+
+    api_auth_as user_id => 1;
+
+    my $dialog_id = $opts{dialog_id};
+
+    return $obj->rest_post(
+        "/api/admin/dialog/$dialog_id/question",
+        name                => 'create question',
+        stash               => 'question',
+        automatic_load_item => 0,
+        params              => {
+            name          => fake_words(4)->(),
+            content       => fake_words(1)->(),
+            citizen_input => fake_words(1)->(),
+            %opts
+        }
+    );
+}
+
+sub answer_question {
+    my (%opts) = @_;
+
+    my $politician_id = delete $opts{politician_id};
+    my $question_id   = delete $opts{question_id};
+
+    api_auth_as user_id => $politician_id;
+
+    return $obj->rest_post(
+        "/api/politician/$politician_id/answers",
+        name                => 'answer question',
+        stash               => 'answer',
+        automatic_load_item => 0,
+        code                => 200,
+        params              => {
+            "question[$question_id][answer]" => fake_words(1)->()
+        }
+    );
+}
+
 sub create_recipient {
     my (%opts) = @_;
 
@@ -166,6 +207,24 @@ sub create_recipient {
             gender         => fake_pick( qw/ M F/ )->(),
             cellphone      => fake_digits("+551198#######")->(),
             email          => fake_email()->(),
+            security_token => $security_token,
+            %opts,
+        }
+    );
+}
+
+sub create_issue {
+    my (%opts) = @_;
+
+    my $security_token = $ENV{CHATBOT_SECURITY_TOKEN};
+
+    return $obj->rest_post(
+        '/api/chatbot/issue',
+        name                => 'create issue',
+        stash               => 'issue',
+        automatic_load_item => 0,
+        params              => {
+            message        => fake_words(4)->(),
             security_token => $security_token,
             %opts,
         }

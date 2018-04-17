@@ -26,9 +26,20 @@ __PACKAGE__->config(
 
         $params->{open} = 0;
 
+        if ($c->req->params->{groups}) {
+            $c->req->params->{groups} =~ s/(\[|\]|(\s))//g;
+
+            my @groups = split(',', $c->req->params->{groups});
+
+            $params->{groups} = \@groups;
+        } else {
+            $params->{groups} = [];
+        }
+
         return $params;
     },
 
+    # AutoResultGET
     build_row => sub {
         return { $_[0]->get_columns() };
     },
@@ -84,7 +95,18 @@ sub list_GET {
                         recipient    => {
                             id              => $i->get_column('recipient_id'),
                             name            => $i->recipient->get_column('name'),
-                            profile_picture => $i->recipient->get_column('picture')
+                            profile_picture => $i->recipient->get_column('picture'),
+
+                            groups => [
+                                map {
+                                    {
+                                        id               => $_->id,
+                                        name             => $_->get_column('name'),
+                                        recipients_count => $_->get_column('recipients_count'),
+                                        status           => $_->get_column('status'),
+                                    }
+                                } $i->recipient->groups_rs->all()
+                            ]
                         }
                     }
                 } $c->stash->{collection}->search(
@@ -95,7 +117,8 @@ sub list_GET {
                     {
                         prefetch => 'recipient',
                         page     => $page,
-                        rows     => $results
+                        rows     => $results,
+                        order_by => 'recipient_id'
                     }
                   )->all()
             ]

@@ -29,6 +29,8 @@ sub verifiers_specs {
                     post_check => sub {
                         my $filter = $_[0]->get_value('filter');
 
+                        return 1 if !keys %{$filter};
+
                         my %allowed_operators = map { $_ => 1 } qw/ AND OR /;
                         my %allowed_data      = map { $_ => 1 } qw/ field value /;
                         my %allowed_rules     = map { $_ => 1 }

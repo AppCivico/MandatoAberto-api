@@ -114,6 +114,18 @@ __PACKAGE__->table("recipient");
   data_type: 'text'
   is_nullable: 0
 
+=head2 session
+
+  data_type: 'json'
+  is_nullable: 1
+
+=head2 session_updated_at
+
+  data_type: 'timestamp'
+  default_value: current_timestamp
+  is_nullable: 1
+  original: {default_value => \"now()"}
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -153,6 +165,15 @@ __PACKAGE__->add_columns(
   { data_type => "boolean", default_value => \"true", is_nullable => 0 },
   "page_id",
   { data_type => "text", is_nullable => 0 },
+  "session",
+  { data_type => "json", is_nullable => 1 },
+  "session_updated_at",
+  {
+    data_type     => "timestamp",
+    default_value => \"current_timestamp",
+    is_nullable   => 1,
+    original      => { default_value => \"now()" },
+  },
 );
 
 =head1 PRIMARY KEY
@@ -230,8 +251,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-03-18 13:58:55
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:eN0UiUXhCNst+CM2CTR+jA
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-04-03 15:18:51
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:EmbaJagYlG/GXPFaIkR3nw
 
 __PACKAGE__->load_components("InflateColumn::Serializer", "Core");
 __PACKAGE__->remove_column('groups');

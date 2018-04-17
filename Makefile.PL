@@ -102,6 +102,7 @@ my %WriteMakefileArgs = (
     "URI::Escape" => 0,
     "URI::QueryParam" => 0,
     "WebService::Slack::IncomingWebHook" => 0,
+    "YAML::XS" => 0,
     "base" => 0,
     "common::sense" => 0,
     "namespace::autoclean" => 0,
@@ -121,7 +122,7 @@ my %WriteMakefileArgs = (
     "Test::More" => 0,
     "lib" => 0
   },
-  "VERSION" => 20180401,
+  "VERSION" => 20180411,
   "test" => {
     "TESTS" => "t/*.t t/admin/*.t t/chatbot/*.t t/politician/*.t t/polls/*.t t/worker/*.t"
   }
@@ -222,6 +223,7 @@ my %FallbackPrereqs = (
   "URI::Escape" => 0,
   "URI::QueryParam" => 0,
   "WebService::Slack::IncomingWebHook" => 0,
+  "YAML::XS" => 0,
   "base" => 0,
   "common::sense" => 0,
   "lib" => 0,

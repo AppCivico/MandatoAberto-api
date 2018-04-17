@@ -115,6 +115,7 @@ sub action_specs {
                     method  => "post",
                     headers => 'Content-Type: application/json',
                     body    => encode_json {
+                        messaging_type => "UPDATE",
                         recipient => {
                             id => $recipient->fb_id
                         },
