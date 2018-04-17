@@ -147,7 +147,18 @@ sub result_GET {
             recipient  => {
                 id              => $recipient->id,
                 name            => $recipient->name,
-                profile_picture => $recipient->picture
+                profile_picture => $recipient->picture,
+
+                groups => [
+                    map {
+                        {
+                            id               => $_->id,
+                            name             => $_->get_column('name'),
+                            recipients_count => $_->get_column('recipients_count'),
+                            status           => $_->get_column('status'),
+                        }
+                    } $recipient->groups_rs->all()
+                ]
             }
         }
     );
