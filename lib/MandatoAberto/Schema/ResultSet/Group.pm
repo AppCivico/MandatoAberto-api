@@ -29,6 +29,7 @@ sub verifiers_specs {
                     post_check => sub {
                         my $filter = $_[0]->get_value('filter');
 
+                        # Aceitando criação de grupo sem filtro
                         return 1 if !keys %{$filter};
 
                         my %allowed_operators = map { $_ => 1 } qw/ AND OR /;
@@ -85,12 +86,26 @@ sub action_specs {
 
             my %values = $r->valid_values;
 
+            my $filter = $values{filter};
+
+            # Por agora os filtros vazios
+            # estão sem nenhum filtro efetivamente
+            # logo ele fica eternamente processando
+            # TODO para filtros vazios criar filtro "true = false"
+            my $status;
+            if (!keys %{$filter}) {
+                $status = 'ready'
+            }
+            else {
+                $status = 'processing'
+            }
+
             return $self->create(
                 {
                     name          => $values{name},
                     politician_id => $values{politician_id},
                     filter        => $values{filter},
-                    status        => 'processing',
+                    status        => $status,
                 }
             );
         },

@@ -310,11 +310,16 @@ db_transaction {
         rest_post "/api/politician/$politician_id/group",
             name    => 'add group',
             headers => [ 'Content-Type' => 'application/json' ],
+            stash   => 'group',
             data    => encode_json({
                 name     => 'AppCivico',
                 filter   => {},
             }),
         ;
+
+        ok( my $empty_filter_group = $schema->resultset("Group")->find(stash "group.id"), 'group' );
+
+        is ($empty_filter_group->status, 'ready', 'group status is ready');
     };
 
     subtest 'list created groups' => sub {
