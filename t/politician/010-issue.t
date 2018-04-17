@@ -73,10 +73,10 @@ db_transaction {
     };
 
     rest_put "/api/politician/$politician_id/issue/$first_issue_id",
-        name    => "updating issue with reply with more than 250 chars",
+        name    => "updating issue with reply with more than 2000 chars",
         is_fail => 1,
         code    => 400,
-        [ reply => fake_paragraphs(4)->() ]
+        [ reply => fake_paragraphs(100)->() ]
     ;
 
     rest_put "/api/politician/$politician_id/issue/$first_issue_id",

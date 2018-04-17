@@ -208,7 +208,7 @@ sub verifiers_specs {
                 reply => {
                     required   => 0,
                     type       => "Str",
-                    max_length => 250
+                    max_length => 2000
                 },
                 ignore => {
                     required => 1,
@@ -284,7 +284,22 @@ sub action_specs {
                             id => $recipient->fb_id
                         },
                         message => {
-                            text          => "Voc\ê enviou: " . $self->message . "\n\nResposta: " . $values{reply},
+                            text => "Voc\ê enviou: " . $self->message,
+                        }
+                    }
+                );
+
+                $self->_httpcb->add(
+                    url     => $ENV{FB_API_URL} . '/me/messages?access_token=' . $access_token,
+                    method  => "post",
+                    headers => 'Content-Type: application/json',
+                    body    => encode_json {
+                        messaging_type => "UPDATE",
+                        recipient => {
+                            id => $recipient->fb_id
+                        },
+                        message => {
+                            text          => "Resposta: " . $values{reply},
                             quick_replies => [
                                 {
                                     content_type => 'text',
