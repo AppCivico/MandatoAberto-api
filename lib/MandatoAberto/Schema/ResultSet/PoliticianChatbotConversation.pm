@@ -42,8 +42,6 @@ sub verifiers_specs {
                             my $node      = $conversation_model->[$i];
                             my $node_name = $node->{name};
                             my $node_type = $node->{type};
-                            use DDP;
-                            p $node;
 
                             die \['name', "missing on conversation_model[$i]"] if !$node_name;
                             die \['type', "missing on $node_name"] if !$node_type;
@@ -54,12 +52,17 @@ sub verifiers_specs {
 
                             if ($node_type eq 'prompt') {
                                 die \["$node_name", 'prompt type missing'] if !$node->{prompt}->{type};
+                                die \["$node_name", 'prompt name missing'] if !$node->{prompt}->{name};
 
-                                die \["$node_name", 'prompt type missing'] if !$node->{prompt}->{type};
+                                my $node_prompt = $node->{prompt};
+
+                                if ($node_prompt->{type} eq 'extra_field') {
+                                    die \['$node_name', 'prompt field missing'] unless $node_prompt->{field};
+                                }
                             } else {
-
+                                die \["$node_name", 'options object missing']
                             }
-                            die \["$node_name", 'prompt object missing'] if $node_type eq 'prompt' && !$node->{};
+                            die \["$node_name", 'prompt object missing'] if $node_type eq 'prompt' && !$node->{prompt};
                         }
                         return 1;
                     },
