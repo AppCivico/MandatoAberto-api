@@ -76,8 +76,9 @@ sub list_GET {
 
     my $politician_id = $c->stash->{politician}->id;
 
-    my $page    = $c->req->params->{page}    || 1;
-    my $results = $c->req->params->{results} || 20;
+    # Desativando paginação por agora
+    # my $page    = $c->req->params->{page}    || 1;
+    # my $results = $c->req->params->{results} || 20;
 
     return $self->status_ok(
         $c,
@@ -116,8 +117,8 @@ sub list_GET {
                     },
                     {
                         prefetch => 'recipient',
-                        page     => $page,
-                        rows     => $results,
+                        # page     => $page,
+                        # rows     => $results,
                         order_by => 'recipient_id'
                     }
                   )->all()
