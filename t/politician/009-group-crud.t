@@ -306,10 +306,11 @@ db_transaction {
     };
 
     db_transaction {
-        # group without filter is allowed
+        # grupo sem filtro é permitido
         rest_post "/api/politician/$politician_id/group",
             name    => 'add group',
             headers => [ 'Content-Type' => 'application/json' ],
+            stash   => 'group',
             data    => encode_json({
                 name     => 'AppCivico',
                 filter   => {},

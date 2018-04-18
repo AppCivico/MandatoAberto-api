@@ -122,7 +122,7 @@ db_transaction {
         is( $group->discard_changes->recipients_count, 2, 'recipients_count=2' );
         is( $schema->resultset('Recipient')->search_by_group_ids($group_id)->count, 2, 'recipients_count=2' );
     };
+
 };
 
 done_testing();
-

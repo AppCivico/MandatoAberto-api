@@ -6,6 +6,9 @@ use MandatoAberto::Test::Further;
 
 my $schema = MandatoAberto->model("DB");
 
+use_ok 'MandatoAberto::Worker::Segmenter';
+my $worker = new_ok('MandatoAberto::Worker::Segmenter', [ schema => $schema ]);
+
 db_transaction {
     my $security_token = $ENV{CHATBOT_SECURITY_TOKEN};
 
@@ -170,9 +173,6 @@ db_transaction {
     };
 
     api_auth_as user_id => $politician_id;
-
-    use_ok 'MandatoAberto::Worker::Segmenter';
-    my $worker = new_ok('MandatoAberto::Worker::Segmenter', [ schema => $schema ]);
 
     subtest "filter 'QUESTION_ANSWER_EQUALS" => sub {
 
@@ -350,6 +350,64 @@ db_transaction {
     };
 };
 
+db_transaction {
+    api_auth_as user_id => 1;
+
+    my $security_token = $ENV{CHATBOT_SECURITY_TOKEN};
+
+    create_politician(
+        fb_page_id => fake_words(1)->()
+    );
+    my $politician_id = stash "politician.id";
+
+    api_auth_as user_id => $politician_id;
+
+    create_recipient(
+        politician_id => $politician_id,
+        gender        => 'F'
+    );
+    my $first_recipient_id = stash "recipient.id";
+
+    create_recipient(
+        politician_id => $politician_id,
+        gender        => 'M'
+    );
+    my $second_recipient_id = stash "recipient.id";
+
+    create_recipient(
+        politician_id => $politician_id,
+        gender        => 'F'
+    );
+    my $third_recipient_id = stash "recipient.id";
+
+    # Esse filtro seleciona os recipients por gênero
+    rest_post "/api/politician/$politician_id/group",
+        name                => 'add group',
+        stash               => 'group',
+        automatic_load_item => 0,
+        headers             => [ 'Content-Type' => 'application/json' ],
+        data                => encode_json({
+            name     => 'Gender',
+            filter   => {
+                operator => 'AND',
+                rules => [
+                    {
+                        name => 'GENDER_IS',
+                        data => { value => 'F' },
+                    },
+                ],
+            },
+        }),
+    ;
+
+    ok( $worker->run_once(), 'run once' );
+
+    my $group_id = stash 'group.id';
+
+    ok( my $group = $schema->resultset("Group")->find($group_id), 'get group' );
+
+    is ($group->discard_changes->recipients_count, 2, 'recipient count');
+
+};
 
 done_testing();
-

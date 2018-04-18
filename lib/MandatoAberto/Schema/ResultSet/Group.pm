@@ -29,6 +29,8 @@ sub verifiers_specs {
                     post_check => sub {
                         my $filter = $_[0]->get_value('filter');
 
+                        # Caso não seja passado um filtro
+                        # o grupo é criado como EMPTY
                         return 1 if !keys %{$filter};
 
                         my %allowed_operators = map { $_ => 1 } qw/ AND OR /;
@@ -36,7 +38,7 @@ sub verifiers_specs {
                         my %allowed_rules     = map { $_ => 1 }
                             qw/
                             QUESTION_ANSWER_EQUALS QUESTION_ANSWER_NOT_EQUALS QUESTION_IS_NOT_ANSWERED
-                            QUESTION_IS_ANSWERED
+                            QUESTION_IS_ANSWERED GENDER_IS
                             /
                         ;
 
@@ -84,6 +86,18 @@ sub action_specs {
             my $r = shift;
 
             my %values = $r->valid_values;
+
+            my $status;
+            if (!keys %{$values{filter}}) {
+                $values{filter} = {
+                    operator => 'AND',
+                    rules    => [
+                        {
+                            name => 'EMPTY'
+                        }
+                    ]
+                }
+            }
 
             return $self->create(
                 {
