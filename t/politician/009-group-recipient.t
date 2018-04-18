@@ -123,27 +123,6 @@ db_transaction {
         is( $schema->resultset('Recipient')->search_by_group_ids($group_id)->count, 2, 'recipients_count=2' );
     };
 
-    subtest 'group without filter' => sub {
-        # Criando um grupo sem filtro que nenhum recipient deverá ser segmentado
-
-        rest_post "/api/politician/$politician_id/group",
-            name    => 'add group',
-            stash   => 'group',
-            headers => [ 'Content-Type' => 'application/json' ],
-            data    => encode_json({
-                name   => 'No filter',
-                filter => {},
-            }),
-        ;
-
-        ok( $worker->run_once(), 'run once' );
-
-        my $empty_group_id = stash 'group.id';
-        ok( my $empty_group = $schema->resultset('Group')->search( { 'me.id' => $empty_group_id } )->next, 'get group' );
-
-        is( $empty_group->recipients_count, 0, 'recipients_count=0' );
-    }
 };
 
 done_testing();
-

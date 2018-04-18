@@ -154,6 +154,9 @@ sub search_by_filter {
         elsif ($name eq 'QUESTION_IS_NOT_ANSWERED') {
             push @where_attrs, $self->_build_rule_question_not_answered($field);
         }
+        elsif ($name eq 'GENDER_IS') {
+            push @where_attrs, $self->_build_rule_gender_is($value);
+        }
         elsif ($name eq 'EMPTY') {
             push @where_attrs, $self->_build_rule_empty();
         }
@@ -172,6 +175,7 @@ sub search_by_filter {
     #        ],
     #    },
     #);
+
     return $self->search( { $operator => \@where_attrs } );
 }
 
@@ -247,6 +251,14 @@ EXISTS(
     FROM recipient
     WHERE true = false
 )
+SQL_QUERY
+}
+
+sub _build_rule_gender_is {
+    my ($self, $value) = @_;
+
+    return \[ <<'SQL_QUERY', $value ];
+gender = ?
 SQL_QUERY
 }
 
