@@ -154,6 +154,9 @@ sub search_by_filter {
         elsif ($name eq 'QUESTION_IS_NOT_ANSWERED') {
             push @where_attrs, $self->_build_rule_question_not_answered($field);
         }
+        elsif ($name eq 'EMPTY') {
+            push @where_attrs, $self->_build_rule_empty();
+        }
         else {
             die "rule name '$name' does not exists.";
         }
@@ -231,6 +234,18 @@ EXISTS(
       AND poll_question_option.poll_question_id = ?
       AND poll_question_option.poll_question_id IS NOT NULL
       AND poll_question_option.content <> ?
+)
+SQL_QUERY
+}
+
+sub _build_rule_empty {
+    my ($self) = @_;
+
+    return \[ <<'SQL_QUERY' ];
+EXISTS(
+    SELECT 1
+    FROM recipient
+    WHERE true = false
 )
 SQL_QUERY
 }

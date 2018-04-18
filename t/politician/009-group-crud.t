@@ -306,7 +306,7 @@ db_transaction {
     };
 
     db_transaction {
-        # group without filter is allowed
+        # grupo sem filtro é permitido
         rest_post "/api/politician/$politician_id/group",
             name    => 'add group',
             headers => [ 'Content-Type' => 'application/json' ],
@@ -316,10 +316,6 @@ db_transaction {
                 filter   => {},
             }),
         ;
-
-        ok( my $empty_filter_group = $schema->resultset("Group")->find(stash "group.id"), 'group' );
-
-        is ($empty_filter_group->status, 'ready', 'group status is ready');
     };
 
     subtest 'list created groups' => sub {
