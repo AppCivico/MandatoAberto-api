@@ -288,8 +288,8 @@ sub action_specs {
                             quick_replies => [
                                 {
                                     content_type => 'text',
-                                    title        => 'Voltar para o início',
-                                    payload      => 'greetings'
+                                    title        => 'Voltar ao início',
+                                    payload      => 'mainMenu'
                                 }
                             ]
                         }
