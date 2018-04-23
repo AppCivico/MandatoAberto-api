@@ -345,7 +345,8 @@ sub groups_rs {
 
     return $self->politician->groups->search(
         {
-            'me.id' => { 'in' => [ keys %{ $self->groups || {} } ] }
+            'me.id' => { 'in' => [ keys %{ $self->groups || {} } ] },
+            deleted => 0
         }
     );
 }
