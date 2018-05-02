@@ -28,22 +28,6 @@ db_transaction {
         code    => 400,
     ;
 
-    my $politician = $schema->resultset("Politician")->find($politician_id);
-
-    rest_get "/api/chatbot/politician",
-        name  => 'get politician data',
-        list  => 1,
-        stash => 'get_politician_data',
-        [
-            fb_page_id     => 'foo',
-            security_token => $chatbot_security_token
-        ]
-    ;
-
-    stash_test "get_politician_data" => sub {
-        my $res = shift;
-
-    }
 };
 
 done_testing();

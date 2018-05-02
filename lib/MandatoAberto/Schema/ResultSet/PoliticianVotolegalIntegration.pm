@@ -51,7 +51,7 @@ sub action_specs {
 
             not defined $values{$_} and delete $values{$_} for keys %values;
 
-            my $username         = delete $values{username};
+            my $username         = $values{username};
             $values{website_url} = $ENV{VOTOLEGAL_FRONT_URL} . $username;
 
             my $existent_politician_votolegal_integration = $self->search(

@@ -41,13 +41,20 @@ sub list_GET {
             map {
                 my $p = $_;
 
-                user_id         => $p->get_column('user_id'),
-                name            => $p->get_column('name'),
-                gender          => $p->get_column('gender'),
-                address_city    => $p->get_column('address_city_id'),
-                address_state   => $p->get_column('address_state_id'),
-                fb_access_token => $p->get_column('fb_page_access_token'),
-                votolegal_url   => $votolegal_url,
+                user_id               => $p->get_column('user_id'),
+                name                  => $p->get_column('name'),
+                gender                => $p->get_column('gender'),
+                address_city          => $p->get_column('address_city_id'),
+                address_state         => $p->get_column('address_state_id'),
+                fb_access_token       => $p->get_column('fb_page_access_token'),
+                votolegal_integration => {
+                    map {
+                        my $vl = $_;
+
+                        votolegal_username => $vl->get_column("username"),
+                        votolegal_url      => $vl->get_column("website_url")
+                    } $p->politician_votolegal_integrations->all()
+                },
 
                 party         => {
                     name    => $p->party->get_column('name'),
@@ -76,7 +83,7 @@ sub list_GET {
 
             } $c->model("DB::Politician")->search(
                 { fb_page_id => $page_id },
-                { prefetch => [ qw/politician_contacts party office /, { 'politicians_greeting' => 'greeting' } ] }
+                { prefetch => [ qw/politician_contacts party office politician_votolegal_integrations/, { 'politicians_greeting' => 'greeting' } ] }
             )
         }
     )
