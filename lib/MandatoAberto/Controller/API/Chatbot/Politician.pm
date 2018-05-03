@@ -83,7 +83,7 @@ sub list_GET {
 
             } $c->model("DB::Politician")->search(
                 { fb_page_id => $page_id },
-                { prefetch => [ qw/politician_contacts party office politician_votolegal_integrations/, { 'politicians_greeting' => 'greeting' } ] }
+                { prefetch => [ qw/politician_contacts party office /, { 'politicians_greeting' => 'greeting' } ] }
             )
         }
     )
