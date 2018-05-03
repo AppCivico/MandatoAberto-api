@@ -38,14 +38,14 @@ db_transaction {
         ]
     ;
 
-    rest_post "/api/politician/$politician_id/contact",
-        name    => "politician with invalid cellphone",
-        is_fail => 1,
-        code    => 400,
-        [
-            cellphone => 'Foobar',
-        ]
-    ;
+    # rest_post "/api/politician/$politician_id/contact",
+    #     name    => "politician with invalid cellphone",
+    #     is_fail => 1,
+    #     code    => 400,
+    #     [
+    #         cellphone => 'Foobar',
+    #     ]
+    # ;
 
     rest_post "/api/politician/$politician_id/contact",
         name    => "politician with invalid url",

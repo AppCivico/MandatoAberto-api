@@ -15,7 +15,7 @@ sub root : Chained('/') : PathPart('api') : CaptureArgs(0) {
     if (defined($api_key)) {
         my $user_session = $c->model('DB::UserSession')->search({
             api_key      => $api_key,
-            valid_until  => { '>=' => \"NOW()" },
+            # valid_until  => { '>=' => \"NOW()" },
             #valid_for_ip => $c->req->address,
         })->next;
 

@@ -274,6 +274,16 @@ sub action_specs {
             }
 
             if ($values{reply}) {
+                my $message;
+                # Tratando se a mensagem tem mais de 100 chars
+                if (length $self->message > 100) {
+                    $message = substr $self->message, 0, 97;
+                    $message = $message . "...";
+                }
+                else {
+                    $message = $self->message;
+                }
+
                 $self->_httpcb->add(
                     url     => $ENV{FB_API_URL} . '/me/messages?access_token=' . $access_token,
                     method  => "post",
@@ -284,12 +294,12 @@ sub action_specs {
                             id => $recipient->fb_id
                         },
                         message => {
-                            text          => "Voc\ê enviou: " . $self->message . "\n\nResposta: " . $values{reply},
+                            text          => "Voc\ê enviou: " . $message . "\n\nResposta: " . $values{reply},
                             quick_replies => [
                                 {
                                     content_type => 'text',
-                                    title        => 'Voltar para o início',
-                                    payload      => 'greetings'
+                                    title        => 'Voltar ao início',
+                                    payload      => 'mainMenu'
                                 }
                             ]
                         }

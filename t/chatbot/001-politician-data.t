@@ -29,6 +29,13 @@ db_transaction {
     );
     my $politician_id = stash "politician.id";
 
+    api_auth_as user_id => $politician_id;
+    rest_post "/api/politician/$politician_id/votolegal-integration",
+        name                => "Creating Voto Legal integration",
+        automatic_load_item => 0,
+        [ votolegal_email  => 'demonstracao@votolegal.com.br' ]
+    ;
+
     $schema->resultset("PoliticianContact")->create({
         politician_id => $politician_id,
         twitter       => '@foobar',

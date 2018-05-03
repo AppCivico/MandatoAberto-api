@@ -37,7 +37,7 @@ sub verifiers_specs {
                 },
                 cellphone => {
                     required => 0,
-                    type     => PhoneNumber
+                    type     => "Str"
                 },
                 instagram => {
                     required => 0,
