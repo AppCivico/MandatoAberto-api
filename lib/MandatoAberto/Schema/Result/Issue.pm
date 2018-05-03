@@ -278,6 +278,7 @@ sub action_specs {
                 # Tratando se a mensagem tem mais de 100 chars
                 if (length $self->message > 100) {
                     $message = substr $self->message, 0, 97;
+                    $message = $message . "...";
                 }
                 else {
                     $message = $self->message;
@@ -293,7 +294,7 @@ sub action_specs {
                             id => $recipient->fb_id
                         },
                         message => {
-                            text          => "Voc\ê enviou: " . $message . "...\n\nResposta: " . $values{reply},
+                            text          => "Voc\ê enviou: " . $message . "\n\nResposta: " . $values{reply},
                             quick_replies => [
                                 {
                                     content_type => 'text',
