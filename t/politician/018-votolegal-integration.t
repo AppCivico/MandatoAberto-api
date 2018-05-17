@@ -28,6 +28,13 @@ db_transaction {
         code    => 400,
     ;
 
+    rest_post "/api/politician/$politician_id/votolegal-integration",
+        name    => "Integration with non-existent votolegal_email",
+        is_fail => 1,
+        code    => 400,
+        [ votolegal_email => 'thisisonlyatestemail@email.com' ]
+    ;
+
 };
 
 done_testing();
