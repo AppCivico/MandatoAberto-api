@@ -43,8 +43,8 @@ sub list_GET {
                     map {
                         my $vl = $_;
 
-                        username => $vl->get_column("username"),
-                        url      => $vl->get_column("website_url")
+                        votolegal_username => $vl->get_column("username"),
+                        votolegal_url      => $vl->get_column("website_url")
                     } $p->politician_votolegal_integrations->all()
                 },
 
