@@ -50,8 +50,8 @@ db_transaction {
 
         my $votolegal_integration = $res->{votolegal_integration};
 
-        is ( $votolegal_integration->{username}, 'josehernandes', 'voto legal username' );
-        ok ( defined( $votolegal_integration->{url} ) , 'voto legal url' );
+        is ( $votolegal_integration->{votolegal_username}, 'josehernandes', 'voto legal username' );
+        ok ( defined( $votolegal_integration->{votolegal_url} ) , 'voto legal url' );
     };
 
 };
