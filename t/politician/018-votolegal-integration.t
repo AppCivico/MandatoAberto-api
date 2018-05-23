@@ -35,6 +35,25 @@ db_transaction {
         [ votolegal_email => 'thisisonlyatestemail@email.com' ]
     ;
 
+    rest_get "/api/chatbot/politician",
+        name  => 'get politician data',
+        list  => 1,
+        stash => 'get_politician_data',
+        [
+            security_token => $chatbot_security_token,
+            fb_page_id     => 'foo'
+        ]
+    ;
+
+    stash_test "get_politician_data" => sub {
+        my $res = shift;
+
+        my $votolegal_integration = $res->{votolegal_integration};
+
+        is ( $votolegal_integration->{username}, 'josehernandes', 'voto legal username' );
+        ok ( defined( $votolegal_integration->{url} ) , 'voto legal url' );
+    };
+
 };
 
 done_testing();

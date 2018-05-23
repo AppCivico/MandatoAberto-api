@@ -26,15 +26,6 @@ sub list_GET {
 
     my $politician = $c->model("DB::Politician")->search( { fb_page_id => $page_id } )->next;
 
-    my $votolegal_integration = $politician->politician_votolegal_integrations->next;
-    my $votolegal_url;
-
-    if ($votolegal_integration) {
-        $votolegal_url = $votolegal_integration->website_url;
-    } else {
-        $votolegal_url = undef
-    }
-
     return $self->status_ok(
         $c,
         entity => {
@@ -47,23 +38,24 @@ sub list_GET {
                 address_city          => $p->get_column('address_city_id'),
                 address_state         => $p->get_column('address_state_id'),
                 fb_access_token       => $p->get_column('fb_page_access_token'),
+
                 votolegal_integration => {
                     map {
                         my $vl = $_;
 
-                        votolegal_username => $vl->get_column("username"),
-                        votolegal_url      => $vl->get_column("website_url")
+                        username => $vl->get_column("username"),
+                        url      => $vl->get_column("website_url")
                     } $p->politician_votolegal_integrations->all()
                 },
 
-                party         => {
+                party => {
                     name    => $p->party->get_column('name'),
                     acronym => $p->party->get_column('acronym'),
                 },
-                office        => {
+                office => {
                     name => $p->office->get_column('name'),
                 },
-                contact       => {
+                contact => {
                     map {
                         my $c = $_;
 
@@ -74,7 +66,7 @@ sub list_GET {
                         twitter   => $c->get_column('twitter'),
                     } $p->politician_contacts->all()
                 },
-                greeting       =>
+                greeting =>
                     map {
                         my $g = $_;
 
