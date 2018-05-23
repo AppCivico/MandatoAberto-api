@@ -38,7 +38,7 @@ __PACKAGE__->config(
                 mandatoaberto_id => $politician->id
             }
         );
-        die $res->decoded_content unless $res->is_success;
+        die \['votolegal_email', 'non existent on voto legal'] unless $res->is_success;
 
         $res = decode_json $res->decoded_content;
 
