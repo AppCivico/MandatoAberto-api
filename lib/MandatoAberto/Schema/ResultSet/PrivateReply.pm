@@ -110,7 +110,7 @@ sub action_specs {
                     method  => "post",
                     headers => 'Content-Type: application/json',
                     body    => encode_json {
-                        message => "Olá sou o Assistente virtual $article $office_name $politician_name. Vi que você comentou em nossa página, você gostaria de enviar uma mensagem, dúvidas, perguntas ou denúncias? Faça isso a qualquer momento que eu entrego para nossa equipe."
+                        message => "Sou o Assistente virtual $article $office_name $politician_name. Sou um robô que vai te ajudar a conhecer nosso trabalho e entregar mensagens para nossa equipe.\n\nVí que você realizou um comentário em nossa página. Se quiser enviar uma mensagem para nossa equipe ou saber mais sobre nosso trabalho, digite 'Sim'."
                     }
                 );
 
