@@ -109,6 +109,11 @@ __PACKAGE__->table("politician");
   default_value: true
   is_nullable: 0
 
+=head2 picframe_url
+
+  data_type: 'text'
+  is_nullable: 1
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -136,6 +141,8 @@ __PACKAGE__->add_columns(
   { data_type => "timestamp", is_nullable => 1 },
   "private_reply_activated",
   { data_type => "boolean", default_value => \"true", is_nullable => 0 },
+  "picframe_url",
+  { data_type => "text", is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -408,8 +415,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-04-27 19:44:12
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:92nyd9knhoIzWW7Flr3qpw
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-06-07 10:58:41
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:xEIOastVANQfTjBXDWo12w
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
@@ -424,6 +431,7 @@ use HTTP::Request;
 use IO::Socket::SSL;
 use DateTime;
 use DateTime::Format::DateParse;
+use MandatoAberto::Types qw/URI/;
 
 sub verifiers_specs {
     my $self = shift;
@@ -497,6 +505,10 @@ sub verifiers_specs {
                 private_reply_activated => {
                     required => 0,
                     type     => "Bool"
+                },
+                picframe_url => {
+                    required => 0,
+                    type     => URI
                 }
             }
         ),

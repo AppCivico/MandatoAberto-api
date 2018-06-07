@@ -38,6 +38,7 @@ sub list_GET {
                 address_city          => $p->get_column('address_city_id'),
                 address_state         => $p->get_column('address_state_id'),
                 fb_access_token       => $p->get_column('fb_page_access_token'),
+                picframe_url          => $p->get_column('picframe_url'),
 
                 votolegal_integration => {
                     map {

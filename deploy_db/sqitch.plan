@@ -81,3 +81,4 @@
 0077-votolegal-integration [0076-politician-chatbot-conversation] 2018-04-27T22:45:05Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Creating the 'politician_votolegal_integration' table
 0078-votolegal-integration-username [0077-votolegal-integration] 2018-05-02T17:16:21Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the 'votolegal_username' on the 'politician_votolegal_integration' table
 0079-add-new-office [0078-votolegal-integration-username] 2018-05-23T14:04:55Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding two more offices
+0080-add-picframe_url [0079-add-new-office] 2018-06-07T14:04:56Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding picframe_url to the politician table
