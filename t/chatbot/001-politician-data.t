@@ -48,6 +48,11 @@ db_transaction {
         greeting_id   => 1
     });
 
+	rest_put "/api/politician/$politician_id",
+	    name => "Adding picframe URL",
+	    [ picframe_url => 'https://foobar.com.br' ]
+    ;
+
     rest_get "/api/chatbot/politician",
         name  => "get politician data",
         list  => 1,
@@ -70,6 +75,7 @@ db_transaction {
         is ($res->{contact}->{email}, $email, 'email');
         is ($res->{contact}->{url}, "https://www.google.com", 'url');
         is ($res->{greeting}, 'Olá, sou assistente digital do(a) ${user.office.name} ${user.name} Seja bem-vindo a nossa Rede! Queremos um Brasil a melhor e precisamos de sua ajuda.', 'greeting content');
+        is ($res->{picframe_url}, 'https://foobar.com.br', 'picframe_url' );
     };
 };
 

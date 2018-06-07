@@ -168,6 +168,18 @@ db_transaction {
         ],
     ;
 
+    rest_put "/api/politician/$politician_id",
+        name    => "Adding picframe URL with invalid url",
+        is_fail => 1,
+        code    => 400,
+        [ picframe_url => 'foobar' ]
+    ;
+
+    rest_put "/api/politician/$politician_id",
+        name => "Adding picframe URL",
+        [ picframe_url => 'https://foobar.com.br' ]
+    ;
+
     create_politician;
     rest_get [ "api", "politician", stash "politician.id" ], name => "can't get other politician", is_fail => 1, code => 403;
     rest_put [ "api", "politician", stash "politician.id" ],
