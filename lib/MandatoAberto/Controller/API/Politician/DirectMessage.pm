@@ -52,14 +52,29 @@ sub list_POST {
         $groups = [];
     }
 
+    # Por agora, por padrão o type será text
+    my $type = $c->req->params->{type} || 'text';
+
+    if ( $type eq 'attachment' ) {
+        die \['attachment_type', 'missing'] unless $c->req->{attachment_type};
+        die \['attachment_url', 'missing'] unless $c->req->{attachment_url};
+
+        $c->req->{attachment_type} eq 'template' ? () :
+	      die \['attachment_template', 'missing'] unless $c->req->{attachment_template};
+    }
+
     my $direct_message = $c->stash->{collection}->execute(
         $c,
         for  => "create",
         with => {
-            politician_id => $c->stash->{politician}->id,
-            groups        => $groups,
-            content       => $c->req->params->{content},
-            name          => $c->req->params->{name},
+            politician_id       => $c->stash->{politician}->id,
+            groups              => $groups,
+            content             => $c->req->params->{content},
+            name                => $c->req->params->{name},
+            type                => $type,
+            attachment_type     => $c->req->params->{attachment_type},
+            attachment_template => $c->req->params->{attachment_template},
+            attachment_url      => $c->req->params->{attachment_url},
         },
     );
 

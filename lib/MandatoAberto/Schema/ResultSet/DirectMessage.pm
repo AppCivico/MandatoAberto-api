@@ -10,6 +10,7 @@ with 'MandatoAberto::Role::Verification::TransactionalActions::DBIC';
 
 use Data::Verifier;
 use MandatoAberto::Utils;
+use MandatoAberto::Types qw/URI/;
 use MandatoAberto::Messager::Template;
 use WebService::HttpCallback::Async;
 
@@ -69,6 +70,57 @@ sub verifiers_specs {
 
                         return 1;
                     }
+                },
+                type => {
+                    required   => 1,
+                    type       => 'Str',
+                    post_check => sub {
+                        my $type = $_[0]->get_value('type');
+
+                        die \['type', 'invalid'] unless $type =~ m/^(text|attachment)$/;
+
+                        return 1;
+                    }
+                },
+                attachment_type => {
+                    required   => 0,
+                    type       => 'Str',
+                    post_check => sub {
+                        my $direct_message_type = $_[0]->get_value('type');
+						my $attachment_type     = $_[0]->get_value('attachment_type');
+
+                        die \['attachment_type', 'not allowed when direct message type is text'] if $direct_message_type eq 'text';
+
+						die \['attachment_type', 'invalid'] unless $type =~ m/^(image|audio|file|video|template)$/;
+
+						return 1;
+                    }
+                },
+                attachment_template => {
+                    required   => 0,
+                    type       => 'Str',
+                    post_check => sub {
+						my $attachment_type     = $_[0]->get_value('attachment_type');
+						my $attachment_template = $_[0]->get_value('attachment_template');
+
+                        die \['attachment_template', 'not allowed unless attachment type is template'] unless $attachment_type eq 'template';
+
+						die \['attachment_template', 'invalid'] unless $type =~ m/^(generic|button|receipt|list)$/;
+
+						return 1;
+                    }
+                },
+                attachment_url => {
+                    required   => 0,
+                    type       => URI,
+                    post_check => sub {
+						my $direct_message_type = $_[0]->get_value('type');
+						my $attachment_url      = $_[0]->get_value('attachment_url');
+
+						die \['attachment_url', 'not allowed when direct message type is text'] if $direct_message_type eq 'text';
+
+                        return 1;
+                    }
                 }
             }
         ),
@@ -107,6 +159,11 @@ sub action_specs {
                     }
                 )
             ;
+
+            # Montando o objeto a ser enviado no 'message'
+            my $message_structure = {
+                "$values{type}" => $values{type} eq 'text' ? $values{content} : ;
+            };
 
             while (my $recipient = $recipient_rs->next()) {
                 # Mando para o httpcallback
