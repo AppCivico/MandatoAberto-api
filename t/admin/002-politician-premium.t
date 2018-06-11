@@ -30,7 +30,7 @@ db_transaction {
         "politician isn't premium"
     );
 
-    is ($schema->resultset('EmailQueue')->count, "1", "only greetings and activation email queued");
+    is ($schema->resultset('EmailQueue')->count, "2", "only greetings and new register emails queued");
 
     api_auth_as user_id => 1;
 
@@ -63,7 +63,7 @@ db_transaction {
         "politician is premium"
     );
 
-    is ($schema->resultset('EmailQueue')->count, "2", "premium active email queued");
+    is ($schema->resultset('EmailQueue')->count, "3", "premium active email queued");
 
     rest_post "/api/admin/politician/premium",
         name    => "politician alredy premium",
@@ -100,7 +100,7 @@ db_transaction {
         "politician is not premium"
     );
 
-    is ($schema->resultset('EmailQueue')->count, "3", "premium inactive email queued");
+    is ($schema->resultset('EmailQueue')->count, "4", "premium inactive email queued");
 };
 
 done_testing();

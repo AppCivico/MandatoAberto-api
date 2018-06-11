@@ -48,9 +48,9 @@ db_transaction {
         greeting_id   => 1
     });
 
-	rest_put "/api/politician/$politician_id",
-	    name => "Adding picframe URL",
-	    [ picframe_url => 'https://foobar.com.br' ]
+    rest_put "/api/politician/$politician_id",
+        name => "Adding picframe URL",
+        [ picframe_url => 'https://foobar.com.br' ]
     ;
 
     rest_get "/api/chatbot/politician",

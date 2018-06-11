@@ -25,7 +25,7 @@ db_transaction {
         ]
     ;
 
-    is ($schema->resultset('EmailQueue')->count, "1", "greetings and confirmation emails");
+    is ($schema->resultset('EmailQueue')->count, "2", "greetings and new register emails");
 
     is (
         $schema->resultset("Politician")->find(stash "d1.id")->user->email,
