@@ -99,9 +99,13 @@ sub action_specs {
                 $self->search( { comment_id => $item_id } )->count == 1 ? die \['comment_id', 'comment alredy replied to'] : ()
             }
 
+            # Crio a private reply
+            my $private_reply = $self->create(\%values);
+
+            # Valido se o político está com as private replies ativas
+            # e também se não está dentro da janela de 'delay'
             my $politician = $self->result_source->schema->resultset("Politician")->find($values{politician_id});
             my $private_reply_config = $politician->politician_private_reply_config;
-            use DDP; p $private_reply_config;
 
             my $access_token = $politician->fb_page_access_token;
 
@@ -109,8 +113,8 @@ sub action_specs {
             my $office_name     = $politician->office->name;
             my $article         = $politician->gender eq 'F' ? 'da' : 'do';
 
-            if ($private_reply_config->active) {
-
+            if ( $private_reply_config->active ) {
+                use DDP; p $private_reply->created_at;
                 $self->_httpcb->add(
                     url     => "$ENV{FB_API_URL}/$item_id/private_replies?access_token=$access_token",
                     method  => "post",
@@ -123,7 +127,6 @@ sub action_specs {
                 $values{reply_sent} = 1;
             }
 
-            my $private_reply = $self->create(\%values);
 
             return $private_reply;
         }

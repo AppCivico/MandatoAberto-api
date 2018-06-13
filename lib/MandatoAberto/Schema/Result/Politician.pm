@@ -103,12 +103,6 @@ __PACKAGE__->table("politician");
   data_type: 'timestamp'
   is_nullable: 1
 
-=head2 private_reply_activated
-
-  data_type: 'boolean'
-  default_value: true
-  is_nullable: 0
-
 =head2 picframe_url
 
   data_type: 'text'
@@ -139,8 +133,6 @@ __PACKAGE__->add_columns(
   { data_type => "boolean", default_value => \"false", is_nullable => 0 },
   "premium_updated_at",
   { data_type => "timestamp", is_nullable => 1 },
-  "private_reply_activated",
-  { data_type => "boolean", default_value => \"true", is_nullable => 0 },
   "picframe_url",
   { data_type => "text", is_nullable => 1 },
 );
@@ -430,8 +422,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-06-13 14:54:06
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:4s8kzxwetcM/C+G7hTJqWA
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-06-13 17:37:48
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:BSbvdI3L0lnI0CguI18+iw
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
