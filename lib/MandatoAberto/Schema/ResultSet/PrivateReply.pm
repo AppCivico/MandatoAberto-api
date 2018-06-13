@@ -57,6 +57,10 @@ sub verifiers_specs {
                 permalink => {
                     required   => 0,
                     type       => "Str",
+                },
+                fb_user_id => {
+                    required => 1,
+                    type     => "Str"
                 }
             }
         ),
@@ -96,6 +100,8 @@ sub action_specs {
             }
 
             my $politician = $self->result_source->schema->resultset("Politician")->find($values{politician_id});
+            my $private_reply_config = $politician->politician_private_reply_config;
+            use DDP; p $private_reply_config;
 
             my $access_token = $politician->fb_page_access_token;
 
@@ -103,7 +109,7 @@ sub action_specs {
             my $office_name     = $politician->office->name;
             my $article         = $politician->gender eq 'F' ? 'da' : 'do';
 
-            if ($politician->private_reply_activated) {
+            if ($private_reply_config->active) {
 
                 $self->_httpcb->add(
                     url     => "$ENV{FB_API_URL}/$item_id/private_replies?access_token=$access_token",

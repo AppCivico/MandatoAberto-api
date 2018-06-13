@@ -30,7 +30,8 @@ db_transaction {
             post_id        => $post_id,
             comment_id     => $comment_id,
             permalink      => $permalink,
-            security_token => $security_token
+            security_token => $security_token,
+            user_id        => 'foobar'
         ]
     ;
 
@@ -43,7 +44,8 @@ db_transaction {
             post_id        => $post_id,
             comment_id     => $comment_id,
             permalink      => $permalink,
-            security_token => $security_token
+            security_token => $security_token,
+            user_id        => 'foobar'
 
         ]
     ;
@@ -58,7 +60,8 @@ db_transaction {
             item           => 'foobar',
             comment_id     => $comment_id,
             permalink      => $permalink,
-            security_token => $security_token
+            security_token => $security_token,
+            user_id        => 'foobar'
         ]
     ;
 
@@ -71,7 +74,8 @@ db_transaction {
             item           => 'comment',
             comment_id     => $comment_id,
             permalink      => $permalink,
-            security_token => $security_token
+            security_token => $security_token,
+            user_id        => 'foobar'
         ]
     ;
 
@@ -85,7 +89,8 @@ db_transaction {
             item           => 'comment',
             comment_id     => $comment_id,
             permalink      => $permalink,
-            security_token => $security_token
+            security_token => $security_token,
+            user_id        => 'foobar'
         ]
     ;
 
@@ -98,7 +103,21 @@ db_transaction {
             post_id        => $post_id,
             item           => 'comment',
             permalink      => $permalink,
-            security_token => $security_token
+            security_token => $security_token,
+            user_id        => 'foobar'
+        ]
+    ;
+
+    rest_post "/api/chatbot/private-reply",
+        name    => 'private reply without user_id',
+        is_fail => 1,
+        code    => 400,
+        [
+            page_id        => $page_id,
+            post_id        => $post_id,
+            item           => 'comment',
+            permalink      => $permalink,
+            security_token => $security_token,
         ]
     ;
 
@@ -111,7 +130,8 @@ db_transaction {
             post_id        => $post_id,
             comment_id     => $comment_id,
             permalink      => $permalink,
-            security_token => $security_token
+            security_token => $security_token,
+            user_id        => 'foobar'
         ]
     ;
 
@@ -125,7 +145,8 @@ db_transaction {
             item           => 'comment',
             comment_id     => $comment_id,
             permalink      => fake_words(1)->(),
-            security_token => $security_token
+            security_token => $security_token,
+            user_id        => 'foobar'
         ]
     ;
 
@@ -137,7 +158,8 @@ db_transaction {
             post_id        => $post_id,
             item           => 'post',
             permalink      => fake_words(1)->(),
-            security_token => $security_token
+            security_token => $security_token,
+            user_id        => 'foobar'
         ]
     ;
 
@@ -150,7 +172,8 @@ db_transaction {
             post_id        => $post_id,
             item           => 'post',
             permalink      => fake_words(1)->(),
-            security_token => $security_token
+            security_token => $security_token,
+            user_id        => 'foobar'
         ]
     ;
 
@@ -167,7 +190,8 @@ db_transaction {
             item           => 'post',
             post_id        => fake_words(2)->(),
             permalink      => fake_words(2)->(),
-            security_token => $security_token
+            security_token => $security_token,
+            user_id        => 'foobar'
         ]
     ;
 

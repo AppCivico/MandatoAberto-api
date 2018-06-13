@@ -1,12 +1,12 @@
 use utf8;
-package MandatoAberto::Schema::Result::PrivateReply;
+package MandatoAberto::Schema::Result::PoliticianPrivateReplyConfig;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
 
 =head1 NAME
 
-MandatoAberto::Schema::Result::PrivateReply
+MandatoAberto::Schema::Result::PoliticianPrivateReplyConfig
 
 =cut
 
@@ -34,11 +34,11 @@ extends 'DBIx::Class::Core';
 
 __PACKAGE__->load_components("InflateColumn::DateTime", "TimeStamp", "PassphraseColumn");
 
-=head1 TABLE: C<private_reply>
+=head1 TABLE: C<politician_private_reply_config>
 
 =cut
 
-__PACKAGE__->table("private_reply");
+__PACKAGE__->table("politician_private_reply_config");
 
 =head1 ACCESSORS
 
@@ -47,7 +47,7 @@ __PACKAGE__->table("private_reply");
   data_type: 'integer'
   is_auto_increment: 1
   is_nullable: 0
-  sequence: 'private_reply_id_seq'
+  sequence: 'politician_private_reply_config_id_seq'
 
 =head2 politician_id
 
@@ -55,42 +55,21 @@ __PACKAGE__->table("private_reply");
   is_foreign_key: 1
   is_nullable: 0
 
-=head2 item
-
-  data_type: 'text'
-  is_nullable: 0
-
-=head2 post_id
-
-  data_type: 'text'
-  is_nullable: 0
-
-=head2 comment_id
-
-  data_type: 'text'
-  is_nullable: 1
-
-=head2 permalink
-
-  data_type: 'text'
-  is_nullable: 1
-
-=head2 reply_sent
+=head2 active
 
   data_type: 'boolean'
-  default_value: false
+  default_value: true
   is_nullable: 0
 
-=head2 created_at
+=head2 delay_between_private_replies
+
+  data_type: 'interval'
+  default_value: '01:00:00'
+  is_nullable: 0
+
+=head2 updated_at
 
   data_type: 'timestamp'
-  default_value: current_timestamp
-  is_nullable: 0
-  original: {default_value => \"now()"}
-
-=head2 fb_user_id
-
-  data_type: 'text'
   is_nullable: 1
 
 =cut
@@ -101,29 +80,16 @@ __PACKAGE__->add_columns(
     data_type         => "integer",
     is_auto_increment => 1,
     is_nullable       => 0,
-    sequence          => "private_reply_id_seq",
+    sequence          => "politician_private_reply_config_id_seq",
   },
   "politician_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
-  "item",
-  { data_type => "text", is_nullable => 0 },
-  "post_id",
-  { data_type => "text", is_nullable => 0 },
-  "comment_id",
-  { data_type => "text", is_nullable => 1 },
-  "permalink",
-  { data_type => "text", is_nullable => 1 },
-  "reply_sent",
-  { data_type => "boolean", default_value => \"false", is_nullable => 0 },
-  "created_at",
-  {
-    data_type     => "timestamp",
-    default_value => \"current_timestamp",
-    is_nullable   => 0,
-    original      => { default_value => \"now()" },
-  },
-  "fb_user_id",
-  { data_type => "text", is_nullable => 1 },
+  "active",
+  { data_type => "boolean", default_value => \"true", is_nullable => 0 },
+  "delay_between_private_replies",
+  { data_type => "interval", default_value => "01:00:00", is_nullable => 0 },
+  "updated_at",
+  { data_type => "timestamp", is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -137,6 +103,23 @@ __PACKAGE__->add_columns(
 =cut
 
 __PACKAGE__->set_primary_key("id");
+
+=head1 UNIQUE CONSTRAINTS
+
+=head2 C<politician_private_reply_config_politician_id_key>
+
+=over 4
+
+=item * L</politician_id>
+
+=back
+
+=cut
+
+__PACKAGE__->add_unique_constraint(
+  "politician_private_reply_config_politician_id_key",
+  ["politician_id"],
+);
 
 =head1 RELATIONS
 
@@ -156,8 +139,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-06-13 14:38:14
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:5zOjuEq5FaNSB5szzpO6vA
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-06-13 17:08:49
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:PP0bx1xFinvPfYZdXS5e7w
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
