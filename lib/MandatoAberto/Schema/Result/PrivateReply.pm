@@ -208,7 +208,7 @@ sub send {
         my $office_name     = $politician->office->name;
         my $article         = $politician->gender eq 'F' ? 'da' : 'do';
 
-        my $item_id = $self->post_id ? $self->post_id : $self->comment_id;
+        my $item_id = $self->comment_id ? $self->comment_id : $self->post_id;
 
         if ( is_test() ) {
             $self->update( { reply_sent => 1 } );
