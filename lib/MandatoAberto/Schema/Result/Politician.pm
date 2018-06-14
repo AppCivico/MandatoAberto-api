@@ -103,12 +103,6 @@ __PACKAGE__->table("politician");
   data_type: 'timestamp'
   is_nullable: 1
 
-=head2 private_reply_activated
-
-  data_type: 'boolean'
-  default_value: true
-  is_nullable: 0
-
 =head2 picframe_url
 
   data_type: 'text'
@@ -139,8 +133,6 @@ __PACKAGE__->add_columns(
   { data_type => "boolean", default_value => \"false", is_nullable => 0 },
   "premium_updated_at",
   { data_type => "timestamp", is_nullable => 1 },
-  "private_reply_activated",
-  { data_type => "boolean", default_value => \"true", is_nullable => 0 },
   "picframe_url",
   { data_type => "text", is_nullable => 1 },
 );
@@ -309,6 +301,21 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 politician_private_reply_config
+
+Type: might_have
+
+Related object: L<MandatoAberto::Schema::Result::PoliticianPrivateReplyConfig>
+
+=cut
+
+__PACKAGE__->might_have(
+  "politician_private_reply_config",
+  "MandatoAberto::Schema::Result::PoliticianPrivateReplyConfig",
+  { "foreign.politician_id" => "self.user_id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 politician_votolegal_integrations
 
 Type: has_many
@@ -415,8 +422,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-06-07 10:58:41
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:xEIOastVANQfTjBXDWo12w
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-06-13 17:37:48
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:BSbvdI3L0lnI0CguI18+iw
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
@@ -509,7 +516,7 @@ sub verifiers_specs {
                 picframe_url => {
                     required => 0,
                     type     => URI
-                }
+                },
             }
         ),
     };
@@ -556,6 +563,12 @@ sub action_specs {
 
                 # Setando o botão get started
                 $self->set_get_started_button_and_persistent_menu($values{fb_page_access_token});
+            }
+
+            if ( exists $values{private_reply_activated} ) {
+                my $private_reply_activated = delete $values{private_reply_activated};
+
+                $self->politician_private_reply_config->update( { active => $private_reply_activated } );
             }
 
             $self->user->update( { password => $values{new_password} } ) and delete $values{new_password} if $values{new_password};

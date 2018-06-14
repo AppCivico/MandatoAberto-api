@@ -59,7 +59,7 @@ sub result_GET {
         $c,
         entity => {
             ( map { $_ => $c->stash->{politician}->$_ } qw/
-                name gender premium private_reply_activated/ ),
+                name gender premium/ ),
 
             fb_page_id => $facebook_active_page ? $c->stash->{politician}->fb_page_id : undef,
 
