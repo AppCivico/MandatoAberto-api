@@ -99,38 +99,27 @@ sub action_specs {
                 $self->search( { comment_id => $item_id } )->count == 1 ? die \['comment_id', 'comment alredy replied to'] : ()
             }
 
-            # Crio a private reply
             my $private_reply = $self->create(\%values);
-
-            # Valido se o político está com as private replies ativas
-            # e também se não está dentro da janela de 'delay'
-            my $politician = $self->result_source->schema->resultset("Politician")->find($values{politician_id});
-            my $private_reply_config = $politician->politician_private_reply_config;
-
-            my $access_token = $politician->fb_page_access_token;
-
-            my $politician_name = $politician->name;
-            my $office_name     = $politician->office->name;
-            my $article         = $politician->gender eq 'F' ? 'da' : 'do';
-
-            if ( $private_reply_config->active ) {
-                use DDP; p $private_reply->created_at;
-                $self->_httpcb->add(
-                    url     => "$ENV{FB_API_URL}/$item_id/private_replies?access_token=$access_token",
-                    method  => "post",
-                    headers => 'Content-Type: application/json',
-                    body    => encode_json {
-                        message => "Sou o Assistente virtual $article $office_name $politician_name. Sou um robô que vai te ajudar a conhecer nosso trabalho e entregar mensagens para nossa equipe.\n\nVí que você realizou um comentário em nossa página. Se quiser enviar uma mensagem para nossa equipe ou saber mais sobre nosso trabalho, digite 'Sim'."
-                    }
-                );
-
-                $values{reply_sent} = 1;
-            }
-
+            $private_reply->send();
 
             return $private_reply;
         }
     };
+}
+
+sub get_last_sent_private_reply {
+    my ($self, $politician_id, $fb_user_id) = @_;
+
+	my $last_sent_private_reply = $self->result_source->schema->resultset("PrivateReply")->search(
+		{
+			reply_sent    => 1,
+			fb_user_id    => $fb_user_id,
+            politician_id => $politician_id
+		},
+		{ order_by => { -desc => 'created_at' } }
+	)->first;
+
+    return $last_sent_private_reply;
 }
 
 sub _build__httpcb { WebService::HttpCallback::Async->instance }

@@ -516,7 +516,7 @@ sub verifiers_specs {
                 picframe_url => {
                     required => 0,
                     type     => URI
-                }
+                },
             }
         ),
     };
@@ -563,6 +563,12 @@ sub action_specs {
 
                 # Setando o botão get started
                 $self->set_get_started_button_and_persistent_menu($values{fb_page_access_token});
+            }
+
+            if ( exists $values{private_reply_activated} ) {
+                my $private_reply_activated = delete $values{private_reply_activated};
+
+                $self->politician_private_reply_config->update( { active => $private_reply_activated } );
             }
 
             $self->user->update( { password => $values{new_password} } ) and delete $values{new_password} if $values{new_password};

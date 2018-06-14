@@ -15,6 +15,7 @@ db_transaction {
         fb_page_access_token => 'foo'
     );
     my $politician_id = stash "politician.id";
+    my $politician    = $schema->resultset("Politician")->find($politician_id);
 
     my $item       = 'comment';
     my $post_id    = fake_words(1)->();
@@ -178,26 +179,60 @@ db_transaction {
     ;
 
     # Desativando private reply para o político
-    # $schema->resultset("Politician")->find($politician_id)->update( { private_reply_activated => 0 } );
+    api_auth_as user_id => $politician_id;
+    rest_put "/api/politician/$politician_id",
+        name => 'Deactivating private replies',
+        [ private_reply_activated => 0 ]
+    ;
 
-    # # Private reply foi criada no entanto não foi enviada
-    # rest_post "/api/chatbot/private-reply",
-    #     name                => 'sucessful private-reply creation',
-    #     automatic_load_item => 0,
-    #     stash               => 'r1',
-    #     [
-    #         page_id        => $page_id,
-    #         item           => 'post',
-    #         post_id        => fake_words(2)->(),
-    #         permalink      => fake_words(2)->(),
-    #         security_token => $security_token,
-    #         user_id        => 'foobar'
-    #     ]
-    # ;
+    ok ( $politician = $politician->discard_changes, 'discard changes' );
+    is ( $politician->politician_private_reply_config->active, 0, 'private replies deactivated' );
 
-    # my $private_reply = $schema->resultset("PrivateReply")->find(stash 'r1.id');
+    # Private reply foi criada no entanto não foi enviada
+    rest_post "/api/chatbot/private-reply",
+        name                => 'sucessful private-reply creation',
+        automatic_load_item => 0,
+        stash               => 'r1',
+        [
+            page_id        => $page_id,
+            item           => 'post',
+            post_id        => fake_words(2)->(),
+            permalink      => fake_words(2)->(),
+            security_token => $security_token,
+            user_id        => 'foobar'
+        ]
+    ;
 
-    # is ($private_reply->reply_sent, 0, 'reply was not sent');
+    my $private_reply = $schema->resultset("PrivateReply")->find(stash 'r1.id');
+
+    is ($private_reply->reply_sent, 0, 'reply was not sent');
+
+    rest_put "/api/politician/$politician_id",
+        name => 'Deactivating private replies',
+        [ private_reply_activated => 1 ]
+    ;
+
+    ok ( $politician = $politician->discard_changes, 'discard changes' );
+    is ( $politician->politician_private_reply_config->active, 1, 'private replies activated' );
+
+    # Private reply foi criada no entanto não foi enviada por estar dentro do delay
+    rest_post "/api/chatbot/private-reply",
+        name                => 'sucessful private-reply creation',
+        automatic_load_item => 0,
+        stash               => 'r2',
+        [
+            page_id        => $page_id,
+            item           => 'post',
+            post_id        => fake_words(2)->(),
+            permalink      => fake_words(2)->(),
+            security_token => $security_token,
+            user_id        => 'foobar'
+        ]
+    ;
+
+	my $delayed_private_reply = $schema->resultset("PrivateReply")->find(stash 'r2.id');
+
+	is($delayed_private_reply->reply_sent, 0, 'reply was not sent');
 
 };
 
