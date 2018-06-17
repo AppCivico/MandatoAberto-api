@@ -15,6 +15,7 @@ db_transaction {
         fb_page_access_token => 'foo'
     );
     my $politician_id = stash "politician.id";
+    my $politician    = $schema->resultset("Politician")->find($politician_id);
 
     my $item       = 'comment';
     my $post_id    = fake_words(1)->();
@@ -30,7 +31,8 @@ db_transaction {
             post_id        => $post_id,
             comment_id     => $comment_id,
             permalink      => $permalink,
-            security_token => $security_token
+            security_token => $security_token,
+            user_id        => 'foobar'
         ]
     ;
 
@@ -43,7 +45,8 @@ db_transaction {
             post_id        => $post_id,
             comment_id     => $comment_id,
             permalink      => $permalink,
-            security_token => $security_token
+            security_token => $security_token,
+            user_id        => 'foobar'
 
         ]
     ;
@@ -58,7 +61,8 @@ db_transaction {
             item           => 'foobar',
             comment_id     => $comment_id,
             permalink      => $permalink,
-            security_token => $security_token
+            security_token => $security_token,
+            user_id        => 'foobar'
         ]
     ;
 
@@ -71,7 +75,8 @@ db_transaction {
             item           => 'comment',
             comment_id     => $comment_id,
             permalink      => $permalink,
-            security_token => $security_token
+            security_token => $security_token,
+            user_id        => 'foobar'
         ]
     ;
 
@@ -85,7 +90,8 @@ db_transaction {
             item           => 'comment',
             comment_id     => $comment_id,
             permalink      => $permalink,
-            security_token => $security_token
+            security_token => $security_token,
+            user_id        => 'foobar'
         ]
     ;
 
@@ -98,7 +104,21 @@ db_transaction {
             post_id        => $post_id,
             item           => 'comment',
             permalink      => $permalink,
-            security_token => $security_token
+            security_token => $security_token,
+            user_id        => 'foobar'
+        ]
+    ;
+
+    rest_post "/api/chatbot/private-reply",
+        name    => 'private reply without user_id',
+        is_fail => 1,
+        code    => 400,
+        [
+            page_id        => $page_id,
+            post_id        => $post_id,
+            item           => 'comment',
+            permalink      => $permalink,
+            security_token => $security_token,
         ]
     ;
 
@@ -111,7 +131,8 @@ db_transaction {
             post_id        => $post_id,
             comment_id     => $comment_id,
             permalink      => $permalink,
-            security_token => $security_token
+            security_token => $security_token,
+            user_id        => 'foobar'
         ]
     ;
 
@@ -125,7 +146,8 @@ db_transaction {
             item           => 'comment',
             comment_id     => $comment_id,
             permalink      => fake_words(1)->(),
-            security_token => $security_token
+            security_token => $security_token,
+            user_id        => 'foobar'
         ]
     ;
 
@@ -137,7 +159,8 @@ db_transaction {
             post_id        => $post_id,
             item           => 'post',
             permalink      => fake_words(1)->(),
-            security_token => $security_token
+            security_token => $security_token,
+            user_id        => 'foobar'
         ]
     ;
 
@@ -150,12 +173,20 @@ db_transaction {
             post_id        => $post_id,
             item           => 'post',
             permalink      => fake_words(1)->(),
-            security_token => $security_token
+            security_token => $security_token,
+            user_id        => 'foobar'
         ]
     ;
 
     # Desativando private reply para o político
-    $schema->resultset("Politician")->find($politician_id)->update( { private_reply_activated => 0 } );
+    api_auth_as user_id => $politician_id;
+    rest_put "/api/politician/$politician_id",
+        name => 'Deactivating private replies',
+        [ private_reply_activated => 0 ]
+    ;
+
+    ok ( $politician = $politician->discard_changes, 'discard changes' );
+    is ( $politician->politician_private_reply_config->active, 0, 'private replies deactivated' );
 
     # Private reply foi criada no entanto não foi enviada
     rest_post "/api/chatbot/private-reply",
@@ -167,13 +198,41 @@ db_transaction {
             item           => 'post',
             post_id        => fake_words(2)->(),
             permalink      => fake_words(2)->(),
-            security_token => $security_token
+            security_token => $security_token,
+            user_id        => 'foobar'
         ]
     ;
 
     my $private_reply = $schema->resultset("PrivateReply")->find(stash 'r1.id');
 
     is ($private_reply->reply_sent, 0, 'reply was not sent');
+
+    rest_put "/api/politician/$politician_id",
+        name => 'Deactivating private replies',
+        [ private_reply_activated => 1 ]
+    ;
+
+    ok ( $politician = $politician->discard_changes, 'discard changes' );
+    is ( $politician->politician_private_reply_config->active, 1, 'private replies activated' );
+
+    # Private reply foi criada no entanto não foi enviada por estar dentro do delay
+    rest_post "/api/chatbot/private-reply",
+        name                => 'sucessful private-reply creation',
+        automatic_load_item => 0,
+        stash               => 'r2',
+        [
+            page_id        => $page_id,
+            item           => 'post',
+            post_id        => fake_words(2)->(),
+            permalink      => fake_words(2)->(),
+            security_token => $security_token,
+            user_id        => 'foobar'
+        ]
+    ;
+
+	my $delayed_private_reply = $schema->resultset("PrivateReply")->find(stash 'r2.id');
+
+	is($delayed_private_reply->reply_sent, 0, 'reply was not sent');
 
 };
 

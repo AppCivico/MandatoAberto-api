@@ -37,7 +37,7 @@ db_transaction {
 
     api_auth_as user_id => 1;
 
-    is ($schema->resultset('EmailQueue')->count, "1", "only greetings and confirm emails queued");
+    is ($schema->resultset('EmailQueue')->count, "2", "only greetings and new register emails queued");
 
     rest_post "/api/admin/politician/approve",
         name => "approving politician",
@@ -48,7 +48,7 @@ db_transaction {
         ]
     ;
 
-    is ($schema->resultset('EmailQueue')->count, "2", "all emails queued");
+    is ($schema->resultset('EmailQueue')->count, "3", "all emails queued");
 
     $schema->resultset("User")->find($politician_id)->update({ approved => 1 });
 

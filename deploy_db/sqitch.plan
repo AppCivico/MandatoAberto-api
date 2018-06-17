@@ -82,3 +82,5 @@
 0078-votolegal-integration-username [0077-votolegal-integration] 2018-05-02T17:16:21Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the 'votolegal_username' on the 'politician_votolegal_integration' table
 0079-add-new-office [0078-votolegal-integration-username] 2018-05-23T14:04:55Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding two more offices
 0080-add-picframe_url [0079-add-new-office] 2018-06-07T14:04:56Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding picframe_url to the politician table
+0081-add-fb_user_id-on-private_reply [0080-add-picframe_url] 2018-06-13T17:37:43Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the 'fb_user_id' column on the 'private_reply' table
+0082-politician_private_reply_config [0081-add-fb_user_id-on-private_reply] 2018-06-13T17:53:03Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Creating the 'politician_private_reply_config' table

@@ -10,7 +10,7 @@ db_transaction {
     create_politician;
     my $politician_id = stash "politician.id";
 
-    is ($schema->resultset('EmailQueue')->count, "1", "only greetings email queued");
+    is ($schema->resultset('EmailQueue')->count, "2", "only greetings and new_register emails queued");
 
     my $politician_user = $schema->resultset("User")->find($politician_id);
 

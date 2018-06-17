@@ -41,7 +41,7 @@ sub verifiers_specs {
                 content => {
                     required   => 1,
                     type       => "Str",
-                    max_length => 250,
+                    max_length => 1000,
                 },
                 name => {
                     required  => 1,
