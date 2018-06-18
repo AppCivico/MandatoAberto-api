@@ -108,6 +108,11 @@ __PACKAGE__->table("direct_message");
   data_type: 'text'
   is_nullable: 1
 
+=head2 quick_replies
+
+  data_type: 'json'
+  is_nullable: 1
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -140,6 +145,8 @@ __PACKAGE__->add_columns(
   { data_type => "text", is_nullable => 1 },
   "attachment_url",
   { data_type => "text", is_nullable => 1 },
+  "quick_replies",
+  { data_type => "json", is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -187,8 +194,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-06-09 01:41:55
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:KVqN+szviCT5uZWhkvQIqw
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-06-17 17:15:09
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:P5XfoSbuM9Ml0/sPKgpSlw
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

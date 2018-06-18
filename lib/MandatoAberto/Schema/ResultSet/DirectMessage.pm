@@ -162,6 +162,7 @@ sub action_specs {
 
             # Montando o objeto a ser enviado no 'message'
             my $message_structure = {
+
                 "$values{type}" => $values{type} eq 'text' ? $values{content} : ;
             };
 
