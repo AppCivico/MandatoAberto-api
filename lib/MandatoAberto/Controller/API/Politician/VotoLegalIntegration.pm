@@ -3,6 +3,8 @@ use common::sense;
 use Moose;
 use namespace::autoclean;
 
+use MandatoAberto::Utils qw/is_test/;
+
 use Furl;
 use JSON::MaybeXS;
 
@@ -28,19 +30,27 @@ __PACKAGE__->config(
         die \['votolegal_email', 'missing'] unless $votolegal_email;
 
         my $politician = $c->stash->{politician};
+        die \['politician_id', 'no active fb_page_id for this politician'] unless $politician->fb_page_id;
 
-        my $res = $furl->post(
-            $ENV{VOTOLEGAL_API_URL} . '/candidate/mandatoaberto_integration',
-            [],
-            {
-                security_token   => $security_token,
-                email            => $votolegal_email,
-                mandatoaberto_id => $politician->id
-            }
-        );
-        die \['votolegal_email', 'non existent on voto legal'] unless $res->is_success;
+        my $res;
+        if ( is_test() ) {
+            $res = $MandatoAberto::Test::Further::votolegal_response;
+        }
+        else {
+			$res = $furl->post(
+				$ENV{VOTOLEGAL_API_URL} . '/candidate/mandatoaberto_integration',
+				[],
+				{
+                    page_id          => $politician->fb_page_id,
+					security_token   => $security_token,
+					email            => $votolegal_email,
+					mandatoaberto_id => $politician->id
+				}
+			);
+			die \['votolegal_email', 'non existent on voto legal'] unless $res->is_success;
 
-        $res = decode_json $res->decoded_content;
+    		$res = decode_json $res->decoded_content;
+        }
 
         die \['invalid response', 'id'] if !$res->{id} || !$res->{username};
 

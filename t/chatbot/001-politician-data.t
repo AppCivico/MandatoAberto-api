@@ -30,10 +30,12 @@ db_transaction {
     my $politician_id = stash "politician.id";
 
     api_auth_as user_id => $politician_id;
+
+    &setup_votolegal_integration_success;
     rest_post "/api/politician/$politician_id/votolegal-integration",
         name                => "Creating Voto Legal integration",
         automatic_load_item => 0,
-        [ votolegal_email  => 'demonstracao@votolegal.com.br' ]
+        [ votolegal_email  => 'foobar@email.com' ]
     ;
 
     $schema->resultset("PoliticianContact")->create({

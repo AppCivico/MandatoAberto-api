@@ -16,10 +16,12 @@ db_transaction {
 
     api_auth_as "user_id" => $politician_id;
 
+    &setup_votolegal_integration_success;
+
     rest_post "/api/politician/$politician_id/votolegal-integration",
         name                => "Creating Voto Legal integration",
         automatic_load_item => 0,
-        [ votolegal_email  => 'demonstracao@votolegal.com.br' ]
+        [ votolegal_email  => 'foobar@email.com' ]
     ;
 
     rest_post "/api/politician/$politician_id/votolegal-integration",
@@ -27,6 +29,8 @@ db_transaction {
         is_fail => 1,
         code    => 400,
     ;
+
+    &setup_votolegal_integration_fail;
 
     rest_post "/api/politician/$politician_id/votolegal-integration",
         name    => "Integration with non-existent votolegal_email",
@@ -50,7 +54,7 @@ db_transaction {
 
         my $votolegal_integration = $res->{votolegal_integration};
 
-        is ( $votolegal_integration->{votolegal_username}, 'josehernandes', 'voto legal username' );
+        is ( $votolegal_integration->{votolegal_username}, 'fake_username', 'voto legal username' );
         ok ( defined( $votolegal_integration->{votolegal_url} ) , 'voto legal url' );
     };
 
