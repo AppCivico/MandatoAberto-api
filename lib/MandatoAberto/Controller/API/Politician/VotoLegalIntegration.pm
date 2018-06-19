@@ -44,7 +44,8 @@ __PACKAGE__->config(
                     page_id          => $politician->fb_page_id,
 					security_token   => $security_token,
 					email            => $votolegal_email,
-					mandatoaberto_id => $politician->id
+					mandatoaberto_id => $politician->id,
+                    greeting         => $c->req->params->{greeting}
 				}
 			);
 			die \['votolegal_email', 'non existent on voto legal'] unless $res->is_success;

@@ -35,7 +35,7 @@ sub verifiers_specs {
                     required => 1,
                     type     => "Str"
                 },
-                logged_in_greeting => {
+                greeting => {
                     required   => 0,
                     type       => "Str",
                     max_length => 80

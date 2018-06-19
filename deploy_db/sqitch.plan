@@ -85,3 +85,4 @@
 0081-add-fb_user_id-on-private_reply [0080-add-picframe_url] 2018-06-13T17:37:43Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the 'fb_user_id' column on the 'private_reply' table
 0082-politician_private_reply_config [0081-add-fb_user_id-on-private_reply] 2018-06-13T17:53:03Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Creating the 'politician_private_reply_config' table
 0083-add-logged_in_greeting [0082-politician_private_reply_config] 2018-06-18T21:48:29Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the 'logged_in_greeting' on the 'politician_votolegal_integration'
+0084-rename-logged_in_greeting [0083-add-logged_in_greeting] 2018-06-19T18:03:41Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Renaming the 'logged_in_greeting' to 'greeting' on the 'politician_votolegal_integration' table

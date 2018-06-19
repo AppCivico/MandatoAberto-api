@@ -25,60 +25,61 @@ sub list_GET {
     die \["fb_page_id", "missing"] unless $page_id;
 
     my $politician = $c->model("DB::Politician")->search( { fb_page_id => $page_id } )->next;
+    my $politician_greeting = $politician->politicians_greeting->next;
 
     return $self->status_ok(
         $c,
-        entity => {
+        entity =>
             map {
                 my $p = $_;
 
-                user_id               => $p->get_column('user_id'),
-                name                  => $p->get_column('name'),
-                gender                => $p->get_column('gender'),
-                address_city          => $p->get_column('address_city_id'),
-                address_state         => $p->get_column('address_state_id'),
-                fb_access_token       => $p->get_column('fb_page_access_token'),
-                picframe_url          => $p->get_column('picframe_url'),
+                +{
+                    user_id               => $p->get_column('user_id'),
+                    name                  => $p->get_column('name'),
+                    gender                => $p->get_column('gender'),
+                    address_city          => $p->get_column('address_city_id'),
+                    address_state         => $p->get_column('address_state_id'),
+                    fb_access_token       => $p->get_column('fb_page_access_token'),
+                    picframe_url          => $p->get_column('picframe_url'),
 
-                votolegal_integration => {
-                    map {
-                        my $vl = $_;
+                    ( $politician->has_votolegal_integration ?
+                    (
+                        votolegal_integration => {
+                            map {
+                                my $vl = $_;
 
-                        votolegal_username => $vl->get_column("username"),
-                        votolegal_url      => $vl->get_column("website_url")
-                    } $p->politician_votolegal_integrations->all()
-                },
+                                votolegal_username => $vl->get_column("username"),
+                                votolegal_url      => $vl->get_column("website_url")
+                            } $p->politician_votolegal_integrations->all()
+                        }
+                    ) : ()
+                    ),
 
-                party => {
-                    name    => $p->party->get_column('name'),
-                    acronym => $p->party->get_column('acronym'),
-                },
-                office => {
-                    name => $p->office->get_column('name'),
-                },
-                contact => {
-                    map {
-                        my $c = $_;
+                    party => {
+                        name    => $p->party->get_column('name'),
+                        acronym => $p->party->get_column('acronym'),
+                    },
+                    office => {
+                        name => $p->office->get_column('name'),
+                    },
+                    contact => {
+                        map {
+                            my $c = $_;
 
-                        cellphone => $c->get_column('cellphone'),
-                        email     => $c->get_column('email'),
-                        facebook  => $c->get_column('facebook'),
-                        url       => $c->get_column('url'),
-                        twitter   => $c->get_column('twitter'),
-                    } $p->politician_contacts->all()
-                },
-                greeting =>
-                    map {
-                        my $g = $_;
-
-                        $g->greeting->get_column('content');
-                    } $p->politicians_greeting->all()
+                            cellphone => $c->get_column('cellphone'),
+                            email     => $c->get_column('email'),
+                            facebook  => $c->get_column('facebook'),
+                            url       => $c->get_column('url'),
+                            twitter   => $c->get_column('twitter'),
+                        } $p->politician_contacts->all()
+                    },
+                    greeting => $politician_greeting ? $politician_greeting->greeting->content : undef
+                }
 
             } $c->model("DB::Politician")->search(
                 { fb_page_id => $page_id },
                 { prefetch => [ qw/politician_contacts party office /, { 'politicians_greeting' => 'greeting' } ] }
             )
-        }
     )
 }
 

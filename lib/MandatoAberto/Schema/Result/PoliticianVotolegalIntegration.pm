@@ -82,7 +82,7 @@ __PACKAGE__->table("politician_votolegal_integration");
   data_type: 'text'
   is_nullable: 0
 
-=head2 logged_in_greeting
+=head2 greeting
 
   data_type: 'text'
   is_nullable: 1
@@ -114,7 +114,7 @@ __PACKAGE__->add_columns(
   },
   "username",
   { data_type => "text", is_nullable => 0 },
-  "logged_in_greeting",
+  "greeting",
   { data_type => "text", is_nullable => 1 },
 );
 
@@ -148,10 +148,50 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-06-18 18:49:00
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:YZZYW0WGELxtxpAo6Q0Baw
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-06-19 15:04:19
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Gz3boqcL5prHep1YR80bjw
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
+
+use MandatoAberto::Utils qw/is_test/;
+
+use Furl;
+use JSON::MaybeXS;
+
+sub update_votolegal_integration {
+    my ($self) = @_;
+
+	my $security_token = $ENV{VOTOLEGAL_SECURITY_TOKEN};
+	die \['missing env', 'VOTOLEGAL_SECURITY_TOKEN'] unless $security_token;
+
+    my $furl = Furl->new();
+
+    my $res;
+    if ( is_test() ) {
+        $res = $MandatoAberto::Test::Further::votolegal_response;
+    }
+    else {
+        $res = $furl->post(
+            $ENV{VOTOLEGAL_API_URL} . '/candidate/mandatoaberto_integration',
+            [],
+            {
+                page_id          => $self->politician->fb_page_id,
+                security_token   => $security_token,
+                email            => $self->votolegal_email,
+                mandatoaberto_id => $self->politician_id,
+                greeting         => $self->greeting
+            }
+        );
+        die \['votolegal_email', 'non existent on voto legal'] unless $res->is_success;
+
+        $res = decode_json $res->decoded_content;
+    }
+
+    die \['invalid response', 'id'] if !$res->{id} || !$res->{username};
+
+    return 1;
+}
+
 __PACKAGE__->meta->make_immutable;
 1;
