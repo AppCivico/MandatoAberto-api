@@ -230,9 +230,9 @@ db_transaction {
         ]
     ;
 
-	my $delayed_private_reply = $schema->resultset("PrivateReply")->find(stash 'r2.id');
+    my $delayed_private_reply = $schema->resultset("PrivateReply")->find(stash 'r2.id');
 
-	is($delayed_private_reply->reply_sent, 0, 'reply was not sent');
+    is($delayed_private_reply->reply_sent, 0, 'reply was not sent');
 
 };
 

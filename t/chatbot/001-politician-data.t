@@ -30,10 +30,12 @@ db_transaction {
     my $politician_id = stash "politician.id";
 
     api_auth_as user_id => $politician_id;
+
+    &setup_votolegal_integration_success;
     rest_post "/api/politician/$politician_id/votolegal-integration",
         name                => "Creating Voto Legal integration",
         automatic_load_item => 0,
-        [ votolegal_email  => 'demonstracao@votolegal.com.br' ]
+        [ votolegal_email  => 'foobar@email.com' ]
     ;
 
     $schema->resultset("PoliticianContact")->create({
@@ -76,6 +78,8 @@ db_transaction {
         is ($res->{contact}->{url}, "https://www.google.com", 'url');
         is ($res->{greeting}, 'Olá, sou assistente digital do(a) ${user.office.name} ${user.name} Seja bem-vindo a nossa Rede! Queremos um Brasil a melhor e precisamos de sua ajuda.', 'greeting content');
         is ($res->{picframe_url}, 'https://foobar.com.br', 'picframe_url' );
+        is ($res->{votolegal_integration}->{votolegal_username}, 'fake_username', 'voto legal username');
+        is ($res->{votolegal_integration}->{votolegal_url}, 'https://dev.votolegal.com.br/em/fake_username', 'voto legal url');
     };
 };
 

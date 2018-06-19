@@ -34,6 +34,11 @@ sub verifiers_specs {
                 username => {
                     required => 1,
                     type     => "Str"
+                },
+                greeting => {
+                    required   => 0,
+                    type       => "Str",
+                    max_length => 80
                 }
             }
         ),
