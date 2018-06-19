@@ -68,8 +68,8 @@ db_transaction {
         ok ( defined( $votolegal_integration->{votolegal_url} ) , 'voto legal url' );
     };
 
-	create_politician();
-	my $second_politician_id = stash "politician.id";
+    create_politician();
+    my $second_politician_id = stash "politician.id";
 
     api_auth_as user_id => $second_politician_id;
 

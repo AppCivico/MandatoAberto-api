@@ -37,20 +37,20 @@ __PACKAGE__->config(
             $res = $MandatoAberto::Test::Further::votolegal_response;
         }
         else {
-			$res = $furl->post(
-				$ENV{VOTOLEGAL_API_URL} . '/candidate/mandatoaberto_integration',
-				[],
-				{
+            $res = $furl->post(
+                $ENV{VOTOLEGAL_API_URL} . '/candidate/mandatoaberto_integration',
+                [],
+                {
                     page_id          => $politician->fb_page_id,
-					security_token   => $security_token,
-					email            => $votolegal_email,
-					mandatoaberto_id => $politician->id,
+                    security_token   => $security_token,
+                    email            => $votolegal_email,
+                    mandatoaberto_id => $politician->id,
                     greeting         => $c->req->params->{greeting}
-				}
-			);
-			die \['votolegal_email', 'non existent on voto legal'] unless $res->is_success;
+                }
+            );
+            die \['votolegal_email', 'non existent on voto legal'] unless $res->is_success;
 
-    		$res = decode_json $res->decoded_content;
+            $res = decode_json $res->decoded_content;
         }
 
         die \['invalid response', 'id'] if !$res->{id} || !$res->{username};

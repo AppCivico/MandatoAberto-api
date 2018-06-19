@@ -79,7 +79,7 @@ db_transaction {
         is ($res->{greeting}, 'Olá, sou assistente digital do(a) ${user.office.name} ${user.name} Seja bem-vindo a nossa Rede! Queremos um Brasil a melhor e precisamos de sua ajuda.', 'greeting content');
         is ($res->{picframe_url}, 'https://foobar.com.br', 'picframe_url' );
         is ($res->{votolegal_integration}->{votolegal_username}, 'fake_username', 'voto legal username');
-		is ($res->{votolegal_integration}->{votolegal_url}, 'https://dev.votolegal.com.br/em/fake_username', 'voto legal url');
+        is ($res->{votolegal_integration}->{votolegal_url}, 'https://dev.votolegal.com.br/em/fake_username', 'voto legal url');
     };
 };
 

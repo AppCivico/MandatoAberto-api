@@ -110,14 +110,14 @@ sub action_specs {
 sub get_last_sent_private_reply {
     my ($self, $politician_id, $fb_user_id) = @_;
 
-	my $last_sent_private_reply = $self->result_source->schema->resultset("PrivateReply")->search(
-		{
-			reply_sent    => 1,
-			fb_user_id    => $fb_user_id,
+    my $last_sent_private_reply = $self->result_source->schema->resultset("PrivateReply")->search(
+        {
+            reply_sent    => 1,
+            fb_user_id    => $fb_user_id,
             politician_id => $politician_id
-		},
-		{ order_by => { -desc => 'created_at' } }
-	)->first;
+        },
+        { order_by => { -desc => 'created_at' } }
+    )->first;
 
     return $last_sent_private_reply;
 }

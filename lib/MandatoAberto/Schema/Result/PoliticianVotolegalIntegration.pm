@@ -162,8 +162,8 @@ use JSON::MaybeXS;
 sub update_votolegal_integration {
     my ($self) = @_;
 
-	my $security_token = $ENV{VOTOLEGAL_SECURITY_TOKEN};
-	die \['missing env', 'VOTOLEGAL_SECURITY_TOKEN'] unless $security_token;
+    my $security_token = $ENV{VOTOLEGAL_SECURITY_TOKEN};
+    die \['missing env', 'VOTOLEGAL_SECURITY_TOKEN'] unless $security_token;
 
     my $furl = Furl->new();
 
