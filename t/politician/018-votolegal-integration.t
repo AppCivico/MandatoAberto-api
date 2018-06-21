@@ -96,7 +96,23 @@ db_transaction {
         ok ( defined( $res->{votolegal_integration} ),            'votolegal_integration object is defined' );
         is ( $res->{votolegal_integration}->{votolegal_url},      'https://dev.votolegal.com.br/em/fake_username', 'votolegal url' );
         is ( $res->{votolegal_integration}->{votolegal_username}, 'fake_username',                                 'votolegal username' );
-    }
+    };
+
+    api_auth_as user_id => $politician_id;
+
+    rest_get "/api/politician/$politician_id",
+        name => 'get politician data',
+        list => 1,
+        stash => 'get_politician_data',
+    ;
+
+    stash_test "get_politician_data" => sub {
+        my $res = shift;
+
+        ok ( defined( $res->{votolegal_integration} ),            'votolegal_integration object is defined' );
+        is ( $res->{votolegal_integration}->{votolegal_email},      'foobar@email.com', 'votolegal email' );
+        is ( $res->{votolegal_integration}->{greeting}, undef,     'votolegal greeting' );
+    };
 };
 
 done_testing();

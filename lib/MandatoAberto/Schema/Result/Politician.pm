@@ -840,6 +840,12 @@ sub has_votolegal_integration {
     return $self->politician_votolegal_integrations->count > 0 ? 1 : 0;
 }
 
+sub get_votolegal_integration {
+    my ($self) = @_;
+
+    return $self->has_votolegal_integration ? $self->politician_votolegal_integrations->next : 0;
+}
+
 __PACKAGE__->meta->make_immutable;
 1;
 
