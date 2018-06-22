@@ -826,8 +826,8 @@ sub send_new_register_email {
             gender        => $self->gender,
             office        => $self->office->name,
             party         => $self->party->name,
-            address_state => $self->address_state,
-            address_city  => $self->address_city,
+            address_state => $self->address_state->name,
+            address_city  => $self->address_city->name,
         },
     )->build_email();
 
