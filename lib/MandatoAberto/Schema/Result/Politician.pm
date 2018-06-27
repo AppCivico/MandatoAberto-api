@@ -571,6 +571,12 @@ sub action_specs {
                 $self->politician_private_reply_config->update( { active => $private_reply_activated } );
             }
 
+            # Caso ocorra mudança no fb_page_id e o político possuir integração do voto legal
+            # devo avisar o novo page_id ao voto legal
+            if ( $values{fb_page_id} && $self->has_votolegal_integration() ) {
+                $self->politician_votolegal_integrations->next->update_votolegal_integration();
+            }
+
             $self->user->update( { password => $values{new_password} } ) and delete $values{new_password} if $values{new_password};
 
             $self->update(\%values);
@@ -820,12 +826,24 @@ sub send_new_register_email {
             gender        => $self->gender,
             office        => $self->office->name,
             party         => $self->party->name,
-            address_state => $self->address_state,
-            address_city  => $self->address_city,
+            address_state => $self->address_state->name,
+            address_city  => $self->address_city->name,
         },
     )->build_email();
 
     return $self->result_source->schema->resultset('EmailQueue')->create({ body => $email->as_string });
+}
+
+sub has_votolegal_integration {
+    my ($self) = @_;
+
+    return $self->politician_votolegal_integrations->count > 0 ? 1 : 0;
+}
+
+sub get_votolegal_integration {
+    my ($self) = @_;
+
+    return $self->has_votolegal_integration ? $self->politician_votolegal_integrations->next : 0;
 }
 
 __PACKAGE__->meta->make_immutable;

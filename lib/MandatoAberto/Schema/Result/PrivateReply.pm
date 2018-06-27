@@ -172,9 +172,9 @@ use DateTime::Format::Pg;
 use MandatoAberto::Utils qw/is_test/;
 
 has _httpcb => (
-	is         => "ro",
-	isa        => "WebService::HttpCallback::Async",
-	lazy_build => 1,
+    is         => "ro",
+    isa        => "WebService::HttpCallback::Async",
+    lazy_build => 1,
 );
 
 sub send {
@@ -214,14 +214,14 @@ sub send {
             $self->update( { reply_sent => 1 } );
             return 1;
         } else {
-			$self->_httpcb->add(
-				url     => "$ENV{FB_API_URL}/$item_id/private_replies?access_token=$access_token",
-				method  => "post",
-				headers => 'Content-Type: application/json',
-				body    => encode_json {
-					message => "Sou o Assistente virtual $article $office_name $politician_name. Sou um robô que vai te ajudar a conhecer nosso trabalho e entregar mensagens para nossa equipe.\n\nVi que você realizou um comentário em nossa página. Se quiser enviar uma mensagem para nossa equipe ou saber mais sobre nosso trabalho, digite 'Sim'."
-				}
-			);
+            $self->_httpcb->add(
+                url     => "$ENV{FB_API_URL}/$item_id/private_replies?access_token=$access_token",
+                method  => "post",
+                headers => 'Content-Type: application/json',
+                body    => encode_json {
+                    message => "Sou o Assistente virtual $article $office_name $politician_name. Sou um robô que vai te ajudar a conhecer nosso trabalho e entregar mensagens para nossa equipe.\n\nVi que você realizou um comentário em nossa página. Se quiser enviar uma mensagem para nossa equipe ou saber mais sobre nosso trabalho, digite 'Sim'."
+                }
+            );
 
             $self->update( { reply_sent => 1 } );
         }

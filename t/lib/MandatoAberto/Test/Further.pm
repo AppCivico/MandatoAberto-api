@@ -13,6 +13,8 @@ use JSON::MaybeXS;
 use Data::Fake qw(Core Company Dates Internet Names Text);
 use MandatoAberto::Utils;
 
+our $votolegal_response;
+
 # Ugly hack
 sub import {
     strict->import;
@@ -229,6 +231,19 @@ sub create_issue {
             %opts,
         }
     );
+}
+
+sub setup_votolegal_integration_success {
+    $votolegal_response = {
+        id       => fake_int(1, 100)->(),
+        username => 'fake_username'
+    };
+}
+
+sub setup_votolegal_integration_fail {
+    $votolegal_response = {
+        votolegal_email => 'non existent on voto legal'
+    };
 }
 
 1;

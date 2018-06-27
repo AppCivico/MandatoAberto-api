@@ -55,11 +55,13 @@ sub result_GET {
         $facebook_active_page = $c->stash->{politician}->get_current_facebook_page();
     }
 
+    my $votolegal_integration = $c->stash->{politician}->get_votolegal_integration;
+
     return $self->status_ok(
         $c,
         entity => {
             ( map { $_ => $c->stash->{politician}->$_ } qw/
-                name gender premium/ ),
+                name gender premium picframe_url/ ),
 
             fb_page_id => $facebook_active_page ? $c->stash->{politician}->fb_page_id : undef,
 
@@ -104,6 +106,15 @@ sub result_GET {
             ( map { $_ => $c->stash->{politician}->user->$_ } qw/id email approved created_at/ ),
 
             facebook_active_page => $facebook_active_page,
+
+            ( $votolegal_integration ?
+                (
+                    votolegal_integration => {
+                        votolegal_email => $votolegal_integration->votolegal_email,
+                        greeting        => $votolegal_integration->greeting
+                    }
+                ) : ()
+            )
         }
     );
 }
