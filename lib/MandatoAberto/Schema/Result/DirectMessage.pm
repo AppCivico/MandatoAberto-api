@@ -51,13 +51,7 @@ __PACKAGE__->table("direct_message");
 =head2 content
 
   data_type: 'text'
-  is_nullable: 0
-
-=head2 sent
-
-  data_type: 'boolean'
-  default_value: false
-  is_nullable: 0
+  is_nullable: 1
 
 =head2 created_at
 
@@ -79,7 +73,7 @@ __PACKAGE__->table("direct_message");
 =head2 count
 
   data_type: 'integer'
-  is_nullable: 0
+  is_nullable: 1
 
 =head2 campaign_id
 
@@ -93,19 +87,10 @@ __PACKAGE__->table("direct_message");
   default_value: 'text'
   is_nullable: 0
 
-=head2 attachment_type
+=head2 attachment_id
 
-  data_type: 'text'
-  is_nullable: 1
-
-=head2 attachment_template
-
-  data_type: 'text'
-  is_nullable: 1
-
-=head2 attachment_url
-
-  data_type: 'text'
+  data_type: 'integer'
+  is_foreign_key: 1
   is_nullable: 1
 
 =head2 quick_replies
@@ -119,9 +104,7 @@ __PACKAGE__->add_columns(
   "politician_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "content",
-  { data_type => "text", is_nullable => 0 },
-  "sent",
-  { data_type => "boolean", default_value => \"false", is_nullable => 0 },
+  { data_type => "text", is_nullable => 1 },
   "created_at",
   {
     data_type     => "timestamp",
@@ -134,17 +117,13 @@ __PACKAGE__->add_columns(
   "groups",
   { data_type => "integer[]", is_nullable => 1 },
   "count",
-  { data_type => "integer", is_nullable => 0 },
+  { data_type => "integer", is_nullable => 1 },
   "campaign_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "type",
   { data_type => "text", default_value => "text", is_nullable => 0 },
-  "attachment_type",
-  { data_type => "text", is_nullable => 1 },
-  "attachment_template",
-  { data_type => "text", is_nullable => 1 },
-  "attachment_url",
-  { data_type => "text", is_nullable => 1 },
+  "attachment_id",
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
   "quick_replies",
   { data_type => "json", is_nullable => 1 },
 );
@@ -162,6 +141,26 @@ __PACKAGE__->add_columns(
 __PACKAGE__->set_primary_key("campaign_id");
 
 =head1 RELATIONS
+
+=head2 attachment
+
+Type: belongs_to
+
+Related object: L<MandatoAberto::Schema::Result::DirectMessageAttachment>
+
+=cut
+
+__PACKAGE__->belongs_to(
+  "attachment",
+  "MandatoAberto::Schema::Result::DirectMessageAttachment",
+  { id => "attachment_id" },
+  {
+    is_deferrable => 0,
+    join_type     => "LEFT",
+    on_delete     => "NO ACTION",
+    on_update     => "NO ACTION",
+  },
+);
 
 =head2 campaign
 
@@ -194,8 +193,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-06-17 17:15:09
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:P5XfoSbuM9Ml0/sPKgpSlw
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-06-29 19:37:52
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:MFarljvW5axbxAU8/Zhd4A
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
@@ -206,6 +205,66 @@ sub groups_rs {
     return $self->politician->groups->search(
         { 'me.id' => { 'in' => $self->groups || [] } }
     );
+}
+
+sub build_message_object {
+    my ($self) = @_;
+
+	my $ret;
+
+	if ( $self->type eq 'text' ) {
+
+		$ret = {
+			text => $self->content,
+			quick_replies => [
+				{
+					content_type => 'text',
+					title        => "Voltar para o início",
+					payload      => 'greetings'
+				}
+			]
+		};
+
+	}else {
+
+		# É attachment logo pode ser video, imagem ou template
+
+		if ( $self->attachment_type ne 'template' ) {
+			$ret = {
+				attachment => {
+					type    => $self->attachment_type,
+					payload => {
+						url         => $self->attachment_url,
+						is_reusable => \1
+					}
+				},
+				quick_replies   => [
+					{
+						content_type => 'text',
+						title        => "Voltar para o início",
+						payload      => 'greetings'
+					}
+				]
+			  };
+		}else {
+
+			# É um template
+			$ret = {
+				attachment_type => $self->attachment_type,
+				template        => $self->template,
+				quick_replies   => [
+					{
+						content_type => 'text',
+						title        => "Voltar para o início",
+						payload      => 'greetings'
+					}
+				]
+			};
+		}
+
+	}
+
+	return $ret;
 }
 
 __PACKAGE__->meta->make_immutable;

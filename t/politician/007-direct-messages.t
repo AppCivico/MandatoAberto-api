@@ -222,6 +222,21 @@ db_transaction {
             ]
         ;
     };
+
+    # Testando criação de mensagens diretas com imagem
+    subtest 'direct message with attachment type' => sub {
+
+        rest_post "/api/politician/$politician_id/direct-message",
+            name     => "Must not send 'content' if type is attachment",
+            is_fail => 1,
+            [
+                name    => 'wrong',
+                content => 'foobar',
+                type    => 'attachment'
+            ]
+        ;
+
+    }
 };
 
 done_testing();
