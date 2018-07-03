@@ -573,9 +573,9 @@ sub action_specs {
 
             # Caso ocorra mudança no fb_page_id e o político possuir integração do voto legal
             # devo avisar o novo page_id ao voto legal
-            # if ( $values{fb_page_id} && $self->has_votolegal_integration() ) {
-            #     $self->politician_votolegal_integrations->next->update_votolegal_integration();
-            # }
+            if ( $self->fb_page_id && ( $values{fb_page_id} && $self->has_votolegal_integration() ) ) {
+                $self->politician_votolegal_integrations->next->update_votolegal_integration();
+            }
 
             $self->user->update( { password => $values{new_password} } ) and delete $values{new_password} if $values{new_password};
 
