@@ -589,8 +589,8 @@ sub action_specs {
 
             if ( $values{deactivate_chatbot} ) {
                 $self->deactivate_chatbot();
-                delete $values{deactivate_chatbot};
             }
+            delete $values{deactivate_chatbot};
 
             $self->user->update( { password => $values{new_password} } ) and delete $values{new_password} if $values{new_password};
 
