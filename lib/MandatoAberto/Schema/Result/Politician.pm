@@ -490,6 +490,9 @@ sub verifiers_specs {
                     type       => "Str",
                     post_check => sub {
                         my $fb_page_id = $_[0]->get_value('fb_page_id');
+
+                        return 1 if length $fb_page_id == 0;
+
                         $self->result_source->schema->resultset("Politician")->search( { fb_page_id => $fb_page_id } )->count and die \["fb_page_id", "alredy exists"];
 
                         return 1;
@@ -500,6 +503,9 @@ sub verifiers_specs {
                     type       => "Str",
                     post_check => sub {
                         my $fb_page_access_token = $_[0]->get_value('fb_page_access_token');
+
+						return 1 if length $fb_page_access_token == 0;
+
                         $self->result_source->schema->resultset("Politician")->search( { fb_page_access_token => $fb_page_access_token } )->count and die \["fb_page_access_token", "alredy exists"];
 
                         return 1;
@@ -517,6 +523,10 @@ sub verifiers_specs {
                     required => 0,
                     type     => URI
                 },
+                deactivate_chatbot => {
+                    required => 0,
+                    type     => 'Bool'
+                }
             }
         ),
     };
@@ -573,9 +583,14 @@ sub action_specs {
 
             # Caso ocorra mudança no fb_page_id e o político possuir integração do voto legal
             # devo avisar o novo page_id ao voto legal
-            if ( $values{fb_page_id} && $self->has_votolegal_integration() ) {
+            if ( $self->fb_page_id && ( $values{fb_page_id} && $self->has_votolegal_integration() ) ) {
                 $self->politician_votolegal_integrations->next->update_votolegal_integration();
             }
+
+            if ( $values{deactivate_chatbot} ) {
+                $self->deactivate_chatbot();
+            }
+            delete $values{deactivate_chatbot};
 
             $self->user->update( { password => $values{new_password} } ) and delete $values{new_password} if $values{new_password};
 
@@ -826,8 +841,8 @@ sub send_new_register_email {
             gender        => $self->gender,
             office        => $self->office->name,
             party         => $self->party->name,
-            address_state => $self->address_state,
-            address_city  => $self->address_city,
+            address_state => $self->address_state->name,
+            address_city  => $self->address_city->name,
         },
     )->build_email();
 
@@ -838,6 +853,23 @@ sub has_votolegal_integration {
     my ($self) = @_;
 
     return $self->politician_votolegal_integrations->count > 0 ? 1 : 0;
+}
+
+sub get_votolegal_integration {
+    my ($self) = @_;
+
+    return $self->has_votolegal_integration ? $self->politician_votolegal_integrations->next : 0;
+}
+
+sub deactivate_chatbot {
+    my ($self) = @_;
+
+    return $self->update(
+        {
+            fb_page_id           => undef,
+            fb_page_access_token => undef
+        }
+    );
 }
 
 __PACKAGE__->meta->make_immutable;

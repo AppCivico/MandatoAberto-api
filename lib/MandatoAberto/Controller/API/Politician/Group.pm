@@ -59,11 +59,25 @@ sub result_GET {
         },
     );
 
+    # Por agora a API irá retornar regras com null
+    # Ao invés de não enviar o objeto de regra
+    my $filter     = $group->filter;
+    my $first_rule = $filter->{rules}->[0];
+    if ( $first_rule->{name} eq 'EMPTY' ) {
+        $filter->{rules}->[0] = {
+            name => 'EMPTY',
+            data => {
+                field => undef,
+                value => undef
+            }
+        }
+    }
+
     return $self->status_ok(
         $c,
         entity => {
             id               => $group->id,
-            filter           => $group->filter,
+            filter           => $filter,
             name             => $group->get_column('name'),
             status           => $group->get_column('status'),
             updated_at       => $group->get_column('updated_at'),

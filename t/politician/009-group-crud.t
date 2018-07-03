@@ -316,6 +316,7 @@ db_transaction {
                 filter   => {},
             }),
         ;
+
     };
 
     subtest 'list created groups' => sub {

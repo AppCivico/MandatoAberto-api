@@ -179,6 +179,27 @@ db_transaction {
         [ picframe_url => 'https://foobar.com.br' ]
     ;
 
+    rest_reload_list "get_politician";
+
+    stash_test "get_politician.list" => sub {
+        my $res = shift;
+
+        is($res->{picframe_url}, 'https://foobar.com.br', 'picframe_url');
+    };
+
+    rest_put "/api/politician/$politician_id",
+        name => "Adding picframe URL",
+        [ deactivate_chatbot => 1 ]
+    ;
+
+	rest_reload_list "get_politician";
+
+	stash_test "get_politician.list" => sub {
+		my $res = shift;
+
+		is($res->{fb_page_id}, undef, 'no id');
+	};
+
     create_politician;
     rest_get [ "api", "politician", stash "politician.id" ], name => "can't get other politician", is_fail => 1, code => 403;
     rest_put [ "api", "politician", stash "politician.id" ],
