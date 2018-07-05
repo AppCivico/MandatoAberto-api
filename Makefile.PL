@@ -120,12 +120,11 @@ my %WriteMakefileArgs = (
     "IO::Handle" => 0,
     "IPC::Open3" => 0,
     "Test::More" => 0,
-    "blib" => "1.01",
     "lib" => 0
   },
-  "VERSION" => 20180619,
+  "VERSION" => 20180705,
   "test" => {
-    "TESTS" => "t/*.t t/admin/*.t t/chatbot/*.t t/politician/*.t t/polls/*.t t/worker/*.t"
+    "TESTS" => "t/*.t t/admin/*.t t/chatbot/*.t t/misc/*.t t/politician/*.t t/polls/*.t t/worker/*.t"
   }
 );
 
@@ -226,7 +225,6 @@ my %FallbackPrereqs = (
   "WebService::Slack::IncomingWebHook" => 0,
   "YAML::XS" => 0,
   "base" => 0,
-  "blib" => "1.01",
   "common::sense" => 0,
   "lib" => 0,
   "namespace::autoclean" => 0,
