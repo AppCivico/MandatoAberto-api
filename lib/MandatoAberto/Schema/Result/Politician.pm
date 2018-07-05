@@ -108,6 +108,12 @@ __PACKAGE__->table("politician");
   data_type: 'text'
   is_nullable: 1
 
+=head2 movement_id
+
+  data_type: 'integer'
+  is_foreign_key: 1
+  is_nullable: 1
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -135,6 +141,8 @@ __PACKAGE__->add_columns(
   { data_type => "timestamp", is_nullable => 1 },
   "picframe_url",
   { data_type => "text", is_nullable => 1 },
+  "movement_id",
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -239,6 +247,26 @@ __PACKAGE__->has_many(
   "MandatoAberto::Schema::Result::Issue",
   { "foreign.politician_id" => "self.user_id" },
   { cascade_copy => 0, cascade_delete => 0 },
+);
+
+=head2 movement
+
+Type: belongs_to
+
+Related object: L<MandatoAberto::Schema::Result::Movement>
+
+=cut
+
+__PACKAGE__->belongs_to(
+  "movement",
+  "MandatoAberto::Schema::Result::Movement",
+  { id => "movement_id" },
+  {
+    is_deferrable => 0,
+    join_type     => "LEFT",
+    on_delete     => "NO ACTION",
+    on_update     => "NO ACTION",
+  },
 );
 
 =head2 office
@@ -422,8 +450,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-06-13 17:37:48
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:BSbvdI3L0lnI0CguI18+iw
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-07-05 01:06:59
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:yLKsh4OUAoTdfQz0ivg8hw
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
@@ -504,7 +532,7 @@ sub verifiers_specs {
                     post_check => sub {
                         my $fb_page_access_token = $_[0]->get_value('fb_page_access_token');
 
-						return 1 if length $fb_page_access_token == 0;
+                        return 1 if length $fb_page_access_token == 0;
 
                         $self->result_source->schema->resultset("Politician")->search( { fb_page_access_token => $fb_page_access_token } )->count and die \["fb_page_access_token", "alredy exists"];
 
@@ -526,6 +554,16 @@ sub verifiers_specs {
                 deactivate_chatbot => {
                     required => 0,
                     type     => 'Bool'
+                },
+                movement_id => {
+                    required   => 0,
+                    type       => "Int",
+                    post_check => sub {
+                        my $movement_id = $_[0]->get_value('movement_id');
+
+                        my $movement_rs = $self->result_source->schema->resultset('Movement');
+                        $movement_rs->search( { id => $movement_id } )->count;
+                    }
                 }
             }
         ),
@@ -843,6 +881,7 @@ sub send_new_register_email {
             party         => $self->party->name,
             address_state => $self->address_state->name,
             address_city  => $self->address_city->name,
+            movement      => $self->movement->name
         },
     )->build_email();
 
@@ -4228,257 +4267,47 @@ Pedimos para que verifique com sua operadora &nbsp;e retorne o contato conosco.<
   <li style="text-align: left;"><span style="font-size:16px"><strong>Partido: <font color="#cc3399"> [% party %];</font></strong></span></li>
   <li style="text-align: left;"><span style="font-size:16px"><strong>Estado <font color="#cc3399"> [% address_state %];</font></strong></span></li>
   <li style="text-align: left;"><span style="font-size:16px"><strong>Cidade: <font color="#cc3399"> [% address_city %];</font></strong></span></li>
+  <li style="text-align: left;"><span style="font-size:16px"><strong>Movimento: <font color="#cc3399"> [% movement %];</font></strong></span></li>
 </ul>
+                        </td></tr>
+                </tbody></table><!--[if mso]></td><![endif]-->
 
-                        </td>
-                    </tr>
-                </tbody></table>
-        <!--[if mso]>
-        </td>
-        <![endif]-->
+                          <!--[if mso]></tr>
+        </table><![endif]-->
 
-        <!--[if mso]>
-        </tr>
-        </table>
-        <![endif]-->
-            </td>
-        </tr>
-    </tbody>
-</table><table border="0" cellpadding="0" cellspacing="0" width="100%" class="mcnDividerBlock" style="min-width:100%;">
-    <tbody class="mcnDividerBlockOuter">
-        <tr>
-            <td class="mcnDividerBlockInner" style="min-width: 100%; padding: 9px 18px;">
-                <table class="mcnDividerContent" border="0" cellpadding="0" cellspacing="0" width="100%" style="min-width: 100%;border-top-width: 1px;border-top-style: solid;border-top-color: #E0E0E0;">
-                    <tbody><tr>
-                        <td>
-                            <span></span>
-                        </td>
-                    </tr>
-                </tbody></table>
-<!--
-                <td class="mcnDividerBlockInner" style="padding: 18px;">
-                <hr class="mcnDividerContent" style="border-bottom-color:none; border-left-color:none; border-right-color:none; border-bottom-width:0; border-left-width:0; border-right-width:0; margin-top:0; margin-right:0; margin-bottom:0; margin-left:0;" />
--->
-            </td>
-        </tr>
-    </tbody>
-</table><table border="0" cellpadding="0" cellspacing="0" width="100%" class="mcnDividerBlock" style="min-width:100%;">
-    <tbody class="mcnDividerBlockOuter">
-        <tr>
-            <td class="mcnDividerBlockInner" style="min-width: 100%; padding: 18px 18px 0px;">
-                <table class="mcnDividerContent" border="0" cellpadding="0" cellspacing="0" width="100%" style="min-width:100%;">
-                    <tbody><tr>
-                        <td>
-                            <span></span>
-                        </td>
-                    </tr>
-                </tbody></table>
-<!--
-                <td class="mcnDividerBlockInner" style="padding: 18px;">
-                <hr class="mcnDividerContent" style="border-bottom-color:none; border-left-color:none; border-right-color:none; border-bottom-width:0; border-left-width:0; border-right-width:0; margin-top:0; margin-right:0; margin-bottom:0; margin-left:0;" />
--->
-            </td>
-        </tr>
-    </tbody>
-</table><table border="0" cellpadding="0" cellspacing="0" width="100%" class="mcnButtonBlock" style="min-width:100%;">
-    <tbody class="mcnButtonBlockOuter">
-        <tr>
-            <td style="padding-top:0; padding-right:18px; padding-bottom:18px; padding-left:18px;" valign="top" align="center" class="mcnButtonBlockInner">
-                <table border="0" cellpadding="0" cellspacing="0" class="mcnButtonContentContainer" style="border-collapse: separate !important;border-radius: 3px;background-color: #E0629A;">
-                    <tbody>
-                        <tr>
-                            <td align="center" valign="middle" class="mcnButtonContent" style="font-family: Helvetica; font-size: 18px; padding: 18px;">
-                                <a class="mcnButton " title="Saiba mais" href="https://mandatoaberto.com.br/" target="_self" style="font-weight: bold;letter-spacing: -0.5px;line-height: 100%;text-align: center;text-decoration: none;color: #FFFFFF;">Saiba mais</a>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </td>
-        </tr>
-    </tbody>
-</table></td>
-                    </tr>
-                  </table>
-                  <!--[if (gte mso 9)|(IE)]>
-                  </td>
-                  </tr>
-                  </table>
-                  <![endif]-->
-                </td>
-                            </tr>
-                            <tr>
-                <td align="center" valign="top" id="templateFooter" data-template-container>
-                  <!--[if (gte mso 9)|(IE)]>
-                  <table align="center" border="0" cellspacing="0" cellpadding="0" width="600" style="width:600px;">
-                  <tr>
-                  <td align="center" valign="top" width="600" style="width:600px;">
-                  <![endif]-->
-                  <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" class="templateContainer">
-                    <tr>
-                                      <td valign="top" class="footerContainer"><table border="0" cellpadding="0" cellspacing="0" width="100%" class="mcnFollowBlock" style="min-width:100%;">
-    <tbody class="mcnFollowBlockOuter">
-        <tr>
-            <td align="center" valign="top" style="padding:9px" class="mcnFollowBlockInner">
-                <table border="0" cellpadding="0" cellspacing="0" width="100%" class="mcnFollowContentContainer" style="min-width:100%;">
-    <tbody><tr>
-        <td align="center" style="padding-left:9px;padding-right:9px;">
-            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="min-width:100%;" class="mcnFollowContent">
-                <tbody><tr>
-                    <td align="center" valign="top" style="padding-top:9px; padding-right:9px; padding-left:9px;">
-                        <table align="center" border="0" cellpadding="0" cellspacing="0">
-                            <tbody><tr>
-                                <td align="center" valign="top">
-                                    <!--[if mso]>
-                                    <table align="center" border="0" cellspacing="0" cellpadding="0">
-                                    <tr>
-                                    <![endif]-->
-
-                                        <!--[if mso]>
-                                        <td align="center" valign="top">
-                                        <![endif]-->
-
-
-                                            <table align="left" border="0" cellpadding="0" cellspacing="0" style="display:inline;">
-                                                <tbody><tr>
-                                                    <td valign="top" style="padding-right:10px; padding-bottom:9px;" class="mcnFollowContentItemContainer">
-                                                        <table border="0" cellpadding="0" cellspacing="0" width="100%" class="mcnFollowContentItem">
-                                                            <tbody><tr>
-                                                                <td align="left" valign="middle" style="padding-top:5px; padding-right:10px; padding-bottom:5px; padding-left:9px;">
-                                                                    <table align="left" border="0" cellpadding="0" cellspacing="0" width="">
-                                                                        <tbody><tr>
-
-                                                                                <td align="center" valign="middle" width="24" class="mcnFollowIconContent">
-                                                                                    <a href="https://www.facebook.com/AppCivicoCSB/" target="_blank"><img src="https://cdn-images.mailchimp.com/icons/social-block-v2/outline-color-facebook-48.png" style="display:block;" height="24" width="24" class=""></a>
-                                                                                </td>
-
-
-                                                                        </tr>
-                                                                    </tbody></table>
-                                                                </td>
-                                                            </tr>
-                                                        </tbody></table>
-                                                    </td>
-                                                </tr>
-                                            </tbody></table>
-
-                                        <!--[if mso]>
-                                        </td>
-                                        <![endif]-->
-
-                                        <!--[if mso]>
-                                        <td align="center" valign="top">
-                                        <![endif]-->
-
-
-                                            <table align="left" border="0" cellpadding="0" cellspacing="0" style="display:inline;">
-                                                <tbody><tr>
-                                                    <td valign="top" style="padding-right:10px; padding-bottom:9px;" class="mcnFollowContentItemContainer">
-                                                        <table border="0" cellpadding="0" cellspacing="0" width="100%" class="mcnFollowContentItem">
-                                                            <tbody><tr>
-                                                                <td align="left" valign="middle" style="padding-top:5px; padding-right:10px; padding-bottom:5px; padding-left:9px;">
-                                                                    <table align="left" border="0" cellpadding="0" cellspacing="0" width="">
-                                                                        <tbody><tr>
-
-                                                                                <td align="center" valign="middle" width="24" class="mcnFollowIconContent">
-                                                                                    <a href="http://www.twitter.com/" target="_blank"><img src="https://cdn-images.mailchimp.com/icons/social-block-v2/outline-color-twitter-48.png" style="display:block;" height="24" width="24" class=""></a>
-                                                                                </td>
-
-
-                                                                        </tr>
-                                                                    </tbody></table>
-                                                                </td>
-                                                            </tr>
-                                                        </tbody></table>
-                                                    </td>
-                                                </tr>
-                                            </tbody></table>
-
-                                        <!--[if mso]>
-                                        </td>
-                                        <![endif]-->
-
-                                        <!--[if mso]>
-                                        <td align="center" valign="top">
-                                        <![endif]-->
-
-
-                                            <table align="left" border="0" cellpadding="0" cellspacing="0" style="display:inline;">
-                                                <tbody><tr>
-                                                    <td valign="top" style="padding-right:0; padding-bottom:9px;" class="mcnFollowContentItemContainer">
-                                                        <table border="0" cellpadding="0" cellspacing="0" width="100%" class="mcnFollowContentItem">
-                                                            <tbody><tr>
-                                                                <td align="left" valign="middle" style="padding-top:5px; padding-right:10px; padding-bottom:5px; padding-left:9px;">
-                                                                    <table align="left" border="0" cellpadding="0" cellspacing="0" width="">
-                                                                        <tbody><tr>
-
-                                                                                <td align="center" valign="middle" width="24" class="mcnFollowIconContent">
-                                                                                    <a href="https://mandatoaberto.com.br/" target="_blank"><img src="https://cdn-images.mailchimp.com/icons/social-block-v2/outline-color-link-48.png" style="display:block;" height="24" width="24" class=""></a>
-                                                                                </td>
-
-
-                                                                        </tr>
-                                                                    </tbody></table>
-                                                                </td>
-                                                            </tr>
-                                                        </tbody></table>
-                                                    </td>
-                                                </tr>
-                                            </tbody></table>
-
-                                        <!--[if mso]>
-                                        </td>
-                                        <![endif]-->
-
-                                    <!--[if mso]>
-                                    </tr>
-                                    </table>
-                                    <![endif]-->
-                                </td>
+                          </td>
                             </tr>
                         </tbody></table>
-                    </td>
+                          </td>
                 </tr>
             </tbody></table>
-        </td>
+                          </td>
     </tr>
 </tbody></table>
 
-            </td>
+                          </td>
         </tr>
     </tbody>
-</table><table border="0" cellpadding="0" cellspacing="0" width="100%" class="mcnDividerBlock" style="min-width:100%;">
-    <tbody class="mcnDividerBlockOuter">
-        <tr>
+</table><table border="0" cellpadding="0" cellspacing="0" width="100%" class="mcnDividerBlock" style="min-width:100%;"><tbody class="mcnDividerBlockOuter"><tr>
             <td class="mcnDividerBlockInner" style="min-width: 100%; padding: 18px;">
                 <table class="mcnDividerContent" border="0" cellpadding="0" cellspacing="0" width="100%" style="min-width: 100%;border-top-width: 2px;border-top-style: solid;border-top-color: #505050;">
-                    <tbody><tr>
-                        <td>
-                            <span></span>
-                        </td>
-                    </tr>
-                </tbody></table>
-<!--
-                <td class="mcnDividerBlockInner" style="padding: 18px;">
-                <hr class="mcnDividerContent" style="border-bottom-color:none; border-left-color:none; border-right-color:none; border-bottom-width:0; border-left-width:0; border-right-width:0; margin-top:0; margin-right:0; margin-bottom:0; margin-left:0;" />
--->
-            </td>
-        </tr>
-    </tbody>
-</table></td>
+                          <tbody><tr><td><span></span>
+                        </td></tr></tbody></table><!--<td class="mcnDividerBlockInner" style="padding: 18px;"><hr class="mcnDividerContent" style="border-bottom-color:none; border-left-color:none; border-right-color:none; border-bottom-width:0; border-left-width:0; border-right-width:0; margin-top:0; margin-right:0; margin-bottom:0; margin-left:0;" /> --></td></tr>
+    </tbody></table></td>
                     </tr>
                   </table>
                   <!--[if (gte mso 9)|(IE)]>
-                  </td>
+                          </td>
                   </tr>
                   </table>
                   <![endif]-->
-                </td>
+                          </td>
                             </tr>
                         </table>
                         <!-- // END TEMPLATE -->
-                    </td>
+                          </td>
                 </tr>
             </table>
         </center>
-    </body>
+                          </body>
 </html>

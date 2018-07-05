@@ -7,23 +7,25 @@ use MandatoAberto::Test::Further;
 my $schema = MandatoAberto->model("DB");
 
 db_transaction {
-    my $party    = fake_int(1, 35)->();
-    my $office   = fake_int(1, 8)->();
-    my $gender   = fake_pick(qw/F M/)->();
-    my $email    = fake_email()->();
-    my $password = "foobar";
+    my $party       = fake_int(1, 35)->();
+    my $office      = fake_int(1, 8)->();
+    my $gender      = fake_pick(qw/F M/)->();
+    my $email       = fake_email()->();
+    my $password    = "foobar";
+    my $movement_id = fake_int(1, 6)->();
 
     create_politician(
-        email               => $email,
-        password            => $password,
-        name                => "Lucas Ansei",
-        address_state       => 26,
-        address_city_id     => 9508,
-        party_id            => $party,
-        office_id           => $office,
-        fb_page_id          => "FOO",
+        email                => $email,
+        password             => $password,
+        name                 => "Lucas Ansei",
+        address_state        => 26,
+        address_city_id      => 9508,
+        party_id             => $party,
+        office_id            => $office,
+        fb_page_id           => "FOO",
         fb_page_access_token => "FOOBAR",
-        gender              => $gender,
+        gender               => $gender,
+        movement_id          => $movement_id
     );
 
     my $politician_id = stash "politician.id";
@@ -70,27 +72,36 @@ db_transaction {
         stash => "get_politician"
     ;
 
+    my $movement = $schema->resultset("Movement")->find($movement_id);
+
     stash_test "get_politician" => sub {
         my $res = shift;
 
-        is ($res->{id}, $politician_id,  'id');
-        is ($res->{name}, "Lucas Ansei", 'name');
-        is ($res->{state}->{code}, "SP" , 'state code');
-        is ($res->{state}->{name}, "São Paulo" , 'state name');
-        is ($res->{city}->{name}, "São Paulo" , 'city');
-        is ($res->{party}->{id}, $party , 'party');
-        is ($res->{office}->{id}, $office , 'office');
-        is ($res->{fb_page_id}, "FOO" , 'fb_page_id');
-        is ($res->{gender}, $gender , 'gender');
-        is ($res->{premium}, 0, 'politician is not premium');
-        is ($res->{contact}->{id}, $contact_id , 'contact id');
-        is ($res->{contact}->{twitter}, '@lucas_ansei', 'twitter');
-        is ($res->{contact}->{facebook}, 'https://facebook.com/lucasansei', 'facebook');
-        is ($res->{contact}->{email}, 'foobar@email.com', 'email');
-        is ($res->{contact}->{url}, "https://www.google.com", 'url');
-        is ($res->{greeting}->{id}, $greeting_id, 'greeting entity id');
-        is ($res->{greeting}->{greeting_id}, 1, 'greeting id');
-        is ($res->{greeting}->{content}, 'Olá, sou assistente digital do(a) ${user.office.name} ${user.name} Seja bem-vindo a nossa Rede! Queremos um Brasil a melhor e precisamos de sua ajuda.', 'greeting content');
+        is ($res->{id},                      $politician_id,                    'id');
+        is ($res->{name},                    "Lucas Ansei",                     'name');
+        is ($res->{state}->{code},           "SP",                              'state code');
+        is ($res->{state}->{name},           "São Paulo",                       'state name');
+        is ($res->{city}->{name},            "São Paulo",                       'city');
+        is ($res->{party}->{id},             $party,                            'party');
+        is ($res->{office}->{id},            $office,                           'office');
+        is ($res->{fb_page_id},              "FOO",                             'fb_page_id');
+        is ($res->{gender},                  $gender,                           'gender');
+        is ($res->{premium},                 0,                                 'politician is not premium');
+        is ($res->{contact}->{id},           $contact_id,                       'contact id');
+        is ($res->{contact}->{twitter},      '@lucas_ansei',                    'twitter');
+        is ($res->{contact}->{facebook},     'https://facebook.com/lucasansei', 'facebook');
+        is ($res->{contact}->{email},        'foobar@email.com',                'email');
+        is ($res->{contact}->{url},          "https://www.google.com",          'url');
+        is ($res->{greeting}->{id},          $greeting_id,                      'greeting entity id');
+        is ($res->{greeting}->{greeting_id}, 1,                                 'greeting id');
+        is ($res->{movement}->{id},          $movement->id,                     'movement id');
+        is ($res->{movement}->{name},        $movement->name,                   'movement name');
+
+        is (
+            $res->{greeting}->{content},
+            'Olá, sou assistente digital do(a) ${user.office.name} ${user.name} Seja bem-vindo a nossa Rede! Queremos um Brasil a melhor e precisamos de sua ajuda.',
+            'greeting content'
+        );
     };
 
     # Caso apenas a cidade seja editada, deve bater com o estado corrente
@@ -192,13 +203,26 @@ db_transaction {
         [ deactivate_chatbot => 1 ]
     ;
 
-	rest_reload_list "get_politician";
+    rest_put "/api/politician/$politician_id",
+        name => "update political movement",
+        [ movement_id => 7 ]
+    ;
 
-	stash_test "get_politician.list" => sub {
-		my $res = shift;
+    rest_reload_list "get_politician";
 
-		is($res->{fb_page_id}, undef, 'no id');
-	};
+    stash_test "get_politician.list" => sub {
+        my $res = shift;
+
+        is($res->{picframe_url}, 'https://foobar.com.br', 'picframe_url');
+    };
+
+    rest_reload_list "get_politician";
+
+    stash_test "get_politician.list" => sub {
+        my $res = shift;
+
+        is ($res->{movement}->{id}, 7, 'movement id');
+    };
 
     create_politician;
     rest_get [ "api", "politician", stash "politician.id" ], name => "can't get other politician", is_fail => 1, code => 403;

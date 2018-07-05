@@ -21,6 +21,7 @@ db_transaction {
             party_id         => fake_int(1, 35)->(),
             office_id        => fake_int(1, 8)->(),
             gender           => fake_pick(qw/F M/)->(),
+            movement_id      => fake_int(1, 7)->()
         },
     ;
 

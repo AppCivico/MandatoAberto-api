@@ -108,6 +108,16 @@ sub verifiers_specs {
                 gender => {
                     required => 1,
                     type     => "Str"
+                },
+                movement_id => {
+                    required   => 0,
+                    type       => "Int",
+                    post_check => sub {
+                        my $movement_id = $_[0]->get_value('movement_id');
+
+                        my $movement_rs = $self->result_source->schema->resultset('Movement');
+                        $movement_rs->search( { id => $movement_id } )->count;
+                    }
                 }
             }
         ),
@@ -144,6 +154,7 @@ sub action_specs {
                         map { $_ => $values{$_} } qw(
                             name address_state_id address_city_id party_id
                             office_id fb_page_id fb_page_access_token gender
+                            movement_id
                         )
                     ),
                     user_id => $user->id,

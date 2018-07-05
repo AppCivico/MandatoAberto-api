@@ -65,6 +65,8 @@ sub result_GET {
 
             fb_page_id => $facebook_active_page ? $c->stash->{politician}->fb_page_id : undef,
 
+            ( movement => { map { $_ => $c->stash->{politician}->movement->$_ } qw/name id/  } ),
+
             ( state => { map { $_ => $c->stash->{politician}->address_state->$_ } qw/name code/  } ),
 
             ( city => {map { $_ => $c->stash->{politician}->address_city->$_ } qw/name id/}  ),
