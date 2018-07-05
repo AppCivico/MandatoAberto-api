@@ -114,6 +114,21 @@ __PACKAGE__->table("politician");
   is_foreign_key: 1
   is_nullable: 1
 
+=head2 twitter_id
+
+  data_type: 'text'
+  is_nullable: 1
+
+=head2 twitter_oauth_token
+
+  data_type: 'text'
+  is_nullable: 1
+
+=head2 twitter_token_secret
+
+  data_type: 'text'
+  is_nullable: 1
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -143,6 +158,12 @@ __PACKAGE__->add_columns(
   { data_type => "text", is_nullable => 1 },
   "movement_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
+  "twitter_id",
+  { data_type => "text", is_nullable => 1 },
+  "twitter_oauth_token",
+  { data_type => "text", is_nullable => 1 },
+  "twitter_token_secret",
+  { data_type => "text", is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -450,8 +471,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-07-05 01:06:59
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:yLKsh4OUAoTdfQz0ivg8hw
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-07-05 14:06:29
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:rgyherx+U1ygF4h1/Hy5Ng
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
@@ -460,13 +481,14 @@ with 'MandatoAberto::Role::Verification';
 with 'MandatoAberto::Role::Verification::TransactionalActions::DBIC';
 
 use MandatoAberto::Utils;
+use MandatoAberto::Types qw/URI Twitter_id/;
+
 use Furl;
 use JSON::MaybeXS;
 use HTTP::Request;
 use IO::Socket::SSL;
 use DateTime;
 use DateTime::Format::DateParse;
-use MandatoAberto::Types qw/URI/;
 
 sub verifiers_specs {
     my $self = shift;
@@ -564,7 +586,43 @@ sub verifiers_specs {
                         my $movement_rs = $self->result_source->schema->resultset('Movement');
                         $movement_rs->search( { id => $movement_id } )->count;
                     }
-                }
+                },
+                twitter_id => {
+                    required   => 0,
+                    type       => Twitter_id,
+                    post_check => sub {
+                        my $twitter_id = $_[0]->get_value('twitter_id');
+
+                        my $politician_rs = $self->result_source->schema->resultset('Politician');
+                        $politician_rs->search( { twitter_id => $twitter_id } )->count and die \["twitter_id", "alredy exists"];
+
+                        return 1;
+                    }
+                },
+                twitter_oauth_token => {
+                    required   => 0,
+                    type       => 'Str',
+                    post_check => sub {
+                        my $twitter_oauth_token  = $_[0]->get_value('twitter_oauth_token');
+
+                        my $politician_rs = $self->result_source->schema->resultset('Politician');
+                        $politician_rs->search( { twitter_oauth_token => $twitter_oauth_token } )->count and die \["twitter_oauth_token", "alredy exists"];
+
+                        return 1;
+                    }
+                },
+                twitter_token_secret => {
+                    required   => 0,
+                    type       => 'Str',
+                    post_check => sub {
+                        my $twitter_token_secret = $_[0]->get_value('twitter_token_secret');
+
+                        my $politician_rs = $self->result_source->schema->resultset('Politician');
+                        $politician_rs->search( { twitter_token_secret => $twitter_token_secret } )->count and die \["twitter_token_secret", "alredy exists"];
+
+                        return 1;
+                    }
+                },
             }
         ),
     };
@@ -579,6 +637,10 @@ sub action_specs {
 
             my %values = $r->valid_values;
             not defined $values{$_} and delete $values{$_} for keys %values;
+
+            if ( $values{twitter_oauth_token} || $values{twitter_token_secret} || $values{twitter_id} ) {
+                defined $values{$_} or die \[ "$_", "missing"] for qw/ twitter_token_secret twitter_oauth_token twitter_id /
+            }
 
             if ($values{address_city_id} && !$values{address_state_id}) {
                 my $address_state = $self->address_state_id;

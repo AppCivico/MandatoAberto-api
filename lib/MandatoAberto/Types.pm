@@ -6,7 +6,7 @@ use MooseX::Types -declare => [
         NotTooBigString Int CEP
         CPF CNPJ RG PositiveInt
         EmailAddress PhoneNumber
-        URI Twitter
+        URI Twitter Twitter_id
     )
 ];
 
@@ -82,5 +82,11 @@ subtype Twitter, as Str, where {
 
     return $twitter =~ /^(@\S{0,15}+)/;
 }, message { "$_[0] is not a valid Twitter" };
+
+subtype Twitter_id, as Str, where {
+    my $twitter_id = $_;
+
+    return $twitter_id =~ /^\w{1,20}$/;
+}, message { "$_[0] is not a valid twitter id" };
 
 1;

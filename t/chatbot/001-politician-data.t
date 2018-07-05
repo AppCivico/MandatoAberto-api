@@ -11,7 +11,7 @@ db_transaction {
     my $office   = fake_int(1, 8)->();
     my $gender   = fake_pick(qw/F M/)->();
     my $email    = fake_email()->();
-    my $password = "foobar";
+    my $password = 'foobar';
 
     my $security_token = $ENV{CHATBOT_SECURITY_TOKEN};
 
@@ -28,6 +28,7 @@ db_transaction {
         gender                  => $gender,
     );
     my $politician_id = stash "politician.id";
+    my $politician    = $schema->resultset("Politician")->find($politician_id);
 
     api_auth_as user_id => $politician_id;
 
@@ -80,6 +81,53 @@ db_transaction {
         is ($res->{picframe_url}, 'https://foobar.com.br', 'picframe_url' );
         is ($res->{votolegal_integration}->{votolegal_username}, 'fake_username', 'voto legal username');
         is ($res->{votolegal_integration}->{votolegal_url}, 'https://dev.votolegal.com.br/em/fake_username', 'voto legal url');
+    };
+
+    rest_get "/api/chatbot/politician",
+        name    => "get politician data with invalid platform",
+        is_fail => 1,
+        code    => 400,
+        [
+            platform       => 'FOO',
+            security_token => $security_token
+        ]
+    ;
+
+    rest_get '/api/chatbot/politician',
+        name    => 'get politician data with non existent twitter_id',
+        is_fail => 1,
+        code    => 400,
+        [
+            platform       => 'twitter',
+            twitter_id     => 'foobar',
+            security_token => $security_token
+        ]
+    ;
+
+    $politician->update(
+        {
+            twitter_id           => 'foobar',
+            twitter_oauth_token  => 'bar',
+            twitter_token_secret => 'baz'
+        }
+    );
+
+    rest_get '/api/chatbot/politician',
+        name  => 'get politician data with non existent twitter_id',
+        list  => 1,
+        stash => 'politician_data_twitter',
+        [
+            platform       => 'twitter',
+            twitter_id     => 'foobar',
+            security_token => $security_token
+        ]
+    ;
+
+    stash_test "politician_data_twitter" => sub {
+        my $res = shift;
+
+        is ($res->{twitter_oauth_token},  'bar', 'twitter_oauth_token');
+        is ($res->{twitter_token_secret}, 'baz', 'twitter_token_secret');
     };
 };
 
