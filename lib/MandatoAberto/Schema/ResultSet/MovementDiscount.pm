@@ -27,6 +27,24 @@ sub verifiers_specs {
 						$self->result_source->schema->resultset('Movement')->search( { id => $movement_id } )->count;
 					}
 				},
+				percentage => {
+					required   => 0,
+					type       => "Int",
+					post_check => sub {
+						my $movement_id = $_[0]->get_value("movement_id");
+
+						$self->result_source->schema->resultset('Movement')->search( { id => $movement_id } )->count;
+					}
+				},
+                movement_id => {
+					required   => 0,
+					type       => "Int",
+					post_check => sub {
+						my $movement_id = $_[0]->get_value("movement_id");
+
+						$self->result_source->schema->resultset('Movement')->search( { id => $movement_id } )->count;
+					}
+				},
 			}
 		),
 	};
