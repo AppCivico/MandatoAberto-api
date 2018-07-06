@@ -947,8 +947,8 @@ sub send_new_register_email {
                 (
                     movement        => $self->movement->name,
                     final_amount    => $self->movement->calculate_discount,
-                    base_amount     => $ENV{MANDATOABERTO_BASE_AMOUNT},
-                    discount_amount => $self->movement->get_movement_discount->{amount}
+                    base_amount     => ( $ENV{MANDATOABERTO_BASE_AMOUNT} / 100 ),
+                    discount_amount => ( $self->movement->get_movement_discount->{amount} / 100 )
                 ) : ()
             )
         },
