@@ -82,6 +82,21 @@ __PACKAGE__->set_primary_key("id");
 
 =head1 RELATIONS
 
+=head2 movement_discounts
+
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::MovementDiscount>
+
+=cut
+
+__PACKAGE__->has_many(
+  "movement_discounts",
+  "MandatoAberto::Schema::Result::MovementDiscount",
+  { "foreign.movement_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 politicians
 
 Type: has_many
@@ -98,8 +113,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-07-05 01:06:59
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:+2WN2MJMzABTbJaqbDfgjg
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-07-05 01:50:40
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:FeZoLrVL678/PItoZuKGhQ
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
