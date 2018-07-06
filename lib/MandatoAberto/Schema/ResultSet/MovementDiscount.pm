@@ -23,7 +23,18 @@ sub verifiers_specs {
                     post_check => sub {
                         my $movement_id = $_[0]->get_value("movement_id");
 
-                        $self->result_source->schema->resultset('Movement')->search( { id => $movement_id } )->count;
+                        my $movement_count = $self->result_source->schema->resultset('Movement')->search( { id => $movement_id } )->count;
+                        die \['movement_id', 'could not find movement with that id'] unless $movement_count;
+
+                        my $valid_movement_discount_count = $self->search(
+                            {
+                                movement_id => $movement_id,
+                                valid_until => 'infinity'
+                            }
+                        )->count;
+						die \['movement_id', 'there alredy is a discount for that movement'] unless $valid_movement_discount_count == 0;
+
+                        return 1;
                     }
                 },
                 percentage => {
@@ -44,8 +55,8 @@ sub verifiers_specs {
                     post_check => sub {
                         my $amount = $_[0]->get_value("amount");
 
-                        my $base_amount = $ENV{MA_PRICE};
-                        die \['$ENV{MA_PRICE}', 'missing'] unless $base_amount;
+                        my $base_amount = $ENV{MANDATOABERTO_BASE_AMOUNT};
+                        die \['$ENV{MANDATOABERTO_BASE_AMOUNT}', 'missing'] unless $base_amount;
 
                         die \['amount', 'must not be greater than base amount'] if $amount > $base_amount;
 

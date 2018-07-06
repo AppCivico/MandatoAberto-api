@@ -128,12 +128,15 @@ sub get_movement_discount {
     if ( $movement_discount ) {
         my $is_percentage = $movement_discount->percentage ? 1 : 0;
         $ret = {
+            has_discount  => 1,
             is_percentage => $is_percentage,
             ( $is_percentage ? ( percentage => $movement_discount->percentage ) : ( amount => $movement_discount->amount ) )
         };
     }
     else {
-        $ret = {};
+        $ret = {
+            has_discount => 0
+        };
     }
 
     return $ret;
@@ -146,7 +149,7 @@ sub calculate_discount {
 
     my $value;
     if ( $discount->{is_percentage} ) {
-        # TODO desconto de porcentagem
+        $value = $ENV{MANDATOABERTO_BASE_AMOUNT} * ( 1 - ( $discount->{percentage} / 100 ) );
     }
     else {
         $value = $ENV{MANDATOABERTO_BASE_AMOUNT} - $discount->{amount};

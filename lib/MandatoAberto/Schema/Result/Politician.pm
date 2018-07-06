@@ -930,8 +930,11 @@ sub get_current_pendency {
 sub send_new_register_email {
     my ($self) = @_;
 
+    my $movement          = $self->movement;
+    my $movement_discount = $movement->get_movement_discount;
+
     my $email = MandatoAberto::Mailer::Template->new(
-		to       => 'edgard.lobo@eokoe.com',
+		to       => 'contato@appcivico.com',
         from     => 'no-reply@mandatoaberto.com.br',
         subject  => "Mandato Aberto - Novo cadastro",
         template => get_data_section('new-register.tt'),
@@ -945,10 +948,14 @@ sub send_new_register_email {
             address_city  => $self->address_city->name,
             ( $self->movement ?
                 (
-                    movement        => $self->movement->name,
-                    final_amount    => $self->movement->calculate_discount,
-                    base_amount     => ( $ENV{MANDATOABERTO_BASE_AMOUNT} / 100 ),
-                    discount_amount => ( $self->movement->get_movement_discount->{amount} / 100 )
+                    movement => $self->movement->name,
+                    ( $movement_discount->{has_discount} ?
+                        (
+                            final_amount    => $self->movement->calculate_discount,
+							base_amount     => ( $ENV{MANDATOABERTO_BASE_AMOUNT} / 100 ),
+							discount_amount => ( $self->movement->get_movement_discount->{amount} / 100 )
+                        ) : ()
+                    )
                 ) : ()
             )
         },
