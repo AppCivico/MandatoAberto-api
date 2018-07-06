@@ -931,7 +931,7 @@ sub send_new_register_email {
     my ($self) = @_;
 
     my $movement          = $self->movement;
-    my $movement_discount = $movement->get_movement_discount;
+    my $movement_discount = $movement ? $movement->get_movement_discount : undef;
 
     my $recipient = $ENV{SQITCH_DEPLOY} eq 'development' ? 'edgard.alobo@eokoe.com' : 'contato@appcivico.com' ;
 
