@@ -1,4 +1,4 @@
-package MandatoAberto::Controller::API::Admin::Dialog;
+package MandatoAberto::Controller::API::Admin::Movement;
 use Moose;
 use namespace::autoclean;
 
@@ -8,6 +8,7 @@ with "CatalystX::Eta::Controller::AutoBase";
 with "CatalystX::Eta::Controller::AutoResultPUT";
 with "CatalystX::Eta::Controller::AutoResultGET";
 with "CatalystX::Eta::Controller::AutoListPOST";
+with "CatalystX::Eta::Controller::AutoListGET";
 
 __PACKAGE__->config(
     # AutoBase.
@@ -16,30 +17,40 @@ __PACKAGE__->config(
     # AutoResultPUT.
     object_key     => "movement",
     result_put_for => "update",
+
+    # AutoListGET
+    list_key => "movements",
+    build_row  => sub {
+        return { $_[0]->get_columns() };
+    }
 );
 
 sub root : Chained('/api/admin/base') : PathPart('') : CaptureArgs(0) { }
 
-sub base : Chained('root') : PathPart('dialog') : CaptureArgs(0) { }
+sub base : Chained('root') : PathPart('movement') : CaptureArgs(0) { }
 
 sub object : Chained('base') : PathPart('') : CaptureArgs(1) {
-    my ($self, $c, $dialog_id) = @_;
+    my ($self, $c, $movement_id) = @_;
 
-    $c->stash->{collection} = $c->stash->{collection}->search( { id => $dialog_id } );
+    $c->stash->{collection} = $c->stash->{collection}->search( { id => $movement_id } );
 
-    my $dialog = $c->stash->{collection}->find($dialog_id);
-    $c->detach("/error_404") unless ref $dialog;
+    my $movement = $c->stash->{collection}->find($movement_id);
+    $c->detach("/error_404") unless ref $movement;
 
-    $c->stash->{dialog} = $dialog;
+    $c->stash->{movement} = $movement;
 }
 
 sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }
 
 sub list_POST { }
 
+sub list_GET {}
+
 sub result : Chained('object') : PathPart('') : Args(0) : ActionClass('REST') { }
 
 sub result_PUT { }
+
+sub result_GET { }
 
 __PACKAGE__->meta->make_immutable;
 

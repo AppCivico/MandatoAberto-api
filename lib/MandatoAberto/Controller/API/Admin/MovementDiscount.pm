@@ -1,4 +1,4 @@
-package MandatoAberto::Controller::API::Admin::Dialog;
+package MandatoAberto::Controller::API::Admin::MovementDiscount;
 use Moose;
 use namespace::autoclean;
 
@@ -39,7 +39,7 @@ __PACKAGE__->config(
 
 sub root : Chained('/api/admin/base') : PathPart('') : CaptureArgs(0) { }
 
-sub base : Chained('root') : PathPart('dialog') : CaptureArgs(0) { }
+sub base : Chained('root') : PathPart('movement-discount') : CaptureArgs(0) { }
 
 sub object : Chained('base') : PathPart('') : CaptureArgs(1) {
     my ($self, $c, $dialog_id) = @_;
