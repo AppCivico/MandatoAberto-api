@@ -931,7 +931,7 @@ sub send_new_register_email {
     my ($self) = @_;
 
     my $email = MandatoAberto::Mailer::Template->new(
-        to       => 'contato@appcivico.com',
+		to       => 'edgard.lobo@eokoe.com',
         from     => 'no-reply@mandatoaberto.com.br',
         subject  => "Mandato Aberto - Novo cadastro",
         template => get_data_section('new-register.tt'),
