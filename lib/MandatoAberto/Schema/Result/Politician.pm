@@ -943,7 +943,7 @@ sub send_new_register_email {
             party         => $self->party->name,
             address_state => $self->address_state->name,
             address_city  => $self->address_city->name,
-            movement      => $self->movement->name
+            ( $self->movement ?  ( movement => $self->movement->name ) : () )
         },
     )->build_email();
 
