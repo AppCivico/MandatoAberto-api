@@ -118,5 +118,42 @@ __PACKAGE__->has_many(
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
+
+sub get_movement_discount {
+    my ($self) = @_;
+
+    my $ret;
+    my $movement_discount = $self->movement_discounts->search( { valid_until => 'infinity' } )->next;
+
+    if ( $movement_discount ) {
+        my $is_percentage = $movement_discount->percentage ? 1 : 0;
+        $ret = {
+            is_percentage => $is_percentage,
+            ( $is_percentage ? ( percentage => $movement_discount->percentage ) : ( amount => $movement_discount->amount ) )
+        };
+    }
+    else {
+        $ret = {};
+    }
+
+    return $ret;
+}
+
+sub calculate_discount {
+    my ($self) = @_;
+
+    my $discount = $self->get_movement_discount();
+
+    my $value;
+    if ( $discount->{is_percentage} ) {
+        # TODO desconto de porcentagem
+    }
+    else {
+        $value = $ENV{MANDATOABERTO_BASE_AMOUNT} - $discount->{amount};
+    }
+
+    return ( $value / 100 );
+}
+
 __PACKAGE__->meta->make_immutable;
 1;
