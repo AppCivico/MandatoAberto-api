@@ -108,6 +108,27 @@ __PACKAGE__->table("politician");
   data_type: 'text'
   is_nullable: 1
 
+=head2 movement_id
+
+  data_type: 'integer'
+  is_foreign_key: 1
+  is_nullable: 1
+
+=head2 twitter_id
+
+  data_type: 'text'
+  is_nullable: 1
+
+=head2 twitter_oauth_token
+
+  data_type: 'text'
+  is_nullable: 1
+
+=head2 twitter_token_secret
+
+  data_type: 'text'
+  is_nullable: 1
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -134,6 +155,14 @@ __PACKAGE__->add_columns(
   "premium_updated_at",
   { data_type => "timestamp", is_nullable => 1 },
   "picframe_url",
+  { data_type => "text", is_nullable => 1 },
+  "movement_id",
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
+  "twitter_id",
+  { data_type => "text", is_nullable => 1 },
+  "twitter_oauth_token",
+  { data_type => "text", is_nullable => 1 },
+  "twitter_token_secret",
   { data_type => "text", is_nullable => 1 },
 );
 
@@ -239,6 +268,26 @@ __PACKAGE__->has_many(
   "MandatoAberto::Schema::Result::Issue",
   { "foreign.politician_id" => "self.user_id" },
   { cascade_copy => 0, cascade_delete => 0 },
+);
+
+=head2 movement
+
+Type: belongs_to
+
+Related object: L<MandatoAberto::Schema::Result::Movement>
+
+=cut
+
+__PACKAGE__->belongs_to(
+  "movement",
+  "MandatoAberto::Schema::Result::Movement",
+  { id => "movement_id" },
+  {
+    is_deferrable => 0,
+    join_type     => "LEFT",
+    on_delete     => "NO ACTION",
+    on_update     => "NO ACTION",
+  },
 );
 
 =head2 office
@@ -422,8 +471,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-06-13 17:37:48
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:BSbvdI3L0lnI0CguI18+iw
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-07-05 14:06:29
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:rgyherx+U1ygF4h1/Hy5Ng
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
@@ -432,13 +481,14 @@ with 'MandatoAberto::Role::Verification';
 with 'MandatoAberto::Role::Verification::TransactionalActions::DBIC';
 
 use MandatoAberto::Utils;
+use MandatoAberto::Types qw/URI Twitter_id/;
+
 use Furl;
 use JSON::MaybeXS;
 use HTTP::Request;
 use IO::Socket::SSL;
 use DateTime;
 use DateTime::Format::DateParse;
-use MandatoAberto::Types qw/URI/;
 
 sub verifiers_specs {
     my $self = shift;
@@ -504,7 +554,7 @@ sub verifiers_specs {
                     post_check => sub {
                         my $fb_page_access_token = $_[0]->get_value('fb_page_access_token');
 
-						return 1 if length $fb_page_access_token == 0;
+                        return 1 if length $fb_page_access_token == 0;
 
                         $self->result_source->schema->resultset("Politician")->search( { fb_page_access_token => $fb_page_access_token } )->count and die \["fb_page_access_token", "alredy exists"];
 
@@ -526,7 +576,53 @@ sub verifiers_specs {
                 deactivate_chatbot => {
                     required => 0,
                     type     => 'Bool'
-                }
+                },
+                movement_id => {
+                    required   => 0,
+                    type       => "Int",
+                    post_check => sub {
+                        my $movement_id = $_[0]->get_value('movement_id');
+
+                        my $movement_rs = $self->result_source->schema->resultset('Movement');
+                        $movement_rs->search( { id => $movement_id } )->count;
+                    }
+                },
+                twitter_id => {
+                    required   => 0,
+                    type       => Twitter_id,
+                    post_check => sub {
+                        my $twitter_id = $_[0]->get_value('twitter_id');
+
+                        my $politician_rs = $self->result_source->schema->resultset('Politician');
+                        $politician_rs->search( { twitter_id => $twitter_id } )->count and die \["twitter_id", "alredy exists"];
+
+                        return 1;
+                    }
+                },
+                twitter_oauth_token => {
+                    required   => 0,
+                    type       => 'Str',
+                    post_check => sub {
+                        my $twitter_oauth_token  = $_[0]->get_value('twitter_oauth_token');
+
+                        my $politician_rs = $self->result_source->schema->resultset('Politician');
+                        $politician_rs->search( { twitter_oauth_token => $twitter_oauth_token } )->count and die \["twitter_oauth_token", "alredy exists"];
+
+                        return 1;
+                    }
+                },
+                twitter_token_secret => {
+                    required   => 0,
+                    type       => 'Str',
+                    post_check => sub {
+                        my $twitter_token_secret = $_[0]->get_value('twitter_token_secret');
+
+                        my $politician_rs = $self->result_source->schema->resultset('Politician');
+                        $politician_rs->search( { twitter_token_secret => $twitter_token_secret } )->count and die \["twitter_token_secret", "alredy exists"];
+
+                        return 1;
+                    }
+                },
             }
         ),
     };
@@ -541,6 +637,10 @@ sub action_specs {
 
             my %values = $r->valid_values;
             not defined $values{$_} and delete $values{$_} for keys %values;
+
+            if ( $values{twitter_oauth_token} || $values{twitter_token_secret} || $values{twitter_id} ) {
+                defined $values{$_} or die \[ "$_", "missing"] for qw/ twitter_token_secret twitter_oauth_token twitter_id /
+            }
 
             if ($values{address_city_id} && !$values{address_state_id}) {
                 my $address_state = $self->address_state_id;
@@ -830,8 +930,11 @@ sub get_current_pendency {
 sub send_new_register_email {
     my ($self) = @_;
 
+    my $movement          = $self->movement;
+    my $movement_discount = $movement->get_movement_discount;
+
     my $email = MandatoAberto::Mailer::Template->new(
-        to       => 'contato@appcivico.com',
+		to       => 'contato@appcivico.com',
         from     => 'no-reply@mandatoaberto.com.br',
         subject  => "Mandato Aberto - Novo cadastro",
         template => get_data_section('new-register.tt'),
@@ -843,6 +946,18 @@ sub send_new_register_email {
             party         => $self->party->name,
             address_state => $self->address_state->name,
             address_city  => $self->address_city->name,
+            ( $self->movement ?
+                (
+                    movement => $self->movement->name,
+                    ( $movement_discount->{has_discount} ?
+                        (
+                            final_amount    => $self->movement->calculate_discount,
+							base_amount     => ( $ENV{MANDATOABERTO_BASE_AMOUNT} / 100 ),
+							discount_amount => ( $self->movement->get_movement_discount->{amount} / 100 )
+                        ) : ()
+                    )
+                ) : ()
+            )
         },
     )->build_email();
 
@@ -4228,257 +4343,49 @@ Pedimos para que verifique com sua operadora &nbsp;e retorne o contato conosco.<
   <li style="text-align: left;"><span style="font-size:16px"><strong>Partido: <font color="#cc3399"> [% party %];</font></strong></span></li>
   <li style="text-align: left;"><span style="font-size:16px"><strong>Estado <font color="#cc3399"> [% address_state %];</font></strong></span></li>
   <li style="text-align: left;"><span style="font-size:16px"><strong>Cidade: <font color="#cc3399"> [% address_city %];</font></strong></span></li>
+  <li style="text-align: left;"><span style="font-size:16px"><strong>Movimento: <font color="#cc3399"> [% movement %] (desconto de: R$ [% discount_amount %] );</font></strong></span></li>
+  <li style="text-align: left;"><span style="font-size:16px"><strong>Desconto: <font color="#cc3399"> R$ [% final_amount %] (preço base: R$ [% base_amount %], desconto: r$ [% discount_amount %]) ;</font></strong></span></li>
+
 </ul>
+                        </td></tr>
+                </tbody></table><!--[if mso]></td><![endif]-->
 
-                        </td>
-                    </tr>
-                </tbody></table>
-        <!--[if mso]>
-        </td>
-        <![endif]-->
+                          <!--[if mso]></tr>
+        </table><![endif]-->
 
-        <!--[if mso]>
-        </tr>
-        </table>
-        <![endif]-->
-            </td>
-        </tr>
-    </tbody>
-</table><table border="0" cellpadding="0" cellspacing="0" width="100%" class="mcnDividerBlock" style="min-width:100%;">
-    <tbody class="mcnDividerBlockOuter">
-        <tr>
-            <td class="mcnDividerBlockInner" style="min-width: 100%; padding: 9px 18px;">
-                <table class="mcnDividerContent" border="0" cellpadding="0" cellspacing="0" width="100%" style="min-width: 100%;border-top-width: 1px;border-top-style: solid;border-top-color: #E0E0E0;">
-                    <tbody><tr>
-                        <td>
-                            <span></span>
-                        </td>
-                    </tr>
-                </tbody></table>
-<!--
-                <td class="mcnDividerBlockInner" style="padding: 18px;">
-                <hr class="mcnDividerContent" style="border-bottom-color:none; border-left-color:none; border-right-color:none; border-bottom-width:0; border-left-width:0; border-right-width:0; margin-top:0; margin-right:0; margin-bottom:0; margin-left:0;" />
--->
-            </td>
-        </tr>
-    </tbody>
-</table><table border="0" cellpadding="0" cellspacing="0" width="100%" class="mcnDividerBlock" style="min-width:100%;">
-    <tbody class="mcnDividerBlockOuter">
-        <tr>
-            <td class="mcnDividerBlockInner" style="min-width: 100%; padding: 18px 18px 0px;">
-                <table class="mcnDividerContent" border="0" cellpadding="0" cellspacing="0" width="100%" style="min-width:100%;">
-                    <tbody><tr>
-                        <td>
-                            <span></span>
-                        </td>
-                    </tr>
-                </tbody></table>
-<!--
-                <td class="mcnDividerBlockInner" style="padding: 18px;">
-                <hr class="mcnDividerContent" style="border-bottom-color:none; border-left-color:none; border-right-color:none; border-bottom-width:0; border-left-width:0; border-right-width:0; margin-top:0; margin-right:0; margin-bottom:0; margin-left:0;" />
--->
-            </td>
-        </tr>
-    </tbody>
-</table><table border="0" cellpadding="0" cellspacing="0" width="100%" class="mcnButtonBlock" style="min-width:100%;">
-    <tbody class="mcnButtonBlockOuter">
-        <tr>
-            <td style="padding-top:0; padding-right:18px; padding-bottom:18px; padding-left:18px;" valign="top" align="center" class="mcnButtonBlockInner">
-                <table border="0" cellpadding="0" cellspacing="0" class="mcnButtonContentContainer" style="border-collapse: separate !important;border-radius: 3px;background-color: #E0629A;">
-                    <tbody>
-                        <tr>
-                            <td align="center" valign="middle" class="mcnButtonContent" style="font-family: Helvetica; font-size: 18px; padding: 18px;">
-                                <a class="mcnButton " title="Saiba mais" href="https://mandatoaberto.com.br/" target="_self" style="font-weight: bold;letter-spacing: -0.5px;line-height: 100%;text-align: center;text-decoration: none;color: #FFFFFF;">Saiba mais</a>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </td>
-        </tr>
-    </tbody>
-</table></td>
-                    </tr>
-                  </table>
-                  <!--[if (gte mso 9)|(IE)]>
-                  </td>
-                  </tr>
-                  </table>
-                  <![endif]-->
-                </td>
-                            </tr>
-                            <tr>
-                <td align="center" valign="top" id="templateFooter" data-template-container>
-                  <!--[if (gte mso 9)|(IE)]>
-                  <table align="center" border="0" cellspacing="0" cellpadding="0" width="600" style="width:600px;">
-                  <tr>
-                  <td align="center" valign="top" width="600" style="width:600px;">
-                  <![endif]-->
-                  <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" class="templateContainer">
-                    <tr>
-                                      <td valign="top" class="footerContainer"><table border="0" cellpadding="0" cellspacing="0" width="100%" class="mcnFollowBlock" style="min-width:100%;">
-    <tbody class="mcnFollowBlockOuter">
-        <tr>
-            <td align="center" valign="top" style="padding:9px" class="mcnFollowBlockInner">
-                <table border="0" cellpadding="0" cellspacing="0" width="100%" class="mcnFollowContentContainer" style="min-width:100%;">
-    <tbody><tr>
-        <td align="center" style="padding-left:9px;padding-right:9px;">
-            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="min-width:100%;" class="mcnFollowContent">
-                <tbody><tr>
-                    <td align="center" valign="top" style="padding-top:9px; padding-right:9px; padding-left:9px;">
-                        <table align="center" border="0" cellpadding="0" cellspacing="0">
-                            <tbody><tr>
-                                <td align="center" valign="top">
-                                    <!--[if mso]>
-                                    <table align="center" border="0" cellspacing="0" cellpadding="0">
-                                    <tr>
-                                    <![endif]-->
-
-                                        <!--[if mso]>
-                                        <td align="center" valign="top">
-                                        <![endif]-->
-
-
-                                            <table align="left" border="0" cellpadding="0" cellspacing="0" style="display:inline;">
-                                                <tbody><tr>
-                                                    <td valign="top" style="padding-right:10px; padding-bottom:9px;" class="mcnFollowContentItemContainer">
-                                                        <table border="0" cellpadding="0" cellspacing="0" width="100%" class="mcnFollowContentItem">
-                                                            <tbody><tr>
-                                                                <td align="left" valign="middle" style="padding-top:5px; padding-right:10px; padding-bottom:5px; padding-left:9px;">
-                                                                    <table align="left" border="0" cellpadding="0" cellspacing="0" width="">
-                                                                        <tbody><tr>
-
-                                                                                <td align="center" valign="middle" width="24" class="mcnFollowIconContent">
-                                                                                    <a href="https://www.facebook.com/AppCivicoCSB/" target="_blank"><img src="https://cdn-images.mailchimp.com/icons/social-block-v2/outline-color-facebook-48.png" style="display:block;" height="24" width="24" class=""></a>
-                                                                                </td>
-
-
-                                                                        </tr>
-                                                                    </tbody></table>
-                                                                </td>
-                                                            </tr>
-                                                        </tbody></table>
-                                                    </td>
-                                                </tr>
-                                            </tbody></table>
-
-                                        <!--[if mso]>
-                                        </td>
-                                        <![endif]-->
-
-                                        <!--[if mso]>
-                                        <td align="center" valign="top">
-                                        <![endif]-->
-
-
-                                            <table align="left" border="0" cellpadding="0" cellspacing="0" style="display:inline;">
-                                                <tbody><tr>
-                                                    <td valign="top" style="padding-right:10px; padding-bottom:9px;" class="mcnFollowContentItemContainer">
-                                                        <table border="0" cellpadding="0" cellspacing="0" width="100%" class="mcnFollowContentItem">
-                                                            <tbody><tr>
-                                                                <td align="left" valign="middle" style="padding-top:5px; padding-right:10px; padding-bottom:5px; padding-left:9px;">
-                                                                    <table align="left" border="0" cellpadding="0" cellspacing="0" width="">
-                                                                        <tbody><tr>
-
-                                                                                <td align="center" valign="middle" width="24" class="mcnFollowIconContent">
-                                                                                    <a href="http://www.twitter.com/" target="_blank"><img src="https://cdn-images.mailchimp.com/icons/social-block-v2/outline-color-twitter-48.png" style="display:block;" height="24" width="24" class=""></a>
-                                                                                </td>
-
-
-                                                                        </tr>
-                                                                    </tbody></table>
-                                                                </td>
-                                                            </tr>
-                                                        </tbody></table>
-                                                    </td>
-                                                </tr>
-                                            </tbody></table>
-
-                                        <!--[if mso]>
-                                        </td>
-                                        <![endif]-->
-
-                                        <!--[if mso]>
-                                        <td align="center" valign="top">
-                                        <![endif]-->
-
-
-                                            <table align="left" border="0" cellpadding="0" cellspacing="0" style="display:inline;">
-                                                <tbody><tr>
-                                                    <td valign="top" style="padding-right:0; padding-bottom:9px;" class="mcnFollowContentItemContainer">
-                                                        <table border="0" cellpadding="0" cellspacing="0" width="100%" class="mcnFollowContentItem">
-                                                            <tbody><tr>
-                                                                <td align="left" valign="middle" style="padding-top:5px; padding-right:10px; padding-bottom:5px; padding-left:9px;">
-                                                                    <table align="left" border="0" cellpadding="0" cellspacing="0" width="">
-                                                                        <tbody><tr>
-
-                                                                                <td align="center" valign="middle" width="24" class="mcnFollowIconContent">
-                                                                                    <a href="https://mandatoaberto.com.br/" target="_blank"><img src="https://cdn-images.mailchimp.com/icons/social-block-v2/outline-color-link-48.png" style="display:block;" height="24" width="24" class=""></a>
-                                                                                </td>
-
-
-                                                                        </tr>
-                                                                    </tbody></table>
-                                                                </td>
-                                                            </tr>
-                                                        </tbody></table>
-                                                    </td>
-                                                </tr>
-                                            </tbody></table>
-
-                                        <!--[if mso]>
-                                        </td>
-                                        <![endif]-->
-
-                                    <!--[if mso]>
-                                    </tr>
-                                    </table>
-                                    <![endif]-->
-                                </td>
+                          </td>
                             </tr>
                         </tbody></table>
-                    </td>
+                          </td>
                 </tr>
             </tbody></table>
-        </td>
+                          </td>
     </tr>
 </tbody></table>
 
-            </td>
+                          </td>
         </tr>
     </tbody>
-</table><table border="0" cellpadding="0" cellspacing="0" width="100%" class="mcnDividerBlock" style="min-width:100%;">
-    <tbody class="mcnDividerBlockOuter">
-        <tr>
+</table><table border="0" cellpadding="0" cellspacing="0" width="100%" class="mcnDividerBlock" style="min-width:100%;"><tbody class="mcnDividerBlockOuter"><tr>
             <td class="mcnDividerBlockInner" style="min-width: 100%; padding: 18px;">
                 <table class="mcnDividerContent" border="0" cellpadding="0" cellspacing="0" width="100%" style="min-width: 100%;border-top-width: 2px;border-top-style: solid;border-top-color: #505050;">
-                    <tbody><tr>
-                        <td>
-                            <span></span>
-                        </td>
-                    </tr>
-                </tbody></table>
-<!--
-                <td class="mcnDividerBlockInner" style="padding: 18px;">
-                <hr class="mcnDividerContent" style="border-bottom-color:none; border-left-color:none; border-right-color:none; border-bottom-width:0; border-left-width:0; border-right-width:0; margin-top:0; margin-right:0; margin-bottom:0; margin-left:0;" />
--->
-            </td>
-        </tr>
-    </tbody>
-</table></td>
+                          <tbody><tr><td><span></span>
+                        </td></tr></tbody></table><!--<td class="mcnDividerBlockInner" style="padding: 18px;"><hr class="mcnDividerContent" style="border-bottom-color:none; border-left-color:none; border-right-color:none; border-bottom-width:0; border-left-width:0; border-right-width:0; margin-top:0; margin-right:0; margin-bottom:0; margin-left:0;" /> --></td></tr>
+    </tbody></table></td>
                     </tr>
                   </table>
                   <!--[if (gte mso 9)|(IE)]>
-                  </td>
+                          </td>
                   </tr>
                   </table>
                   <![endif]-->
-                </td>
+                          </td>
                             </tr>
                         </table>
                         <!-- // END TEMPLATE -->
-                    </td>
+                          </td>
                 </tr>
             </table>
         </center>
-    </body>
+                          </body>
 </html>

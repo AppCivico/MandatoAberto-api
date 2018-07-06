@@ -57,13 +57,17 @@ sub result_GET {
 
     my $votolegal_integration = $c->stash->{politician}->get_votolegal_integration;
 
+    my $has_movement = $c->stash->{politician}->movement ? 1 : 0;
+
     return $self->status_ok(
         $c,
         entity => {
             ( map { $_ => $c->stash->{politician}->$_ } qw/
-                name gender premium picframe_url/ ),
+                name gender premium picframe_url twitter_id/ ),
 
             fb_page_id => $facebook_active_page ? $c->stash->{politician}->fb_page_id : undef,
+
+            ( $has_movement ? ( movement => { map { $_ => $c->stash->{politician}->movement->$_ } qw/name id/  } ) : () ),
 
             ( state => { map { $_ => $c->stash->{politician}->address_state->$_ } qw/name code/  } ),
 

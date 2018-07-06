@@ -21,10 +21,30 @@ sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }
 sub list_GET {
     my ($self, $c) = @_;
 
-    my $page_id = $c->req->params->{fb_page_id};
-    die \["fb_page_id", "missing"] unless $page_id;
+    my $platform = $c->req->params->{platform} || 'fb';
+    die \['platform', 'invalid'] unless $platform =~ m/^(fb|twitter)$/;
 
-    my $politician = $c->model("DB::Politician")->search( { fb_page_id => $page_id } )->next;
+    my ($politician, $page_id, $cond);
+    if ( $platform eq 'fb' ) {
+
+        $page_id = $c->req->params->{fb_page_id};
+        die \["fb_page_id", "missing"] unless $page_id;
+
+        $politician = $c->model("DB::Politician")->search( { fb_page_id => $page_id } )->next;
+        die \['fb_page_id', 'could not find politician with that fb_page_id'] unless $politician;
+
+        $cond = 'fb_page_id';
+    }
+    else {
+
+        $page_id = $c->req->params->{twitter_id};
+        die \['twitter_id', 'missing'] unless $page_id;
+
+        $politician = $c->model("DB::Politician")->search( { twitter_id => $page_id } )->next;
+        die \['twitter_id', 'could not find politician with that twitter_id'] unless $politician;
+
+        $cond = 'twitter_id';
+    }
     my $politician_greeting = $politician->politicians_greeting->next;
 
     return $self->status_ok(
@@ -39,8 +59,18 @@ sub list_GET {
                     gender                => $p->get_column('gender'),
                     address_city          => $p->get_column('address_city_id'),
                     address_state         => $p->get_column('address_state_id'),
-                    fb_access_token       => $p->get_column('fb_page_access_token'),
                     picframe_url          => $p->get_column('picframe_url'),
+
+                    (
+                        $platform eq 'fb' ?
+                        (
+                            fb_access_token => $p->get_column('fb_page_access_token')
+                        ) :
+                        (
+                            twitter_oauth_token  => $p->get_column('twitter_oauth_token'),
+                            twitter_token_secret => $p->get_column('twitter_token_secret')
+                        )
+                    ),
 
                     ( $politician->has_votolegal_integration ?
                     (
@@ -77,7 +107,7 @@ sub list_GET {
                 }
 
             } $c->model("DB::Politician")->search(
-                { fb_page_id => $page_id },
+                { "$cond" => $page_id },
                 { prefetch => [ qw/politician_contacts party office /, { 'politicians_greeting' => 'greeting' } ] }
             )
     )
