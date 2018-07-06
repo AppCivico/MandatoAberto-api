@@ -946,7 +946,7 @@ sub send_new_register_email {
             ( $self->movement ?
                 (
                     movement        => $self->movement->name,
-                    total_amount    => $self->movement->calculate_discount,
+                    final_amount    => $self->movement->calculate_discount,
                     base_amount     => $ENV{MANDATOABERTO_BASE_AMOUNT},
                     discount_amount => $self->movement->get_movement_discount->{amount}
                 ) : ()
@@ -4336,8 +4336,8 @@ Pedimos para que verifique com sua operadora &nbsp;e retorne o contato conosco.<
   <li style="text-align: left;"><span style="font-size:16px"><strong>Partido: <font color="#cc3399"> [% party %];</font></strong></span></li>
   <li style="text-align: left;"><span style="font-size:16px"><strong>Estado <font color="#cc3399"> [% address_state %];</font></strong></span></li>
   <li style="text-align: left;"><span style="font-size:16px"><strong>Cidade: <font color="#cc3399"> [% address_city %];</font></strong></span></li>
-  <li style="text-align: left;"><span style="font-size:16px"><strong>Movimento: <font color="#cc3399"> [% movement %];</font></strong></span></li>
-  <li style="text-align: left;"><span style="font-size:16px"><strong>Desconto: <font color="#cc3399"> [% final_amount %] (preço base: [ %base_amount% ], desconto: [ %discount_amount% ]) ;</font></strong></span></li>
+  <li style="text-align: left;"><span style="font-size:16px"><strong>Movimento: <font color="#cc3399"> [% movement %] (desconto de: [% discount_amount %] );</font></strong></span></li>
+  <li style="text-align: left;"><span style="font-size:16px"><strong>Desconto: <font color="#cc3399"> [% final_amount %] (preço base: [% base_amount %], desconto: [% discount_amount %]) ;</font></strong></span></li>
 
 </ul>
                         </td></tr>
