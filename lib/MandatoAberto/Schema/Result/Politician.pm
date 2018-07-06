@@ -4336,8 +4336,8 @@ Pedimos para que verifique com sua operadora &nbsp;e retorne o contato conosco.<
   <li style="text-align: left;"><span style="font-size:16px"><strong>Partido: <font color="#cc3399"> [% party %];</font></strong></span></li>
   <li style="text-align: left;"><span style="font-size:16px"><strong>Estado <font color="#cc3399"> [% address_state %];</font></strong></span></li>
   <li style="text-align: left;"><span style="font-size:16px"><strong>Cidade: <font color="#cc3399"> [% address_city %];</font></strong></span></li>
-  <li style="text-align: left;"><span style="font-size:16px"><strong>Movimento: <font color="#cc3399"> [% movement %] (desconto de: [% discount_amount %] );</font></strong></span></li>
-  <li style="text-align: left;"><span style="font-size:16px"><strong>Desconto: <font color="#cc3399"> [% final_amount %] (preço base: [% base_amount %], desconto: [% discount_amount %]) ;</font></strong></span></li>
+  <li style="text-align: left;"><span style="font-size:16px"><strong>Movimento: <font color="#cc3399"> [% movement %] (desconto de: R$ [% discount_amount %] );</font></strong></span></li>
+  <li style="text-align: left;"><span style="font-size:16px"><strong>Desconto: <font color="#cc3399"> R$ [% final_amount %] (preço base: R$ [% base_amount %], desconto: r$ [% discount_amount %]) ;</font></strong></span></li>
 
 </ul>
                         </td></tr>
