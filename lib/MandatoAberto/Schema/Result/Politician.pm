@@ -933,7 +933,7 @@ sub send_new_register_email {
     my $movement          = $self->movement;
     my $movement_discount = $movement ? $movement->get_movement_discount : undef;
 
-    my $recipient = $ENV{SQITCH_DEPLOY} eq 'development' ? 'edgard.alobo@eokoe.com' : 'contato@appcivico.com' ;
+    my $recipient = $ENV{SQITCH_DEPLOY} eq 'development' ? 'edgard.lobo@eokoe.com' : 'contato@appcivico.com' ;
 
     my $email = MandatoAberto::Mailer::Template->new(
 		to       => $recipient,
