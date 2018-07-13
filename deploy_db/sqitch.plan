@@ -89,3 +89,4 @@
 0085-add-movement [0084-rename-logged_in_greeting] 2018-07-05T04:42:46Z Lucas Ansei,,, <lucas@lucas-G750JX> # Creating the 'movement' table and adding corresponding fk on the 'politician' table
 0086-add-twitter [0085-add-movement] 2018-07-05T18:09:04Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding twitter data on politician table
 0087-movement_discount [0086-add-twitter] 2018-07-06T13:03:42Z Lucas Ansei,,, <lucas@lucas-G750JX> # Adding the 'movement_discount' table
+0088-adding-one-movement [0087-movement_discount] 2018-07-13T16:24:59Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding one more row to the 'movement' table
