@@ -90,3 +90,4 @@
 0086-add-twitter [0085-add-movement] 2018-07-05T18:09:04Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding twitter data on politician table
 0087-movement_discount [0086-add-twitter] 2018-07-06T13:03:42Z Lucas Ansei,,, <lucas@lucas-G750JX> # Adding the 'movement_discount' table
 0088-adding-one-movement [0087-movement_discount] 2018-07-13T16:24:59Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding one more row to the 'movement' table
+0089-add-a-party [0088-adding-one-movement] 2018-07-16T12:29:44Z Lucas Ansei,,, <lucas@lucas-G750JX> # Adding one more row to the 'party' table
