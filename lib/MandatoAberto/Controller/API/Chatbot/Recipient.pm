@@ -37,7 +37,7 @@ __PACKAGE__->config(
         }
         else {
 			$recipient_id = $c->req->params->{twitter_id};
-			die \["twitter", "missing"] unless $recipient_id;
+			die \["twitter_id", "missing"] unless $recipient_id;
 
 			$id_param = 'twitter_id';
         }
@@ -49,6 +49,7 @@ __PACKAGE__->config(
         my $politician = $c->model("DB::Politician")->find($politician_id);
         die \["politician_id", 'could not find politician with that id'] unless $politician;
 
+        $params->{source}        = $platform;
         $params->{politician_id} = $politician_id;
         $params->{"$id_param"}   = $recipient_id;
         $params->{page_id}       = $platform eq 'facebook' ? $politician->fb_page_id : $politician->twitter_id;

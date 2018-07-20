@@ -20,6 +20,10 @@ sub verifiers_specs {
         create => Data::Verifier->new(
             filters => [qw(trim)],
             profile => {
+                source => {
+                    required => 1,
+                    type     => 'Str'
+                },
                 politician_id => {
                     required   => 1,
                     type       => 'Int',
@@ -66,8 +70,15 @@ sub verifiers_specs {
                     type       => "Str",
                     post_check => sub {
                         my $page_id = $_[0]->get_value("page_id");
+                        my $source  = $_[0]->get_value('source');
 
-                        $self->result_source->schema->resultset("Politician")->search({ fb_page_id => $page_id })->count;
+                        if ( $source eq 'facebook' ) {
+                            $self->result_source->schema->resultset("Politician")->search({ fb_page_id => $page_id })->count;
+                        }
+                        else {
+							$self->result_source->schema->resultset("Politician")->search({ twitter_id => $page_id })->count;
+                        }
+
                     }
                 }
             }
@@ -84,6 +95,7 @@ sub action_specs {
 
             my %values = $r->valid_values;
             not defined $values{$_} and delete $values{$_} for keys %values;
+            delete $values{source};
 
             if ( defined($values{gender}) && $values{gender} !~ m{^[FM]{1}$} ) {
                 die \["gender", "must be F or M"];
