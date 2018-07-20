@@ -110,7 +110,7 @@ sub list_GET {
                 count                    => $issues->count(),
                 count_open               => $issues->get_politician_open_issues->count,
                 count_ignored            => $issues->search( { open => 0, reply => \'IS NULL' } )->count,
-                count_ignored            => $issues->search( { open => 0, reply => \'IS NOT NULL' } )->count,
+                count_replied            => $issues->search( { open => 0, reply => \'IS NOT NULL' } )->count,
                 count_open_last_24_hours => $issues->get_open_issues_created_today->count
             },
             campaigns => {
