@@ -63,7 +63,7 @@ __PACKAGE__->table("recipient");
 =head2 fb_id
 
   data_type: 'text'
-  is_nullable: 0
+  is_nullable: 1
 
 =head2 origin_dialog
 
@@ -126,6 +126,21 @@ __PACKAGE__->table("recipient");
   is_nullable: 1
   original: {default_value => \"now()"}
 
+=head2 twitter_id
+
+  data_type: 'text'
+  is_nullable: 1
+
+=head2 twitter_origin_id
+
+  data_type: 'text'
+  is_nullable: 1
+
+=head2 twitter_screen_name
+
+  data_type: 'text'
+  is_nullable: 1
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -141,7 +156,7 @@ __PACKAGE__->add_columns(
   "name",
   { data_type => "text", is_nullable => 0 },
   "fb_id",
-  { data_type => "text", is_nullable => 0 },
+  { data_type => "text", is_nullable => 1 },
   "origin_dialog",
   { data_type => "text", is_nullable => 0 },
   "gender",
@@ -174,6 +189,12 @@ __PACKAGE__->add_columns(
     is_nullable   => 1,
     original      => { default_value => \"now()" },
   },
+  "twitter_id",
+  { data_type => "text", is_nullable => 1 },
+  "twitter_origin_id",
+  { data_type => "text", is_nullable => 1 },
+  "twitter_screen_name",
+  { data_type => "text", is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -250,9 +271,24 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 recipient_network
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-04-03 15:18:51
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:EmbaJagYlG/GXPFaIkR3nw
+Type: might_have
+
+Related object: L<MandatoAberto::Schema::Result::RecipientNetwork>
+
+=cut
+
+__PACKAGE__->might_have(
+  "recipient_network",
+  "MandatoAberto::Schema::Result::RecipientNetwork",
+  { "foreign.recipient_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-07-20 11:40:48
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:aDKPvFLlGHkUe4Mijz4KYw
 
 __PACKAGE__->load_components("InflateColumn::Serializer", "Core");
 __PACKAGE__->remove_column('groups');

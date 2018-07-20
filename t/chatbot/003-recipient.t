@@ -153,6 +153,8 @@ db_transaction {
         is($res->{id}, $citizen_id, 'id');
         is($res->{email}, $new_email, 'email');
     };
+
+    # TODO testar criação de recipient twitter
 };
 
 done_testing();
