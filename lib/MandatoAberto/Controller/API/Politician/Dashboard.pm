@@ -61,27 +61,25 @@ sub list_GET {
     my $first_access = $politician->user->user_sessions->count > 1 ? 0 : 1;
 
     # Dados de genero
-    my $recipients_by_gender = $politician->recipients->get_recipient_by_gender;
+    # my $recipients_by_gender = $politician->recipients->get_recipient_by_gender;
 
-    my $citizen_gender = {
-        name     => "Gênero",
-        title    => "Gênero",
-        subtitle => "Número de pessoas por gênero",
-        labels   => [ 'Feminino', 'Masculino' ],
-        data     => [ $recipients_by_gender->{female_recipient_count}, $recipients_by_gender->{male_recipient_count} ]
-    };
+    # my $citizen_gender = {
+    #     name     => "Gênero",
+    #     title    => "Gênero",
+    #     subtitle => "Número de pessoas por gênero",
+    #     labels   => [ 'Feminino', 'Masculino' ],
+    #     data     => [ $recipients_by_gender->{female_recipient_count}, $recipients_by_gender->{male_recipient_count} ]
+    # };
 
     # Pegando dados do analytics do Facebook
-    my $range = $c->req->params->{range};
-    $range = 8 if !$range;
-    die \["range", 'invalid'] if $range !~ m/^(8|16|31)/;
+    # my $range = $c->req->params->{range};
+    # $range = 8 if !$range;
+    # die \["range", 'invalid'] if $range !~ m/^(8|16|31)/;
 
-    my $citizen_interaction;
-    if ($has_facebook_auth) {
-        $citizen_interaction = $politician->get_citizen_interaction($range);
-    }
-
-    my $group_count = $politician->groups->search( { deleted => 0 } )->count;
+    # my $citizen_interaction;
+    # if ($has_facebook_auth) {
+    #     $citizen_interaction = $politician->get_citizen_interaction($range);
+    # }
 
     my $issues    = $politician->issues;
     my $campaigns = $politician->campaigns;
@@ -97,8 +95,8 @@ sub list_GET {
             has_facebook_auth   => $has_facebook_auth,
             has_active_poll     => $active_poll ? 1 : 0,
             ever_had_poll       => $ever_had_poll,
-            citizen_interaction => $citizen_interaction,
-            citizen_gender      => $citizen_gender,
+            # citizen_interaction => $citizen_interaction,
+            # citizen_gender      => $citizen_gender,
             group_count         => $group_count,
 
             recipients => {
