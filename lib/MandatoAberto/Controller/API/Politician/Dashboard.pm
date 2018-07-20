@@ -107,20 +107,20 @@ sub list_GET {
                 count_with_cellphone => $recipients->search( { cellphone => \'IS NOT NULL' } )->count
             },
             issues => {
-                count                    => $issues->all(),
+                count                    => $issues->count(),
                 count_open               => $issues->get_politician_open_issues->count,
                 count_ignored            => $issues->search( { open => 0, reply => \'IS NULL' } )->count,
                 count_ignored            => $issues->search( { open => 0, reply => \'IS NOT NULL' } )->count,
                 count_open_last_24_hours => $issues->get_open_issues_created_today->count
             },
             campaigns => {
-                count                => $campaigns->count,
-                count_direct_message => $campaigns->search( { type_id => 1 } )->count,
-                count_poll_propagate => $campaigns->search( { type_id => 2 } )->count,
+                count                => $politician->campaigns->count,
+                count_direct_message => $politician->campaigns->search( { type_id => 1 } )->count,
+                count_poll_propagate => $politician->campaigns->search( { type_id => 2 } )->count,
 
-                reach                => $campaigns->get_politician_campaign_reach_count(),
-                reach_direct_message => $campaigns->get_politician_campaign_reach_dm_count(),
-                reach_poll_propagate => $campaigns->get_politician_campaign_reach_poll_propagate_count(),
+                reach                => $politician->campaigns->get_politician_campaign_reach_count(),
+                reach_direct_message => $politician->campaigns->get_politician_campaign_reach_dm_count(),
+                reach_poll_propagate => $politician->campaigns->get_politician_campaign_reach_poll_propagate_count(),
             },
             groups => {
                 count                          => $groups->count,
