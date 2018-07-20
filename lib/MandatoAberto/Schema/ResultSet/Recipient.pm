@@ -34,8 +34,12 @@ sub verifiers_specs {
                     type     => "Str"
                 },
                 fb_id => {
-                    required => 1,
+                    required => 0,
                     type     => "Str"
+                },
+                twitter_id => {
+                    required => 0,
+                    type     => 'Str'
                 },
                 origin_dialog => {
                     required => 0,
