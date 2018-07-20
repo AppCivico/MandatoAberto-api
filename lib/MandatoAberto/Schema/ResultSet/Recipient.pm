@@ -20,9 +20,14 @@ sub verifiers_specs {
         create => Data::Verifier->new(
             filters => [qw(trim)],
             profile => {
-                source => {
-                    required => 1,
-                    type     => 'Str'
+                platform => {
+                    required   => 1,
+                    type       => 'Str',
+                    post_check => sub {
+                        my $platform = $_[0]->get_value('platform');
+
+                        die \['platform', 'invalid'] unless $platform =~ m/^(twitter|facebook)$/;
+                    }
                 },
                 politician_id => {
                     required   => 1,
@@ -42,8 +47,34 @@ sub verifiers_specs {
                     type     => "Str"
                 },
                 twitter_id => {
-                    required => 0,
-                    type     => 'Str'
+                    required   => 0,
+                    type       => 'Str',
+                    post_check => sub {
+                        my $twitter_id        = $_[0]->get_value('twitter_id');
+                        my $twitter_origin_id = $_[0]->get_value('twitter_origin_id');
+
+                        die \['twitter_origin_id', 'missing'] unless $twitter_origin_id;
+
+                        return 1;
+                    }
+                },
+                twitter_origin_id => {
+                    required   => 0,
+                    type       => 'Str',
+                    post_check => sub {
+                        my $twitter_id = $_[0]->get_value('twitter_id');
+
+                        die \['twitter_id', 'missing'] unless $twitter_id;
+                    }
+                },
+                twitter_screen_name => {
+                    required   => 0,
+                    type       => 'Str',
+                    post_check => sub {
+						my $twitter_id = $_[0]->get_value('twitter_id');
+
+						die \['twitter_id', 'missing'] unless $twitter_id;
+                    }
                 },
                 origin_dialog => {
                     required => 0,
@@ -70,9 +101,9 @@ sub verifiers_specs {
                     type       => "Str",
                     post_check => sub {
                         my $page_id = $_[0]->get_value("page_id");
-                        my $source  = $_[0]->get_value('source');
+                        my $platform  = $_[0]->get_value('platform');
 
-                        if ( $source eq 'facebook' ) {
+                        if ( $platform eq 'facebook' ) {
                             $self->result_source->schema->resultset("Politician")->search({ fb_page_id => $page_id })->count;
                         }
                         else {
@@ -95,7 +126,6 @@ sub action_specs {
 
             my %values = $r->valid_values;
             not defined $values{$_} and delete $values{$_} for keys %values;
-            delete $values{source};
 
             if ( defined($values{gender}) && $values{gender} !~ m{^[FM]{1}$} ) {
                 die \["gender", "must be F or M"];

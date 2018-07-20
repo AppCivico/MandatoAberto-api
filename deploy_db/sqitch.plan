@@ -94,3 +94,4 @@
 0090-add-twitter-recipient-data [0089-add-a-party] 2018-07-20T14:52:10Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the necessary data so that the 'recipient' may be created via Twitter
 0091-add-politician_id-on-campaign [0090-add-twitter-recipient-data] 2018-07-20T15:02:27Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the 'politician_id' on the 'campaign' table
 0092-drop-notnull-origin_dialog [0091-add-politician_id-on-campaign] 2018-07-20T19:48:39Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Setting the 'origin_dialog' to nullabe
+0093-add-platform [0092-drop-notnull-origin_dialog] 2018-07-20T20:17:26Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the 'platform' column on the 'recipient' table

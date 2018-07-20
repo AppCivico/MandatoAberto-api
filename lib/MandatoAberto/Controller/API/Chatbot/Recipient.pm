@@ -26,7 +26,7 @@ __PACKAGE__->config(
         my ($self, $c, $params) = @_;
 
         my $platform = $c->req->params->{platform} || 'facebook';
-        die \['platform', 'invalid'] unless $platform =~ m/(facebook|twitter)/;
+        die \['platform', 'invalid'] unless $platform =~ m/^(facebook|twitter)$/;
 
         my ( $id_param, $recipient_id );
         if ( $platform eq 'facebook' ) {
@@ -49,10 +49,11 @@ __PACKAGE__->config(
         my $politician = $c->model("DB::Politician")->find($politician_id);
         die \["politician_id", 'could not find politician with that id'] unless $politician;
 
-        $params->{source}        = $platform;
-        $params->{politician_id} = $politician_id;
-        $params->{"$id_param"}   = $recipient_id;
-        $params->{page_id}       = $platform eq 'facebook' ? $politician->fb_page_id : $politician->twitter_id;
+        $params->{platform}          = $platform;
+        $params->{politician_id}     = $politician_id;
+        $params->{"$id_param"}       = $recipient_id;
+        $params->{page_id}           = $platform eq 'facebook' ? $politician->fb_page_id : $politician->twitter_id;
+        $params->{twitter_origin_id} = $platform eq 'twitter' ? $politician->twitter_id : ();
 
         return $params;
     },
