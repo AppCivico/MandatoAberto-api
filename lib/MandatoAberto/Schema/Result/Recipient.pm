@@ -68,7 +68,7 @@ __PACKAGE__->table("recipient");
 =head2 origin_dialog
 
   data_type: 'text'
-  is_nullable: 0
+  is_nullable: 1
 
 =head2 gender
 
@@ -158,7 +158,7 @@ __PACKAGE__->add_columns(
   "fb_id",
   { data_type => "text", is_nullable => 1 },
   "origin_dialog",
-  { data_type => "text", is_nullable => 0 },
+  { data_type => "text", is_nullable => 1 },
   "gender",
   { data_type => "text", is_nullable => 1 },
   "email",
@@ -287,8 +287,8 @@ __PACKAGE__->might_have(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-07-20 11:40:48
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:aDKPvFLlGHkUe4Mijz4KYw
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-07-20 16:49:31
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:And07HNrJLo19rK0xHbLaw
 
 __PACKAGE__->load_components("InflateColumn::Serializer", "Core");
 __PACKAGE__->remove_column('groups');

@@ -37,17 +37,6 @@ db_transaction {
     ;
 
     rest_post "/api/chatbot/recipient",
-        name    => "create recipient without origin_dialog",
-        is_fail => 1,
-        [
-            name          => fake_name()->(),
-            politician_id => $politician_id,
-            fb_id         => "foobar",
-            security_token => $security_token
-        ]
-    ;
-
-    rest_post "/api/chatbot/recipient",
         name    => "email is not required but must be valid",
         is_fail => 1,
         [

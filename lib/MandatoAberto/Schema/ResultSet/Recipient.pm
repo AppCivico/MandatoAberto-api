@@ -105,11 +105,7 @@ sub action_specs {
 
             if (!defined $existing_citizen) {
 
-                if ( ( !$values{origin_dialog} && $values{name} ) || ( !$values{origin_dialog} && !$values{name} ) ) {
-                    die \["origin_dialog", "missing"];
-                } elsif ( ( $values{origin_dialog} && !$values{name} ) ) {
-                    die \["name", "missing"];
-                }
+                die \['name', 'missing'] unless $values{name};
 
                 my $citizen = $self->create(\%values);
 
