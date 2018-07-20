@@ -92,3 +92,4 @@
 0088-adding-one-movement [0087-movement_discount] 2018-07-13T16:24:59Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding one more row to the 'movement' table
 0089-add-a-party [0088-adding-one-movement] 2018-07-16T12:29:44Z Lucas Ansei,,, <lucas@lucas-G750JX> # Adding one more row to the 'party' table
 0090-add-twitter-recipient-data [0089-add-a-party] 2018-07-20T14:52:10Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the necessary data so that the 'recipient' may be created via Twitter
+0091-add-politician_id-on-campaign [0090-add-twitter-recipient-data] 2018-07-20T15:02:27Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the 'politician_id' on the 'campaign' table

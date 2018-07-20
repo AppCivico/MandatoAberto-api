@@ -85,7 +85,13 @@ sub action_specs {
             my %values = $r->valid_values;
             not defined $values{$_} and delete $values{$_} for keys %values;
 
-            my $campaign = $self->result_source->schema->resultset("Campaign")->create( { type_id => 1 } );
+            # TODO Colocar em uma unica tx
+            my $campaign = $self->result_source->schema->resultset("Campaign")->create(
+                {
+                    politician_id => $values{politician_id},
+                    type_id       => 1
+                }
+            );
             $values{campaign_id} = $campaign->id;
 
             my $politician   = $self->result_source->schema->resultset("Politician")->find($values{politician_id});

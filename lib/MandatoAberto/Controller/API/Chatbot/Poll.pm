@@ -21,8 +21,20 @@ sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }
 sub list_GET {
     my ($self, $c) = @_;
 
-    my $page_id = $c->req->params->{fb_page_id};
-    die \["fb_page_id", "missing"] unless $page_id;
+    my $platform = $c->req->params->{platform} || 'facebook';
+    die \['platform', 'invalid'] unless $platform =~ m/(facebook|twitter)/;
+
+    my ( $page_id, $page_id_param );
+    if ( $platform eq 'facebook' ) {
+        $page_id_param = 'politician.fb_page_id';
+		$page_id       = $c->req->params->{fb_page_id};
+		die \["fb_page_id", "missing"] unless $page_id;
+    }
+    else {
+		$page_id_param = 'politician.twitter_id';
+		$page_id       = $c->req->params->{twitter_id};
+		die \["twitter_id", "missing"] unless $page_id;
+    }
 
     return $self->status_ok(
         $c,
@@ -56,8 +68,8 @@ sub list_GET {
                 ],
             } $c->model("DB::Poll")->search(
                 {
-                    'politician.fb_page_id' => $page_id,
-                    status_id               => 1
+                    "$page_id_param" => $page_id,
+                    status_id        => 1
                 },
                 { prefetch => [ 'poll_questions', { 'poll_questions' => "poll_question_options" }, 'politician' ] }
             )

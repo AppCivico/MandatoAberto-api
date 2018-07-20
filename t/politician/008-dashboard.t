@@ -118,7 +118,7 @@ db_transaction {
     stash_test "get_politician_dashboard" => sub {
         my $res = shift;
 
-        is ($res->{citizens}, 1, 'one citizen');
+        is ($res->{recipients}->{count}, 1, 'one citizen');
     };
 
     rest_post "/api/chatbot/recipient",
@@ -141,7 +141,7 @@ db_transaction {
     stash_test "get_politician_dashboard.list" => sub {
         my $res = shift;
 
-        is ($res->{citizens}, 2, 'two citizens');
+        is ($res->{recipients}->{count}, 2, 'two citizens');
         is ($res->{has_greeting}, 0, 'politician does not have greeting');
         is ($res->{has_contacts}, 0, 'politician does not have contacts');
         is ($res->{has_dialogs}, 0, 'politician does not have dialogs');
@@ -159,7 +159,7 @@ db_transaction {
     stash_test "get_politician_dashboard.list" => sub {
         my $res = shift;
 
-        is ($res->{citizens}, 2, 'two citizens');
+        is ($res->{recipients}->{count}, 2, 'two citizens');
         is ($res->{has_greeting}, 0, 'politician does not have greeting');
         is ($res->{has_contacts}, 0, 'politician does not have contacts');
         is ($res->{has_dialogs}, 0, 'politician does not have dialogs');
@@ -180,7 +180,7 @@ db_transaction {
     stash_test "get_politician_dashboard.list" => sub {
         my $res = shift;
 
-        is ($res->{citizens}, 2, 'two citizens');
+        is ($res->{recipients}->{count}, 2, 'two citizens');
         is ($res->{has_greeting}, 1, 'politician has greeting');
         is ($res->{has_contacts}, 0, 'politician does not have contacts');
         is ($res->{has_dialogs}, 0, 'politician does not have dialogs');
@@ -204,7 +204,7 @@ db_transaction {
     stash_test "get_politician_dashboard.list" => sub {
         my $res = shift;
 
-        is ($res->{citizens}, 2, 'two citizens');
+        is ($res->{recipients}->{count}, 2, 'two citizens');
         is ($res->{has_greeting}, 1, 'politician has greeting');
         is ($res->{has_contacts}, 1, 'politician has contacts');
         is ($res->{has_dialogs}, 0, 'politician does not have dialogs');
@@ -222,7 +222,7 @@ db_transaction {
     stash_test "get_politician_dashboard.list" => sub {
         my $res = shift;
 
-        is ($res->{citizens}, 2, 'two citizens');
+        is ($res->{recipients}->{count}, 2, 'two citizens');
         is ($res->{has_greeting}, 1, 'politician has greeting');
         is ($res->{has_contacts}, 1, 'politician has contacts');
         is ($res->{has_dialogs}, 1, 'politician has dialogs');
@@ -234,7 +234,7 @@ db_transaction {
     stash_test "get_politician_dashboard.list" => sub {
         my $res = shift;
 
-        is ($res->{citizens}, 2, 'two citizens');
+        is ($res->{recipients}->{count}, 2, 'two citizens');
         is ($res->{has_greeting}, 1, 'politician has greeting');
         is ($res->{has_contacts}, 1, 'politician has contacts');
         is ($res->{has_dialogs}, 1, 'politician has dialogs');
@@ -263,14 +263,15 @@ db_transaction {
     stash_test "get_politician_dashboard.list" => sub {
         my $res = shift;
 
-        is ($res->{citizens}, 2, 'two citizens');
+        is ($res->{recipients}->{count}, 2, 'two citizens');
         is ($res->{has_greeting}, 1, 'politician has greeting');
         is ($res->{has_contacts}, 1, 'politician has contacts');
         is ($res->{has_dialogs}, 1, 'politician has dialogs');
         is ($res->{has_facebook_auth}, 1, 'politician has facebook auth');
         is ($res->{first_access}, 0, 'politician first access');
         is ($res->{group_count}, 1, 'group count');
-        is ($res->{open_issue_count}, 1, 'open issues count');
+        is ($res->{issues}->{count_open}, 1, 'open issues count');
+        is ($res->{issues}->{count_open_last_24_hours}, 1, 'open issues count');
     };
 };
 

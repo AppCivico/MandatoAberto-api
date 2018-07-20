@@ -65,4 +65,15 @@ sub get_politician_open_issues {
     return $self->search( { open => 1 } );
 }
 
+sub get_open_issues_created_today {
+    my ($self) = @_;
+
+    return $self->search(
+        {
+            open       => 1,
+            created_at => { '>=' => "yesterday()" }
+        }
+    );
+}
+
 1;
