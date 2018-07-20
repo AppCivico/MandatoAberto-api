@@ -28,16 +28,16 @@ __PACKAGE__->config(
         my $platform = $c->req->params->{platform} || 'facebook';
         die \['platform', 'invalid'] unless $platform =~ m/(facebook|twitter)/;
 
-        my ( $id_param, $recipient_fb_id, $recipient_twitter_id );
+        my ( $id_param, $recipient_id );
         if ( $platform eq 'facebook' ) {
-			$recipient_fb_id = $c->req->params->{fb_id};
-            die \["fb_id", "missing"] unless $recipient_fb_id;
+			$recipient_id = $c->req->params->{fb_id};
+            die \["fb_id", "missing"] unless $recipient_id;
 
             $id_param = 'fb_id';
         }
         else {
-			$recipient_twitter_id = $c->req->params->{twitter_id};
-			die \["twitter", "missing"] unless $recipient_twitter_id;
+			$recipient_id = $c->req->params->{twitter_id};
+			die \["twitter", "missing"] unless $recipient_id;
 
 			$id_param = 'twitter_id';
         }
@@ -50,7 +50,7 @@ __PACKAGE__->config(
         die \["politician_id", 'could not find politician with that id'] unless $politician;
 
         $params->{politician_id} = $politician_id;
-        $params->{"$id_param"}   = $platform eq 'facebook' ? $recipient_fb_id : $recipient_twitter_id;
+        $params->{"$id_param"}   = $recipient_id;
         $params->{page_id}       = $platform eq 'facebook' ? $politician->fb_page_id : $politician->twitter_id;
 
         return $params;
