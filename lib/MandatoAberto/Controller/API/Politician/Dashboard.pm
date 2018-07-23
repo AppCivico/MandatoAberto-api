@@ -85,6 +85,8 @@ sub list_GET {
     my $campaigns = $politician->campaigns;
     my $groups    = $politician->groups->search( { deleted => 0 } );
 
+    my $issue_response_view = $c->model('DB::ViewAvgIssueResponseTime')->search( undef, { bind => [ $politician->user_id ] } )->next;
+
     return $self->status_ok(
         $c,
         entity => {
@@ -97,7 +99,7 @@ sub list_GET {
             ever_had_poll       => $ever_had_poll,
             # citizen_interaction => $citizen_interaction,
             # citizen_gender      => $citizen_gender,
-            group_count         => $group_count,
+            # group_count         => $group_count,
 
             recipients => {
                 count                => $recipients->count,
@@ -111,7 +113,8 @@ sub list_GET {
                 count_open               => $issues->get_politician_open_issues->count,
                 count_ignored            => $issues->search( { open => 0, reply => \'IS NULL' } )->count,
                 count_replied            => $issues->search( { open => 0, reply => \'IS NOT NULL' } )->count,
-                count_open_last_24_hours => $issues->get_open_issues_created_today->count
+                count_open_last_24_hours => $issues->get_open_issues_created_today->count,
+                avg_response_time        => $issue_response_view ? $issue_response_view->avg_response_time : 0
             },
             campaigns => {
                 count                => $politician->campaigns->count,
