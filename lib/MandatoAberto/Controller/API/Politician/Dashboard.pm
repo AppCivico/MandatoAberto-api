@@ -136,8 +136,9 @@ sub list_GET {
                         my $g = $_;
 
                         {
-                            id   => $g->id,
-                            name => $g->name
+                            id              => $g->id,
+                            name            => $g->name,
+                            recipient_count => $g->recipients_count
                         }
                     } $groups->get_groups_ordered_by_recipient_count->all()
                 ]
