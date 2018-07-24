@@ -114,7 +114,7 @@ sub list_GET {
                 count_ignored            => $issues->search( { open => 0, reply => \'IS NULL' } )->count,
                 count_replied            => $issues->search( { open => 0, reply => \'IS NOT NULL' } )->count,
                 count_open_last_24_hours => $issues->get_open_issues_created_today->count,
-                avg_response_time        => $issue_response_view ? $issue_response_view->avg_response_time : 0
+                avg_response_time        => $issue_response_view ? $issue_response_view->avg_response_time : 0,
             },
             campaigns => {
                 count                => $politician->campaigns->count,

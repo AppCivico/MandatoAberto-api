@@ -290,7 +290,7 @@ db_transaction {
     stash_test "get_politician_dashboard.list" => sub {
         my $res = shift;
 
-        is ( $res->{issues}->{avg_response_time}, '01:00:00', '1 hour avg response time' );
+        is ( $res->{issues}->{avg_response_time}, '60', '60 minutes avg response time' );
     };
 };
 

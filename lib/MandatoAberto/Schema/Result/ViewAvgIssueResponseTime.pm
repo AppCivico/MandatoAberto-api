@@ -14,7 +14,7 @@ __PACKAGE__->add_columns( qw( avg_response_time ) );
 __PACKAGE__->result_source_instance->is_virtual(1);
 
 __PACKAGE__->result_source_instance->view_definition(<<'SQL_QUERY');
-SELECT politician_id, avg(updated_at - created_at) AS avg_response_time
+SELECT politician_id, avg( extract(epoch FROM ( updated_at - created_at ) ) / 60 ) as avg_response_time
     FROM issue
     WHERE reply IS NOT NULL AND politician_id = ?
     GROUP BY politician_id
