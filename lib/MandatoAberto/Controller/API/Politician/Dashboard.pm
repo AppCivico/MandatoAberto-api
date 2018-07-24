@@ -87,6 +87,14 @@ sub list_GET {
 
     my $issue_response_view = $c->model('DB::ViewAvgIssueResponseTime')->search( undef, { bind => [ $politician->user_id ] } )->next;
 
+    # Condição para puxar dados dos últimos 7 dias
+    my $last_week_issue_response_view = $c->model('DB::ViewAvgIssueResponseTimeLastWeek')->search( undef, { bind => [ $politician->user_id ] } )->next;
+    my $last_week_cond = { created_at => { '>=' => \"NOW() - interval '7 days'" } };
+
+    my $last_week_issues     = $issues->search( $last_week_cond );
+	my $last_week_recipients = $recipients->search($last_week_cond);
+	my $last_week_campaigns  = $campaigns->search($last_week_cond);
+
     return $self->status_ok(
         $c,
         entity => {
@@ -100,13 +108,30 @@ sub list_GET {
             # citizen_interaction => $citizen_interaction,
             # citizen_gender      => $citizen_gender,
             # group_count         => $group_count,
-
+            last_week_data => {
+                issues => {
+                    avg_response_time => $issue_response_view ? $issue_response_view->avg_response_time : 0,
+                    count             => $last_week_issues->count,
+                    count_open        => $last_week_issues->search( { open => 1 } )->count,
+                    count_ignored     => $last_week_issues->search( { open => 0, reply => \'IS NULL' } )->count,
+                },
+                recipients => {
+                    count => $last_week_recipients->count
+                },
+                campaigns => {
+                    count                => $last_week_campaigns->count,
+					count_direct_message => $last_week_campaigns->search( { type_id => 1 } )->count,
+					count_poll_propagate => $last_week_campaigns->search( { type_id => 2 } )->count
+                }
+            },
             recipients => {
-                count                => $recipients->count,
-                count_with_email     => $recipients->search( { email => \'IS NOT NULL' } )->count,
-                count_with_cellphone => $recipients->search( { cellphone => \'IS NOT NULL' } )->count,
-                count_facebook       => $recipients->search( { platform => 'facebook' } )->count,
-                count_twitter        => $recipients->search( { platform => 'twitter' } )->count,
+                count                          => $recipients->count,
+                count_with_email               => $recipients->search( { email => \'IS NOT NULL' } )->count,
+                count_with_cellphone           => $recipients->search( { cellphone => \'IS NOT NULL' } )->count,
+                count_facebook                 => $recipients->search( { platform => 'facebook' } )->count,
+                count_twitter                  => $recipients->search( { platform => 'twitter' } )->count,
+                count_segmented_recipients     => $recipients->search( { groups => { '!=' => '' } } )->count,
+                count_non_segmented_recipients => $recipients->search( { groups => '' } )->count,
             },
             issues => {
                 count                    => $issues->count(),
@@ -126,10 +151,10 @@ sub list_GET {
                 reach_poll_propagate => $politician->campaigns->get_politician_campaign_reach_poll_propagate_count(),
             },
             groups => {
-                count                          => $groups->count,
-                count_all_recipients           => $recipients->count,
-                count_segmented_recipients     => $recipients->search( { groups => { '!=' => '' } } )->count,
-                count_non_segmented_recipients => $recipients->search( { groups => '' } )->count,
+                count                => $groups->count,
+                count_all_recipients => $recipients->count,
+                count_empty          => $groups->search( { recipients_count => 0 } )->count,
+                count_populated      => $groups->search( { recipients_count => { '!=' => 0 } } )->count,
 
                 top_3_groups_by_recipients => [
                     map {

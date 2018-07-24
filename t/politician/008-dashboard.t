@@ -254,9 +254,10 @@ db_transaction {
     # Criando grupo
     $schema->resultset("Group")->create(
         {
-            politician_id => $politician_id,
-            name          => 'foobar',
-            filter        => '{}',
+            politician_id    => $politician_id,
+            name             => 'foobar',
+            filter           => '{}',
+            recipients_count => 1
         }
     );
 
