@@ -76,6 +76,32 @@ sub list_GET {
 
     my $politician_id = $c->stash->{politician}->id;
 
+    my $filter = $c->req->params->{filter};
+	die \['filter', 'missing'] unless $filter;
+	die \['filter', 'invalid'] unless $filter =~ m/^(open|closed|ignored)$/;
+
+    my $cond;
+    if ( $filter eq 'open' ) {
+        $cond = {
+            'me.politician_id' => $politician_id,,
+            open               => 1
+        }
+    }
+    elsif ( $filter eq 'ignored' ) {
+        $cond = {
+            'me.politician_id' => $politician_id,,
+            open               => 0,
+            reply              => \'IS NULL'
+        }
+    }
+    else {
+        $cond = {
+            'me.politician_id' => $politician_id,,
+            open               => 0,
+            reply              => \'IS NOT NULL'
+        }
+    }
+
     # Desativando paginação por agora
     # my $page    = $c->req->params->{page}    || 1;
     # my $results = $c->req->params->{results} || 20;
@@ -111,10 +137,7 @@ sub list_GET {
                         }
                     }
                 } $c->stash->{collection}->search(
-                    {
-                        'me.politician_id' => $politician_id,
-                        open          => 1
-                    },
+                    $cond,
                     {
                         prefetch => 'recipient',
                         # page     => $page,

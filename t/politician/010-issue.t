@@ -60,7 +60,8 @@ db_transaction {
     rest_get "/api/politician/$politician_id/issue",
         name  => "get issues",
         list  => 1,
-        stash => "get_issues"
+        stash => "get_issues",
+        [ filter => 'open' ]
     ;
 
     stash_test "get_issues" => sub {
