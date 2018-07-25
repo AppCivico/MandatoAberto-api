@@ -57,7 +57,7 @@ sub list_GET {
     my $politician = $c->stash->{politician};
 
     my $page    = $c->req->params->{page}    || 1;
-    my $results = $c->req->params->{results} || 20;
+    my $results = $c->req->params->{results} || 5;
 
     $c->stash->{collection} = $c->stash->{collection}->search(
         {
