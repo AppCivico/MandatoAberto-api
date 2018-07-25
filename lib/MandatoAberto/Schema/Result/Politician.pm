@@ -554,27 +554,26 @@ sub verifiers_specs {
                     required   => 0,
                     type       => "Str",
                     post_check => sub {
-                        my $fb_page_id = $_[0]->get_value('fb_page_id');
+                        my $fb_page_id           = $_[0]->get_value('fb_page_id');
+						my $fb_page_access_token = $_[0]->get_value('fb_page_access_token');
 
                         return 1 if length $fb_page_id == 0;
 
-                        $self->result_source->schema->resultset("Politician")->search( { fb_page_id => $fb_page_id } )->count and die \["fb_page_id", "alredy exists"];
+                        die \['fb_page_access_token', 'missing'] unless $fb_page_access_token;
+
+                        $self->result_source->schema->resultset("Politician")->search(
+                            {
+                                fb_page_id => $fb_page_id,
+                                user_id    => { '!=' => $self->user_id }
+                            }
+                        )->count and die \["fb_page_id", "alredy exists"];
 
                         return 1;
                     }
                 },
                 fb_page_access_token => {
                     required   => 0,
-                    type       => "Str",
-                    post_check => sub {
-                        my $fb_page_access_token = $_[0]->get_value('fb_page_access_token');
-
-                        return 1 if length $fb_page_access_token == 0;
-
-                        $self->result_source->schema->resultset("Politician")->search( { fb_page_access_token => $fb_page_access_token } )->count and die \["fb_page_access_token", "alredy exists"];
-
-                        return 1;
-                    }
+                    type       => "Str"
                 },
                 new_password => {
                     required => 0,
