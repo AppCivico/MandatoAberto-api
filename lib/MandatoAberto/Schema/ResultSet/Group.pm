@@ -111,5 +111,17 @@ sub action_specs {
     };
 }
 
+sub get_groups_ordered_by_recipient_count {
+    my ($self) = @_;
+
+    return $self->search(
+        undef,
+        {
+            order_by => { '-desc' => 'recipients_count' },
+            rows     => 3
+        }
+    );
+}
+
 1;
 

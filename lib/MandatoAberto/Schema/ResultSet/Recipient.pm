@@ -20,6 +20,15 @@ sub verifiers_specs {
         create => Data::Verifier->new(
             filters => [qw(trim)],
             profile => {
+                platform => {
+                    required   => 1,
+                    type       => 'Str',
+                    post_check => sub {
+                        my $platform = $_[0]->get_value('platform');
+
+                        die \['platform', 'invalid'] unless $platform =~ m/^(twitter|facebook)$/;
+                    }
+                },
                 politician_id => {
                     required   => 1,
                     type       => 'Int',
@@ -34,8 +43,38 @@ sub verifiers_specs {
                     type     => "Str"
                 },
                 fb_id => {
-                    required => 1,
+                    required => 0,
                     type     => "Str"
+                },
+                twitter_id => {
+                    required   => 0,
+                    type       => 'Str',
+                    post_check => sub {
+                        my $twitter_id        = $_[0]->get_value('twitter_id');
+                        my $twitter_origin_id = $_[0]->get_value('twitter_origin_id');
+
+                        die \['twitter_origin_id', 'missing'] unless $twitter_origin_id;
+
+                        return 1;
+                    }
+                },
+                twitter_origin_id => {
+                    required   => 0,
+                    type       => 'Str',
+                    post_check => sub {
+                        my $twitter_id = $_[0]->get_value('twitter_id');
+
+                        die \['twitter_id', 'missing'] unless $twitter_id;
+                    }
+                },
+                twitter_screen_name => {
+                    required   => 0,
+                    type       => 'Str',
+                    post_check => sub {
+						my $twitter_id = $_[0]->get_value('twitter_id');
+
+						die \['twitter_id', 'missing'] unless $twitter_id;
+                    }
                 },
                 origin_dialog => {
                     required => 0,
@@ -62,8 +101,15 @@ sub verifiers_specs {
                     type       => "Str",
                     post_check => sub {
                         my $page_id = $_[0]->get_value("page_id");
+                        my $platform  = $_[0]->get_value('platform');
 
-                        $self->result_source->schema->resultset("Politician")->search({ fb_page_id => $page_id })->count;
+                        if ( $platform eq 'facebook' ) {
+                            $self->result_source->schema->resultset("Politician")->search({ fb_page_id => $page_id })->count;
+                        }
+                        else {
+							$self->result_source->schema->resultset("Politician")->search({ twitter_id => $page_id })->count;
+                        }
+
                     }
                 }
             }
@@ -89,11 +135,7 @@ sub action_specs {
 
             if (!defined $existing_citizen) {
 
-                if ( ( !$values{origin_dialog} && $values{name} ) || ( !$values{origin_dialog} && !$values{name} ) ) {
-                    die \["origin_dialog", "missing"];
-                } elsif ( ( $values{origin_dialog} && !$values{name} ) ) {
-                    die \["name", "missing"];
-                }
+                die \['name', 'missing'] unless $values{name};
 
                 my $citizen = $self->create(\%values);
 
@@ -272,6 +314,15 @@ sub get_recipient_by_gender {
         male_recipient_count   => $male_recipients,
         female_recipient_count => $female_recipients
     };
+}
+
+sub get_recipients_poll_results {
+    my ($self) = @_;
+
+    return $self->search(
+        undef,
+        { prefetch => 'poll_results' }
+    );
 }
 
 1;

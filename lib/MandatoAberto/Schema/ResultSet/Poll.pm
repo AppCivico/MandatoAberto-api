@@ -103,4 +103,17 @@ sub get_active_politician_poll_with_data {
     )->next;
 }
 
+sub get_non_propagated_polls {
+    my ($self, $politician_id) = @_;
+
+    die \['politician_id', 'missing'] unless $politician_id;
+
+    return $self->search(
+        {
+            'me.id' => \"NOT IN ( SELECT poll_id FROM poll_propagate WHERE politician_id = $politician_id )"
+        },
+        { prefetch => 'poll_propagates' }
+    );
+}
+
 1;

@@ -62,6 +62,12 @@ __PACKAGE__->table("campaign");
   is_nullable: 0
   original: {default_value => \"now()"}
 
+=head2 politician_id
+
+  data_type: 'integer'
+  is_foreign_key: 1
+  is_nullable: 0
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -81,6 +87,8 @@ __PACKAGE__->add_columns(
     is_nullable   => 0,
     original      => { default_value => \"now()" },
   },
+  "politician_id",
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
 );
 
 =head1 PRIMARY KEY
@@ -110,6 +118,21 @@ __PACKAGE__->might_have(
   "MandatoAberto::Schema::Result::DirectMessage",
   { "foreign.campaign_id" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
+);
+
+=head2 politician
+
+Type: belongs_to
+
+Related object: L<MandatoAberto::Schema::Result::Politician>
+
+=cut
+
+__PACKAGE__->belongs_to(
+  "politician",
+  "MandatoAberto::Schema::Result::Politician",
+  { user_id => "politician_id" },
+  { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
 );
 
 =head2 poll_propagate
@@ -143,8 +166,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-02-21 18:02:29
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:365pElh9l4iZwARRGH03Jw
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-07-20 12:03:30
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:6X6nx3SC/J+4wTOsb1o9sw
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

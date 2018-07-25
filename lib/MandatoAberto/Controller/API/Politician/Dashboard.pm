@@ -36,7 +36,7 @@ sub list_GET {
 
     my $politician = $c->stash->{politician};
 
-    my $citizen_count = $politician->recipients->all;
+    my $recipients = $politician->recipients;
 
     my $ever_had_poll = $politician->polls->count > 0 ? 1 : 0;
 
@@ -61,35 +61,45 @@ sub list_GET {
     my $first_access = $politician->user->user_sessions->count > 1 ? 0 : 1;
 
     # Dados de genero
-    my $recipients_by_gender = $politician->recipients->get_recipient_by_gender;
+    # my $recipients_by_gender = $politician->recipients->get_recipient_by_gender;
 
-    my $citizen_gender = {
-        name     => "Gênero",
-        title    => "Gênero",
-        subtitle => "Número de pessoas por gênero",
-        labels   => [ 'Feminino', 'Masculino' ],
-        data     => [ $recipients_by_gender->{female_recipient_count}, $recipients_by_gender->{male_recipient_count} ]
-    };
+    # my $citizen_gender = {
+    #     name     => "Gênero",
+    #     title    => "Gênero",
+    #     subtitle => "Número de pessoas por gênero",
+    #     labels   => [ 'Feminino', 'Masculino' ],
+    #     data     => [ $recipients_by_gender->{female_recipient_count}, $recipients_by_gender->{male_recipient_count} ]
+    # };
 
     # Pegando dados do analytics do Facebook
-    my $range = $c->req->params->{range};
-    $range = 8 if !$range;
-    die \["range", 'invalid'] if $range !~ m/^(8|16|31)/;
+    # my $range = $c->req->params->{range};
+    # $range = 8 if !$range;
+    # die \["range", 'invalid'] if $range !~ m/^(8|16|31)/;
 
-    my $citizen_interaction;
-    if ($has_facebook_auth) {
-        $citizen_interaction = $politician->get_citizen_interaction($range);
-    }
+    # my $citizen_interaction;
+    # if ($has_facebook_auth) {
+    #     $citizen_interaction = $politician->get_citizen_interaction($range);
+    # }
 
-    my $group_count = $politician->groups->search( { deleted => 0 } )->count;
+    my $issues       = $politician->issues;
+    my $campaigns    = $politician->campaigns;
+	my $groups       = $politician->groups->search( { deleted => 0 } );
+	my $polls        = $politician->polls;
+	my $poll_results = $recipients->get_recipients_poll_results;
 
-    my $open_issue_count = $politician->issues->get_politician_open_issues->count;
+    my $issue_response_view = $c->model('DB::ViewAvgIssueResponseTime')->search( undef, { bind => [ $politician->user_id ] } )->next;
+
+    # Condição para puxar dados dos últimos 7 dias
+    my $last_week_issue_response_view = $c->model('DB::ViewAvgIssueResponseTimeLastWeek')->search( undef, { bind => [ $politician->user_id ] } )->next;
+    my $last_week_cond = { created_at => { '>=' => \"NOW() - interval '7 days'" } };
+
+    my $last_week_issues     = $issues->search( $last_week_cond );
+	my $last_week_recipients = $recipients->search($last_week_cond);
+	my $last_week_campaigns  = $campaigns->search($last_week_cond);
 
     return $self->status_ok(
         $c,
         entity => {
-            citizens => $citizen_count,
-
             first_access        => $first_access,
             has_greeting        => $has_greeting,
             has_contacts        => $has_contacts,
@@ -97,89 +107,79 @@ sub list_GET {
             has_facebook_auth   => $has_facebook_auth,
             has_active_poll     => $active_poll ? 1 : 0,
             ever_had_poll       => $ever_had_poll,
-            citizen_interaction => $citizen_interaction,
-            citizen_gender      => $citizen_gender,
-            group_count         => $group_count,
-            open_issue_count    => $open_issue_count,
+            # citizen_interaction => $citizen_interaction,
+            # citizen_gender      => $citizen_gender,
+            # group_count         => $group_count,
+            last_week_data => {
+                issues => {
+                    avg_response_time => $issue_response_view ? $issue_response_view->avg_response_time : 0,
+                    count             => $last_week_issues->count,
+                    count_open        => $last_week_issues->search( { open => 1 } )->count,
+                    count_ignored     => $last_week_issues->search( { open => 0, reply => \'IS NULL' } )->count,
+                },
+                recipients => {
+                    count => $last_week_recipients->count
+                },
+                campaigns => {
+                    count                => $last_week_campaigns->count,
+					count_direct_message => $last_week_campaigns->search( { type_id => 1 } )->count,
+					count_poll_propagate => $last_week_campaigns->search( { type_id => 2 } )->count
+                }
+            },
+            recipients => {
+                count                          => $recipients->count,
+                count_with_email               => $recipients->search( { email => \'IS NOT NULL' } )->count,
+                count_with_cellphone           => $recipients->search( { cellphone => \'IS NOT NULL' } )->count,
+                count_facebook                 => $recipients->search( { platform => 'facebook' } )->count,
+                count_twitter                  => $recipients->search( { platform => 'twitter' } )->count,
+                count_segmented_recipients     => $recipients->search( { groups => { '!=' => '' } } )->count,
+                count_non_segmented_recipients => $recipients->search( { groups => '' } )->count,
+            },
+            issues => {
+                count                    => $issues->count(),
+                count_open               => $issues->get_politician_open_issues->count,
+                count_ignored            => $issues->search( { open => 0, reply => \'IS NULL' } )->count,
+                count_replied            => $issues->search( { open => 0, reply => \'IS NOT NULL' } )->count,
+                count_open_last_24_hours => $issues->get_open_issues_created_today->count,
+                avg_response_time        => $issue_response_view ? $issue_response_view->avg_response_time : 0,
+            },
+            campaigns => {
+                count                => $politician->campaigns->count,
+                count_direct_message => $politician->campaigns->search( { type_id => 1 } )->count,
+                count_poll_propagate => $politician->campaigns->search( { type_id => 2 } )->count,
 
-            poll => $active_poll ?
+                reach                => $politician->campaigns->get_politician_campaign_reach_count(),
+                reach_direct_message => $politician->campaigns->get_politician_campaign_reach_dm_count(),
+                reach_poll_propagate => $politician->campaigns->get_politician_campaign_reach_poll_propagate_count(),
+            },
+            groups => {
+                count                => $groups->count,
+                count_all_recipients => $recipients->count,
+                count_empty          => $groups->search( { recipients_count => 0 } )->count,
+                count_populated      => $groups->search( { recipients_count => { '!=' => 0 } } )->count,
+
+                top_3_groups_by_recipients => [
                     map {
-                        my $p = $_;
-
-                        my $poll_name = $p->get_column('name');
+                        my $g = $_;
 
                         {
-                            id        => $p->get_column('id'),
-                            name      => $poll_name,
-
-                            title     => $poll_name,
-
-                            questions => [
-                                map {
-                                    my $q = $_;
-
-                                    +{
-                                        id      => $q->get_column('id'),
-                                        content => $q->get_column('content'),
-
-                                        options => [
-                                            map {
-                                                my $o = $_;
-
-                                                +{
-                                                    id      => $o->get_column('id'),
-                                                    content => $o->get_column('content'),
-                                                    count   => $o->poll_results->search( { origin => 'dialog' } )->count,
-                                                }
-                                            } $q->poll_question_options->all()
-                                        ]
-                                    }
-                                } $p->poll_questions->all()
-                            ]
+                            id              => $g->id,
+                            name            => $g->name,
+                            recipient_count => $g->recipients_count
                         }
-                    } $active_poll
-                :
-                (
-                    $last_active_poll ?
+                    } $groups->get_groups_ordered_by_recipient_count->all()
+                ]
+            },
+            polls => {
+                count                => $polls->count,
+                count_propagated     => $politician->poll_propagates->count,
+                count_non_propagated => $polls->get_non_propagated_polls( $politician->user_id )->count,
 
-                            map {
-                                my $p = $_;
+                # reach            => $poll_results->count,
+                # reach_dialog     => $poll_results->search( { 'poll_results.origin' => 'dialog' } )->count,
+                # reach_propagated => $poll_results->search( { 'poll_results.origin' => 'propagate' } )->count
+            }
 
-                                my $poll_name = $p->get_column('name');
-
-                                {
-                                    id        => $p->get_column('id'),
-                                    name      => $poll_name,
-
-                                    title     => $poll_name,
-
-                                    questions => [
-                                        map {
-                                            my $q = $_;
-
-                                            +{
-                                                id      => $q->get_column('id'),
-                                                content => $q->get_column('content'),
-
-                                                options => [
-                                                    map {
-                                                        my $o = $_;
-
-                                                        +{
-                                                            id      => $o->get_column('id'),
-                                                            content => $o->get_column('content'),
-                                                            count   => $o->poll_results->search( { origin => 'dialog' } )->count,
-                                                        }
-                                                    } $q->poll_question_options->all()
-                                                ]
-                                            }
-                                        } $p->poll_questions->all()
-                                    ]
-                                }
-                            } $last_active_poll
-                        :
-                        { }
-                )
         }
     );
 }

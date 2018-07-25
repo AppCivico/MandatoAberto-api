@@ -25,8 +25,22 @@ __PACKAGE__->config(
     prepare_params_for_create => sub {
         my ($self, $c, $params) = @_;
 
-        my $recipient_fb_id = $c->req->params->{fb_id};
-        die \["fb_id", "missing"] unless $recipient_fb_id;
+        my $platform = $c->req->params->{platform} || 'facebook';
+        die \['platform', 'invalid'] unless $platform =~ m/^(facebook|twitter)$/;
+
+        my ( $id_param, $recipient_id );
+        if ( $platform eq 'facebook' ) {
+			$recipient_id = $c->req->params->{fb_id};
+            die \["fb_id", "missing"] unless $recipient_id;
+
+            $id_param = 'fb_id';
+        }
+        else {
+			$recipient_id = $c->req->params->{twitter_id};
+			die \["twitter_id", "missing"] unless $recipient_id;
+
+			$id_param = 'twitter_id';
+        }
 
         # TODO não aceitar politician_id
         my $politician_id = $c->req->params->{politician_id};
@@ -35,9 +49,11 @@ __PACKAGE__->config(
         my $politician = $c->model("DB::Politician")->find($politician_id);
         die \["politician_id", 'could not find politician with that id'] unless $politician;
 
-        $params->{politician_id} = $politician_id;
-        $params->{fb_id}         = $recipient_fb_id;
-        $params->{page_id}       = $politician->fb_page_id;
+        $params->{platform}          = $platform;
+        $params->{politician_id}     = $politician_id;
+        $params->{"$id_param"}       = $recipient_id;
+        $params->{page_id}           = $platform eq 'facebook' ? $politician->fb_page_id : $politician->twitter_id;
+        $params->{twitter_origin_id} = $platform eq 'twitter' ? $politician->twitter_id : ();
 
         return $params;
     },

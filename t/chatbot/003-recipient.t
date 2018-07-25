@@ -13,6 +13,7 @@ db_transaction {
         fb_page_id => 'foo',
     );
     my $politician_id = stash "politician.id";
+    my $politician    = $schema->resultset('Politician')->find($politician_id);
 
     rest_post "/api/chatbot/recipient",
         name    => "create recipient without fb_id",
@@ -32,17 +33,6 @@ db_transaction {
             origin_dialog => fake_words(1)->(),
             fb_id         => "foobar",
             politician_id => $politician_id,
-            security_token => $security_token
-        ]
-    ;
-
-    rest_post "/api/chatbot/recipient",
-        name    => "create recipient without origin_dialog",
-        is_fail => 1,
-        [
-            name          => fake_name()->(),
-            politician_id => $politician_id,
-            fb_id         => "foobar",
             security_token => $security_token
         ]
     ;
@@ -153,6 +143,71 @@ db_transaction {
         is($res->{id}, $citizen_id, 'id');
         is($res->{email}, $new_email, 'email');
     };
+
+    $politician->update( { twitter_id => '123456' } );
+
+    rest_post "/api/chatbot/recipient/",
+        name    => "Creating twitter recipient with invalid platform",
+        is_fail => 1,
+        code    => 400,
+        [
+            platform       => 'foobar',
+            twitter_id     => 'foobar',
+            politician_id  => $politician_id,
+            email          => $new_email,
+            security_token => $security_token
+        ]
+    ;
+
+    rest_post "/api/chatbot/recipient/",
+        name    => "Creating twitter recipient without twitter_id",
+        is_fail => 1,
+        code    => 400,
+        [
+            platform       => 'twitter',
+            politician_id  => $politician_id,
+            email          => $new_email,
+            security_token => $security_token
+        ]
+    ;
+
+    rest_post "/api/chatbot/recipient/",
+        name    => "Creating twitter recipient without name",
+        is_fail => 1,
+        code    => 400,
+        [
+            platform          => 'twitter',
+            twitter_id        => 'foobar',
+            politician_id     => $politician_id,
+            email             => $new_email,
+            security_token    => $security_token
+        ]
+    ;
+
+    rest_post "/api/chatbot/recipient/",
+        name    => "Creating twitter recipient without name",
+        is_fail => 1,
+        code    => 400,
+        [
+            platform          => 'twitter',
+            twitter_id        => 'foobar',
+            politician_id     => $politician_id,
+            email             => $new_email,
+            security_token    => $security_token
+        ]
+    ;
+
+    rest_post "/api/chatbot/recipient/",
+        name => "Creating twitter recipient",
+        [
+            platform          => 'twitter',
+            twitter_id        => 'foobar',
+            name              => 'foobar',
+            politician_id     => $politician_id,
+            email             => $new_email,
+            security_token    => $security_token
+        ]
+    ;
 };
 
 done_testing();

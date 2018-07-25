@@ -54,6 +54,7 @@ db_transaction {
     rest_post "/api/chatbot/issue",
         name                => 'creating issue',
         automatic_load_item => 0,
+        stash               => 'i1',
         [
             politician_id  => $politician_id,
             fb_id          => 'foobar',
@@ -61,6 +62,7 @@ db_transaction {
             security_token => $security_token
         ]
     ;
+    my $issue_id = stash 'i1.id';
 
     api_auth_as user_id => 1;
 
@@ -90,24 +92,24 @@ db_transaction {
     ;
     my $poll_id = stash "p1.id";
 
-    rest_get "/api/politician/$politician_id/dashboard",
-        name    => "invalid data range",
-        is_fail => 1,
-        code    => 400,
-        [ range => 5 ]
-    ;
+    # rest_get "/api/politician/$politician_id/dashboard",
+    #     name    => "invalid data range",
+    #     is_fail => 1,
+    #     code    => 400,
+    #     [ range => 5 ]
+    # ;
 
-    rest_get "/api/politician/$politician_id/dashboard",
-        name    => "invalid data range",
-        is_fail => 1,
-        code    => 400,
-        [ range => 'foobar' ]
-    ;
+    # rest_get "/api/politician/$politician_id/dashboard",
+    #     name    => "invalid data range",
+    #     is_fail => 1,
+    #     code    => 400,
+    #     [ range => 'foobar' ]
+    # ;
 
-    rest_get "/api/politician/$politician_id/dashboard",
-        name    => "valid data range",
-        [ range => 16 ]
-    ;
+    # rest_get "/api/politician/$politician_id/dashboard",
+    #     name    => "valid data range",
+    #     [ range => 16 ]
+    # ;
 
     rest_get "/api/politician/$politician_id/dashboard",
         name  => "politician dashboard",
@@ -118,7 +120,7 @@ db_transaction {
     stash_test "get_politician_dashboard" => sub {
         my $res = shift;
 
-        is ($res->{citizens}, 1, 'one citizen');
+        is ($res->{recipients}->{count}, 1, 'one citizen');
     };
 
     rest_post "/api/chatbot/recipient",
@@ -141,7 +143,7 @@ db_transaction {
     stash_test "get_politician_dashboard.list" => sub {
         my $res = shift;
 
-        is ($res->{citizens}, 2, 'two citizens');
+        is ($res->{recipients}->{count}, 2, 'two citizens');
         is ($res->{has_greeting}, 0, 'politician does not have greeting');
         is ($res->{has_contacts}, 0, 'politician does not have contacts');
         is ($res->{has_dialogs}, 0, 'politician does not have dialogs');
@@ -159,7 +161,7 @@ db_transaction {
     stash_test "get_politician_dashboard.list" => sub {
         my $res = shift;
 
-        is ($res->{citizens}, 2, 'two citizens');
+        is ($res->{recipients}->{count}, 2, 'two citizens');
         is ($res->{has_greeting}, 0, 'politician does not have greeting');
         is ($res->{has_contacts}, 0, 'politician does not have contacts');
         is ($res->{has_dialogs}, 0, 'politician does not have dialogs');
@@ -180,7 +182,7 @@ db_transaction {
     stash_test "get_politician_dashboard.list" => sub {
         my $res = shift;
 
-        is ($res->{citizens}, 2, 'two citizens');
+        is ($res->{recipients}->{count}, 2, 'two citizens');
         is ($res->{has_greeting}, 1, 'politician has greeting');
         is ($res->{has_contacts}, 0, 'politician does not have contacts');
         is ($res->{has_dialogs}, 0, 'politician does not have dialogs');
@@ -204,7 +206,7 @@ db_transaction {
     stash_test "get_politician_dashboard.list" => sub {
         my $res = shift;
 
-        is ($res->{citizens}, 2, 'two citizens');
+        is ($res->{recipients}->{count}, 2, 'two citizens');
         is ($res->{has_greeting}, 1, 'politician has greeting');
         is ($res->{has_contacts}, 1, 'politician has contacts');
         is ($res->{has_dialogs}, 0, 'politician does not have dialogs');
@@ -222,7 +224,7 @@ db_transaction {
     stash_test "get_politician_dashboard.list" => sub {
         my $res = shift;
 
-        is ($res->{citizens}, 2, 'two citizens');
+        is ($res->{recipients}->{count}, 2, 'two citizens');
         is ($res->{has_greeting}, 1, 'politician has greeting');
         is ($res->{has_contacts}, 1, 'politician has contacts');
         is ($res->{has_dialogs}, 1, 'politician has dialogs');
@@ -234,7 +236,7 @@ db_transaction {
     stash_test "get_politician_dashboard.list" => sub {
         my $res = shift;
 
-        is ($res->{citizens}, 2, 'two citizens');
+        is ($res->{recipients}->{count}, 2, 'two citizens');
         is ($res->{has_greeting}, 1, 'politician has greeting');
         is ($res->{has_contacts}, 1, 'politician has contacts');
         is ($res->{has_dialogs}, 1, 'politician has dialogs');
@@ -252,9 +254,10 @@ db_transaction {
     # Criando grupo
     $schema->resultset("Group")->create(
         {
-            politician_id => $politician_id,
-            name          => 'foobar',
-            filter        => '{}',
+            politician_id    => $politician_id,
+            name             => 'foobar',
+            filter           => '{}',
+            recipients_count => 1
         }
     );
 
@@ -263,14 +266,32 @@ db_transaction {
     stash_test "get_politician_dashboard.list" => sub {
         my $res = shift;
 
-        is ($res->{citizens}, 2, 'two citizens');
+        is ($res->{recipients}->{count}, 2, 'two citizens');
         is ($res->{has_greeting}, 1, 'politician has greeting');
         is ($res->{has_contacts}, 1, 'politician has contacts');
         is ($res->{has_dialogs}, 1, 'politician has dialogs');
         is ($res->{has_facebook_auth}, 1, 'politician has facebook auth');
         is ($res->{first_access}, 0, 'politician first access');
-        is ($res->{group_count}, 1, 'group count');
-        is ($res->{open_issue_count}, 1, 'open issues count');
+        is ($res->{groups}->{count}, 1, 'group count');
+        is ($res->{issues}->{count_open}, 1, 'open issues count');
+        is ($res->{issues}->{count_open_last_24_hours}, 1, 'open issues count');
+    };
+
+    my $issue = $schema->resultset('Issue')->find($issue_id);
+    $issue->update(
+        {
+            reply => 'foobar',
+            open  => 0,
+            updated_at => \"NOW() + interval '1 hour'"
+        }
+    );
+
+    rest_reload_list "get_politician_dashboard";
+
+    stash_test "get_politician_dashboard.list" => sub {
+        my $res = shift;
+
+        is ( $res->{issues}->{avg_response_time}, '60', '60 minutes avg response time' );
     };
 };
 

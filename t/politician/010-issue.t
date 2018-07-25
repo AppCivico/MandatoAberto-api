@@ -60,7 +60,8 @@ db_transaction {
     rest_get "/api/politician/$politician_id/issue",
         name  => "get issues",
         list  => 1,
-        stash => "get_issues"
+        stash => "get_issues",
+        [ filter => 'open' ]
     ;
 
     stash_test "get_issues" => sub {
@@ -70,6 +71,8 @@ db_transaction {
         is ($res->{issues}->[0]->{open},  1, 'issue status');
         is ($res->{issues}->[0]->{reply}, undef, 'issue reply');
         is ($res->{issues}->[0]->{updated_at}, undef, 'issue updated timestamp');
+        is ($res->{issues}->[0]->{ignored}, 0, 'issue is not ignored');
+        is ($res->{issues}->[0]->{replied}, 0, 'issue is not replied');
     };
 
     rest_put "/api/politician/$politician_id/issue/$first_issue_id",
@@ -107,8 +110,15 @@ db_transaction {
     ;
 
     rest_get "/api/politician/$politician_id/issue/$first_issue_id",
-        name => "get only one issue",
+        name  => "get only one issue",
+        stash => 'r1'
     ;
+
+    stash_test 'r1' => sub {
+        my $res = shift;
+
+        is ( $res->{ignored}, 1, 'issue was ignored' );
+    };
 
     rest_post "/api/chatbot/issue",
         name                => "issue creation",
