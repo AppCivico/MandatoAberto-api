@@ -110,8 +110,15 @@ db_transaction {
     ;
 
     rest_get "/api/politician/$politician_id/issue/$first_issue_id",
-        name => "get only one issue",
+        name  => "get only one issue",
+        stash => 'r1'
     ;
+
+    stash_test 'r1' => sub {
+        my $res = shift;
+
+        is ( $res->{ignored}, 1, 'issue was ignored' );
+    };
 
     rest_post "/api/chatbot/issue",
         name                => "issue creation",

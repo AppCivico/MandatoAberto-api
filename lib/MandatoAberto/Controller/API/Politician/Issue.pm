@@ -179,6 +179,23 @@ sub result_GET {
     my $issue     = $c->stash->{issue};
     my $recipient = $c->stash->{issue}->recipient;
 
+    my $reply = $issue->reply;
+    my $open  = $issue->open;
+
+    my ( $ignored_flag, $replied_flag );
+    if ( !$open && !$reply ) {
+        $ignored_flag = 1;
+        $replied_flag = 0;
+    }
+    elsif ( !$open && $reply ) {
+        $ignored_flag = 0;
+        $replied_flag = 1;
+    }
+    else {
+        $ignored_flag = 0;
+        $replied_flag = 0;
+    }
+
     return $self->status_ok(
         $c,
         entity => {
@@ -187,6 +204,8 @@ sub result_GET {
             open       => $issue->open,
             message    => $issue->message,
             created_at => $issue->created_at,
+			ignored    => $ignored_flag,
+            replied    => $replied_flag,
             recipient  => {
                 id              => $recipient->id,
                 name            => $recipient->name,
