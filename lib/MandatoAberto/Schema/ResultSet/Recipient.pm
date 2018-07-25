@@ -316,5 +316,14 @@ sub get_recipient_by_gender {
     };
 }
 
+sub get_recipients_poll_results {
+    my ($self) = @_;
+
+    return $self->search(
+        undef,
+        { prefetch => 'poll_results' }
+    );
+}
+
 1;
 

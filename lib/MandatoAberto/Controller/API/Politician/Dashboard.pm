@@ -81,9 +81,11 @@ sub list_GET {
     #     $citizen_interaction = $politician->get_citizen_interaction($range);
     # }
 
-    my $issues    = $politician->issues;
-    my $campaigns = $politician->campaigns;
-    my $groups    = $politician->groups->search( { deleted => 0 } );
+    my $issues       = $politician->issues;
+    my $campaigns    = $politician->campaigns;
+	my $groups       = $politician->groups->search( { deleted => 0 } );
+	my $polls        = $politician->polls;
+	my $poll_results = $recipients->get_recipients_poll_results;
 
     my $issue_response_view = $c->model('DB::ViewAvgIssueResponseTime')->search( undef, { bind => [ $politician->user_id ] } )->next;
 
@@ -167,6 +169,15 @@ sub list_GET {
                         }
                     } $groups->get_groups_ordered_by_recipient_count->all()
                 ]
+            },
+            polls => {
+                count                => $polls->count,
+                count_propagated     => $politician->poll_propagates->count,
+                count_non_propagated => $polls->get_non_propagated_polls( $politician->user_id )->count,
+
+                # reach            => $poll_results->count,
+                # reach_dialog     => $poll_results->search( { 'poll_results.origin' => 'dialog' } )->count,
+                # reach_propagated => $poll_results->search( { 'poll_results.origin' => 'propagate' } )->count
             }
 
         }
