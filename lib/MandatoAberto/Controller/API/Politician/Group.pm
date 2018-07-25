@@ -54,8 +54,8 @@ sub result_GET {
     my $recipients_rs = $group->politician->recipients->search(
         {},
         {
-            page => $page,
-            rows => $results,
+            # page => $page,
+            # rows => $results,
         },
     );
 

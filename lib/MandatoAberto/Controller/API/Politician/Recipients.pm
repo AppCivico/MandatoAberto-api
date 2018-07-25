@@ -64,7 +64,7 @@ sub list_GET {
             politician_id => $politician->user_id,
             page_id       => $politician->fb_page_id
         },
-        { page => $page, rows => $results }
+        # { page => $page, rows => $results }
     );
 
     return $self->status_ok(
