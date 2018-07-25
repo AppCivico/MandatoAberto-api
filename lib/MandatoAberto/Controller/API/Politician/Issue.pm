@@ -161,7 +161,7 @@ sub list_GET {
                         prefetch => 'recipient',
                         # page     => $page,
                         # rows     => $results,
-                        order_by => 'recipient_id'
+                        order_by => [ 'recipient_id', { '-desc' => 'me.created_at' } ]
                     }
                   )->all()
             ]
