@@ -71,6 +71,8 @@ db_transaction {
         is ($res->{issues}->[0]->{open},  1, 'issue status');
         is ($res->{issues}->[0]->{reply}, undef, 'issue reply');
         is ($res->{issues}->[0]->{updated_at}, undef, 'issue updated timestamp');
+        is ($res->{issues}->[0]->{ignored}, 0, 'issue is not ignored');
+        is ($res->{issues}->[0]->{replied}, 0, 'issue is not replied');
     };
 
     rest_put "/api/politician/$politician_id/issue/$first_issue_id",

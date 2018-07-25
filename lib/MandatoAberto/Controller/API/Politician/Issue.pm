@@ -113,10 +113,29 @@ sub list_GET {
                 map {
                     my $i = $_;
 
+					my $reply = $i->reply;
+					my $open  = $i->open;
+
+                    my ( $ignored_flag, $replied_flag );
+                    if ( !$open && !$reply ) {
+						$ignored_flag = 1;
+						$replied_flag = 0;
+                    }
+                    elsif ( !$open && $reply ) {
+                        $ignored_flag = 0;
+                        $replied_flag = 1;
+                    }
+                    else {
+                        $ignored_flag = 0;
+                        $replied_flag = 0;
+                    }
+
                     {
                         id           => $i->get_column('id'),
                         reply        => $i->get_column('reply'),
                         open         => $i->get_column('open'),
+                        ignored      => $ignored_flag,
+                        replied      => $replied_flag,
                         message      => $i->get_column('message'),
                         created_at   => $i->get_column('created_at'),
                         recipient    => {
