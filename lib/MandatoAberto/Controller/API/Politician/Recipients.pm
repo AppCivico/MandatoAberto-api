@@ -35,6 +35,7 @@ __PACKAGE__->config(
                     }
                 } $r->groups_rs->all()
             ],
+            platform => $r->get_column('platform'),
         };
      },
 );
@@ -84,6 +85,7 @@ sub list_GET {
                         email         => $_->get_column('email'),
                         gender        => $_->get_column('gender'),
                         origin_dialog => $_->get_column('origin_dialog'),
+                        platform      => $_->get_column('platform'),
                         created_at    => $_->get_column('created_at')
                     }
                 } $c->stash->{collection}->all()
