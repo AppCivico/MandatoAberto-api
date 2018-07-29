@@ -75,6 +75,7 @@ db_transaction {
 
         rest_get "/api/politician/$politician_id/recipients/$recipient_id",
             name  => 'get recipient',
+            list  => 1,
             stash => 'get_recipient',
         ;
 
@@ -90,6 +91,27 @@ db_transaction {
             is( $res->{groups}->[0]->{id},   $group_id,    'group_id' );
             is( $res->{groups}->[0]->{name}, 'Fake Group', 'name=Fake Group' );
         };
+
+        # Desativando chatbot
+        rest_put "/api/politician/$politician_id",
+            name => 'deactivating chatbot',
+            [ deactivate_chatbot => 1 ]
+        ;
+
+        rest_reload_list 'get_recipient';
+
+        stash_test 'get_recipient.list' => sub {
+            my $res = shift;
+
+            is_deeply(
+                [ sort keys %{ $res } ],
+                [ sort qw/ cellphone created_at email gender groups id name origin_dialog / ],
+            );
+
+            is( ref($res->{groups}), 'ARRAY' );
+            is( $res->{groups}->[0]->{id},   $group_id,    'group_id' );
+            is( $res->{groups}->[0]->{name}, 'Fake Group', 'name=Fake Group' );
+        }
     };
 };
 
