@@ -83,9 +83,9 @@ sub list_GET {
 
     my $issues       = $politician->issues;
     my $campaigns    = $politician->campaigns;
-	my $groups       = $politician->groups->search( { deleted => 0 } );
-	my $polls        = $politician->polls;
-	my $poll_results = $recipients->get_recipients_poll_results;
+    my $groups       = $politician->groups->search( { deleted => 0 } );
+    my $polls        = $politician->polls;
+    my $poll_results = $recipients->get_recipients_poll_results;
 
     my $issue_response_view = $c->model('DB::ViewAvgIssueResponseTime')->search( undef, { bind => [ $politician->user_id ] } )->next;
 
@@ -94,8 +94,8 @@ sub list_GET {
     my $last_week_cond = { created_at => { '>=' => \"NOW() - interval '7 days'" } };
 
     my $last_week_issues     = $issues->search( $last_week_cond );
-	my $last_week_recipients = $recipients->search($last_week_cond);
-	my $last_week_campaigns  = $campaigns->search($last_week_cond);
+    my $last_week_recipients = $recipients->search($last_week_cond);
+    my $last_week_campaigns  = $campaigns->search($last_week_cond);
 
     return $self->status_ok(
         $c,
@@ -122,8 +122,8 @@ sub list_GET {
                 },
                 campaigns => {
                     count                => $last_week_campaigns->count,
-					count_direct_message => $last_week_campaigns->search( { type_id => 1 } )->count,
-					count_poll_propagate => $last_week_campaigns->search( { type_id => 2 } )->count
+                    count_direct_message => $last_week_campaigns->search( { type_id => 1 } )->count,
+                    count_poll_propagate => $last_week_campaigns->search( { type_id => 2 } )->count
                 }
             },
             recipients => {

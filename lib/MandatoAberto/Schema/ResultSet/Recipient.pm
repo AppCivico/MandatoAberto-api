@@ -71,9 +71,9 @@ sub verifiers_specs {
                     required   => 0,
                     type       => 'Str',
                     post_check => sub {
-						my $twitter_id = $_[0]->get_value('twitter_id');
+                        my $twitter_id = $_[0]->get_value('twitter_id');
 
-						die \['twitter_id', 'missing'] unless $twitter_id;
+                        die \['twitter_id', 'missing'] unless $twitter_id;
                     }
                 },
                 origin_dialog => {
@@ -107,7 +107,7 @@ sub verifiers_specs {
                             $self->result_source->schema->resultset("Politician")->search({ fb_page_id => $page_id })->count;
                         }
                         else {
-							$self->result_source->schema->resultset("Politician")->search({ twitter_id => $page_id })->count;
+                            $self->result_source->schema->resultset("Politician")->search({ twitter_id => $page_id })->count;
                         }
 
                     }

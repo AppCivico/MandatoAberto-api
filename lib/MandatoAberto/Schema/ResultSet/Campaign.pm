@@ -21,31 +21,31 @@ sub get_politician_campaign_reach_count {
 }
 
 sub get_politician_campaign_reach_dm_count {
-	my ($self) = @_;
+    my ($self) = @_;
 
     my $rs = $self->search( { type_id => 1 } );
 
-	my $sum = 0;
-	while ( my $campaign = $rs->next() ) {
+    my $sum = 0;
+    while ( my $campaign = $rs->next() ) {
 
-		$sum += $campaign->direct_message->count if $campaign->direct_message;
-	}
+        $sum += $campaign->direct_message->count if $campaign->direct_message;
+    }
 
-	return $sum;
+    return $sum;
 }
 
 sub get_politician_campaign_reach_poll_propagate_count {
-	my ($self) = @_;
+    my ($self) = @_;
 
-	my $rs = $self->search( { type_id => 2 } );
+    my $rs = $self->search( { type_id => 2 } );
 
-	my $sum = 0;
-	while ( my $campaign = $rs->next() ) {
+    my $sum = 0;
+    while ( my $campaign = $rs->next() ) {
 
-		$sum += $campaign->poll_propagate->count if $campaign->poll_propagate;
-	}
+        $sum += $campaign->poll_propagate->count if $campaign->poll_propagate;
+    }
 
-	return $sum;
+    return $sum;
 }
 
 1;
