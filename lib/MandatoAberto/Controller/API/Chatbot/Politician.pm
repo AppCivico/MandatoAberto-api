@@ -79,7 +79,7 @@ sub list_GET {
                                 my $vl = $_;
 
                                 votolegal_username => $vl->get_column("username"),
-                                votolegal_url      => $vl->get_column("website_url")
+                                votolegal_url      => $vl->get_column("website_url") . '?ref=mandatoaberto#doar'
                             } $p->politician_votolegal_integrations->all()
                         }
                     ) : ()
