@@ -77,8 +77,8 @@ sub list_GET {
     my $politician_id = $c->stash->{politician}->id;
 
     my $filter = $c->req->params->{filter};
-	die \['filter', 'missing'] unless $filter;
-	die \['filter', 'invalid'] unless $filter =~ m/^(open|closed|ignored)$/;
+    die \['filter', 'missing'] unless $filter;
+    die \['filter', 'invalid'] unless $filter =~ m/^(open|closed|ignored)$/;
 
     my $cond;
     if ( $filter eq 'open' ) {
@@ -113,13 +113,13 @@ sub list_GET {
                 map {
                     my $i = $_;
 
-					my $reply = $i->reply;
-					my $open  = $i->open;
+                    my $reply = $i->reply;
+                    my $open  = $i->open;
 
                     my ( $ignored_flag, $replied_flag );
                     if ( !$open && !$reply ) {
-						$ignored_flag = 1;
-						$replied_flag = 0;
+                        $ignored_flag = 1;
+                        $replied_flag = 0;
                     }
                     elsif ( !$open && $reply ) {
                         $ignored_flag = 0;
@@ -204,7 +204,7 @@ sub result_GET {
             open       => $issue->open,
             message    => $issue->message,
             created_at => $issue->created_at,
-			ignored    => $ignored_flag,
+            ignored    => $ignored_flag,
             replied    => $replied_flag,
             recipient  => {
                 id              => $recipient->id,

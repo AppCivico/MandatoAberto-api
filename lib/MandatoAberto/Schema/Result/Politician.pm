@@ -555,7 +555,7 @@ sub verifiers_specs {
                     type       => "Str",
                     post_check => sub {
                         my $fb_page_id           = $_[0]->get_value('fb_page_id');
-						my $fb_page_access_token = $_[0]->get_value('fb_page_access_token');
+                        my $fb_page_access_token = $_[0]->get_value('fb_page_access_token');
 
                         return 1 if length $fb_page_id == 0;
 
@@ -950,7 +950,7 @@ sub send_new_register_email {
     my $recipient = $ENV{SQITCH_DEPLOY} eq 'development' ? 'edgard.lobo@eokoe.com' : 'contato@appcivico.com' ;
 
     my $email = MandatoAberto::Mailer::Template->new(
-		to       => $recipient,
+        to       => $recipient,
         from     => 'no-reply@mandatoaberto.com.br',
         subject  => "Mandato Aberto - Novo cadastro",
         template => get_data_section('new-register.tt'),
@@ -968,8 +968,8 @@ sub send_new_register_email {
                     ( $movement_discount->{has_discount} ?
                         (
                             final_amount    => $self->movement->calculate_discount,
-							base_amount     => ( $ENV{MANDATOABERTO_BASE_AMOUNT} / 100 ),
-							discount_amount => ( $movement_discount->{amount} / 100 )
+                            base_amount     => ( $ENV{MANDATOABERTO_BASE_AMOUNT} / 100 ),
+                            discount_amount => ( $movement_discount->{amount} / 100 )
                         ) : ()
                     )
                 ) : ()

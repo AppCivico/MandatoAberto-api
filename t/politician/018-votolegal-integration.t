@@ -94,8 +94,8 @@ db_transaction {
         my $res = shift;
 
         ok ( defined( $res->{votolegal_integration} ),            'votolegal_integration object is defined' );
-        is ( $res->{votolegal_integration}->{votolegal_url},      'https://dev.votolegal.com.br/em/fake_username', 'votolegal url' );
-        is ( $res->{votolegal_integration}->{votolegal_username}, 'fake_username',                                 'votolegal username' );
+        is ( $res->{votolegal_integration}->{votolegal_url},      'https://dev.votolegal.com.br/em/fake_username?ref=mandatoaberto#doar', 'votolegal url' );
+        is ( $res->{votolegal_integration}->{votolegal_username}, 'fake_username',                                                        'votolegal username' );
     };
 
     api_auth_as user_id => $politician_id;

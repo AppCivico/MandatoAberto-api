@@ -32,7 +32,7 @@ sub verifiers_specs {
                                 valid_until => 'infinity'
                             }
                         )->count;
-						die \['movement_id', 'there alredy is a discount for that movement'] unless $valid_movement_discount_count == 0;
+                        die \['movement_id', 'there alredy is a discount for that movement'] unless $valid_movement_discount_count == 0;
 
                         return 1;
                     }

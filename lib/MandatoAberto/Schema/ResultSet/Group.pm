@@ -118,6 +118,7 @@ sub get_groups_ordered_by_recipient_count {
         undef,
         {
             order_by => { '-desc' => 'recipients_count' },
+            page     => 1,
             rows     => 3
         }
     );

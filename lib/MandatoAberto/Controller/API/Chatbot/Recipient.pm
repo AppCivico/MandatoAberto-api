@@ -30,16 +30,16 @@ __PACKAGE__->config(
 
         my ( $id_param, $recipient_id );
         if ( $platform eq 'facebook' ) {
-			$recipient_id = $c->req->params->{fb_id};
+            $recipient_id = $c->req->params->{fb_id};
             die \["fb_id", "missing"] unless $recipient_id;
 
             $id_param = 'fb_id';
         }
         else {
-			$recipient_id = $c->req->params->{twitter_id};
-			die \["twitter_id", "missing"] unless $recipient_id;
+            $recipient_id = $c->req->params->{twitter_id};
+            die \["twitter_id", "missing"] unless $recipient_id;
 
-			$id_param = 'twitter_id';
+            $id_param = 'twitter_id';
         }
 
         # TODO não aceitar politician_id

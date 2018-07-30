@@ -69,18 +69,18 @@ db_transaction {
     stash_test "get_politician_data" => sub {
         my $res = shift;
 
-        is ($res->{user_id}, $politician_id, 'user_id');
-        is ($res->{name}, "Lucas Ansei", 'name');
-        is ($res->{address_state}, 26 , 'address_state');
-        is ($res->{address_city}, 9508 , 'address_city');
-        is ($res->{gender}, $gender , 'gender');
-        is ($res->{contact}->{twitter}, '@foobar', 'twitter');
-        is ($res->{contact}->{email}, $email, 'email');
-        is ($res->{contact}->{url}, "https://www.google.com", 'url');
+        is ($res->{user_id},                                     $politician_id,                                                         'user_id');
+        is ($res->{name},                                        "Lucas Ansei",                                                          'name');
+        is ($res->{address_state},                               26 ,                                                                    'address_state');
+        is ($res->{address_city},                                9508 ,                                                                  'address_city');
+        is ($res->{gender},                                      $gender ,                                                               'gender');
+        is ($res->{contact}->{twitter},                          '@foobar',                                                              'twitter');
+        is ($res->{contact}->{email},                            $email,                                                                 'email');
+        is ($res->{contact}->{url},                              "https://www.google.com",                                               'url');
+        is ($res->{picframe_url},                                'https://foobar.com.br',                                                'picframe_url' );
+        is ($res->{votolegal_integration}->{votolegal_username}, 'fake_username',                                                        'voto legal username');
+        is ($res->{votolegal_integration}->{votolegal_url},      'https://dev.votolegal.com.br/em/fake_username?ref=mandatoaberto#doar', 'voto legal url');
         is ($res->{greeting}, 'Olá, sou assistente digital do(a) ${user.office.name} ${user.name} Seja bem-vindo a nossa Rede! Queremos um Brasil melhor e precisamos de sua ajuda.', 'greeting content');
-        is ($res->{picframe_url}, 'https://foobar.com.br', 'picframe_url' );
-        is ($res->{votolegal_integration}->{votolegal_username}, 'fake_username', 'voto legal username');
-        is ($res->{votolegal_integration}->{votolegal_url}, 'https://dev.votolegal.com.br/em/fake_username', 'voto legal url');
     };
 
     rest_get "/api/chatbot/politician",

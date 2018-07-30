@@ -27,13 +27,13 @@ sub list_GET {
     my ( $page_id, $page_id_param );
     if ( $platform eq 'facebook' ) {
         $page_id_param = 'politician.fb_page_id';
-		$page_id       = $c->req->params->{fb_page_id};
-		die \["fb_page_id", "missing"] unless $page_id;
+        $page_id       = $c->req->params->{fb_page_id};
+        die \["fb_page_id", "missing"] unless $page_id;
     }
     else {
-		$page_id_param = 'politician.twitter_id';
-		$page_id       = $c->req->params->{twitter_id};
-		die \["twitter_id", "missing"] unless $page_id;
+        $page_id_param = 'politician.twitter_id';
+        $page_id       = $c->req->params->{twitter_id};
+        die \["twitter_id", "missing"] unless $page_id;
     }
 
     return $self->status_ok(
