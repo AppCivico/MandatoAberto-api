@@ -144,7 +144,6 @@ __PACKAGE__->table("recipient");
 =head2 platform
 
   data_type: 'text'
-  default_value: 'facebook'
   is_nullable: 0
 
 =cut
@@ -202,7 +201,7 @@ __PACKAGE__->add_columns(
   "twitter_screen_name",
   { data_type => "text", is_nullable => 1 },
   "platform",
-  { data_type => "text", default_value => "facebook", is_nullable => 0 },
+  { data_type => "text", is_nullable => 0 },
 );
 
 =head1 PRIMARY KEY
@@ -295,8 +294,8 @@ __PACKAGE__->might_have(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-07-20 17:17:16
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:hwb4dY4tswsu8NuCRCdEfQ
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-07-31 13:22:19
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:XZQPbmBMTwUqpNM6dJxqSw
 
 __PACKAGE__->load_components("InflateColumn::Serializer", "Core");
 __PACKAGE__->remove_column('groups');

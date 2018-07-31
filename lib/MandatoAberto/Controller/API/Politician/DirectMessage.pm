@@ -107,7 +107,6 @@ sub list_GET {
                     +{
                         campaign_id => $dm->get_column('campaign_id'),
                         content     => $dm->get_column('content'),
-                        sent        => $dm->get_column('sent'),
                         created_at  => $dm->get_column('created_at'),
                         name        => $dm->get_column('name'),
                         count       => $dm->get_column('count'),

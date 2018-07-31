@@ -227,8 +227,9 @@ db_transaction {
     subtest 'direct message with attachment type' => sub {
 
         rest_post "/api/politician/$politician_id/direct-message",
-            name     => "Must not send 'content' if type is attachment",
+            name    => "Must not send 'content' if type is attachment",
             is_fail => 1,
+            code    => 400,
             [
                 name    => 'wrong',
                 content => 'foobar',

@@ -70,7 +70,7 @@ sub list_GET {
             # mostro todos os recipients, independente da página de origem
             ( $has_active_page ? ( page_id => $politician->fb_page_id ) : () )
         },
-        # { page => $page, rows => $results }
+        { page => $page, rows => $results }
     );
 
     return $self->status_ok(

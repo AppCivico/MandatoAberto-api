@@ -46,7 +46,7 @@ sub verifiers_specs {
                         my $content = $_[0]->get_value('content');
                         my $type    = $_[0]->get_value('type');
 
-                        die \['content', 'must not send content if direct message type is attachment'] if $type ;
+                        die \['content', 'must not send content if direct message type is attachment'] if $type eq 'attachment';
 
                         return 1;
                     }
@@ -208,14 +208,11 @@ sub action_specs {
                     }
                 );
 
-                $count //= $recipient->get_column('total');
-
-                #$values{count} //= $recipient->get_column('total');
+                $count++;
             }
-
             $self->_httpcb->wait_for_all_responses();
 
-            return $direct_message;
+            return $direct_message->update( { count => $count } );
         }
     };
 }

@@ -102,9 +102,8 @@ sub list_GET {
         }
     }
 
-    # Desativando paginação por agora
-    # my $page    = $c->req->params->{page}    || 1;
-    # my $results = $c->req->params->{results} || 20;
+    my $page    = $c->req->params->{page}    || 1;
+    my $results = $c->req->params->{results} || 20;
 
     return $self->status_ok(
         $c,
@@ -159,8 +158,8 @@ sub list_GET {
                     $cond,
                     {
                         prefetch => 'recipient',
-                        # page     => $page,
-                        # rows     => $results,
+                        page     => $page,
+                        rows     => $results,
                         order_by => { '-desc' => 'me.created_at' }
                     }
                   )->all()
