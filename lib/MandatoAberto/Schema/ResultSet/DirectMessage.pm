@@ -10,6 +10,7 @@ with 'MandatoAberto::Role::Verification::TransactionalActions::DBIC';
 
 use Data::Verifier;
 use MandatoAberto::Utils;
+use MandatoAberto::Types qw/URI/;
 use MandatoAberto::Messager::Template;
 use WebService::HttpCallback::Async;
 
@@ -38,9 +39,17 @@ sub verifiers_specs {
                     }
                 },
                 content => {
-                    required   => 1,
+                    required   => 0,
                     type       => "Str",
                     max_length => 1000,
+                    post_check => sub {
+                        my $content = $_[0]->get_value('content');
+                        my $type    = $_[0]->get_value('type');
+
+                        die \['content', 'must not send content if direct message type is attachment'] if $type ;
+
+                        return 1;
+                    }
                 },
                 name => {
                     required  => 1,
@@ -66,6 +75,62 @@ sub verifiers_specs {
                             die \['groups', "group $group_id does not exists or does not belongs to this politician"] unless ref $group;
                             die \['groups', "group $group_id isn't ready"] unless $group->get_column('status') eq 'ready';
                         }
+
+                        return 1;
+                    }
+                },
+                type => {
+                    required   => 1,
+                    type       => 'Str',
+                    post_check => sub {
+                        my $type    = $_[0]->get_value('type');
+                        my $content = $_[0]->get_value('content');
+
+                        die \['type', 'invalid'] unless $type =~ m/^(text|attachment)$/;
+
+                        if ( $type eq 'text' && !$content ) {
+                            die \['content', 'missing']
+                        }
+
+                        return 1;
+                    }
+                },
+                attachment_type => {
+                    required   => 0,
+                    type       => 'Str',
+                    post_check => sub {
+                        my $direct_message_type = $_[0]->get_value('type');
+						my $attachment_type     = $_[0]->get_value('attachment_type');
+
+                        die \['attachment_type', 'not allowed when direct message type is text'] if $direct_message_type eq 'text';
+
+						die \['attachment_type', 'invalid'] unless $attachment_type =~ m/^(image|audio|file|video|template)$/;
+
+						return 1;
+                    }
+                },
+                attachment_template => {
+                    required   => 0,
+                    type       => 'Str',
+                    post_check => sub {
+						my $attachment_type     = $_[0]->get_value('attachment_type');
+						my $attachment_template = $_[0]->get_value('attachment_template');
+
+                        die \['attachment_template', 'not allowed unless attachment type is template'] unless $attachment_type eq 'template';
+
+						die \['attachment_template', 'invalid'] unless $attachment_type =~ m/^(generic|button|receipt|list)$/;
+
+						return 1;
+                    }
+                },
+                attachment_url => {
+                    required   => 0,
+                    type       => URI,
+                    post_check => sub {
+						my $direct_message_type = $_[0]->get_value('type');
+						my $attachment_url      = $_[0]->get_value('attachment_url');
+
+						die \['attachment_url', 'not allowed when direct message type is text'] if $direct_message_type eq 'text';
 
                         return 1;
                     }
@@ -98,6 +163,16 @@ sub action_specs {
             my $access_token = $politician->fb_page_access_token;
             die \['politician_id', 'politician does not have active Facebook page access_token'] if $access_token eq 'undef';
 
+            if ( $values{type} eq 'attachment' ) {
+                $values{attachment} = {
+                    type     => delete $values{attachment_type},
+                    template => delete $values{attachment_template},
+                    url      => delete $values{attachment_url},
+                }
+            }
+
+            my $direct_message = $self->create(\%values);
+
             # Depois de criada a messagem direta, devo adicionar uma entrada
             # na fila para cada recipient atrelado ao rep. público
             # levando em consideração os grupos, se adicionados
@@ -114,6 +189,10 @@ sub action_specs {
                 )
             ;
 
+            # Montando o objeto a ser enviado no 'message'
+            my $message_object = $direct_message->build_message_object;
+
+            my $count = 0;
             while (my $recipient = $recipient_rs->next()) {
                 # Mando para o httpcallback
                 $self->_httpcb->add(
@@ -125,28 +204,22 @@ sub action_specs {
                         recipient => {
                             id => $recipient->fb_id
                         },
-                        message => {
-                            text          => $values{content},
-                            quick_replies => [
-                                {
-                                    content_type => 'text',
-                                    title        => "Voltar para o in\ício",
-                                    payload      => 'greetings'
-                                }
-                            ]
-                        }
+                        message => $message_object
                     }
                 );
 
-                $values{count} //= $recipient->get_column('total');
+                $count //= $recipient->get_column('total');
+
+                #$values{count} //= $recipient->get_column('total');
             }
 
             $self->_httpcb->wait_for_all_responses();
 
-            return $self->create(\%values);
+            return $direct_message;
         }
     };
 }
+
 
 sub _build__httpcb { WebService::HttpCallback::Async->instance }
 
