@@ -96,3 +96,4 @@
 0092-drop-notnull-origin_dialog [0091-add-politician_id-on-campaign] 2018-07-20T19:48:39Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Setting the 'origin_dialog' to nullabe
 0093-add-platform [0092-drop-notnull-origin_dialog] 2018-07-20T20:17:26Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the 'platform' column on the 'recipient' table
 0094-updating-greeting-text [0093-add-platform] 2018-07-23T18:49:24Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Updating one greeting text
+0095-add-dm-related [0094-updating-greeting-text] 2018-07-31T16:28:14Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Updating dm related data
