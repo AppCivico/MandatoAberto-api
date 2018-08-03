@@ -89,6 +89,11 @@ __PACKAGE__->table("issue");
   default_value: true
   is_nullable: 0
 
+=head2 entities
+
+  data_type: 'integer[]'
+  is_nullable: 1
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -118,6 +123,8 @@ __PACKAGE__->add_columns(
   { data_type => "text", is_nullable => 1 },
   "open",
   { data_type => "boolean", default_value => \"true", is_nullable => 0 },
+  "entities",
+  { data_type => "integer[]", is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -165,8 +172,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-01-31 09:14:05
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:ifYVFfmRGQkBd+RJoGgejA
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-08-03 16:00:29
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:SkAuqnJ5iGZU7i/augGHJg
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

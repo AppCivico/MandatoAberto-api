@@ -365,6 +365,36 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 politician_entities
+
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::PoliticianEntity>
+
+=cut
+
+__PACKAGE__->has_many(
+  "politician_entities",
+  "MandatoAberto::Schema::Result::PoliticianEntity",
+  { "foreign.politician_id" => "self.user_id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+=head2 politician_knowledge_bases
+
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::PoliticianKnowledgeBase>
+
+=cut
+
+__PACKAGE__->has_many(
+  "politician_knowledge_bases",
+  "MandatoAberto::Schema::Result::PoliticianKnowledgeBase",
+  { "foreign.politician_id" => "self.user_id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 politician_private_reply_config
 
 Type: might_have
@@ -486,8 +516,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-07-20 12:03:30
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:KTciFDq48Q65FAWKk81S5Q
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-08-03 16:00:29
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:QNT0AcoYq4+rDyrJkmkVCA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

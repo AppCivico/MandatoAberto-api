@@ -146,6 +146,11 @@ __PACKAGE__->table("recipient");
   data_type: 'text'
   is_nullable: 0
 
+=head2 entities
+
+  data_type: 'integer[]'
+  is_nullable: 1
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -202,6 +207,8 @@ __PACKAGE__->add_columns(
   { data_type => "text", is_nullable => 1 },
   "platform",
   { data_type => "text", is_nullable => 0 },
+  "entities",
+  { data_type => "integer[]", is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -294,8 +301,8 @@ __PACKAGE__->might_have(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-07-31 13:22:19
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:XZQPbmBMTwUqpNM6dJxqSw
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-08-03 16:00:29
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:OvGBX/3LDQrMlfH0fZn3KA
 
 __PACKAGE__->load_components("InflateColumn::Serializer", "Core");
 __PACKAGE__->remove_column('groups');
