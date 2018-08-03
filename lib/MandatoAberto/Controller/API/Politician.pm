@@ -98,8 +98,8 @@ sub result_GET {
                         my $g = $_;
 
                         id          => $g->get_column('id'),
-                        greeting_id => $g->greeting->get_column('id'),
-                        content     => $g->greeting->get_column('content')
+                        on_facebook => $g->get_column('on_facebook'),
+                        on_website  => $g->get_column('on_website')
                     } $c->model("DB::PoliticianGreeting")->search(
                         { politician_id => $c->user->id },
                         { prefetch => 'greeting' }

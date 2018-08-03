@@ -48,7 +48,8 @@ db_transaction {
 
     $schema->resultset("PoliticianGreeting")->create({
         politician_id => $politician_id,
-        greeting_id   => 1
+        on_facebook   => 'Olá, sou assistente digital do(a) ${user.office.name} ${user.name} Seja bem-vindo a nossa Rede! Queremos um Brasil melhor e precisamos de sua ajuda.',
+        on_website    => 'Olá, sou assistente digital do(a) ${user.office.name} ${user.name} Seja bem-vindo a nossa Rede! Queremos um Brasil melhor e precisamos de sua ajuda.'
     });
 
     rest_put "/api/politician/$politician_id",

@@ -21,15 +21,16 @@ sub verifiers_specs {
                     required   => 1,
                     type       => "Int",
                 },
-                greeting_id => {
+                on_facebook => {
                     required   => 1,
-                    type       => "Int",
-                    post_check => sub {
-                        my $greeting_id = $_[0]->get_value('greeting_id');
-
-                        $self->result_source->schema->resultset("Greeting")->search( { id => $greeting_id } )->count;
-                    }
-                }
+                    type       => 'Str',
+                    max_lenght => 300
+                },
+                on_website => {
+                    required   => 1,
+                    type       => 'Str',
+                    max_lenght => 300
+                },
             }
         ),
     };

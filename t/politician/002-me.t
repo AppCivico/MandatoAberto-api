@@ -61,7 +61,10 @@ db_transaction {
         code                => 200,
         automatic_load_item => 0,
         stash               => 'g1',
-        [ greeting_id => 1 ]
+        [
+            on_facebook => 'Olá, sou assistente digital do(a) ${user.office.name} ${user.name} Seja bem-vindo a nossa Rede! Queremos um Brasil melhor e precisamos de sua ajuda.',
+            on_website  => 'Olá, sou assistente digital do(a) ${user.office.name} ${user.name} Seja bem-vindo a nossa Rede! Queremos um Brasil melhor e precisamos de sua ajuda.'
+        ]
     ;
     my $greeting    = stash "g1";
     my $greeting_id = $greeting->{id};
@@ -93,12 +96,11 @@ db_transaction {
         is ($res->{contact}->{email},        'foobar@email.com',                'email');
         is ($res->{contact}->{url},          "https://www.google.com",          'url');
         is ($res->{greeting}->{id},          $greeting_id,                      'greeting entity id');
-        is ($res->{greeting}->{greeting_id}, 1,                                 'greeting id');
         is ($res->{movement}->{id},          $movement->id,                     'movement id');
         is ($res->{movement}->{name},        $movement->name,                   'movement name');
 
         is (
-            $res->{greeting}->{content},
+            $res->{greeting}->{on_facebook},
             'Olá, sou assistente digital do(a) ${user.office.name} ${user.name} Seja bem-vindo a nossa Rede! Queremos um Brasil melhor e precisamos de sua ajuda.',
             'greeting content'
         );

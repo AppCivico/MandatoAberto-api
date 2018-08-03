@@ -103,7 +103,7 @@ sub list_GET {
                             twitter   => $c->get_column('twitter'),
                         } $p->politician_contacts->all()
                     },
-                    greeting => $politician_greeting ? $politician_greeting->greeting->content : undef
+                    greeting => $politician_greeting ? $politician_greeting->on_facebook : undef
                 }
 
             } $c->model("DB::Politician")->search(
