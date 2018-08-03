@@ -98,3 +98,4 @@
 0094-updating-greeting-text [0093-add-platform] 2018-07-23T18:49:24Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Updating one greeting text
 0095-add-dm-related [0094-updating-greeting-text] 2018-07-31T16:28:14Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Updating dm related data
 0096-adding-free-text-greeting [0095-add-dm-related] 2018-08-03T17:53:52Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Updating the 'politician_greeting' table to support open text
+0097-adding-active-to-dialog [0096-adding-free-text-greeting] 2018-08-03T18:16:28Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the 'active' boolean to the 'dialog' table and deactivating the 'about me' dialog
