@@ -60,7 +60,7 @@ sub list_POST {
         die \['attachment_url',  'missing'] unless $c->req->params->{attachment_url};
 
         $c->req->params->{attachment_type} ne 'template' ? () :
-	      die \['attachment_template', 'missing'] unless $c->req->params->{attachment_template};
+          die \['attachment_template', 'missing'] unless $c->req->params->{attachment_template};
     }
 
     my $direct_message = $c->stash->{collection}->execute(

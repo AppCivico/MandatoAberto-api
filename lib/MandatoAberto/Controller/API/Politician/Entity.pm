@@ -11,11 +11,11 @@ with 'CatalystX::Eta::Controller::AutoResultGET';
 
 __PACKAGE__->config(
     # AutoBase
-	result  => 'DB::PoliticianEntity',
-	no_user => 1,
+    result  => 'DB::PoliticianEntity',
+    no_user => 1,
 
     # AutoListGET
-	list_key => 'politician_entities',
+    list_key => 'politician_entities',
     build_list_row => sub {
         my ($r, $self, $c) = @_;
 
@@ -51,14 +51,14 @@ __PACKAGE__->config(
 
 
 sub root : Chained('/api/politician/object') : PathPart('') : CaptureArgs(0) {
-	my ($self, $c) = @_;
+    my ($self, $c) = @_;
 
-	$c->detach("/api/forbidden") unless $c->stash->{is_me};
+    $c->detach("/api/forbidden") unless $c->stash->{is_me};
 
-	eval { $c->assert_user_roles(qw/politician/) };
-	if ($@) {
-		$c->forward("/api/forbidden");
-	}
+    eval { $c->assert_user_roles(qw/politician/) };
+    if ($@) {
+        $c->forward("/api/forbidden");
+    }
 }
 
 sub base : Chained('root') : PathPart('intent') : CaptureArgs(0) { }

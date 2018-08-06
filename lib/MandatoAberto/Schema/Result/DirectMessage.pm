@@ -231,61 +231,61 @@ sub groups_rs {
 sub build_message_object {
     my ($self) = @_;
 
-	my $ret;
+    my $ret;
 
-	if ( $self->type eq 'text' ) {
+    if ( $self->type eq 'text' ) {
 
-		$ret = {
-			text => $self->content,
-			quick_replies => [
-				{
-					content_type => 'text',
-					title        => "Voltar para o início",
-					payload      => 'greetings'
-				}
-			]
-		};
+        $ret = {
+            text => $self->content,
+            quick_replies => [
+                {
+                    content_type => 'text',
+                    title        => "Voltar para o início",
+                    payload      => 'greetings'
+                }
+            ]
+        };
 
-	}else {
+    }else {
 
-		# É attachment logo pode ser video, imagem ou template
+        # É attachment logo pode ser video, imagem ou template
 
-		if ( $self->attachment_type ne 'template' ) {
-			$ret = {
-				attachment => {
-					type    => $self->attachment_type,
-					payload => {
-						url         => $self->attachment_url,
-						is_reusable => \1
-					}
-				},
-				quick_replies   => [
-					{
-						content_type => 'text',
-						title        => "Voltar para o início",
-						payload      => 'greetings'
-					}
-				]
-			  };
-		}else {
+        if ( $self->attachment_type ne 'template' ) {
+            $ret = {
+                attachment => {
+                    type    => $self->attachment_type,
+                    payload => {
+                        url         => $self->attachment_url,
+                        is_reusable => \1
+                    }
+                },
+                quick_replies   => [
+                    {
+                        content_type => 'text',
+                        title        => "Voltar para o início",
+                        payload      => 'greetings'
+                    }
+                ]
+              };
+        }else {
 
-			# É um template
-			$ret = {
-				attachment_type => $self->attachment_type,
-				template        => $self->template,
-				quick_replies   => [
-					{
-						content_type => 'text',
-						title        => "Voltar para o início",
-						payload      => 'greetings'
-					}
-				]
-			};
-		}
+            # É um template
+            $ret = {
+                attachment_type => $self->attachment_type,
+                template        => $self->template,
+                quick_replies   => [
+                    {
+                        content_type => 'text',
+                        title        => "Voltar para o início",
+                        payload      => 'greetings'
+                    }
+                ]
+            };
+        }
 
-	}
+    }
 
-	return $ret;
+    return $ret;
 }
 
 __PACKAGE__->meta->make_immutable;

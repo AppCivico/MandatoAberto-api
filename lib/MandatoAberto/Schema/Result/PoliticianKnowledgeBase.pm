@@ -173,15 +173,15 @@ sub verifiers_specs {
             filters => [ qw(trim) ],
             profile => {
                 question => {
-					required   => 0,
-					type       => 'Str',
-					max_lenght => 300
-				},
-				answer => {
-					required   => 0,
-					type       => 'Str',
-					max_lenght => 300
-				},
+                    required   => 0,
+                    type       => 'Str',
+                    max_lenght => 300
+                },
+                answer => {
+                    required   => 0,
+                    type       => 'Str',
+                    max_lenght => 300
+                },
                 active => {
                     required => 0,
                     type     => 'Bool'
