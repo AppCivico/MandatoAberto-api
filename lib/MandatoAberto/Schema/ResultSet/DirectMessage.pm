@@ -150,7 +150,6 @@ sub action_specs {
             my %values = $r->valid_values;
             not defined $values{$_} and delete $values{$_} for keys %values;
 
-            # TODO Colocar em uma unica tx
             my $campaign = $self->result_source->schema->resultset("Campaign")->create(
                 {
                     politician_id => $values{politician_id},
@@ -162,14 +161,6 @@ sub action_specs {
             my $politician   = $self->result_source->schema->resultset("Politician")->find($values{politician_id});
             my $access_token = $politician->fb_page_access_token;
             die \['politician_id', 'politician does not have active Facebook page access_token'] if $access_token eq 'undef';
-
-            if ( $values{type} eq 'attachment' ) {
-                $values{attachment} = {
-                    type     => delete $values{attachment_type},
-                    template => delete $values{attachment_template},
-                    url      => delete $values{attachment_url},
-                }
-            }
 
             my $direct_message = $self->create(\%values);
 

@@ -237,6 +237,39 @@ db_transaction {
             ]
         ;
 
+        rest_post "/api/politician/$politician_id/direct-message",
+            name    => 'POST without attachment_type',
+            is_fail => 1,
+            code    => 400,
+            [
+                name    => 'foobar',
+                content => 'foobar',
+                type    => 'attachment'
+            ]
+        ;
+
+        rest_post "/api/politician/$politician_id/direct-message",
+            name    => 'POST without attachment url',
+            is_fail => 1,
+            code    => 400,
+            [
+                name            => 'foobar',
+                content         => 'foobar',
+                type            => 'attachment',
+                attachment_type => 'image'
+            ]
+        ;
+
+        rest_post "/api/politician/$politician_id/direct-message",
+            name    => 'POST without attachment url',
+            [
+                name            => 'foobar',
+                type            => 'attachment',
+                attachment_type => 'image',
+                attachment_url  => 'https://mandatoaberto.com.br/images/home-header-bg-dc1c97e8.jpg'
+            ]
+        ;
+
     }
 };
 

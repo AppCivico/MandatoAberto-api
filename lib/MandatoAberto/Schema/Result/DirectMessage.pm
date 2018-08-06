@@ -98,6 +98,21 @@ __PACKAGE__->table("direct_message");
   data_type: 'json'
   is_nullable: 1
 
+=head2 attachment_type
+
+  data_type: 'text'
+  is_nullable: 1
+
+=head2 attachment_template
+
+  data_type: 'text'
+  is_nullable: 1
+
+=head2 attachment_url
+
+  data_type: 'text'
+  is_nullable: 1
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -126,6 +141,12 @@ __PACKAGE__->add_columns(
   { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
   "quick_replies",
   { data_type => "json", is_nullable => 1 },
+  "attachment_type",
+  { data_type => "text", is_nullable => 1 },
+  "attachment_template",
+  { data_type => "text", is_nullable => 1 },
+  "attachment_url",
+  { data_type => "text", is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -193,8 +214,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-06-29 19:37:52
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:MFarljvW5axbxAU8/Zhd4A
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-08-06 20:30:14
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:eO12exqPtTznZHKRXnYVpw
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

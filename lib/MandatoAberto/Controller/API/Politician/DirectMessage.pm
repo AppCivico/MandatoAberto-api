@@ -56,11 +56,11 @@ sub list_POST {
     my $type = $c->req->params->{type} || 'text';
 
     if ( $type eq 'attachment' ) {
-        die \['attachment_type', 'missing'] unless $c->req->{attachment_type};
-        die \['attachment_url', 'missing'] unless $c->req->{attachment_url};
+        die \['attachment_type', 'missing'] unless $c->req->params->{attachment_type};
+        die \['attachment_url',  'missing'] unless $c->req->params->{attachment_url};
 
-        $c->req->{attachment_type} eq 'template' ? () :
-	      die \['attachment_template', 'missing'] unless $c->req->{attachment_template};
+        $c->req->params->{attachment_type} ne 'template' ? () :
+	      die \['attachment_template', 'missing'] unless $c->req->params->{attachment_template};
     }
 
     my $direct_message = $c->stash->{collection}->execute(
