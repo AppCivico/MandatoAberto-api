@@ -53,14 +53,7 @@ __PACKAGE__->config(
     object_key         => 'politician_knowledge_base',
 
     # AutoResultPUT.
-    result_put_for            => 'update',
-    prepare_params_for_update => sub {
-        my ($self, $c, $params) = @_;
-
-        $params->{politician_id} = $c->stash->{politician}->id;
-
-        return $params;
-    },
+    result_put_for => 'update',
 
     # AutoResultGET
     build_row => sub { return { $_[0]->get_columns() } },

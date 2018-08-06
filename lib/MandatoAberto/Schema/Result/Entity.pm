@@ -132,9 +132,24 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 sub_entities
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-08-03 16:00:29
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:FPb8qAY4whv0IBIK1+vbYg
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::SubEntity>
+
+=cut
+
+__PACKAGE__->has_many(
+  "sub_entities",
+  "MandatoAberto::Schema::Result::SubEntity",
+  { "foreign.entity_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-08-05 22:53:07
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:yNdcthgP29l756LLA/OmRQ
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

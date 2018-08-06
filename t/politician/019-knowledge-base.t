@@ -175,10 +175,22 @@ db_transaction {
     rest_put "/api/politician/$politician_id/knowledge-base/$kb_id",
         name => 'update politician knowledge base entry',
         [
-            active => 0,
-
+            active   => 0,
+            question => 'foobar',
+            answer   => 'foobar'
         ]
     ;
+
+    rest_reload_list 'get_knowledge_base_entry';
+
+    stash_test 'get_knowledge_base_entry.list' => sub {
+        my $res = shift;
+
+        is ( $res->{active},             0,                    'not active' );
+        is ( $res->{question},           'foobar',             'updated question' );
+        is ( $res->{answer},             'foobar',             'updated answer' );
+        is ( defined $res->{updated_at}, 1,                    'updated_at is defined' );
+    };
 };
 
 done_testing();
