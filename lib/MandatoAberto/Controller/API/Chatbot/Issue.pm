@@ -24,6 +24,18 @@ __PACKAGE__->config(
 
         $params->{recipient_id} = $recipient->id;
 
+		# my $entities;
+		# if ($c->req->params->{entities}) {
+		# 	$c->req->params->{entities} =~ s/(\[|\]|(\s))//g;
+
+		# 	my @entities = split(',', $c->req->params->{entities});
+
+		# 	$entities = \@entities;
+		# } else {
+		# 	die \['entities', 'missing'];
+		# }
+		# $params->{entities} = $entities;
+
         return $params;
     },
 );

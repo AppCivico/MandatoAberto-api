@@ -36,6 +36,7 @@ db_transaction {
 
     my $recipient = $schema->resultset("Recipient")->find(stash "r1.id");
 
+	my $entity = $schema->resultset('Entity')->create( { name => 'Saúde' } );
     rest_post "/api/chatbot/issue",
         name                => "issue creation",
         automatic_load_item => 0,
@@ -44,6 +45,7 @@ db_transaction {
             politician_id  => $politician_id,
             fb_id          => $recipient_fb_id,
             message        => $message,
+            entities       => "[entity->id]",
             security_token => $security_token
         ]
     ;

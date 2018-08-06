@@ -1,12 +1,12 @@
 use utf8;
-package MandatoAberto::Schema::Result::PoliticianEntity;
+package MandatoAberto::Schema::Result::SubEntity;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
 
 =head1 NAME
 
-MandatoAberto::Schema::Result::PoliticianEntity
+MandatoAberto::Schema::Result::SubEntity
 
 =cut
 
@@ -34,11 +34,11 @@ extends 'DBIx::Class::Core';
 
 __PACKAGE__->load_components("InflateColumn::DateTime", "TimeStamp", "PassphraseColumn");
 
-=head1 TABLE: C<politician_entity>
+=head1 TABLE: C<sub_entity>
 
 =cut
 
-__PACKAGE__->table("politician_entity");
+__PACKAGE__->table("sub_entity");
 
 =head1 ACCESSORS
 
@@ -47,29 +47,17 @@ __PACKAGE__->table("politician_entity");
   data_type: 'integer'
   is_auto_increment: 1
   is_nullable: 0
-  sequence: 'politician_entity_id_seq'
-
-=head2 politician_id
-
-  data_type: 'integer'
-  is_foreign_key: 1
-  is_nullable: 0
+  sequence: 'sub_entity_id_seq'
 
 =head2 entity_id
 
   data_type: 'integer'
   is_foreign_key: 1
-  is_nullable: 0
-
-=head2 sub_entity_id
-
-  data_type: 'integer'
-  is_foreign_key: 1
   is_nullable: 1
 
-=head2 recipient_count
+=head2 name
 
-  data_type: 'integer'
+  data_type: 'text'
   is_nullable: 0
 
 =head2 updated_at
@@ -92,16 +80,12 @@ __PACKAGE__->add_columns(
     data_type         => "integer",
     is_auto_increment => 1,
     is_nullable       => 0,
-    sequence          => "politician_entity_id_seq",
+    sequence          => "sub_entity_id_seq",
   },
-  "politician_id",
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "entity_id",
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
-  "sub_entity_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
-  "recipient_count",
-  { data_type => "integer", is_nullable => 0 },
+  "name",
+  { data_type => "text", is_nullable => 0 },
   "updated_at",
   { data_type => "timestamp", is_nullable => 1 },
   "created_at",
@@ -125,6 +109,20 @@ __PACKAGE__->add_columns(
 
 __PACKAGE__->set_primary_key("id");
 
+=head1 UNIQUE CONSTRAINTS
+
+=head2 C<sub_entity_name_key>
+
+=over 4
+
+=item * L</name>
+
+=back
+
+=cut
+
+__PACKAGE__->add_unique_constraint("sub_entity_name_key", ["name"]);
+
 =head1 RELATIONS
 
 =head2 entity
@@ -139,36 +137,6 @@ __PACKAGE__->belongs_to(
   "entity",
   "MandatoAberto::Schema::Result::Entity",
   { id => "entity_id" },
-  { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
-);
-
-=head2 politician
-
-Type: belongs_to
-
-Related object: L<MandatoAberto::Schema::Result::Politician>
-
-=cut
-
-__PACKAGE__->belongs_to(
-  "politician",
-  "MandatoAberto::Schema::Result::Politician",
-  { user_id => "politician_id" },
-  { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
-);
-
-=head2 sub_entity
-
-Type: belongs_to
-
-Related object: L<MandatoAberto::Schema::Result::SubEntity>
-
-=cut
-
-__PACKAGE__->belongs_to(
-  "sub_entity",
-  "MandatoAberto::Schema::Result::SubEntity",
-  { id => "sub_entity_id" },
   {
     is_deferrable => 0,
     join_type     => "LEFT",
@@ -177,9 +145,24 @@ __PACKAGE__->belongs_to(
   },
 );
 
+=head2 politician_entities
+
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::PoliticianEntity>
+
+=cut
+
+__PACKAGE__->has_many(
+  "politician_entities",
+  "MandatoAberto::Schema::Result::PoliticianEntity",
+  { "foreign.sub_entity_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 
 # Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-08-05 22:53:07
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:mrjWft0HIHxk27tSIxyb3Q
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Y0S0UDJ2BpWiaQA472uMeA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

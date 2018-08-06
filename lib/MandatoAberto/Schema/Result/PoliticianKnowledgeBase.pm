@@ -55,7 +55,12 @@ __PACKAGE__->table("politician_knowledge_base");
   is_foreign_key: 1
   is_nullable: 0
 
-=head2 issues_id
+=head2 issues
+
+  data_type: 'integer[]'
+  is_nullable: 0
+
+=head2 entities
 
   data_type: 'integer[]'
   is_nullable: 0
@@ -100,7 +105,9 @@ __PACKAGE__->add_columns(
   },
   "politician_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
-  "issues_id",
+  "issues",
+  { data_type => "integer[]", is_nullable => 0 },
+  "entities",
   { data_type => "integer[]", is_nullable => 0 },
   "active",
   { data_type => "boolean", default_value => \"true", is_nullable => 0 },
@@ -149,10 +156,58 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-08-03 16:00:29
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:ZjHT+EmvmrOLIJFEbUwgIQ
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-08-03 16:45:13
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:EAaVHn6ASk4B+mfmqtdXaQ
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
+
+with 'MandatoAberto::Role::Verification';
+with 'MandatoAberto::Role::Verification::TransactionalActions::DBIC';
+
+sub verifiers_specs {
+    my $self = shift;
+
+    return {
+        update => Data::Verifier->new(
+            filters => [ qw(trim) ],
+            profile => {
+                question => {
+					required   => 0,
+					type       => 'Str',
+					max_lenght => 300
+				},
+				answer => {
+					required   => 0,
+					type       => 'Str',
+					max_lenght => 300
+				},
+                active => {
+                    required => 0,
+                    type     => 'Bool'
+                }
+            }
+        )
+    };
+}
+
+sub action_specs {
+    my ($self) = @_;
+
+    return {
+        update => sub {
+            my $r = shift;
+
+            my %values = $r->valid_values;
+            not defined $values{$_} and delete $values{$_} for keys %values;
+
+            $self->update({
+                %values,
+                updated_at => \'NOW()',
+            });
+        }
+    };
+}
+
 __PACKAGE__->meta->make_immutable;
 1;
