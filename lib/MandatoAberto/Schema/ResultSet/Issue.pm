@@ -34,27 +34,27 @@ sub verifiers_specs {
                     required   => 1,
                     type       => "Str",
                 },
-                entities => {
-                    required   => 1,
-                    type       => 'ArrayRef[Int]',
-                    post_check => sub {
-                        my $entities = $_[0]->get_value('entities');
+                # entities => {
+                #     required   => 1,
+                #     type       => 'ArrayRef[Int]',
+                #     post_check => sub {
+                #         my $entities = $_[0]->get_value('entities');
 
-                        for ( my $i = 0; $i < @{ $entities }; $i++ ) {
-                            my $entity_id = $entities->[$i];
+                #         for ( my $i = 0; $i < @{ $entities }; $i++ ) {
+                #             my $entity_id = $entities->[$i];
 
-                            my $count = $self->result_source->schema->resultset('PoliticianEntity')->search(
-                                {
-                                    id            => $entity_id,
-                                    politician_id => $_[0]->get_value('politician_id'),
-                                }
-                            )->count;
-                            die \['intent', "could not find intent with id $entity_id"] if $count == 0;
-                        }
+                #             my $count = $self->result_source->schema->resultset('PoliticianEntity')->search(
+                #                 {
+                #                     id            => $entity_id,
+                #                     politician_id => $_[0]->get_value('politician_id'),
+                #                 }
+                #             )->count;
+                #             die \['intent', "could not find intent with id $entity_id"] if $count == 0;
+                #         }
 
-                        return 1;
-                    }
-                }
+                #         return 1;
+                #     }
+                # }
             }
         ),
     };
