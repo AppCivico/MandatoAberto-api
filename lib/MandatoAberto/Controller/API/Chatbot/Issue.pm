@@ -3,6 +3,8 @@ use common::sense;
 use Moose;
 use namespace::autoclean;
 
+use JSON::MaybeXS;
+
 BEGIN { extends 'CatalystX::Eta::Controller::REST' }
 
 with "CatalystX::Eta::Controller::AutoBase";
@@ -23,18 +25,14 @@ __PACKAGE__->config(
         die \["fb_id", "could not find recipient with that fb_id"] unless $recipient;
 
         $params->{recipient_id} = $recipient->id;
+        use DDP;
+		my $entities = $c->req->params->{entities};
+        p $entities;
+        die \['entities', 'missing'] unless $entities;
+        $entities = decode_json $entities;
+		p $entities;
 
-		# my $entities;
-		# if ($c->req->params->{entities}) {
-		# 	$c->req->params->{entities} =~ s/(\[|\]|(\s))//g;
-
-		# 	my @entities = split(',', $c->req->params->{entities});
-
-		# 	$entities = \@entities;
-		# } else {
-		# 	die \['entities', 'missing'];
-		# }
-		# $params->{entities} = $entities;
+		$params->{entities} = $entities;
 
         return $params;
     },
