@@ -12,26 +12,26 @@ use Data::Verifier;
 
 
 sub verifiers_specs {
-	my $self = shift;
+    my $self = shift;
 
-	return {
-		create => Data::Verifier->new(
-			filters => [qw(trim)],
-			profile => {
-				politician_id => {
-					required   => 1,
-					type       => "Int",
-				},
-				question => {
-					required   => 1,
-					type       => 'Str',
-					max_lenght => 300
-				},
-				answer => {
-					required   => 1,
-					type       => 'Str',
-					max_lenght => 300
-				},
+    return {
+        create => Data::Verifier->new(
+            filters => [qw(trim)],
+            profile => {
+                politician_id => {
+                    required   => 1,
+                    type       => "Int",
+                },
+                question => {
+                    required   => 1,
+                    type       => 'Str',
+                    max_lenght => 300
+                },
+                answer => {
+                    required   => 1,
+                    type       => 'Str',
+                    max_lenght => 300
+                },
                 issues => {
                     required   => 1,
                     type       => 'ArrayRef[Int]',
@@ -74,26 +74,26 @@ sub verifiers_specs {
                         return 1;
                     }
                 }
-			}
-		),
-	};
+            }
+        ),
+    };
 }
 
 
 sub action_specs {
-	my ($self) = @_;
+    my ($self) = @_;
 
-	return {
-		create => sub {
-			my $r = shift;
+    return {
+        create => sub {
+            my $r = shift;
 
-			my %values = $r->valid_values;
-			not defined $values{$_} and delete $values{$_} for keys %values;
+            my %values = $r->valid_values;
+            not defined $values{$_} and delete $values{$_} for keys %values;
 
-			my $politician_knowledge_base = $self->create(\%values);
-			return $politician_knowledge_base;
-		},
-	};
+            my $politician_knowledge_base = $self->create(\%values);
+            return $politician_knowledge_base;
+        },
+    };
 }
 
 1;

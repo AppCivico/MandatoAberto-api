@@ -100,37 +100,37 @@ sub verifiers_specs {
                     type       => 'Str',
                     post_check => sub {
                         my $direct_message_type = $_[0]->get_value('type');
-						my $attachment_type     = $_[0]->get_value('attachment_type');
+                        my $attachment_type     = $_[0]->get_value('attachment_type');
 
                         die \['attachment_type', 'not allowed when direct message type is text'] if $direct_message_type eq 'text';
 
-						die \['attachment_type', 'invalid'] unless $attachment_type =~ m/^(image|audio|file|video|template)$/;
+                        die \['attachment_type', 'invalid'] unless $attachment_type =~ m/^(image|audio|file|video|template)$/;
 
-						return 1;
+                        return 1;
                     }
                 },
                 attachment_template => {
                     required   => 0,
                     type       => 'Str',
                     post_check => sub {
-						my $attachment_type     = $_[0]->get_value('attachment_type');
-						my $attachment_template = $_[0]->get_value('attachment_template');
+                        my $attachment_type     = $_[0]->get_value('attachment_type');
+                        my $attachment_template = $_[0]->get_value('attachment_template');
 
                         die \['attachment_template', 'not allowed unless attachment type is template'] unless $attachment_type eq 'template';
 
-						die \['attachment_template', 'invalid'] unless $attachment_type =~ m/^(generic|button|receipt|list)$/;
+                        die \['attachment_template', 'invalid'] unless $attachment_type =~ m/^(generic|button|receipt|list)$/;
 
-						return 1;
+                        return 1;
                     }
                 },
                 attachment_url => {
                     required   => 0,
                     type       => URI,
                     post_check => sub {
-						my $direct_message_type = $_[0]->get_value('type');
-						my $attachment_url      = $_[0]->get_value('attachment_url');
+                        my $direct_message_type = $_[0]->get_value('type');
+                        my $attachment_url      = $_[0]->get_value('attachment_url');
 
-						die \['attachment_url', 'not allowed when direct message type is text'] if $direct_message_type eq 'text';
+                        die \['attachment_url', 'not allowed when direct message type is text'] if $direct_message_type eq 'text';
 
                         return 1;
                     }
@@ -150,7 +150,6 @@ sub action_specs {
             my %values = $r->valid_values;
             not defined $values{$_} and delete $values{$_} for keys %values;
 
-            # TODO Colocar em uma unica tx
             my $campaign = $self->result_source->schema->resultset("Campaign")->create(
                 {
                     politician_id => $values{politician_id},
@@ -162,14 +161,6 @@ sub action_specs {
             my $politician   = $self->result_source->schema->resultset("Politician")->find($values{politician_id});
             my $access_token = $politician->fb_page_access_token;
             die \['politician_id', 'politician does not have active Facebook page access_token'] if $access_token eq 'undef';
-
-            if ( $values{type} eq 'attachment' ) {
-                $values{attachment} = {
-                    type     => delete $values{attachment_type},
-                    template => delete $values{attachment_template},
-                    url      => delete $values{attachment_url},
-                }
-            }
 
             my $direct_message = $self->create(\%values);
 

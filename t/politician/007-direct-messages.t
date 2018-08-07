@@ -237,6 +237,39 @@ db_transaction {
             ]
         ;
 
+        rest_post "/api/politician/$politician_id/direct-message",
+            name    => 'POST without attachment_type',
+            is_fail => 1,
+            code    => 400,
+            [
+                name    => 'foobar',
+                content => 'foobar',
+                type    => 'attachment'
+            ]
+        ;
+
+        rest_post "/api/politician/$politician_id/direct-message",
+            name    => 'POST without attachment url',
+            is_fail => 1,
+            code    => 400,
+            [
+                name            => 'foobar',
+                content         => 'foobar',
+                type            => 'attachment',
+                attachment_type => 'image'
+            ]
+        ;
+
+        rest_post "/api/politician/$politician_id/direct-message",
+            name    => 'POST without attachment url',
+            params => [
+                name            => 'foobar',
+                type            => 'attachment',
+                attachment_type => 'image',
+            ],
+            files => { picture => "$Bin/picture.jpg" }
+        ;
+
     }
 };
 

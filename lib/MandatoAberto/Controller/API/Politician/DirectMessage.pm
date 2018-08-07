@@ -6,6 +6,9 @@ use namespace::autoclean;
 use MandatoAberto::Utils qw/ is_test /;
 use MandatoAberto::Uploader;
 
+use File::MimeInfo;
+use Crypt::PRNG qw(random_string);
+
 BEGIN { extends 'CatalystX::Eta::Controller::REST' }
 
 with "CatalystX::Eta::Controller::AutoBase";
@@ -64,18 +67,17 @@ sub list_POST {
 
     my $picture;
     if ( $type eq 'attachment' ) {
-        die \['attachment_type', 'missing'] unless $c->req->{attachment_type};
-        #die \['attachment_url', 'missing'] unless $c->req->{attachment_url};
+        die \['attachment_type', 'missing'] unless $c->req->params->{attachment_type};
+        #die \['attachment_url', 'missing'] unless $c->req->params->{attachment_url};
 
 		if ( my $upload = $c->req->upload("picture") ) {
-
 			$picture = $self->_upload_picture($upload);
             $c->req->params->{attachment_url} = $picture;
             use DDP; p $c->req->params->{attachment_url};
 		}
-
-        $c->req->{attachment_type} eq 'template' ? () :
-	      die \['attachment_template', 'missing'] unless $c->req->{attachment_template};
+        use DDP; p $c->req->params->{attachment_type};
+        $c->req->params->{attachment_type} ne 'template' ? () :
+	      die \['attachment_template', 'missing'] unless $c->req->params->{attachment_template};
     }
 
     my $direct_message = $c->stash->{collection}->execute(

@@ -101,3 +101,4 @@
 0097-adding-active-to-dialog [0096-adding-free-text-greeting] 2018-08-03T18:16:28Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the 'active' boolean to the 'dialog' table and deactivating the 'about me' dialog
 0098-updating-dialog-texts [0097-adding-active-to-dialog] 2018-08-03T18:22:08Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Updating the dialog texts
 0099-add-entity-and-related-tables [0098-updating-dialog-texts] 2018-08-06T03:45:15Z Lucas Ansei,,, <lucas@lucas-G750JX> # Creating the entity and related table
+0100-add-dm-columns [0099-add-entity-and-related-tables] 2018-08-06T23:40:14Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding attachment related columns to the 'direct_message' table

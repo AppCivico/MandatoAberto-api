@@ -35,15 +35,15 @@ db_transaction {
     ;
     my $recipient = $schema->resultset("Recipient")->find(stash "r1.id");
 
-	# Criando a entidade
-	my $entity = $schema->resultset('Entity')->create( { name => 'Saúde' } );
-	my $politician_entity = $schema->resultset('PoliticianEntity')->create(
-		{
-			politician_id   => $politician_id,
-			entity_id       => $entity->id,
-			recipient_count => 1,
-		}
-	);
+    # Criando a entidade
+    my $entity = $schema->resultset('Entity')->create( { name => 'Saúde' } );
+    my $politician_entity = $schema->resultset('PoliticianEntity')->create(
+        {
+            politician_id   => $politician_id,
+            entity_id       => $entity->id,
+            recipient_count => 1,
+        }
+    );
     my $politician_entity_id = $politician_entity->id;
 
     rest_post "/api/chatbot/issue",
@@ -60,7 +60,7 @@ db_transaction {
     ;
     my $issue_id = stash "i1.id";
 
-	$recipient->update( { entities => [$politician_entity_id] } );
+    $recipient->update( { entities => [$politician_entity_id] } );
 
     api_auth_as user_id => $politician_id;
 
@@ -96,7 +96,7 @@ db_transaction {
         code    => 400,
         [
             issue_id => $issue_id,
-			question => $question,
+            question => $question,
             entities => "[$politician_entity_id]"
         ]
     ;
@@ -107,8 +107,8 @@ db_transaction {
         code    => 400,
         [
             issue_id => 9999999,
-			question => $question,
-			answer   => $answer,
+            question => $question,
+            answer   => $answer,
             entities => "[$politician_entity_id]"
         ]
     ;
@@ -119,8 +119,8 @@ db_transaction {
         code    => 400,
         [
             issue_id => 9999999,
-			question => $question,
-			answer   => $answer,
+            question => $question,
+            answer   => $answer,
             entities => '[999999999]'
         ]
     ;
@@ -131,7 +131,7 @@ db_transaction {
         stash               => 'k1',
         [
             issue_id => $issue_id,
-			question => $question,
+            question => $question,
             entities => "[$politician_entity_id]",
             answer   => $answer,
         ]

@@ -13,14 +13,14 @@ with 'CatalystX::Eta::Controller::AutoResultGET';
 
 __PACKAGE__->config(
     # AutoBase
-	result  => 'DB::PoliticianKnowledgeBase',
-	no_user => 1,
+    result  => 'DB::PoliticianKnowledgeBase',
+    no_user => 1,
 
     # AutoListGET
-	list_key => 'knowledge_base',
-	build_row  => sub {
-		return { $_[0]->get_columns() };
-	},
+    list_key => 'knowledge_base',
+    build_row  => sub {
+        return { $_[0]->get_columns() };
+    },
 
     # AutoListPOST
     prepare_params_for_create => sub {
@@ -33,16 +33,16 @@ __PACKAGE__->config(
 
         $params->{issues} = [$issue_id];
 
-		my $entities;
-		if ($c->req->params->{entities}) {
-			$c->req->params->{entities} =~ s/(\[|\]|(\s))//g;
+        my $entities;
+        if ($c->req->params->{entities}) {
+            $c->req->params->{entities} =~ s/(\[|\]|(\s))//g;
 
-			my @entities = split(',', $c->req->params->{entities});
+            my @entities = split(',', $c->req->params->{entities});
 
-			$entities = \@entities;
-		} else {
-			die \['entities', 'missing'];
-		}
+            $entities = \@entities;
+        } else {
+            die \['entities', 'missing'];
+        }
         $params->{entities} = $entities;
 
         return $params;
@@ -61,14 +61,14 @@ __PACKAGE__->config(
 
 
 sub root : Chained('/api/politician/object') : PathPart('') : CaptureArgs(0) {
-	my ($self, $c) = @_;
+    my ($self, $c) = @_;
 
-	$c->detach("/api/forbidden") unless $c->stash->{is_me};
+    $c->detach("/api/forbidden") unless $c->stash->{is_me};
 
-	eval { $c->assert_user_roles(qw/politician/) };
-	if ($@) {
-		$c->forward("/api/forbidden");
-	}
+    eval { $c->assert_user_roles(qw/politician/) };
+    if ($@) {
+        $c->forward("/api/forbidden");
+    }
 }
 
 sub base : Chained('root') : PathPart('knowledge-base') : CaptureArgs(0) { }
