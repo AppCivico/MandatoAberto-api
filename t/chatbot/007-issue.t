@@ -101,8 +101,8 @@ db_transaction {
             entities       => encode_json(
                 {
                     Saude => [
-                        'vacinação',
-                        'posto de saúde'
+                        'vacinacao',
+                        'posto de saude'
                     ]
                 }
             )

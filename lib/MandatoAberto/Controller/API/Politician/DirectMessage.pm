@@ -4,11 +4,18 @@ use Moose;
 use namespace::autoclean;
 
 use MandatoAberto::Utils qw/ is_test /;
+use MandatoAberto::Uploader;
 
 BEGIN { extends 'CatalystX::Eta::Controller::REST' }
 
 with "CatalystX::Eta::Controller::AutoBase";
 with "CatalystX::Eta::Controller::AutoListGET";
+
+has uploader => (
+	is      => "ro",
+	isa     => "MandatoAberto::Uploader",
+	default => sub { MandatoAberto::Uploader->new() },
+);
 
 __PACKAGE__->config(
     # AutoBase.
@@ -55,9 +62,17 @@ sub list_POST {
     # Por agora, por padrão o type será text
     my $type = $c->req->params->{type} || 'text';
 
+    my $picture;
     if ( $type eq 'attachment' ) {
         die \['attachment_type', 'missing'] unless $c->req->{attachment_type};
-        die \['attachment_url', 'missing'] unless $c->req->{attachment_url};
+        #die \['attachment_url', 'missing'] unless $c->req->{attachment_url};
+
+		if ( my $upload = $c->req->upload("picture") ) {
+
+			$picture = $self->_upload_picture($upload);
+            $c->req->params->{attachment_url} = $picture;
+            use DDP; p $c->req->params->{attachment_url};
+		}
 
         $c->req->{attachment_type} eq 'template' ? () :
 	      die \['attachment_template', 'missing'] unless $c->req->{attachment_template};
@@ -131,6 +146,28 @@ sub list_GET {
             ]
         }
     );
+}
+
+sub _upload_picture {
+	my ( $self, $upload ) = @_;
+
+	my $mimetype = mimetype( $upload->tempname );
+	my $tempname = $upload->tempname;
+
+	die \[ 'picture', 'empty file' ]    unless $upload->size > 0;
+	die \[ 'picture', 'invalid image' ] unless $mimetype =~ m{^image\/};
+
+	my $path = join "/", "ma", "picture", random_string(3), DateTime->now->epoch, $tempname;
+
+	my $url = $self->uploader->upload(
+		{
+			path => $path,
+			file => $tempname,
+			type => $mimetype,
+		}
+	);
+
+	return $url->as_string;
 }
 
 __PACKAGE__->meta->make_immutable;

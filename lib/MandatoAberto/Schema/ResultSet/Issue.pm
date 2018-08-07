@@ -36,14 +36,7 @@ sub verifiers_specs {
                 },
                 entities => {
                     required   => 1,
-                    type       => 'Object',
-                    post_check => sub {
-                        my $entities = $_[0]->get_value('entities');
-
-                        use DDP; p $entities;
-
-                        return 1;
-                    }
+                    type       => 'HashRef'
                 }
             }
         ),
@@ -60,10 +53,44 @@ sub action_specs {
             my %values = $r->valid_values;
             not defined $values{$_} and delete $values{$_} for keys %values;
 
-            # Uma issue sempre é criada como aberta
-            $values{open} = 1;
+            my $issue;
+        	$self->result_source->schema->txn_do(sub {
+                # Uma issue sempre é criada como aberta
+                $values{open} = 1;
 
-            my $issue = $self->create(\%values);
+                my $politician = $self->result_source->schema->resultset('Politician')->find( $values{politician_id} );
+
+                my $entity_val = $values{entities};
+                my @entities_id;
+                #$politician->politician_entities->search(
+                 #   {  },
+                #    { prefetch => [ 'entity', 'sub_entity' ] }
+                #);
+
+                my @entities = keys %{ $entity_val };
+                for my $entity ( @entities ) {
+                    my $upsert_entity = $politician->politician_entities->find_or_create(
+                        {
+                            sub_entity_id => undef,
+                            entity        => { name => $entity },
+                        }
+                    );
+
+                    push @entities_id, $upsert_entity->id;
+
+                    if ( scalar @{ $entity_val->{$entity} } > 0 ) {
+                        for my $sub_entity ( @{ $entity_val->{$entity} } ) {
+
+                            my $upsert_sub_entity = $politician->politician_entities->find_or_create( { sub_entity  => { name => ['foo', 'bar'] } } );
+                            use DDP; p $upsert_sub_entity; p $sub_entity;
+                            push @entities_id, $upsert_sub_entity->id;
+                        }
+                    }
+                }
+
+                use DDP; p \@entities_id;
+                $issue = $self->create(\%values);
+            });
 
             return $issue;
         }

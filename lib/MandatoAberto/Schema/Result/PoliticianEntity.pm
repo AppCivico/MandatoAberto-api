@@ -70,6 +70,7 @@ __PACKAGE__->table("politician_entity");
 =head2 recipient_count
 
   data_type: 'integer'
+  default_value: 0
   is_nullable: 0
 
 =head2 updated_at
@@ -101,7 +102,7 @@ __PACKAGE__->add_columns(
   "sub_entity_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
   "recipient_count",
-  { data_type => "integer", is_nullable => 0 },
+  { data_type => "integer", default_value => 0, is_nullable => 0 },
   "updated_at",
   { data_type => "timestamp", is_nullable => 1 },
   "created_at",
@@ -178,8 +179,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-08-05 22:53:07
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:mrjWft0HIHxk27tSIxyb3Q
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-08-07 00:35:27
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:B2htq1XH5n0JH4WcLOIsNQ
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
