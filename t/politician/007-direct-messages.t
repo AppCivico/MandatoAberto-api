@@ -262,12 +262,12 @@ db_transaction {
 
         rest_post "/api/politician/$politician_id/direct-message",
             name    => 'POST without attachment url',
-            [
+            params => [
                 name            => 'foobar',
                 type            => 'attachment',
                 attachment_type => 'image',
-                attachment_url  => 'https://mandatoaberto.com.br/images/home-header-bg-dc1c97e8.jpg'
-            ]
+            ],
+            files => { picture => "$Bin/picture.jpg" }
         ;
 
     }
