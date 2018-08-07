@@ -73,9 +73,8 @@ sub list_POST {
 		if ( my $upload = $c->req->upload("picture") ) {
 			$picture = $self->_upload_picture($upload);
             $c->req->params->{attachment_url} = $picture;
-            use DDP; p $c->req->params->{attachment_url};
 		}
-        use DDP; p $c->req->params->{attachment_type};
+
         $c->req->params->{attachment_type} ne 'template' ? () :
 	      die \['attachment_template', 'missing'] unless $c->req->params->{attachment_template};
     }
