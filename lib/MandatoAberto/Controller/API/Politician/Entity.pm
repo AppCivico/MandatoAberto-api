@@ -46,7 +46,29 @@ __PACKAGE__->config(
     object_key         => 'politician_entity',
 
     # AutoResultGET
-    build_row => sub { return { $_[0]->get_columns() } },
+    build_row => sub {
+        my ($r, $self, $c) = @_;
+
+        my $tag;
+        my $entity_name = $r->entity->name;
+        if ( $r->sub_entity_id ) {
+            my $sub_entity_name = $r->sub_entity->name;
+            $tag = "$entity_name: $sub_entity_name";
+        }
+        else {
+            $tag = $entity_name;
+        }
+
+        return {
+            id              => $r->id,
+            recipient_count => $r->recipient_count,
+            entity_id       => $r->entity_id,
+            sub_entity_id   => $r->sub_entity_id,
+            created_at      => $r->created_at,
+            updated_at      => $r->updated_at,
+            tag             => $tag,
+        };
+    },
 );
 
 
