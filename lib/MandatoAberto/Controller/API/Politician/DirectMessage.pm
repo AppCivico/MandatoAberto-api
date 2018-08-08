@@ -141,8 +141,8 @@ sub list_GET {
                 } $c->stash->{collection}->search(
                     { politician_id => $politician_id },
                     {
-                        page => $page,
-                        rows => $results
+                        # page => $page,
+                        # rows => $results
                     }
                 )->all()
             ]
