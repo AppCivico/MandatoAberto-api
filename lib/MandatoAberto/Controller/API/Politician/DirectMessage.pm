@@ -7,6 +7,7 @@ use MandatoAberto::Utils qw/ is_test /;
 use MandatoAberto::Uploader;
 
 use File::MimeInfo;
+use DateTime;
 use Crypt::PRNG qw(random_string);
 
 BEGIN { extends 'CatalystX::Eta::Controller::REST' }
