@@ -406,7 +406,7 @@ sub entity_rs {
 
 	return $self->politician->politician_entities->search(
 		{
-			'me.id' => { 'in' => $self->entities },
+			'me.id' => { 'in' => $self->entities ? $self->entities : 0 },
 		}
 	);
 }
