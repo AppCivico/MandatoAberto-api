@@ -67,6 +67,20 @@ __PACKAGE__->config(
             created_at      => $r->created_at,
             updated_at      => $r->updated_at,
             tag             => $tag,
+            recipients      => [
+                map {
+                    my $recipient = $_;
+
+                    +{
+                        id        => $recipient->id,
+                        email     => $recipient->email,
+                        gender    => $recipient->gender,
+                        picture   => $recipient->picture,
+                        platform  => $recipient->platform,
+                        cellphone => $recipient->cellphone
+                    }
+                } $r->get_recipients->all()
+            ]
         };
     },
 );

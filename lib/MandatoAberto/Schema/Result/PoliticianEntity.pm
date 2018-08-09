@@ -184,5 +184,18 @@ __PACKAGE__->belongs_to(
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
+
+sub get_recipients {
+    my ($self) = @_;
+
+    my $id = $self->id;
+
+    my $cond = \[ <<'SQL_QUERY', $id ];
+ @> ARRAY[?]::integer[]
+SQL_QUERY
+
+    return $self->result_source->schema->resultset('Recipient')->search( { entities => $cond } );
+}
+
 __PACKAGE__->meta->make_immutable;
 1;

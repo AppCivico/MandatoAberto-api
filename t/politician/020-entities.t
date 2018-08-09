@@ -52,7 +52,20 @@ db_transaction {
         ok ( my $politician_entity_res = $res->{politician_entities}->[0], 'politician entity' );
         is ( ref $res->{politician_entities}, 'ARRAY', 'expected array' );
 
-    }
+    };
+
+    rest_get "/api/politician/$politician_id/intent/$politician_entity_id",
+        name  => 'get entity result',
+        stash => 'get_entity_result',
+        list  => 1,
+    ;
+
+    stash_test 'get_entity_result' => sub {
+        my $res = shift;
+
+        ok ( my $recipient_res = $res->{recipients}->[0], 'recipient ok' );
+        is ( $recipient_res->{id}, $recipient->id, 'recipient id' );
+    };
 
 };
 

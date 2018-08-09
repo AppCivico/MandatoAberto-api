@@ -25,6 +25,7 @@ __PACKAGE__->config(
             gender        => $r->get_column('gender'),
             origin_dialog => $r->get_column('origin_dialog'),
             created_at    => $r->get_column('created_at'),
+            platform      => $r->get_column('platform'),
             groups        => [
                 map {
                     {
@@ -35,7 +36,14 @@ __PACKAGE__->config(
                     }
                 } $r->groups_rs->all()
             ],
-            platform => $r->get_column('platform'),
+            intents  => [
+                map {
+                    use DDP; p $_;
+                    {
+                        id => $_->id
+                    }
+                } $r->entity_rs->all()
+            ]
         };
      },
 );

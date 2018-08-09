@@ -401,6 +401,16 @@ sub groups_rs {
     );
 }
 
+sub entity_rs {
+	my ($self) = @_;
+
+	return $self->politician->politician_entities->search(
+		{
+			'me.id' => { 'in' => $self->entities },
+		}
+	);
+}
+
 __PACKAGE__->meta->make_immutable;
 
 1;
