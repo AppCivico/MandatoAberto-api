@@ -45,8 +45,15 @@ db_transaction {
             politician_id  => $politician_id,
             fb_id          => $recipient_fb_id,
             message        => $message,
-            entities       => "[entity->id]",
-            security_token => $security_token
+            security_token => $security_token,
+            entities       => encode_json(
+                {
+                    Saude => [
+                        'vacinacao',
+                        'posto de saude'
+                    ]
+                }
+            )
         ]
     ;
     my $first_issue_id = stash "i1.id";
@@ -130,7 +137,15 @@ db_transaction {
             politician_id  => $politician_id,
             fb_id          => $recipient_fb_id,
             message        => fake_words(1)->(),
-            security_token => $security_token
+            security_token => $security_token,
+            entities       => encode_json(
+                {
+                    Saude => [
+                        'vacinacao',
+                        'posto de saude'
+                    ]
+                }
+            )
         ]
     ;
     my $second_issue_id = stash "i2.id";

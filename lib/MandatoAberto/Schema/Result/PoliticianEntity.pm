@@ -55,12 +55,6 @@ __PACKAGE__->table("politician_entity");
   is_foreign_key: 1
   is_nullable: 0
 
-=head2 entity_id
-
-  data_type: 'integer'
-  is_foreign_key: 1
-  is_nullable: 0
-
 =head2 sub_entity_id
 
   data_type: 'integer'
@@ -97,8 +91,6 @@ __PACKAGE__->add_columns(
   },
   "politician_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
-  "entity_id",
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "sub_entity_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
   "recipient_count",
@@ -127,21 +119,6 @@ __PACKAGE__->add_columns(
 __PACKAGE__->set_primary_key("id");
 
 =head1 RELATIONS
-
-=head2 entity
-
-Type: belongs_to
-
-Related object: L<MandatoAberto::Schema::Result::Entity>
-
-=cut
-
-__PACKAGE__->belongs_to(
-  "entity",
-  "MandatoAberto::Schema::Result::Entity",
-  { id => "entity_id" },
-  { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
-);
 
 =head2 politician
 
@@ -179,8 +156,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-08-07 00:35:27
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:B2htq1XH5n0JH4WcLOIsNQ
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-08-10 10:26:38
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:mEeOszjWxIXC5B863ZyI4g
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

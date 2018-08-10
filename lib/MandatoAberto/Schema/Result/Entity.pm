@@ -117,21 +117,6 @@ __PACKAGE__->add_unique_constraint("entity_name_key", ["name"]);
 
 =head1 RELATIONS
 
-=head2 politician_entities
-
-Type: has_many
-
-Related object: L<MandatoAberto::Schema::Result::PoliticianEntity>
-
-=cut
-
-__PACKAGE__->has_many(
-  "politician_entities",
-  "MandatoAberto::Schema::Result::PoliticianEntity",
-  { "foreign.entity_id" => "self.id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
-
 =head2 sub_entities
 
 Type: has_many
@@ -148,8 +133,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-08-05 22:53:07
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:yNdcthgP29l756LLA/OmRQ
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-08-10 10:26:38
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:lvoQno4JYcupeYb0Du3D3w
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

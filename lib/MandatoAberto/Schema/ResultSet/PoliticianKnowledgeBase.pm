@@ -95,12 +95,16 @@ sub action_specs {
             my @entities;
             for my $issue_id ( @{ $values{issues} } ) {
                 my $issue = $issue_rs->find($issue_id);
-                use DDP;p $issue;
+
                 push @entities, $issue->entities
             }
-            $values{entities} = @entities;
-            use DDP; p $values{entities};
-            my $politician_knowledge_base = $self->create(\%values);
+
+            my $politician_knowledge_base = $self->create(
+                {
+                    %values,
+                    entities => @entities
+                }
+            );
             return $politician_knowledge_base;
         },
     };
