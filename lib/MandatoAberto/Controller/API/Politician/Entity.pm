@@ -27,7 +27,6 @@ __PACKAGE__->config(
         return {
             id              => $r->id,
             recipient_count => $r->recipient_count,
-            entity_id       => $r->entity_id,
             sub_entity_id   => $r->sub_entity_id,
             created_at      => $r->created_at,
             updated_at      => $r->updated_at,
@@ -52,7 +51,6 @@ __PACKAGE__->config(
         return {
             id              => $r->id,
             recipient_count => $r->recipient_count,
-            entity_id       => $r->entity_id,
             sub_entity_id   => $r->sub_entity_id,
             created_at      => $r->created_at,
             updated_at      => $r->updated_at,
