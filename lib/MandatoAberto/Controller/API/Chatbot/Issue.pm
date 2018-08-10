@@ -3,7 +3,7 @@ use common::sense;
 use Moose;
 use namespace::autoclean;
 
-use JSON;
+use Cpanel::JSON::XS;
 
 BEGIN { extends 'CatalystX::Eta::Controller::REST' }
 
