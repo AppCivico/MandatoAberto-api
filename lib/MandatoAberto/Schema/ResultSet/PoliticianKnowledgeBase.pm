@@ -53,27 +53,6 @@ sub verifiers_specs {
                         return 1;
                     }
                 },
-                # entities => {
-                #     required   => 1,
-                #     type       => 'ArrayRef[Int]',
-                #     post_check => sub {
-                #         my $entities = $_[0]->get_value('entities');
-
-                #         for ( my $i = 0; $i < @{ $entities }; $i++ ) {
-                #             my $entity_id = $entities->[$i];
-
-                #             my $count = $self->result_source->schema->resultset('PoliticianEntity')->search(
-                #                 {
-                #                     id            => $entity_id,
-                #                     politician_id => $_[0]->get_value('politician_id'),
-                #                 }
-                #             )->count;
-                #             die \['entities', "could not find entity with id $entity_id"] if $count == 0;
-                #         }
-
-                #         return 1;
-                #     }
-                # }
             }
         ),
     };

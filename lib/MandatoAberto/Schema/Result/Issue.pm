@@ -94,6 +94,12 @@ __PACKAGE__->table("issue");
   data_type: 'integer[]'
   is_nullable: 1
 
+=head2 peding_entity_recognition
+
+  data_type: 'boolean'
+  default_value: false
+  is_nullable: 1
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -125,6 +131,8 @@ __PACKAGE__->add_columns(
   { data_type => "boolean", default_value => \"true", is_nullable => 0 },
   "entities",
   { data_type => "integer[]", is_nullable => 1 },
+  "peding_entity_recognition",
+  { data_type => "boolean", default_value => \"false", is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -172,8 +180,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-08-09 19:50:34
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:ZIEZYOExkXkDX5M12sESQQ
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-08-10 14:46:40
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:IVjp5AHsxRtsMUbKycfRXA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

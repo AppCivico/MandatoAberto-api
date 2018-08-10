@@ -112,6 +112,22 @@ db_transaction {
     my $issue = $schema->resultset("Issue")->find(stash "i1.id");
 
     ok ($issue->open eq '1', 'Issue is created as open');
+
+    rest_post "/api/chatbot/issue",
+        name                => "issue creation",
+        automatic_load_item => 0,
+        stash               => "i2",
+        [
+            politician_id  => $politician_id,
+            fb_id          => $recipient_fb_id,
+            message        => fake_words(1)->(),
+            security_token => $security_token,
+        ],
+    ;
+
+    $issue = $schema->resultset("Issue")->find(stash "i2.id");
+
+    ok ($issue->peding_entity_recognition eq '1', 'Issue needs to be recognized');
 };
 
 done_testing();

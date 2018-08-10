@@ -104,3 +104,4 @@
 0100-add-dm-columns [0099-add-entity-and-related-tables] 2018-08-06T23:40:14Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding attachment related columns to the 'direct_message' table
 0101-add-recipient_count-default [0100-add-dm-columns] 2018-08-09T22:51:03Z Lucas Ansei,,, <lucas@lucas-G750JX> # Adding default value for the 'recipient_count' column on the 'politician_entity' table
 0102-update-entity-structure [0101-add-recipient_count-default] 2018-08-10T13:38:58Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Updating the 'entity' structure
+0103-updating-issue [0102-update-entity-structure] 2018-08-10T17:46:20Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding column and dropping not null on issue

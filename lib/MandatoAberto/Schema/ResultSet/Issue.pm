@@ -35,7 +35,7 @@ sub verifiers_specs {
                     type       => "Str",
                 },
                 entities => {
-                    required   => 1,
+                    required   => 0,
                     type       => 'HashRef'
                 }
             }
@@ -62,36 +62,39 @@ sub action_specs {
                 my $recipient  = $politician->recipients->find($values{recipient_id});
                 my $entity_rs  = $self->result_source->schema->resultset('Entity');
 
-                my $entity_val = $values{entities};
                 my @entities_id;
+                if ( $values{entities} ) {
+					my $entity_val = $values{entities};
 
-                my @entities = keys %{ $entity_val };
-                for my $entity ( @entities ) {
+					my @entities = keys %{$entity_val};
+					for my $entity (@entities) {
 
-                    if ( scalar @{ $entity_val->{$entity} } > 0 ) {
+						if ( scalar @{ $entity_val->{$entity} } > 0 ) {
 
-                        for my $sub_entity ( @{ $entity_val->{$entity} } ) {
+							for my $sub_entity ( @{ $entity_val->{$entity} } ) {
 
-                            my $upsert_sub_entity = $politician->politician_entities->find_or_create(
-                                {
-                                    sub_entity => {
-                                        name   => $sub_entity,
-                                        entity => { name => $entity }
-                                    }
-                                }
-                            );
+								my $upsert_sub_entity = $politician->politician_entities->find_or_create(
+									{
+										sub_entity => {
+											name   => $sub_entity,
+											entity => { name => $entity }
+										}
+									}
+								);
 
-                            $recipient->add_to_politician_entity( $upsert_sub_entity->id );
-                            push @entities_id, $upsert_sub_entity->id;
-                        }
+								$recipient->add_to_politician_entity( $upsert_sub_entity->id );
+								push @entities_id, $upsert_sub_entity->id;
+							}
 
-                    }
+						}
+					}
                 }
 
                 $issue = $self->create(
                     {
                         %values,
-                        entities => \@entities_id
+                        peding_entity_recognition => $values{entities} ? 0 : 1,
+                        ( $values{entities} ? (entities => \@entities_id) : () )
                     }
                 );
             });
