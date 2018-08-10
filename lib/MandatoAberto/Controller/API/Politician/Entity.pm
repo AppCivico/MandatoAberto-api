@@ -19,11 +19,10 @@ __PACKAGE__->config(
     build_list_row => sub {
         my ($r, $self, $c) = @_;
 
-		my $tag;
-		my $entity_name     = $_->sub_entity->entity->name;
-		my $sub_entity_name = $_->sub_entity->name;
-
-		$tag = "$entity_name: $sub_entity_name";
+        my $tag;
+        my $entity_name = $r->sub_entity->entity->name;
+        my $sub_entity_name = $r->sub_entity->name;
+        $tag = "$entity_name: $sub_entity_name";
 
         return {
             id              => $r->id,
@@ -46,9 +45,8 @@ __PACKAGE__->config(
         my ($r, $self, $c) = @_;
 
 		my $tag;
-		my $entity_name     = $_->sub_entity->entity->name;
-		my $sub_entity_name = $_->sub_entity->name;
-
+		my $entity_name = $r->sub_entity->entity->name;
+		my $sub_entity_name = $r->sub_entity->name;
 		$tag = "$entity_name: $sub_entity_name";
 
         return {
