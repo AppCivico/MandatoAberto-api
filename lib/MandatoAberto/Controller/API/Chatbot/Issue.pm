@@ -3,7 +3,8 @@ use common::sense;
 use Moose;
 use namespace::autoclean;
 
-use Cpanel::JSON::XS;
+use JSON;
+use Encode;
 
 BEGIN { extends 'CatalystX::Eta::Controller::REST' }
 
@@ -29,7 +30,8 @@ __PACKAGE__->config(
 		my $entities = $c->req->params->{entities};
         die \['entities', 'missing'] unless $entities;
 
-        $entities = decode_json $entities or die \['entities', 'could not decode json'];
+        $entities = decode_json(Encode::encode_utf8($entities)) or die \['entities', 'could not decode json'];
+
 		$params->{entities} = $entities;
 
         return $params;
