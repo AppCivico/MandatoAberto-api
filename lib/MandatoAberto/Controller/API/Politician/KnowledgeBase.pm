@@ -33,18 +33,6 @@ __PACKAGE__->config(
 
         $params->{issues} = [$issue_id];
 
-        # my $entities;
-        # if ($c->req->params->{entities}) {
-        #     $c->req->params->{entities} =~ s/(\[|\]|(\s))//g;
-
-        #     my @entities = split(',', $c->req->params->{entities});
-
-        #     $entities = \@entities;
-        # } else {
-        #     die \['entities', 'missing'];
-        # }
-        # $params->{entities} = $entities;
-
         return $params;
     },
 
@@ -77,13 +65,9 @@ __PACKAGE__->config(
                 map {
 					my $tag;
 					my $entity_name = $_->entity->name;
-					if ( $_->sub_entity_id ) {
-						my $sub_entity_name = $_->sub_entity->name;
-						$tag = "$entity_name: $sub_entity_name";
-					}
-                    else {
-						$tag = $entity_name;
-					}
+                    my $sub_entity_name = $_->sub_entity->name;
+
+                    $tag = "$entity_name: $sub_entity_name";
 
                     {
                         id  => $_->id,
