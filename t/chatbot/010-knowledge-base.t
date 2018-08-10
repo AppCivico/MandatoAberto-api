@@ -48,7 +48,7 @@ db_transaction {
 
     rest_post "/api/politician/$politician_id/knowledge-base",
         name  => 'creating knowledge base entry without intents (entities)',
-        stash => 'k1.id',
+        stash => 'k1',
         [
             issue_id => $issue_id,
             question => $question,
@@ -56,8 +56,20 @@ db_transaction {
         ]
     ;
 
+    rest_post "/api/politician/$politician_id/knowledge-base",
+        name  => 'creating knowledge base entry without intents (entities)',
+        stash => 'k2.id',
+        [
+            issue_id => $issue_id,
+            question => 'foo',
+            answer   => 'bar',
+        ]
+    ;
+
     rest_get '/api/chatbot/knowledge-base',
-        name => 'get knowledge base',
+        name  => 'get knowledge base',
+        stash => 'get_knowledge_base',
+        list  => 1,
         [
             security_token => $security_token,
             politician_id  => $politician_id,
@@ -65,7 +77,7 @@ db_transaction {
                 {
                     Saude => [
                         'vacinacao',
-                        'posto de saúde'
+                        'posto de saúde',
                     ]
                 }
             )

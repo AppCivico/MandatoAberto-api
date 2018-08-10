@@ -40,7 +40,6 @@ sub list_GET {
             push @entities_names, $sub_entity;
         }
 	}
-    $c->stash->{collection} = $c->stash->{collection}->search( { politician_id => $politician_id } );
 
     return $self->status_ok(
         $c,
@@ -49,18 +48,19 @@ sub list_GET {
                 map {
                     my $k = $_;
 
-                    map {
-                        {
-                            id => $k->id,
-                            answer  => $k->answer,
-                            question => $k->question
-                        }
-
-                    } $k->entity_rs->search(
-                        { 'sub_entity.name' => { '-in' => \@entities_names } },
-                        { prefetch => 'sub_entity' }
-                      )->all()
-                } $c->stash->{collection}->search( { 'me.active' => 1 } )
+                    {
+						id       => $k->id,
+						answer   => $k->answer,
+						question => $k->question
+                    }
+                } $c->stash->{collection}->search(
+                    {
+                        'me.politician_id' => $politician_id,
+                        'me.active'        => 1,
+                        'sub_entity.name'  => { '-in' => \@entities_names },
+                    },
+                    { prefetch => { 'politician' => { 'politician_entities' => 'sub_entity' } } }
+                )->all()
             ]
         }
     );
