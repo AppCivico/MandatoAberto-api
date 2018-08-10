@@ -32,6 +32,7 @@ db_transaction {
             entities       => encode_json(
                 {
                     Saude => [
+                        'posto de saúde',
                         'vacinacao',
                     ]
                 }
@@ -64,6 +65,7 @@ db_transaction {
                 {
                     Saude => [
                         'vacinacao',
+                        'posto de saúde'
                     ]
                 }
             )

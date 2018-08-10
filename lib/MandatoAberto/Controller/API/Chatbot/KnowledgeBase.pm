@@ -40,7 +40,6 @@ sub list_GET {
             push @entities_names, $sub_entity;
         }
 	}
-
     $c->stash->{collection} = $c->stash->{collection}->search( { politician_id => $politician_id } );
 
     return $self->status_ok(
@@ -58,7 +57,7 @@ sub list_GET {
                         }
 
                     } $k->entity_rs->search(
-                        { 'sub_entity.name' => { '-in' => @entities_names } },
+                        { 'sub_entity.name' => { '-in' => \@entities_names } },
                         { prefetch => 'sub_entity' }
                       )->all()
                 } $c->stash->{collection}->search( { 'me.active' => 1 } )
