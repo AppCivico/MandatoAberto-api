@@ -64,7 +64,7 @@ __PACKAGE__->config(
             intents => [
                 map {
 					my $tag;
-					my $entity_name = $_->entity->name;
+					my $entity_name     = $_->sub_entity->entity->name;
                     my $sub_entity_name = $_->sub_entity->name;
 
                     $tag = "$entity_name: $sub_entity_name";
