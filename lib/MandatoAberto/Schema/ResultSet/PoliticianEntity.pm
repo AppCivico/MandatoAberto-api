@@ -7,7 +7,7 @@ extends "DBIx::Class::ResultSet";
 
 sub upsert {
     my ($self, $entity) = @_;
-    use DDP; p 'ta aqui';
+
 	my $upsert_entity = $self->find_or_create(
 		{
 			sub_entity_id => undef,
