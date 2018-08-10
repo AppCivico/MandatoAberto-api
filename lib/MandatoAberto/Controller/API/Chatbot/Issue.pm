@@ -3,7 +3,7 @@ use common::sense;
 use Moose;
 use namespace::autoclean;
 
-use JSON::MaybeXS;
+use JSON;
 
 BEGIN { extends 'CatalystX::Eta::Controller::REST' }
 
@@ -28,10 +28,10 @@ __PACKAGE__->config(
 
 		my $entities = $c->req->params->{entities};
         die \['entities', 'missing'] unless $entities;
-#
-        $entities = decode_json $entities;
+
+        $entities = decode_json $entities or die \['entities', 'could not decode json'];
 		$params->{entities} = $entities;
-#
+
         return $params;
     },
 );
