@@ -411,6 +411,42 @@ sub entity_rs {
 	);
 }
 
+sub add_to_politician_entity {
+    my ($self, $politician_entity_id) = @_;
+
+	my $ret;
+	$self->result_source->schema->txn_do(
+		sub {
+			# Verificando se este recipient já estava na entidade.
+			my $recipients_rs = $self->politician->recipients;
+
+			my $already_in_this_group = $recipients_rs->search(
+				{
+					'-and' => [
+						'me.id' => $self->id,
+						\[ '? =ANY(entities)', $politician_entity_id ],
+					],
+				},
+				{ select => [ \1 ] },
+			)->next;
+
+			return if $already_in_this_group;
+
+			$ret = $self->update( { entities => \[ "array_append(entities, ?)", $politician_entity_id ] } );
+
+			$self->politician->politician_entities->search( { 'me.id' => $politician_entity_id } )->update(
+				{
+					recipient_count => \'recipient_count + 1',
+					updated_at      => \'NOW()',
+				}
+			);
+		}
+	);
+
+	return $ret;
+
+}
+
 __PACKAGE__->meta->make_immutable;
 
 1;

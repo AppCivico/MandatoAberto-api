@@ -34,10 +34,10 @@ sub verifiers_specs {
                     required   => 1,
                     type       => "Str",
                 },
-                #entities => {
-                #    required   => 1,
-                #    type       => 'HashRef'
-                #}
+                entities => {
+                    required   => 1,
+                    type       => 'HashRef'
+                }
             }
         ),
     };
@@ -54,43 +54,57 @@ sub action_specs {
             not defined $values{$_} and delete $values{$_} for keys %values;
 
             my $issue;
-        	$self->result_source->schema->txn_do(sub {
+        	#$self->result_source->schema->txn_do(sub {
                 # Uma issue sempre é criada como aberta
                 $values{open} = 1;
 
                 my $politician = $self->result_source->schema->resultset('Politician')->find( $values{politician_id} );
+                my $recipient  = $politician->recipients->find($values{recipient_id});
+                my $entity_rs  = $self->result_source->schema->resultset('Entity');
 
-                # my $entity_val = $values{entities};
-                # my @entities_id;
-                # #$politician->politician_entities->search(
-                #  #   {  },
-                # #    { prefetch => [ 'entity', 'sub_entity' ] }
-                # #);
+                my $entity_val = $values{entities};
+                my @entities_id;
 
-                # my @entities = keys %{ $entity_val };
-                # for my $entity ( @entities ) {
-                #     my $upsert_entity = $politician->politician_entities->find_or_create(
-                #         {
-                #             sub_entity_id => undef,
-                #             entity        => { name => $entity },
-                #         }
-                #     );
+                use DDP;
+                my @entities = keys %{ $entity_val };
+                for my $entity ( @entities ) {
+                    my $upsert_entity = $politician->politician_entities->find_or_create(
+                        {
+                            sub_entity_id => undef,
+                            entity        => { name => $entity },
+                        },
+                        { key      => 'entity_name_key' },
+                        { prefetch => 'entity' }
+                    );
 
-                #     push @entities_id, $upsert_entity->id;
+                    my $global_entity = $entity_rs->search( { name => $entity } )->next;
+                    p $global_entity;
 
-                #     if ( scalar @{ $entity_val->{$entity} } > 0 ) {
-                #         for my $sub_entity ( @{ $entity_val->{$entity} } ) {
+                    $recipient->add_to_politician_entity( $upsert_entity->id );
 
-                #             my $upsert_sub_entity = $politician->politician_entities->find_or_create( { sub_entity  => { name => ['foo', 'bar'] } } );
-                #             use DDP; p $upsert_sub_entity; p $sub_entity;
-                #             push @entities_id, $upsert_sub_entity->id;
-                #         }
-                #     }
-                # }
+                    push @entities_id, $upsert_entity->id;
+                    $politician->politician_entities;
+                    if ( scalar @{ $entity_val->{$entity} } > 0 ) {
 
-                # use DDP; p \@entities_id;
+                        for my $sub_entity ( @{ $entity_val->{$entity} } ) {
+
+                            use DDP; p $politician->politician_entities;
+                            #my $upsert_sub_entity = $politician->politician_entities->find_or_create(
+                            #    {
+                            #        entity_id  => $global_entity->id,
+                            #        sub_entity => { name => $sub_entity }
+                            #    }
+                            #);
+                            #use DDP; p $politician->politician_entities;
+                            #push @entities_id, $upsert_sub_entity->id;
+                        }
+
+                    }
+                }
+
+                use DDP; p \@entities_id;
                 $issue = $self->create(\%values);
-            });
+            #});
 
             return $issue;
         }

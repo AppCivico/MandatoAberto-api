@@ -102,3 +102,4 @@
 0098-updating-dialog-texts [0097-adding-active-to-dialog] 2018-08-03T18:22:08Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Updating the dialog texts
 0099-add-entity-and-related-tables [0098-updating-dialog-texts] 2018-08-06T03:45:15Z Lucas Ansei,,, <lucas@lucas-G750JX> # Creating the entity and related table
 0100-add-dm-columns [0099-add-entity-and-related-tables] 2018-08-06T23:40:14Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding attachment related columns to the 'direct_message' table
+0101-add-recipient_count-default [0100-add-dm-columns] 2018-08-09T22:51:03Z Lucas Ansei,,, <lucas@lucas-G750JX> # Adding default value for the 'recipient_count' column on the 'politician_entity' table

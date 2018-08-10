@@ -38,7 +38,7 @@ __PACKAGE__->config(
             ],
             intents  => [
                 map {
-                    use DDP; p $_;
+
                     {
                         id => $_->id
                     }

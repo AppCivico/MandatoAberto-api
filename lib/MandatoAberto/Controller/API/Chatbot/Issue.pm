@@ -26,11 +26,11 @@ __PACKAGE__->config(
 
         $params->{recipient_id} = $recipient->id;
 
-		#my $entities = $c->req->params->{entities};
-        #die \['entities', 'missing'] unless $entities;
+		my $entities = $c->req->params->{entities};
+        die \['entities', 'missing'] unless $entities;
 #
-        #$entities = decode_json $entities;
-		#$params->{entities} = $entities;
+        $entities = decode_json $entities;
+		$params->{entities} = $entities;
 #
         return $params;
     },

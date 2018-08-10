@@ -53,27 +53,27 @@ sub verifiers_specs {
                         return 1;
                     }
                 },
-                entities => {
-                    required   => 1,
-                    type       => 'ArrayRef[Int]',
-                    post_check => sub {
-                        my $entities = $_[0]->get_value('entities');
+                # entities => {
+                #     required   => 1,
+                #     type       => 'ArrayRef[Int]',
+                #     post_check => sub {
+                #         my $entities = $_[0]->get_value('entities');
 
-                        for ( my $i = 0; $i < @{ $entities }; $i++ ) {
-                            my $entity_id = $entities->[$i];
+                #         for ( my $i = 0; $i < @{ $entities }; $i++ ) {
+                #             my $entity_id = $entities->[$i];
 
-                            my $count = $self->result_source->schema->resultset('PoliticianEntity')->search(
-                                {
-                                    id            => $entity_id,
-                                    politician_id => $_[0]->get_value('politician_id'),
-                                }
-                            )->count;
-                            die \['entities', "could not find entity with id $entity_id"] if $count == 0;
-                        }
+                #             my $count = $self->result_source->schema->resultset('PoliticianEntity')->search(
+                #                 {
+                #                     id            => $entity_id,
+                #                     politician_id => $_[0]->get_value('politician_id'),
+                #                 }
+                #             )->count;
+                #             die \['entities', "could not find entity with id $entity_id"] if $count == 0;
+                #         }
 
-                        return 1;
-                    }
-                }
+                #         return 1;
+                #     }
+                # }
             }
         ),
     };
@@ -90,6 +90,16 @@ sub action_specs {
             my %values = $r->valid_values;
             not defined $values{$_} and delete $values{$_} for keys %values;
 
+            my $issue_rs = $self->result_source->schema->resultset('Issue');
+
+            my @entities;
+            for my $issue_id ( @{ $values{issues} } ) {
+                my $issue = $issue_rs->find($issue_id);
+                use DDP;p $issue;
+                push @entities, $issue->entities
+            }
+            $values{entities} = @entities;
+            use DDP; p $values{entities};
             my $politician_knowledge_base = $self->create(\%values);
             return $politician_knowledge_base;
         },

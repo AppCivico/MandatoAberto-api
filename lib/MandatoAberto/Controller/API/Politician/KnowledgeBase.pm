@@ -33,17 +33,17 @@ __PACKAGE__->config(
 
         $params->{issues} = [$issue_id];
 
-        my $entities;
-        if ($c->req->params->{entities}) {
-            $c->req->params->{entities} =~ s/(\[|\]|(\s))//g;
+        # my $entities;
+        # if ($c->req->params->{entities}) {
+        #     $c->req->params->{entities} =~ s/(\[|\]|(\s))//g;
 
-            my @entities = split(',', $c->req->params->{entities});
+        #     my @entities = split(',', $c->req->params->{entities});
 
-            $entities = \@entities;
-        } else {
-            die \['entities', 'missing'];
-        }
-        $params->{entities} = $entities;
+        #     $entities = \@entities;
+        # } else {
+        #     die \['entities', 'missing'];
+        # }
+        # $params->{entities} = $entities;
 
         return $params;
     },
@@ -56,7 +56,43 @@ __PACKAGE__->config(
     result_put_for => 'update',
 
     # AutoResultGET
-    build_row => sub { return { $_[0]->get_columns() } },
+    build_row => sub {
+		my ($r, $self, $c) = @_;
+
+        return {
+            id         => $r->id,
+            active     => $r->active,
+            question   => $r->question,
+            answer     => $r->answer,
+            updated_at => $r->updated_at,
+            created_at => $r->created_at,
+            issues     => [
+                map {
+                    {
+                        id => $_->id
+                    }
+                } $r->issue_rs->all()
+            ],
+            intents => [
+                map {
+					my $tag;
+					my $entity_name = $_->entity->name;
+					if ( $_->sub_entity_id ) {
+						my $sub_entity_name = $_->sub_entity->name;
+						$tag = "$entity_name: $sub_entity_name";
+					}
+                    else {
+						$tag = $entity_name;
+					}
+
+                    {
+                        id  => $_->id,
+                        tag => $tag
+                    }
+                } $r->entity_rs->all()
+            ]
+        }
+    },
 );
 
 
