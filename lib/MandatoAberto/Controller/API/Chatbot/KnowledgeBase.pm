@@ -41,26 +41,27 @@ sub list_GET {
         }
 	}
 
-    # $c->stash->{collection} = $c->stash->{collection}->search( { politician_id => $politician_id } );
-    # use DDP; p $c->stash->{collection}->entity_rs;
+    $c->stash->{collection} = $c->stash->{collection}->search( { politician_id => $politician_id } );
 
     return $self->status_ok(
         $c,
         entity => {
             knowledge_base => [
-                # map {
-                #     {
-                #         id       => $_->id,
-                #         question => $_->question,
-                #         answer   => $_->answer
-                #     }
-                # } $c->stash->{collection}->search(
-                #     {
-                #         'me.active'       => 1,
-                #         'sub_entity.name' => { '-in' => {  } }
-                #     },
-                #     { prefetch => 'sub_entity' }
-                # )
+                map {
+                    my $k = $_;
+
+                    map {
+                        {
+                            id => $k->id,
+                            answer  => $k->answer,
+                            question => $k->question
+                        }
+
+                    } $k->entity_rs->search(
+                        { 'sub_entity.name' => { '-in' => @entities_names } },
+                        { prefetch => 'sub_entity' }
+                      )->all()
+                } $c->stash->{collection}->search( { 'me.active' => 1 } )
             ]
         }
     );
