@@ -152,7 +152,20 @@ sub list_GET {
                                     }
                                 } $i->recipient->groups_rs->all()
                             ]
-                        }
+                        },
+                        intents => [
+                            map {
+                                my $entity_name     = $_->sub_entity->entity->name;
+                                my $sub_entity_name = $_->sub_entity->name;
+
+                                my $tag = "$entity_name: $sub_entity_name";
+
+                                {
+                                    id  => $_->id,
+                                    tag => $tag
+                                }
+                            } $i->entity_rs->all()
+                        ]
                     }
                 } $c->stash->{collection}->search(
                     $cond,

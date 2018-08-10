@@ -324,6 +324,16 @@ sub action_specs {
     };
 }
 
+sub entity_rs {
+	my ($self) = @_;
+
+	return $self->politician->politician_entities->search(
+		{
+			'me.id' => { 'in' => $self->entities ? $self->entities : 0 },
+		}
+	);
+}
+
 sub _build__httpcb { WebService::HttpCallback::Async->instance }
 
 __PACKAGE__->meta->make_immutable;
