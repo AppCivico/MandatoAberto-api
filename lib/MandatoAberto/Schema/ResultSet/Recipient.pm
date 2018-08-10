@@ -96,6 +96,10 @@ sub verifiers_specs {
                     required => 0,
                     type     => URI
                 },
+                session => {
+                    required => 0,
+                    type     => 'Str'
+                },
                 page_id => {
                     required   => 1,
                     type       => "Str",
