@@ -67,7 +67,7 @@ sub upload {
             'https://f24-user-media-dev.s3.amazonaws.com/votolegal/picture/CiN/1521813860//tmp/0ky1vQLNr1.jpg');
     }
 
-    my $bucket = $self->_s3->bucket( $self->media_bucket );
+	my $bucket = $self->_s3->bucket( $self->media_bucket );
 
     $bucket->add_key_filename( $args->{path}, $args->{file}, { content_type => $args->{type} } );
 
@@ -76,6 +76,12 @@ sub upload {
     }
 
     my $sign_url = $self->_generate_auth_uri( $args->{path}, 2056022152 );
+
+	print STDERR "====================DEBUG ON UPLOADER====================";
+	print STDERR "\nPath: " . $args->{path};
+	print STDERR "\nfile: " . $args->{file};
+	print STDERR "\nsign_url: " . $sign_url;
+	print STDERR "====================DEBUG ON UPLOADER====================";
 
     return URI->new($sign_url);
 }

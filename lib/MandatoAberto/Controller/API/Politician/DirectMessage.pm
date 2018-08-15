@@ -168,7 +168,12 @@ sub _upload_picture {
 			type => $mimetype,
 		}
 	);
-
+	print STDERR "====================DEBUG====================";
+	print STDERR "\nPath: " . $path;
+	print STDERR "\ntempname: " . $tempname;
+	print STDERR "\type: " . $mimetype;
+    print STDERR "\nURL: "  . $url->as_string;
+	print STDERR "====================DEBUG====================";
 	return $url->as_string;
 }
 
