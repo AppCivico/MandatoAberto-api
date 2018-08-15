@@ -6,6 +6,7 @@ use namespace::autoclean;
 use MandatoAberto::Utils qw/ is_test /;
 use MandatoAberto::Uploader;
 
+use File::Basename;
 use File::MimeInfo;
 use DateTime;
 use Crypt::PRNG qw(random_string);
@@ -16,9 +17,9 @@ with "CatalystX::Eta::Controller::AutoBase";
 with "CatalystX::Eta::Controller::AutoListGET";
 
 has uploader => (
-	is      => "ro",
-	isa     => "MandatoAberto::Uploader",
-	default => sub { MandatoAberto::Uploader->new() },
+    is      => "ro",
+    isa     => "MandatoAberto::Uploader",
+    default => sub { MandatoAberto::Uploader->new() },
 );
 
 __PACKAGE__->config(
@@ -71,13 +72,13 @@ sub list_POST {
         die \['attachment_type', 'missing'] unless $c->req->params->{attachment_type};
         #die \['attachment_url', 'missing'] unless $c->req->params->{attachment_url};
 
-		if ( my $upload = $c->req->upload("picture") ) {
-			$picture = $self->_upload_picture($upload);
+        if ( my $upload = $c->req->upload("picture") ) {
+            $picture = $self->_upload_picture($upload);
             $c->req->params->{attachment_url} = $picture;
-		}
+        }
 
         $c->req->params->{attachment_type} ne 'template' ? () :
-	      die \['attachment_template', 'missing'] unless $c->req->params->{attachment_template};
+          die \['attachment_template', 'missing'] unless $c->req->params->{attachment_template};
     }
 
     my $direct_message = $c->stash->{collection}->execute(
@@ -151,30 +152,25 @@ sub list_GET {
 }
 
 sub _upload_picture {
-	my ( $self, $upload ) = @_;
+    my ( $self, $upload ) = @_;
 
-	my $mimetype = mimetype( $upload->tempname );
-	my $tempname = $upload->tempname;
+    my $mimetype = mimetype( $upload->tempname );
+    my $tempname = $upload->tempname;
 
-	die \[ 'picture', 'empty file' ]    unless $upload->size > 0;
-	die \[ 'picture', 'invalid image' ] unless $mimetype =~ m{^image\/};
+    die \[ 'picture', 'empty file' ]    unless $upload->size > 0;
+    die \[ 'picture', 'invalid image' ] unless $mimetype =~ m{^image\/};
 
-	my $path = "/votolegal/picture/" . random_string(3) . "/"  . DateTime->now->epoch . "$tempname";
+    my $path = "/votolegal/picture/" . random_string(3) . "/"  . DateTime->now->epoch . basename($tempname);
 
-	my $url = $self->uploader->upload(
-		{
-			path => $path,
-			file => $tempname,
-			type => $mimetype,
-		}
-	);
-	print STDERR "====================DEBUG====================";
-	print STDERR "\nPath: " . $path;
-	print STDERR "\ntempname: " . $tempname;
-	print STDERR "\type: " . $mimetype;
-    print STDERR "\nURL: "  . $url->as_string;
-	print STDERR "====================DEBUG====================";
-	return $url->as_string;
+    my $url = $self->uploader->upload(
+        {
+            path => $path,
+            file => $tempname,
+            type => $mimetype,
+        }
+    );
+
+    return $url->as_string;
 }
 
 __PACKAGE__->meta->make_immutable;
