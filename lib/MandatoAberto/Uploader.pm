@@ -69,7 +69,7 @@ sub upload {
 
 	my $bucket = $self->_s3->bucket( $self->media_bucket );
 
-    $bucket->add_key_filename( $args->{path}, $args->{file}, { content_type => $args->{type} } );
+    $bucket->add_key_filename( $args->{path}, $args->{file}, { content_type => $args->{type} } ) or die $self->err . ": " . $self->errstr;
 
     if ( $self->err ) {
         die $self->err . ': ' . $self->errstr;
