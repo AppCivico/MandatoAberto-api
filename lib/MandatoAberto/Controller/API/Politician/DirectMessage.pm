@@ -159,7 +159,7 @@ sub _upload_picture {
 	die \[ 'picture', 'empty file' ]    unless $upload->size > 0;
 	die \[ 'picture', 'invalid image' ] unless $mimetype =~ m{^image\/};
 
-	my $path = join "/", "votolegal", "picture", random_string(3), DateTime->now->epoch, $tempname;
+	my $path = "/votolegal/picture/" . random_string(3) . "/"  . DateTime->now->epoch . "$tempname";
 
 	my $url = $self->uploader->upload(
 		{
