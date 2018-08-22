@@ -14,6 +14,7 @@ use Data::Fake qw(Core Company Dates Internet Names Text);
 use MandatoAberto::Utils;
 
 our $votolegal_response;
+our $dialogflow_response;
 
 # Ugly hack
 sub import {
@@ -245,6 +246,83 @@ sub setup_votolegal_integration_fail {
     $votolegal_response = {
         votolegal_email => 'non existent on voto legal'
     };
+}
+
+sub setup_dialogflow_entities_response {
+    $dialogflow_response = {
+        "entityTypes" => [
+            {
+                "name" => "projects/mandato-aberto/agent/entityTypes/a0a263e9-41e7-4cf9-9d1a-92919d16788d",
+                "displayName" => "Desemprego",
+                "kind" => "KIND_MAP",
+                "autoExpansionMode" => "AUTO_EXPANSION_MODE_DEFAULT",
+                "entities" => [
+                    {
+                        "value" => "desemprego",
+                        "synonyms" => [
+                            "desemprego"
+                        ]
+                    },
+                    {
+                        "value" => "desempregado",
+                        "synonyms" => [
+                            "desempregado"
+                        ]
+                    }
+                ]
+            },
+            {
+                "name" => "projects/mandato-aberto/agent/entityTypes/1d139683-fae2-4c1b-ac1b-1077bd4a66d9",
+                "displayName" => "Tags",
+                "kind" => "KIND_MAP",
+                "autoExpansionMode" => "AUTO_EXPANSION_MODE_DEFAULT",
+                "entities" => [
+                    {
+                        "value" => "recessão",
+                        "synonyms" => [
+                            "recessão"
+                        ]
+                    },
+                    {
+                        "value" => "internet",
+                        "synonyms" => [
+                            "internet",
+                            "web"
+                        ]
+                    },
+                    {
+                        "value" => "eleitor",
+                        "synonyms" => [
+                            "eleitor",
+                            "eleitorado"
+                        ]
+                    }
+                ]
+            },
+            {
+                "name" => "projects/mandato-aberto/agent/entityTypes/21ef68da-e7ff-4b71-be6e-88335cb6132b",
+                "displayName" => "Aborto",
+                "kind" => "KIND_MAP",
+                "autoExpansionMode" => "AUTO_EXPANSION_MODE_DEFAULT",
+                "entities" => [
+                    {
+                        "value" => "aborto",
+                        "synonyms" => [
+                            "aborto",
+                            "abortu",
+                            "abort"
+                        ]
+                    },
+                    {
+                        "value" => "interrupção da gravidez",
+                        "synonyms" => [
+                            "interrupção da gravidez"
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
 }
 
 1;
