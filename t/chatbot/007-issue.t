@@ -13,6 +13,7 @@ db_transaction {
         fb_page_id => 'foo',
     );
     my $politician_id = stash "politician.id";
+    my $politician    = $schema->resultset('Politician')->find($politician_id);
 
     my $recipient_fb_id = 'foobar';
     rest_post "/api/chatbot/recipient",
@@ -88,7 +89,6 @@ db_transaction {
         ]
     ;
 
-    my $entity = $schema->resultset('Entity')->create( { name => 'Saúde' } );
     rest_post "/api/chatbot/issue",
         name                => "issue creation",
         automatic_load_item => 0,
@@ -100,9 +100,8 @@ db_transaction {
             security_token => $security_token,
             entities       => encode_json(
                 {
-                    Saude => [
-                        'vacinacao',
-                        'posto de saude'
+                    Aborto => [
+                        'aborto',
                     ]
                 }
             )
@@ -110,6 +109,16 @@ db_transaction {
     ;
 
     my $issue = $schema->resultset("Issue")->find(stash "i1.id");
+
+    my $entity_rs = $schema->resultset('Entity');
+
+    is ( $entity_rs->count, 1, 'one entity created' );
+    ok ( my $entity = $entity_rs->search( { name => 'Aborto' } )->next, 'entity' );
+
+    is ( $politician->politician_entities->count, 1, 'one politician entity' );
+    ok ( my $politician_entity = $politician->politician_entities->next, 'politician entity' );
+    is ( $politician_entity->entity_id,       $entity->id, 'entity id' );
+    is ( $politician_entity->recipient_count, 1,           'recipient count' );
 
     ok ($issue->open eq '1', 'Issue is created as open');
 

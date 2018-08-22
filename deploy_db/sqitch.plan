@@ -105,3 +105,4 @@
 0101-add-recipient_count-default [0100-add-dm-columns] 2018-08-09T22:51:03Z Lucas Ansei,,, <lucas@lucas-G750JX> # Adding default value for the 'recipient_count' column on the 'politician_entity' table
 0102-update-entity-structure [0101-add-recipient_count-default] 2018-08-10T13:38:58Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Updating the 'entity' structure
 0103-updating-issue [0102-update-entity-structure] 2018-08-10T17:46:20Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding column and dropping not null on issue
+0104-updating-entity-and-issue-structure [0103-updating-issue] 2018-08-22T19:07:02Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Updating 'issues' and 'entity' to centralize on entities instead of sub-entities

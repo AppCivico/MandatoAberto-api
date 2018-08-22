@@ -55,12 +55,6 @@ __PACKAGE__->table("politician_entity");
   is_foreign_key: 1
   is_nullable: 0
 
-=head2 sub_entity_id
-
-  data_type: 'integer'
-  is_foreign_key: 1
-  is_nullable: 1
-
 =head2 recipient_count
 
   data_type: 'integer'
@@ -79,6 +73,12 @@ __PACKAGE__->table("politician_entity");
   is_nullable: 1
   original: {default_value => \"now()"}
 
+=head2 entity_id
+
+  data_type: 'integer'
+  is_foreign_key: 1
+  is_nullable: 1
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -91,8 +91,6 @@ __PACKAGE__->add_columns(
   },
   "politician_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
-  "sub_entity_id",
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
   "recipient_count",
   { data_type => "integer", default_value => 0, is_nullable => 0 },
   "updated_at",
@@ -104,6 +102,8 @@ __PACKAGE__->add_columns(
     is_nullable   => 1,
     original      => { default_value => \"now()" },
   },
+  "entity_id",
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -120,6 +120,26 @@ __PACKAGE__->set_primary_key("id");
 
 =head1 RELATIONS
 
+=head2 entity
+
+Type: belongs_to
+
+Related object: L<MandatoAberto::Schema::Result::Entity>
+
+=cut
+
+__PACKAGE__->belongs_to(
+  "entity",
+  "MandatoAberto::Schema::Result::Entity",
+  { id => "entity_id" },
+  {
+    is_deferrable => 0,
+    join_type     => "LEFT",
+    on_delete     => "NO ACTION",
+    on_update     => "NO ACTION",
+  },
+);
+
 =head2 politician
 
 Type: belongs_to
@@ -135,29 +155,9 @@ __PACKAGE__->belongs_to(
   { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
 );
 
-=head2 sub_entity
 
-Type: belongs_to
-
-Related object: L<MandatoAberto::Schema::Result::SubEntity>
-
-=cut
-
-__PACKAGE__->belongs_to(
-  "sub_entity",
-  "MandatoAberto::Schema::Result::SubEntity",
-  { id => "sub_entity_id" },
-  {
-    is_deferrable => 0,
-    join_type     => "LEFT",
-    on_delete     => "NO ACTION",
-    on_update     => "NO ACTION",
-  },
-);
-
-
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-08-10 10:26:38
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:mEeOszjWxIXC5B863ZyI4g
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-08-22 14:18:21
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:pgVC/2IzLB+Jnj5uChbgDg
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
