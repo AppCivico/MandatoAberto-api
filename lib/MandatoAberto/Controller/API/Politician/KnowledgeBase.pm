@@ -121,7 +121,15 @@ sub list_GET {
                     +{
                         id         => $kb->id,
                         answer     => $kb->answer,
-                        created_at => $kb->created_at
+                        created_at => $kb->created_at,
+                        intents    => [
+                            map {
+                                {
+                                    id  => $_->id,
+                                    tag => $_->name
+                                }
+                            } $kb->entity_rs->all()
+                        ]
                     }
                 } $c->stash->{collection}->search( $cond )->all()
             ]
