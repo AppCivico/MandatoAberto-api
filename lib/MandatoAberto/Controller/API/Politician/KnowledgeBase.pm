@@ -21,10 +21,10 @@ __PACKAGE__->config(
 
         $params->{politician_id} = $c->stash->{politician}->id;
 
-        my $issue_id = $c->req->params->{issue_id};
-        die \['issue_id', 'missing'] unless $issue_id;
+        my $entity_id = $c->req->params->{entity_id};
+        die \['entity_id', 'missing'] unless $entity_id;
 
-        $params->{issues} = [$issue_id];
+        $params->{entities} = [$entity_id];
 
         return $params;
     },
@@ -46,13 +46,6 @@ __PACKAGE__->config(
             answer     => $r->answer,
             updated_at => $r->updated_at,
             created_at => $r->created_at,
-            issues     => [
-                map {
-                    {
-                        id => $_->id
-                    }
-                } $r->issue_rs->all()
-            ],
             intents => [
                 map {
                     {

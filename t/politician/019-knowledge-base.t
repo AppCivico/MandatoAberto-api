@@ -66,16 +66,16 @@ db_transaction {
         name    => 'creating knowledge base entry without answer',
         is_fail => 1,
         code    => 400,
-        [ issue_id => $issue_id ]
+        [ entity_id => $politician_entity_id ]
     ;
 
     rest_post "/api/politician/$politician_id/knowledge-base",
-        name    => 'creating knowledge base entry with invalid issue_id',
+        name    => 'creating knowledge base entry with invalid entity_id',
         is_fail => 1,
         code    => 400,
         [
-            issue_id => 9999999,
-            answer   => $answer,
+            entity_id => 9999999,
+            answer    => $answer,
         ]
     ;
 
@@ -84,8 +84,8 @@ db_transaction {
         automatic_load_item => 0,
         stash               => 'k1',
         [
-            issue_id => $issue_id,
-            answer   => $answer,
+            entity_id => $politician_entity_id,
+            answer    => $answer,
         ]
     ;
     my $kb_id = stash 'k1.id';
@@ -120,8 +120,6 @@ db_transaction {
         is ( $res->{answer},             $answer,               'answer' );
         is ( defined $res->{created_at}, 1,                     'created_at is defined' );
         is ( ref $entities,              'ARRAY',               'entities is an array' );
-        is ( ref $issues,                'ARRAY',               'issues is an array' );
-        is ( $issues->[0]->{id},         $issue_id,             'issue id' );
         is ( $entities->[0]->{id},       $politician_entity_id, 'entity id' );
     };
 
@@ -131,8 +129,8 @@ db_transaction {
             automatic_load_item => 0,
             stash               => 'k2',
             [
-                issue_id => $issue_id,
-                answer   => 'lalalala',
+                entity_id => $politician_entity_id,
+                answer    => 'lalalala',
             ]
         ;
         my $second_kb_id = stash 'k2.id';

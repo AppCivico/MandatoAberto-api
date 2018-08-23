@@ -66,13 +66,18 @@ db_transaction {
     my $question = fake_sentences(1)->();
     my $answer   = fake_sentences(2)->();
 
+    my $politician_entity_rs = $schema->resultset('PoliticianEntity');
+
+	my $first_entity  = $politician_entity_rs->search( { name => 'Saude' } )->next;
+	my $second_entity = $politician_entity_rs->search( { name => 'Aborto' } )->next;
+
     rest_post "/api/politician/$politician_id/knowledge-base",
         name                => 'creating knowledge base entry',
         automatic_load_item => 0,
         stash               => 'k1',
         [
-            issue_id => $issue_id,
-            answer   => 'foobar',
+            entity_id => $first_entity->id,
+            answer    => 'foobar',
         ]
     ;
 
@@ -80,8 +85,8 @@ db_transaction {
         name  => 'creating knowledge base entry',
         stash => 'k2',
         [
-            issue_id => $second_issue_id,
-            answer   => 'posicionamento sobre o aborto',
+            entity_id => $second_entity->id,
+            answer    => 'posicionamento sobre o aborto',
         ]
     ;
 

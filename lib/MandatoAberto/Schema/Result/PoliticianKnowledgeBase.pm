@@ -55,11 +55,6 @@ __PACKAGE__->table("politician_knowledge_base");
   is_foreign_key: 1
   is_nullable: 0
 
-=head2 issues
-
-  data_type: 'integer[]'
-  is_nullable: 0
-
 =head2 entities
 
   data_type: 'integer[]'
@@ -100,8 +95,6 @@ __PACKAGE__->add_columns(
   },
   "politician_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
-  "issues",
-  { data_type => "integer[]", is_nullable => 0 },
   "entities",
   { data_type => "integer[]", is_nullable => 0 },
   "active",
@@ -149,8 +142,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-08-23 10:27:48
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:OJEBuX0p2HJM9y+M4nUU/g
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-08-23 18:00:16
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:CA/v6EtalL/7FBlCTAazHQ
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
