@@ -22,7 +22,7 @@ sub get_entities {
         eval {
             retry {
                 my $url = $ENV{DIALOGFLOW_URL} . '/v2/projects/mandato-aberto/agent/entityTypes';
-                $res = $self->furl->get( $url );
+                $res = $self->furl->get( $url, [] );
 
                 die $res->decoded_content unless $res->is_success;
             }
