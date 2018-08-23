@@ -110,14 +110,8 @@ db_transaction {
 
     my $issue = $schema->resultset("Issue")->find(stash "i1.id");
 
-    my $entity_rs = $schema->resultset('Entity');
-
-    is ( $entity_rs->count, 1, 'one entity created' );
-    ok ( my $entity = $entity_rs->search( { name => 'Aborto' } )->next, 'entity' );
-
     is ( $politician->politician_entities->count, 1, 'one politician entity' );
     ok ( my $politician_entity = $politician->politician_entities->next, 'politician entity' );
-    is ( $politician_entity->entity_id,       $entity->id, 'entity id' );
     is ( $politician_entity->recipient_count, 1,           'recipient count' );
 
     ok ($issue->open eq '1', 'Issue is created as open');

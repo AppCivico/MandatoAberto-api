@@ -16,6 +16,8 @@ has _dialogflow => (
 sub sync_dialogflow {
 	my ($self) = @_;
 
+    my $politician_rs = $self->result_source->schema->resultset('Politician');
+
 	my @entities_names;
 	my $res = $self->_dialogflow->get_entities;
 
@@ -25,11 +27,16 @@ sub sync_dialogflow {
 
 	$self->result_source->schema->txn_do(
 		sub{
-			for my $entity_name (@entities_names) {
-				$self->find_or_create(
-                    { entity => { name => $name } }
-                );
-			}
+            while ( my $politician = $politician_rs->next() ) {
+				for my $entity_name (@entities_names) {
+					$self->find_or_create(
+                        {
+                            politician_id => $politician->id,
+                            name          => $entity_name
+                        }
+                    );
+				}
+            }
 		}
 	);
 
