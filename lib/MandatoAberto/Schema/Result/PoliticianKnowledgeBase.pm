@@ -71,11 +71,6 @@ __PACKAGE__->table("politician_knowledge_base");
   default_value: true
   is_nullable: 0
 
-=head2 question
-
-  data_type: 'text'
-  is_nullable: 0
-
 =head2 answer
 
   data_type: 'text'
@@ -111,8 +106,6 @@ __PACKAGE__->add_columns(
   { data_type => "integer[]", is_nullable => 0 },
   "active",
   { data_type => "boolean", default_value => \"true", is_nullable => 0 },
-  "question",
-  { data_type => "text", is_nullable => 0 },
   "answer",
   { data_type => "text", is_nullable => 0 },
   "updated_at",
@@ -156,8 +149,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-08-03 16:45:13
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:EAaVHn6ASk4B+mfmqtdXaQ
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-08-23 10:27:48
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:OJEBuX0p2HJM9y+M4nUU/g
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
@@ -172,11 +165,6 @@ sub verifiers_specs {
         update => Data::Verifier->new(
             filters => [ qw(trim) ],
             profile => {
-                question => {
-                    required   => 0,
-                    type       => 'Str',
-                    max_lenght => 300
-                },
                 answer => {
                     required   => 0,
                     type       => 'Str',
@@ -200,6 +188,19 @@ sub action_specs {
 
             my %values = $r->valid_values;
             not defined $values{$_} and delete $values{$_} for keys %values;
+
+            my @entities = @{ $self->entities };
+			my $active_knowledge_base_entry = $self->result_source->schema->resultset('PoliticianKnowledgeBase')->search(
+				{
+					politician_id => $self->politician->id,
+					entities      => "{@entities}",
+					active        => 1,
+				}
+			)->next;
+
+            if ( $values{active} == 1 && $active_knowledge_base_entry ) {
+                $active_knowledge_base_entry->update( { active => 0 } );
+            }
 
             $self->update({
                 %values,

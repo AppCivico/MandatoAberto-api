@@ -5,7 +5,6 @@ use namespace::autoclean;
 BEGIN { extends 'CatalystX::Eta::Controller::REST' }
 
 with 'CatalystX::Eta::Controller::AutoBase';
-with 'CatalystX::Eta::Controller::AutoListGET';
 with 'CatalystX::Eta::Controller::AutoListPOST';
 with 'CatalystX::Eta::Controller::AutoObject';
 with 'CatalystX::Eta::Controller::AutoResultPUT';
@@ -15,12 +14,6 @@ __PACKAGE__->config(
     # AutoBase
     result  => 'DB::PoliticianKnowledgeBase',
     no_user => 1,
-
-    # AutoListGET
-    list_key => 'knowledge_base',
-    build_row  => sub {
-        return { $_[0]->get_columns() };
-    },
 
     # AutoListPOST
     prepare_params_for_create => sub {
@@ -50,7 +43,6 @@ __PACKAGE__->config(
         return {
             id         => $r->id,
             active     => $r->active,
-            question   => $r->question,
             answer     => $r->answer,
             updated_at => $r->updated_at,
             created_at => $r->created_at,
@@ -63,15 +55,9 @@ __PACKAGE__->config(
             ],
             intents => [
                 map {
-					my $tag;
-					my $entity_name     = $_->sub_entity->entity->name;
-                    my $sub_entity_name = $_->sub_entity->name;
-
-                    $tag = "$entity_name: $sub_entity_name";
-
                     {
                         id  => $_->id,
-                        tag => $tag
+                        tag => $_->name
                     }
                 } $r->entity_rs->all()
             ]
@@ -103,9 +89,45 @@ sub result_PUT { }
 
 sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }
 
-sub list_GET { }
-
 sub list_POST { }
+
+sub list_GET {
+    my ($self, $c) = @_;
+
+    my $filter = $c->req->params->{filter} || 'active';
+    die \['filter', 'invalid'] unless $filter =~ /(active|inactive)/;
+
+    my $cond;
+    if ( $filter eq 'active' ) {
+        $cond = {
+            politician_id => $c->stash->{politician}->id,
+            active        => 1
+        };
+    }
+    elsif ( $filter eq 'inactive' ) {
+		$cond = {
+			politician_id => $c->stash->{politician}->id,
+			active        => 0
+		};
+    }
+
+    return $self->status_ok(
+        $c,
+        entity => {
+            knowledge_base => [
+                map {
+                    my $kb = $_;
+
+                    +{
+                        id         => $kb->id,
+                        answer     => $kb->answer,
+                        created_at => $kb->created_at
+                    }
+                } $c->stash->{collection}->search( $cond )->all()
+            ]
+        }
+    )
+}
 
 
 __PACKAGE__->meta->make_immutable;

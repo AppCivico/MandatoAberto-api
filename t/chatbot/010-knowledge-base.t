@@ -41,28 +41,47 @@ db_transaction {
     ;
     my $issue_id = stash "i1.id";
 
+    rest_post "/api/chatbot/issue",
+        name                => "issue creation",
+        automatic_load_item => 0,
+        stash               => "i2",
+        [
+            politician_id  => $politician_id,
+            fb_id          => $recipient->fb_id,
+            message        => 'O que você acha sobre o aborto?',
+            security_token => $security_token,
+            entities       => encode_json(
+                {
+                    Aborto => [
+                        'aborto',
+                    ]
+                }
+            )
+        ]
+    ;
+    my $second_issue_id = stash "i2.id";
+
     api_auth_as user_id => $politician_id;
 
     my $question = fake_sentences(1)->();
     my $answer   = fake_sentences(2)->();
 
     rest_post "/api/politician/$politician_id/knowledge-base",
-        name  => 'creating knowledge base entry without intents (entities)',
-        stash => 'k1',
+        name                => 'creating knowledge base entry',
+        automatic_load_item => 0,
+        stash               => 'k1',
         [
             issue_id => $issue_id,
-            question => $question,
-            answer   => $answer,
+            answer   => 'foobar',
         ]
     ;
 
     rest_post "/api/politician/$politician_id/knowledge-base",
-        name  => 'creating knowledge base entry without intents (entities)',
-        stash => 'k2.id',
+        name  => 'creating knowledge base entry',
+        stash => 'k2',
         [
-            issue_id => $issue_id,
-            question => 'foo',
-            answer   => 'bar',
+            issue_id => $second_issue_id,
+            answer   => 'posicionamento sobre o aborto',
         ]
     ;
 
@@ -78,11 +97,18 @@ db_transaction {
                     Saude => [
                         'vacinacao',
                         'posto de saúde',
-                    ]
+                    ],
+                    Aborto => [ 'aborto' ]
                 }
             )
         ]
     ;
+
+    stash_test 'get_knowledge_base' => sub {
+        my $res = shift;
+
+        is ( scalar @{ $res->{knowledge_base} }, 2, '2 rows' )
+    }
 };
 
 done_testing();

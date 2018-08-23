@@ -70,6 +70,12 @@ db_transaction {
         is ( $recipient_res->{id}, $recipient->id, 'recipient id' );
     };
 
+    # Listando entidades sem nenhum posiocionamento
+    rest_get "/api/politician/$politician_id/intent/pending",
+        name  => 'get pending entities',
+        stash => 'get_pending_entities',
+        list  => 1
+    ;
 };
 
 done_testing();

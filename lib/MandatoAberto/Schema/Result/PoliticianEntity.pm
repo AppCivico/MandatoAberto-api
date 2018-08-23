@@ -153,5 +153,25 @@ SQL_QUERY
     return $self->result_source->schema->resultset('Recipient')->search( { entities => $cond } );
 }
 
+sub has_active_knowledge_base {
+    my ($self) = @_;
+
+	my $id = $self->id;
+
+    my $knowledge_base_rs = $self->result_source->schema->resultset('PoliticianKnowledgeBase');
+    $knowledge_base_rs    = $knowledge_base_rs->search( { politician_id => $self->politician->id } );
+
+	my $cond = \[ <<'SQL_QUERY', $id ];
+ @> ARRAY[?]::integer[]
+SQL_QUERY
+
+    return $knowledge_base_rs->search(
+        {
+            entities => $cond,
+            active   => 1
+        }
+    )->count;
+}
+
 __PACKAGE__->meta->make_immutable;
 1;

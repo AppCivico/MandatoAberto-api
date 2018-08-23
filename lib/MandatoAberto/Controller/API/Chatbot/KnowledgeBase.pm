@@ -27,6 +27,13 @@ sub list_GET {
     my $politician_id = $c->req->params->{politician_id};
     die \["politician_id", "missing"] unless $politician_id;
 
+    $c->stash->{collection} = $c->stash->{collection}->search(
+        {
+            'me.politician_id' => $politician_id,
+            'me.active'        => 1
+        }
+    );
+
 	my $entities = $c->req->params->{entities};
 	die \['entities', 'missing'] unless $entities;
 	$entities = decode_json(Encode::encode_utf8($entities)) or die \['entities', 'could not decode json'];
@@ -34,12 +41,10 @@ sub list_GET {
     my @entities_names;
 	my @entities = keys %{$entities};
 	for my $entity (@entities) {
-
-        for my $sub_entity ( @{ $entities->{$entity} } ) {
-
-            push @entities_names, $sub_entity;
-        }
+        push @entities_names, $entity;
 	}
+
+    $c->stash->{collection} = $c->stash->{collection}->get_knowledge_base_by_entity_name(@entities_names);
 
     return $self->status_ok(
         $c,
@@ -47,20 +52,21 @@ sub list_GET {
             knowledge_base => [
                 map {
                     my $k = $_;
+                    +{
+						id     => $k->id,
+						answer => $k->answer,
+                        entities => [
+                            map {
+                                my $e = $_;
 
-                    {
-						id       => $k->id,
-						answer   => $k->answer,
-						question => $k->question
+                                +{
+                                    id  => $e->id,
+                                    tag => $e->name
+                                }
+                            } $k->entity_rs->all()
+                        ]
                     }
-                } $c->stash->{collection}->search(
-                    {
-                        'me.politician_id' => $politician_id,
-                        'me.active'        => 1,
-                        'sub_entity.name'  => { '-in' => \@entities_names },
-                    },
-                    { prefetch => { 'politician' => { 'politician_entities' => 'sub_entity' } } }
-                )->all()
+                } $c->stash->{collection}->all()
             ]
         }
     );

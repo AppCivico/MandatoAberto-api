@@ -155,14 +155,9 @@ sub list_GET {
                         },
                         intents => [
                             map {
-                                my $entity_name     = $_->sub_entity->entity->name;
-                                my $sub_entity_name = $_->sub_entity->name;
-
-                                my $tag = "$entity_name: $sub_entity_name";
-
                                 {
                                     id  => $_->id,
-                                    tag => $tag
+                                    tag => $_->name
                                 }
                             } $i->entity_rs->all()
                         ]
@@ -236,14 +231,9 @@ sub result_GET {
             },
 			intents => [
 				map {
-					my $entity_name     = $_->sub_entity->entity->name;
-					my $sub_entity_name = $_->sub_entity->name;
-
-					my $tag = "$entity_name: $sub_entity_name";
-
 					{
 						id  => $_->id,
-						tag => $tag
+						tag => $_->name
 					}
 				} $issue->entity_rs->all()
 			]

@@ -9,7 +9,7 @@ with "MandatoAberto::Role::Verification";
 with 'MandatoAberto::Role::Verification::TransactionalActions::DBIC';
 
 use Data::Verifier;
-
+use List::Flatten;
 
 sub verifiers_specs {
     my $self = shift;
@@ -21,11 +21,6 @@ sub verifiers_specs {
                 politician_id => {
                     required   => 1,
                     type       => "Int",
-                },
-                question => {
-                    required   => 1,
-                    type       => 'Str',
-                    max_lenght => 300
                 },
                 answer => {
                     required   => 1,
@@ -71,22 +66,60 @@ sub action_specs {
 
             my $issue_rs = $self->result_source->schema->resultset('Issue');
 
-            my @entities;
-            for my $issue_id ( @{ $values{issues} } ) {
-                my $issue = $issue_rs->find($issue_id);
+            my $politician_knowledge_base;
+            $self->result_source->schema->txn_do(sub{
+				my @entities;
+				for my $issue_id ( @{ $values{issues} } ) {
+					my $issue = $issue_rs->find($issue_id);
 
-                push @entities, $issue->entities
-            }
+					push @entities, $issue->entities;
+				}
 
-            my $politician_knowledge_base = $self->create(
-                {
-                    %values,
-                    entities => @entities
+                @entities = flat @entities;
+
+				my $active_knowledge_base_entry = $self->search(
+					{
+						politician_id => $values{politician_id},
+						entities      => "{@entities}",
+						active        => 1,
+					}
+				)->next;
+
+                if ( $active_knowledge_base_entry ) {
+                    $active_knowledge_base_entry->update( { active => 0 } );
                 }
-            );
+
+				$politician_knowledge_base = $self->create(
+					{
+						%values,
+                        entities => "{@entities}"
+					}
+				);
+            });
+
             return $politician_knowledge_base;
         },
     };
+}
+
+sub get_knowledge_base_by_entity_name {
+    my ($self, @entity_names) = @_;
+
+    my $politician_entity_rs = $self->result_source->schema->resultset('PoliticianEntity');
+
+    my @ids = map { $_->id } $politician_entity_rs->search( { name => { -in => \@entity_names } } )->all;
+
+    return $self->search(
+        {
+            '-or' => [
+                map {
+                    my $entity_id = $_;
+                    \[ "? = ANY(entities)", $entity_id ] ## no critic
+                } @ids
+            ],
+        },
+        { prefetch => { 'politician' => 'politician_entities' } }
+    );
 }
 
 1;

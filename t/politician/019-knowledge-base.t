@@ -44,144 +44,200 @@ db_transaction {
             fb_id          => $recipient_fb_id,
             message        => $message,
             security_token => $security_token,
-            entities       => encode_json(
-                {
-                    Saude => [
-                        'vacinacao',
-                        'posto de saude'
-                    ]
-                }
-            )
+            entities       => encode_json( { Saude => [ 'vacinacao' ] } )
         ]
     ;
     my $issue_id = stash "i1.id";
 
-    # $recipient->update( { entities => [$politician_entity_id] } );
+    my $politician_entity_id = $schema->resultset('PoliticianEntity')->search(
+        {
+            politician_id => $politician_id,
+            name          => 'Saude'
+        }
+    )->next->id;
 
     api_auth_as user_id => $politician_id;
 
     my $question = fake_sentences(1)->();
     my $answer   = fake_sentences(2)->();
 
+
     rest_post "/api/politician/$politician_id/knowledge-base",
-        name    => 'creating knowledge base entry without intents (entities)',
-        # is_fail => 1,
-        # code    => 400,
+        name    => 'creating knowledge base entry without answer',
+        is_fail => 1,
+        code    => 400,
+        [ issue_id => $issue_id ]
+    ;
+
+    rest_post "/api/politician/$politician_id/knowledge-base",
+        name    => 'creating knowledge base entry with invalid issue_id',
+        is_fail => 1,
+        code    => 400,
         [
-            issue_id => $issue_id,
-            question => $question,
+            issue_id => 9999999,
             answer   => $answer,
         ]
     ;
 
-    # rest_post "/api/politician/$politician_id/knowledge-base",
-    #     name    => 'creating knowledge base entry without question',
-    #     is_fail => 1,
-    #     code    => 400,
-    #     [
-    #         issue_id => $issue_id,
-    #         answer   => $answer,
-    #     ]
-    # ;
+    rest_post "/api/politician/$politician_id/knowledge-base",
+        name                => 'creating knowledge base entry',
+        automatic_load_item => 0,
+        stash               => 'k1',
+        [
+            issue_id => $issue_id,
+            answer   => $answer,
+        ]
+    ;
+    my $kb_id = stash 'k1.id';
 
+    rest_get "/api/politician/$politician_id/knowledge-base",
+        name  => 'get politician knowledge base entry (list)',
+        stash => 'get_knowledge_base',
+        list  => 1
+    ;
 
-    # rest_post "/api/politician/$politician_id/knowledge-base",
-    #     name    => 'creating knowledge base entry without answer',
-    #     is_fail => 1,
-    #     code    => 400,
-    #     [
-    #         issue_id => $issue_id,
-    #         question => $question,
-    #     ]
-    # ;
+    stash_test 'get_knowledge_base' => sub {
+        my $res = shift;
 
-    # rest_post "/api/politician/$politician_id/knowledge-base",
-    #     name    => 'creating knowledge base entry with invalid issue_id',
-    #     is_fail => 1,
-    #     code    => 400,
-    #     [
-    #         issue_id => 9999999,
-    #         question => $question,
-    #         answer   => $answer,
-    #     ]
-    # ;
+        is ( scalar @{ $res->{knowledge_base} },    1,       'one item in the array' );
+        is ( $res->{knowledge_base}->[0]->{id},     $kb_id,  'kb id' );
+        is ( $res->{knowledge_base}->[0]->{answer}, $answer, 'kb answer' );
+    };
 
-    # rest_post "/api/politician/$politician_id/knowledge-base",
-    #     name    => 'creating knowledge base entry with invalid entity',
-    #     is_fail => 1,
-    #     code    => 400,
-    #     [
-    #         issue_id => 9999999,
-    #         question => $question,
-    #         answer   => $answer,
-    #     ]
-    # ;
+    rest_get "/api/politician/$politician_id/knowledge-base/$kb_id",
+        name  => 'get politician knowledge base entry (result)',
+        stash => 'get_knowledge_base_entry',
+        list  => 1,
+    ;
 
-    # rest_post "/api/politician/$politician_id/knowledge-base",
-    #     name                => 'creating knowledge base entry',
-    #     automatic_load_item => 0,
-    #     stash               => 'k1',
-    #     [
-    #         issue_id => $issue_id,
-    #         question => $question,
-    #         answer   => $answer,
-    #     ]
-    # ;
-    # my $kb_id = stash 'k1.id';
+    stash_test 'get_knowledge_base_entry' => sub {
+        my $res = shift;
 
-    # rest_get "/api/politician/$politician_id/knowledge-base",
-    #     name  => 'get politician knowledge base entry (list)',
-    #     stash => 'get_knowledge_base',
-    #     list  => 1
-    # ;
+        my $issues   = $res->{issues};
+        my $entities = $res->{intents};
 
-    # stash_test 'get_knowledge_base' => sub {
-    #     my $res = shift;
+        is ( $res->{active},             1,                     'is active' );
+        is ( $res->{answer},             $answer,               'answer' );
+        is ( defined $res->{created_at}, 1,                     'created_at is defined' );
+        is ( ref $entities,              'ARRAY',               'entities is an array' );
+        is ( ref $issues,                'ARRAY',               'issues is an array' );
+        is ( $issues->[0]->{id},         $issue_id,             'issue id' );
+        is ( $entities->[0]->{id},       $politician_entity_id, 'entity id' );
+    };
 
-    #     is ( scalar @{ $res->{knowledge_base} }, 1, 'one item in the array' );
-    # };
+    db_transaction{
+        rest_post "/api/politician/$politician_id/knowledge-base",
+            name                => 'creating second knowledge base entry',
+            automatic_load_item => 0,
+            stash               => 'k2',
+            [
+                issue_id => $issue_id,
+                answer   => 'lalalala',
+            ]
+        ;
+        my $second_kb_id = stash 'k2.id';
 
-    # rest_get "/api/politician/$politician_id/knowledge-base/$kb_id",
-    #     name  => 'get politician knowledge base entry (result)',
-    #     stash => 'get_knowledge_base_entry',
-    #     list  => 1,
-    # ;
+		rest_reload_list 'get_knowledge_base_entry';
 
-    # stash_test 'get_knowledge_base_entry' => sub {
-    #     my $res = shift;
+		stash_test 'get_knowledge_base_entry.list' => sub {
+			my $res = shift;
 
-    #     my $issues  = $res->{issues};
-    #     my $entities = $res->{entities};
+			is( $res->{active}, 0, 'not active' );
 
-    #     is ( $res->{active},             1,                     'is active' );
-    #     is ( $res->{question},           $question,             'question' );
-    #     is ( $res->{answer},             $answer,               'answer' );
-    #     is ( defined $res->{created_at}, 1,                     'created_at is defined' );
-    #     is ( ref $entities,              'ARRAY',               'entities is an array' );
-    #     is ( ref $issues,                'ARRAY',               'issues is an array' );
-    #     is ( $issues->[0],               $issue_id,             'issue id' );
-    #     is ( $entities->[0],             $politician_entity_id, 'entity id' );
-    # };
+		};
 
-    # rest_put "/api/politician/$politician_id/knowledge-base/$kb_id",
-    #     name => 'update politician knowledge base entry',
-    #     [
-    #         active   => 0,
-    #         question => 'foobar',
-    #         answer   => 'foobar'
-    #     ]
-    # ;
+        rest_get "/api/politician/$politician_id/knowledge-base/$second_kb_id",
+            name  => 'get second politician knowledge base entry (result)',
+            stash => 'get_knowledge_base_entry_2',
+            list  => 1,
+        ;
 
-    # rest_reload_list 'get_knowledge_base_entry';
+		stash_test 'get_knowledge_base_entry_2' => sub {
+			my $res = shift;
 
-    # stash_test 'get_knowledge_base_entry.list' => sub {
-    #     my $res = shift;
+			is( $res->{active}, 1, 'active' );
+		};
+    };
 
-    #     is ( $res->{active},             0,                    'not active' );
-    #     is ( $res->{question},           'foobar',             'updated question' );
-    #     is ( $res->{answer},             'foobar',             'updated answer' );
-    #     is ( defined $res->{updated_at}, 1,                    'updated_at is defined' );
-    # };
+    rest_put "/api/politician/$politician_id/knowledge-base/$kb_id",
+        name => 'update politician knowledge base entry',
+        [
+            active   => 0,
+            answer   => 'foobar'
+        ]
+    ;
+
+    rest_reload_list 'get_knowledge_base_entry';
+
+    stash_test 'get_knowledge_base_entry.list' => sub {
+        my $res = shift;
+
+        is ( $res->{active},             0,                    'not active' );
+        is ( $res->{answer},             'foobar',             'updated answer' );
+        is ( defined $res->{updated_at}, 1,                    'updated_at is defined' );
+    };
+
+    # Listando entidades sem nenhum posiocionamento
+    rest_get "/api/politician/$politician_id/intent/pending",
+        name  => 'get pending entities',
+        stash => 'get_pending_entities',
+        list  => 1
+    ;
+
+    stash_test 'get_pending_entities' => sub {
+        my $res = shift;
+
+        is ( $res->{politician_entities}->[0]->{id},  $politician_entity_id, 'entity id' );
+        is ( $res->{politician_entities}->[0]->{tag}, 'Saude',               'entity name' );
+    };
+
+    rest_put "/api/politician/$politician_id/knowledge-base/$kb_id",
+        name => 'update politician knowledge base entry',
+        [ active => 1 ]
+    ;
+
+	rest_reload_list 'get_pending_entities';
+
+	stash_test 'get_pending_entities.list' => sub {
+		my $res = shift;
+
+        is ( scalar @{ $res->{politician_entities} }, 0, 'empty array' );
+	};
+
+    rest_post "/api/chatbot/issue",
+        name                => "issue creation",
+        automatic_load_item => 0,
+        stash               => "i2",
+        [
+            politician_id  => $politician_id,
+            fb_id          => $recipient_fb_id,
+            message        => $message,
+            security_token => $security_token,
+            entities       => encode_json( { Aborto => [ 'aborto' ] } )
+        ]
+    ;
+
+	rest_reload_list 'get_pending_entities';
+
+	stash_test 'get_pending_entities.list' => sub {
+		my $res = shift;
+
+		is( scalar @{ $res->{politician_entities} }, 1, 'one row' );
+	};
+
+    rest_put "/api/politician/$politician_id/knowledge-base/$kb_id",
+        name => 'update politician knowledge base entry',
+        [ active => 0 ]
+    ;
+
+    rest_reload_list 'get_pending_entities';
+
+	stash_test 'get_pending_entities.list' => sub {
+		my $res = shift;
+
+		is( scalar @{ $res->{politician_entities} }, 2, 'two rows' );
+	};
+
 };
 
 done_testing();
