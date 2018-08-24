@@ -267,10 +267,19 @@ db_transaction {
                 type            => 'attachment',
                 attachment_type => 'image',
             ],
-            files => { picture => "$Bin/picture.jpg" }
+            files => { file => "$Bin/picture.jpg" }
         ;
 
-    }
+    };
+    rest_post "/api/politician/$politician_id/direct-message",
+            name    => 'POST without attachment url',
+            params => [
+                name            => 'foobar',
+                type            => 'attachment',
+                attachment_type => 'image',
+            ],
+            files => { file => "$Bin/picture.jpg", },
+        ;
 };
 
 done_testing();

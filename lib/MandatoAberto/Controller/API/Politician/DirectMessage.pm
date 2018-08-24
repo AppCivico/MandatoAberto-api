@@ -4,7 +4,8 @@ use Moose;
 use namespace::autoclean;
 
 use MandatoAberto::Utils qw/ is_test /;
-use MandatoAberto::Uploader;
+
+use WebService::Facebook;
 
 use File::Basename;
 use File::MimeInfo;
@@ -16,10 +17,10 @@ BEGIN { extends 'CatalystX::Eta::Controller::REST' }
 with "CatalystX::Eta::Controller::AutoBase";
 with "CatalystX::Eta::Controller::AutoListGET";
 
-has uploader => (
-    is      => "ro",
-    isa     => "MandatoAberto::Uploader",
-    default => sub { MandatoAberto::Uploader->new() },
+has _facebook => (
+	is         => "ro",
+	isa        => "WebService::Facebook",
+	lazy_build => 1,
 );
 
 __PACKAGE__->config(
@@ -67,14 +68,15 @@ sub list_POST {
     # Por agora, por padrão o type será text
     my $type = $c->req->params->{type} || 'text';
 
-    my $picture;
+    my $file;
     if ( $type eq 'attachment' ) {
         die \['attachment_type', 'missing'] unless $c->req->params->{attachment_type};
-        #die \['attachment_url', 'missing'] unless $c->req->params->{attachment_url};
 
-        if ( my $upload = $c->req->upload("picture") ) {
-            $picture = $self->_upload_picture($upload);
-            $c->req->params->{attachment_url} = $picture;
+        my $page_access_token = $c->stash->{politician}->fb_page_access_token;
+
+        if ( my $upload = $c->req->upload("file") ) {
+            $file = $self->_upload_picture($upload, $page_access_token);
+            $c->req->params->{saved_attachment_id} = "$file";
         }
 
         $c->req->params->{attachment_type} ne 'template' ? () :
@@ -92,7 +94,7 @@ sub list_POST {
             type                => $type,
             attachment_type     => $c->req->params->{attachment_type},
             attachment_template => $c->req->params->{attachment_template},
-            attachment_url      => $c->req->params->{attachment_url},
+            saved_attachment_id => $c->req->params->{saved_attachment_id},
         },
     );
 
@@ -152,26 +154,39 @@ sub list_GET {
 }
 
 sub _upload_picture {
-    my ( $self, $upload ) = @_;
+    my ( $self, $upload, $page_access_token ) = @_;
 
     my $mimetype = mimetype( $upload->tempname );
     my $tempname = $upload->tempname;
 
+    my $attachment_type;
+    if ( $mimetype =~ m/^image/ ) {
+        $attachment_type = 'image'
+    }
+    elsif ( $mimetype =~ m/^video/ ) {
+		$attachment_type = 'video'
+    }
+	elsif ( $mimetype =~ m/^audio/ ) {
+		$attachment_type = 'audio'
+    }
+    else {
+        $attachment_type = 'file'
+    }
+
     die \[ 'picture', 'empty file' ]    unless $upload->size > 0;
     die \[ 'picture', 'invalid image' ] unless $mimetype =~ m{^image\/};
 
-    my $path = "votolegal/picture/" . random_string(3) . "/"  . DateTime->now->epoch . basename($tempname);
-
-    my $url = $self->uploader->upload(
-        {
-            path => $path,
-            file => $tempname,
-            type => $mimetype,
-        }
+    my $asset = $self->_facebook->save_asset(
+        access_token    => $page_access_token,
+        attachment_type => $attachment_type,
+        file            => $tempname,
+        mimetype        => $mimetype
     );
 
-    return $url->as_string;
+    return $asset->{attachment_id};
 }
+
+sub _build__facebook { WebService::Facebook->instance }
 
 __PACKAGE__->meta->make_immutable;
 

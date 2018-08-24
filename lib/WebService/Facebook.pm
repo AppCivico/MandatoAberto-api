@@ -3,15 +3,15 @@ use common::sense;
 use MooseX::Singleton;
 
 use JSON::MaybeXS;
-use Furl;
+use LWP::UserAgent;
 use Try::Tiny::Retry;
 use MandatoAberto::Utils;
 
-has 'furl' => ( is => 'rw', lazy => 1, builder => '_build_furl' );
+has 'ua' => ( is => 'rw', lazy => 1, builder => '_build_ua' );
 
-sub _build_furl { Furl->new( { headers => ['Content-Type', 'application/json'] } ) }
+sub _build_ua { LWP::UserAgent->new() }
 
-sub upload_picture {
+sub save_asset {
     my ( $self, %opts ) = @_;
 
     if (is_test()) {
@@ -24,20 +24,23 @@ sub upload_picture {
         eval {
             retry {
                 my $url = $ENV{FB_API_URL} . '/me/message_attachments?access_token' . $opts{access_token};
-                $res = $self->furl->post(
+                $res = $self->ua->post(
                     $url,
-                    [ 'Content-Type', 'form-data' ],
-                    [
-                        encode_json(
-                            message => {
+					Content_Type => 'form-data',
+                    Content => [
+                        message => encode_json(
+                            {
                                 attachment => {
-                                    type    => 'image',
-                                    payload => { is_reusable => \1 }
+                                    type    => $opts{attachment_type},
+                                    payload => {
+                                        is_reusable => \1
+                                    }
                                 }
-                            },
+                            }
                         ),
-                        "filedata=$opts{image_path};type=$opts{image_extension}"
-                    ],
+                        filedata => [ $opts{file} ],
+                        type     => $opts{mimetype}
+                    ]
                 );
 
                 die $res->decoded_content unless $res->is_success;

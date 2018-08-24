@@ -134,6 +134,10 @@ sub verifiers_specs {
 
                         return 1;
                     }
+                },
+                saved_attachment_id => {
+                    required => 0,
+                    type     => 'Str'
                 }
             }
         ),

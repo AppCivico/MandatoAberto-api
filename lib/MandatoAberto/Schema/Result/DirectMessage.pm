@@ -87,12 +87,6 @@ __PACKAGE__->table("direct_message");
   default_value: 'text'
   is_nullable: 0
 
-=head2 attachment_id
-
-  data_type: 'integer'
-  is_foreign_key: 1
-  is_nullable: 1
-
 =head2 quick_replies
 
   data_type: 'json'
@@ -109,6 +103,11 @@ __PACKAGE__->table("direct_message");
   is_nullable: 1
 
 =head2 attachment_url
+
+  data_type: 'text'
+  is_nullable: 1
+
+=head2 saved_attachment_id
 
   data_type: 'text'
   is_nullable: 1
@@ -137,8 +136,6 @@ __PACKAGE__->add_columns(
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "type",
   { data_type => "text", default_value => "text", is_nullable => 0 },
-  "attachment_id",
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
   "quick_replies",
   { data_type => "json", is_nullable => 1 },
   "attachment_type",
@@ -146,6 +143,8 @@ __PACKAGE__->add_columns(
   "attachment_template",
   { data_type => "text", is_nullable => 1 },
   "attachment_url",
+  { data_type => "text", is_nullable => 1 },
+  "saved_attachment_id",
   { data_type => "text", is_nullable => 1 },
 );
 
@@ -162,26 +161,6 @@ __PACKAGE__->add_columns(
 __PACKAGE__->set_primary_key("campaign_id");
 
 =head1 RELATIONS
-
-=head2 attachment
-
-Type: belongs_to
-
-Related object: L<MandatoAberto::Schema::Result::DirectMessageAttachment>
-
-=cut
-
-__PACKAGE__->belongs_to(
-  "attachment",
-  "MandatoAberto::Schema::Result::DirectMessageAttachment",
-  { id => "attachment_id" },
-  {
-    is_deferrable => 0,
-    join_type     => "LEFT",
-    on_delete     => "NO ACTION",
-    on_update     => "NO ACTION",
-  },
-);
 
 =head2 campaign
 
@@ -214,8 +193,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-08-06 20:30:14
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:eO12exqPtTznZHKRXnYVpw
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-08-24 11:23:04
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:jReiD4aQ9l/zgiQPTTLCDQ
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
@@ -249,14 +228,12 @@ sub build_message_object {
     }else {
 
         # É attachment logo pode ser video, imagem ou template
-
         if ( $self->attachment_type ne 'template' ) {
             $ret = {
                 attachment => {
                     type    => $self->attachment_type,
                     payload => {
-                        url         => $self->attachment_url,
-                        is_reusable => \1
+                        attachment_id => $self->saved_attachment_id
                     }
                 },
                 quick_replies   => [
