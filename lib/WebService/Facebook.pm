@@ -44,6 +44,9 @@ sub save_asset {
                 );
 
                 die $res->decoded_content unless $res->is_success;
+
+                my $response = decode_json( $res->decoded_content );
+                die \['file', 'invalid response'] unless $response->{attachment_id};
             }
             retry_if { shift() < 3 } catch { die $_; };
         };
