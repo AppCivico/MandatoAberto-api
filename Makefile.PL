@@ -81,6 +81,7 @@ my %WriteMakefileArgs = (
     "IO::Socket::SSL" => 0,
     "JSON" => 0,
     "JSON::MaybeXS" => 0,
+    "LWP::UserAgent" => 0,
     "List::Flatten" => 0,
     "Log::Log4perl" => 0,
     "MIME::Base64" => 0,
@@ -129,7 +130,7 @@ my %WriteMakefileArgs = (
     "blib" => "1.01",
     "lib" => 0
   },
-  "VERSION" => 20180823,
+  "VERSION" => 20180824,
   "test" => {
     "TESTS" => "t/*.t t/admin/*.t t/chatbot/*.t t/misc/*.t t/politician/*.t t/polls/*.t t/worker/*.t"
   }
@@ -208,6 +209,7 @@ my %FallbackPrereqs = (
   "IPC::Open3" => 0,
   "JSON" => 0,
   "JSON::MaybeXS" => 0,
+  "LWP::UserAgent" => 0,
   "List::Flatten" => 0,
   "Log::Log4perl" => 0,
   "MIME::Base64" => 0,
