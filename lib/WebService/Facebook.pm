@@ -47,6 +47,9 @@ sub save_asset {
 
                 my $response = decode_json( $res->decoded_content );
                 die \['file', 'invalid response'] unless $response->{attachment_id};
+				print STDERR '========================================DEBUG========================================';
+                print STDERR "\n $res->decoded_content \n";
+				print STDERR '========================================DEBUG========================================';
             }
             retry_if { shift() < 3 } catch { die $_; };
         };
