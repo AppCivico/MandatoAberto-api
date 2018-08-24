@@ -174,7 +174,6 @@ sub _upload_picture {
     }
 
     die \[ 'picture', 'empty file' ]    unless $upload->size > 0;
-    die \[ 'picture', 'invalid image' ] unless $mimetype =~ m{^image\/};
 
     my $asset = $self->_facebook->save_asset(
         access_token    => $page_access_token,
