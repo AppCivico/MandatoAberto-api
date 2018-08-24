@@ -23,7 +23,10 @@ sub save_asset {
         my $res;
         eval {
             retry {
-                my $url = $ENV{FB_API_URL} . '/me/message_attachments?access_token' . $opts{access_token};
+                my $url = $ENV{FB_API_URL} . '/me/message_attachments?access_token=' . $opts{access_token};
+				print STDERR '========================================DEBUG========================================';
+				print STDERR "\n $url \n";
+				print STDERR '========================================DEBUG========================================';
                 $res = $self->ua->post(
                     $url,
 					Content_Type => 'form-data',
