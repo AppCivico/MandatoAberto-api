@@ -24,9 +24,7 @@ sub save_asset {
         eval {
             retry {
                 my $url = $ENV{FB_API_URL} . '/me/message_attachments?access_token=' . $opts{access_token};
-				print STDERR '========================================DEBUG========================================';
-				print STDERR "\n $url \n";
-				print STDERR '========================================DEBUG========================================';
+
                 $res = $self->ua->post(
                     $url,
 					Content_Type => 'form-data',
@@ -50,9 +48,7 @@ sub save_asset {
 
                 my $response = decode_json( $res->decoded_content );
                 die \['file', 'invalid response'] unless $response->{attachment_id};
-				print STDERR '========================================DEBUG========================================';
-                print STDERR "\n $res->decoded_content \n";
-				print STDERR '========================================DEBUG========================================';
+
             }
             retry_if { shift() < 3 } catch { die $_; };
         };
