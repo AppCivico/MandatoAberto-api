@@ -53,8 +53,10 @@ sub list_GET {
                 map {
                     my $k = $_;
                     +{
-						id     => $k->id,
-						answer => $k->answer,
+						id                    => $k->id,
+						answer                => $k->answer,
+                        saved_attachment_type => $k->saved_attachment_type,
+                        saved_attachment_id   => $k->saved_attachment_id,
                         entities => [
                             map {
                                 my $e = $_;
