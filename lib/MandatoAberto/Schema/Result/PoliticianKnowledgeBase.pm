@@ -83,6 +83,16 @@ __PACKAGE__->table("politician_knowledge_base");
   is_nullable: 0
   original: {default_value => \"now()"}
 
+=head2 saved_attachment_id
+
+  data_type: 'text'
+  is_nullable: 1
+
+=head2 saved_attachment_type
+
+  data_type: 'text'
+  is_nullable: 1
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -110,6 +120,10 @@ __PACKAGE__->add_columns(
     is_nullable   => 0,
     original      => { default_value => \"now()" },
   },
+  "saved_attachment_id",
+  { data_type => "text", is_nullable => 1 },
+  "saved_attachment_type",
+  { data_type => "text", is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -142,8 +156,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-08-23 18:00:16
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:CA/v6EtalL/7FBlCTAazHQ
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-08-24 17:37:39
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:rAS+z1veqng1WBN4rI8yfw
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

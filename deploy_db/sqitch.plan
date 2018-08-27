@@ -110,3 +110,4 @@
 0106-remove-question [0105-removing-entity-table] 2018-08-23T20:10:19Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Removing question from the politician_knowledge_base table
 0107-removing-issues-from-kb [0106-remove-question] 2018-08-23T21:16:13Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Removing issues column
 0108-add-saved_attachment_id [0107-removing-issues-from-kb] 2018-08-24T14:20:27Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the 'saved_attachment_id' and removing the 'attachment_id' column from the direct message table
+0109-adding-media [0108-add-saved_attachment_id] 2018-08-27T13:14:56Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # adding media on knowledge-base and issues

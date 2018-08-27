@@ -100,6 +100,16 @@ __PACKAGE__->table("issue");
   default_value: false
   is_nullable: 1
 
+=head2 saved_attachment_id
+
+  data_type: 'text'
+  is_nullable: 1
+
+=head2 saved_attachment_type
+
+  data_type: 'text'
+  is_nullable: 1
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -133,6 +143,10 @@ __PACKAGE__->add_columns(
   { data_type => "integer[]", is_nullable => 1 },
   "peding_entity_recognition",
   { data_type => "boolean", default_value => \"false", is_nullable => 1 },
+  "saved_attachment_id",
+  { data_type => "text", is_nullable => 1 },
+  "saved_attachment_type",
+  { data_type => "text", is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -180,8 +194,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-08-10 14:46:40
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:IVjp5AHsxRtsMUbKycfRXA
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-08-24 17:37:39
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:wzHzb4rWSyQ+CymHLUOudA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
@@ -195,7 +209,6 @@ has _httpcb => (
     isa        => "WebService::HttpCallback::Async",
     lazy_build => 1,
 );
-
 
 with 'MandatoAberto::Role::Verification';
 with 'MandatoAberto::Role::Verification::TransactionalActions::DBIC';
@@ -251,6 +264,14 @@ sub verifiers_specs {
 
                         return 1;
                     }
+                },
+                saved_attachment_id => {
+                    required => 0,
+                    type     => 'Str'
+                },
+                saved_attachment_type => {
+                    required => 0,
+                    type     => 'Str'
                 }
             }
         )
@@ -320,6 +341,34 @@ sub action_specs {
                         }
                     }
                 );
+            }
+            elsif ( $values{saved_attachment_id} ) {
+				$self->_httpcb->add(
+					url     => $ENV{FB_API_URL} . '/me/messages?access_token=' . $access_token,
+					method  => "post",
+					headers => 'Content-Type: application/json',
+					body    => encode_json {
+						messaging_type => "UPDATE",
+						recipient => {
+							id => $recipient->fb_id
+						},
+						message => {
+							attachment => {
+								type    => $values{saved_attachment_type},
+								payload => {
+									attachment_id => $values{saved_attachment_id}
+								}
+							},
+							quick_replies => [
+								{
+									content_type => 'text',
+									title        => 'Voltar ao início',
+									payload      => 'mainMenu'
+								}
+							]
+						}
+					}
+				);
             }
 
             $self->_httpcb->wait_for_all_responses();

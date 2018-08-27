@@ -76,7 +76,8 @@ sub list_POST {
 
         if ( my $upload = $c->req->upload("file") ) {
             $file = $self->_upload_picture($upload, $page_access_token);
-            $c->req->params->{saved_attachment_id} = "$file";
+			$c->req->params->{saved_attachment_id} = $file->{attachment_id};
+			$c->req->params->{attachment_type}     = $file->{attachment_type};
         }
 
         $c->req->params->{attachment_type} ne 'template' ? () :
@@ -125,11 +126,12 @@ sub list_GET {
                     my $dm = $_;
 
                     +{
-                        campaign_id => $dm->get_column('campaign_id'),
-                        content     => $dm->get_column('content'),
-                        created_at  => $dm->get_column('created_at'),
-                        name        => $dm->get_column('name'),
-                        count       => $dm->get_column('count'),
+                        campaign_id         => $dm->get_column('campaign_id'),
+                        content             => $dm->get_column('content'),
+                        created_at          => $dm->get_column('created_at'),
+                        name                => $dm->get_column('name'),
+                        saved_attachment_id => $dm->get_column('saved_attachment_id'),
+                        count               => $dm->get_column('count'),
                         groups      => [
                             map {
                                 my $g = $_;
@@ -173,7 +175,7 @@ sub _upload_picture {
         $attachment_type = 'file'
     }
 
-    die \[ 'picture', 'empty file' ]    unless $upload->size > 0;
+    die \[ 'picture', 'empty file' ] unless $upload->size > 0;
 
     my $asset = $self->_facebook->save_asset(
         access_token    => $page_access_token,
@@ -182,7 +184,10 @@ sub _upload_picture {
         mimetype        => $mimetype
     );
 
-    return $asset->{attachment_id};
+    return {
+        attachment_id   => $asset->{attachment_id},
+        attachment_type => $attachment_type
+    };
 }
 
 sub _build__facebook { WebService::Facebook->instance }
