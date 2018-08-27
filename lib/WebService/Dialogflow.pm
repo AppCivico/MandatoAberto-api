@@ -9,7 +9,7 @@ use MandatoAberto::Utils;
 
 has 'furl' => ( is => 'rw', lazy => 1, builder => '_build_furl' );
 
-sub _build_furl { Furl->new( { headers => [ 'Authorization', $ENV{DIALOGFLOW_DEVELOPER_ACCESS_TOKEN} ] } ) }
+sub _build_furl { Furl->new() }
 
 sub get_entities {
     my ( $self, %opts ) = @_;
@@ -24,7 +24,10 @@ sub get_entities {
         eval {
             retry {
                 my $url = $ENV{DIALOGFLOW_URL} . '/v2/projects/mandato-aberto/agent/entityTypes';
-                $res = $self->furl->get( $url );
+                $res = $self->furl->get(
+                    $url,
+                    [ 'Authorization', $ENV{DIALOGFLOW_DEVELOPER_ACCESS_TOKEN} ]
+                );
 
                 die $res->decoded_content unless $res->is_success;
             }
