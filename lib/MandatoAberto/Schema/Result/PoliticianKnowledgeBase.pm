@@ -213,7 +213,7 @@ sub action_specs {
 				}
 			)->next;
 
-            if ( $values{active} == 1 && $active_knowledge_base_entry ) {
+            if ( $values{active} == 1 && $active_knowledge_base_entry && $active_knowledge_base_entry->id != $self->id ) {
                 $active_knowledge_base_entry->update( { active => 0 } );
             }
 
