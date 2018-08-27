@@ -128,6 +128,7 @@ db_transaction {
             name                => 'creating second knowledge base entry',
             automatic_load_item => 0,
             stash               => 'k2',
+            files               => { file => "$Bin/picture.jpg" },
             [
                 entity_id => $politician_entity_id,
                 answer    => 'lalalala',
@@ -141,7 +142,6 @@ db_transaction {
 			my $res = shift;
 
 			is( $res->{active}, 0, 'not active' );
-
 		};
 
         rest_get "/api/politician/$politician_id/knowledge-base/$second_kb_id",

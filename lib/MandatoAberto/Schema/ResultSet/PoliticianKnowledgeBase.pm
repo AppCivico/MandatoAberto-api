@@ -27,6 +27,14 @@ sub verifiers_specs {
                     type       => 'Str',
                     max_lenght => 300
                 },
+                saved_attachment_type => {
+                    required => 0,
+                    type     => 'Str'
+                },
+                saved_attachment_id => {
+                    required => 0,
+                    type     => 'Str'
+                },
                 entities => {
                     required   => 1,
                     type       => 'ArrayRef[Int]',

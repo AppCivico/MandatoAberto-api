@@ -10,6 +10,18 @@ with 'CatalystX::Eta::Controller::AutoObject';
 with 'CatalystX::Eta::Controller::AutoResultPUT';
 with 'CatalystX::Eta::Controller::AutoResultGET';
 
+use WebService::Facebook;
+
+use File::Basename;
+use File::MimeInfo;
+
+
+has _facebook => (
+	is         => "ro",
+	isa        => "WebService::Facebook",
+	lazy_build => 1,
+);
+
 __PACKAGE__->config(
     # AutoBase
     result  => 'DB::PoliticianKnowledgeBase',
@@ -24,6 +36,16 @@ __PACKAGE__->config(
         my $entity_id = $c->req->params->{entity_id};
         die \['entity_id', 'missing'] unless $entity_id;
 
+        my $file;
+		if ( my $upload = $c->req->upload("file") ) {
+            my $page_access_token = $c->stash->{politician}->fb_page_access_token;
+
+			$file = $self->_upload_picture($upload, $page_access_token);
+
+			$params->{saved_attachment_id} = $file->{attachment_id};
+			$params->{attachment_type}     = $file->{attachment_type};
+		}
+
         $params->{entities} = [$entity_id];
 
         return $params;
@@ -35,17 +57,33 @@ __PACKAGE__->config(
 
     # AutoResultPUT.
     result_put_for => 'update',
+    prepare_params_for_update => sub {
+        my ($self, $c, $params) = @_;
+
+        my $file;
+        if ( my $upload = $c->req->upload('file') ) {
+            my $page_access_token = $c->stash->{politician}->fb_page_access_token;
+
+            $file = $self->_upload_picture($upload, $page_access_token);
+			$params->{saved_attachment_id}   = $file->{attachment_id};
+			$params->{saved_attachment_type} = $file->{attachment_type};
+        }
+
+        return $params;
+    },
 
     # AutoResultGET
     build_row => sub {
 		my ($r, $self, $c) = @_;
 
         return {
-            id         => $r->id,
-            active     => $r->active,
-            answer     => $r->answer,
-            updated_at => $r->updated_at,
-            created_at => $r->created_at,
+            id                    => $r->id,
+            active                => $r->active,
+            answer                => $r->answer,
+            updated_at            => $r->updated_at,
+            created_at            => $r->created_at,
+            saved_attachment_id   => $r->saved_attachment_id,
+            saved_attachment_type => $r->saved_attachment_type,
             intents => [
                 map {
                     {
@@ -130,6 +168,42 @@ sub list_GET {
     )
 }
 
+sub _upload_picture {
+    my ( $self, $upload, $page_access_token ) = @_;
+
+    my $mimetype = mimetype( $upload->tempname );
+    my $tempname = $upload->tempname;
+
+    my $attachment_type;
+    if ( $mimetype =~ m/^image/ ) {
+        $attachment_type = 'image'
+    }
+    elsif ( $mimetype =~ m/^video/ ) {
+		$attachment_type = 'video'
+    }
+	elsif ( $mimetype =~ m/^audio/ ) {
+		$attachment_type = 'audio'
+    }
+    else {
+        $attachment_type = 'file'
+    }
+
+    die \[ 'picture', 'empty file' ] unless $upload->size > 0;
+
+    my $asset = $self->_facebook->save_asset(
+        access_token    => $page_access_token,
+        attachment_type => $attachment_type,
+        file            => $tempname,
+        mimetype        => $mimetype
+    );
+
+    return {
+        attachment_id   => $asset->{attachment_id},
+        attachment_type => $attachment_type
+    };
+}
+
+sub _build__facebook { WebService::Facebook->instance }
 
 __PACKAGE__->meta->make_immutable;
 

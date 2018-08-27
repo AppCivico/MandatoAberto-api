@@ -180,8 +180,16 @@ sub verifiers_specs {
                 active => {
                     required => 0,
                     type     => 'Bool'
-                }
-            }
+                },
+                saved_attachment_type => {
+                    required => 0,
+                    type     => 'Str'
+                },
+                saved_attachment_id => {
+                    required => 0,
+                    type     => 'Str'
+                },
+            },
         )
     };
 }
