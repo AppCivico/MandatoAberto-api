@@ -200,9 +200,6 @@ db_transaction {
     rest_put "/api/politician/$politician_id/issue/$third_issue_id",
         name  => "updating issue with media",
         files => { file => "$Bin/picture.jpg", },
-        [
-            reply  => fake_words(1)->()
-        ],
     ;
 
     my $third_issue = $schema->resultset('Issue')->find($third_issue_id);

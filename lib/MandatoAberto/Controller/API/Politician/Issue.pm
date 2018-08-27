@@ -50,6 +50,7 @@ __PACKAGE__->config(
         # Tratando resposta por mídia
         my $file;
         if ( my $upload = $c->req->upload('file') ) {
+            die \['reply', 'must not be send with file'] if $c->req->params->{reply};
             my $page_access_token = $c->stash->{politician}->fb_page_access_token;
 
             $file = $self->_upload_picture($upload, $page_access_token);

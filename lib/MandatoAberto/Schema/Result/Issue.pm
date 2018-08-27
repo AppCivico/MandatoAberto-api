@@ -290,7 +290,7 @@ sub action_specs {
 
             if ($values{ignore} == 1 && $values{reply}) {
                 die \['ignore', 'must not have reply'];
-            } elsif ($values{ignore} == 0 && !$values{reply}) {
+            } elsif ($values{ignore} == 0 && !$values{reply} && !$values{saved_attachment_id}) {
                 die \['reply', 'missing'];
             }
             delete $values{ignore};
@@ -343,6 +343,38 @@ sub action_specs {
                 );
             }
             elsif ( $values{saved_attachment_id} ) {
+                my $message;
+                # Tratando se a mensagem tem mais de 100 chars
+                if (length $self->message > 100) {
+                    $message = substr $self->message, 0, 97;
+                    $message = $message . "...";
+                }
+                else {
+                    $message = $self->message;
+                }
+
+                $self->_httpcb->add(
+                    url     => $ENV{FB_API_URL} . '/me/messages?access_token=' . $access_token,
+                    method  => "post",
+                    headers => 'Content-Type: application/json',
+                    body    => encode_json {
+                        messaging_type => "UPDATE",
+                        recipient => {
+                            id => $recipient->fb_id
+                        },
+                        message => {
+                            text          => "Voc\ê enviou: " . $message,
+                            quick_replies => [
+                                {
+                                    content_type => 'text',
+                                    title        => 'Voltar ao início',
+                                    payload      => 'mainMenu'
+                                }
+                            ]
+                        }
+                    }
+                );
+
 				$self->_httpcb->add(
 					url     => $ENV{FB_API_URL} . '/me/messages?access_token=' . $access_token,
 					method  => "post",
