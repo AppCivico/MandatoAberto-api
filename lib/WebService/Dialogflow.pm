@@ -14,6 +14,8 @@ sub _build_furl { Furl->new( { headers => [ 'Authorization', $ENV{DIALOGFLOW_DEV
 sub get_entities {
     my ( $self, %opts ) = @_;
 
+    die \['DIALOGFLOW_DEVELOPER_ACCESS_TOKEN', 'missing'] unless $ENV{DIALOGFLOW_DEVELOPER_ACCESS_TOKEN};
+
     my $res;
     if (is_test()) {
         $res = $MandatoAberto::Test::Further::dialogflow_response;
