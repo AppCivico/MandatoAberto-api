@@ -123,7 +123,8 @@ sub pending_GET {
                     }
                     else {  }
                 } $c->stash->{collection}->search(
-                    { politician_id => $c->stash->{politician}->id }
+                    { politician_id => $c->stash->{politician}->id },
+                    { order_by => 'name' }
                   )->all
             ]
         }
