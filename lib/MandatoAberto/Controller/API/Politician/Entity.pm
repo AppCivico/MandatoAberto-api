@@ -34,11 +34,32 @@ __PACKAGE__->config(
 
                     +{
                         id        => $recipient->id,
+                        name      => $recipient->name,
+                        gender    => $recipient->gender,
                         email     => $recipient->email,
                         gender    => $recipient->gender,
                         picture   => $recipient->picture,
                         platform  => $recipient->platform,
-                        cellphone => $recipient->cellphone
+                        cellphone => $recipient->cellphone,
+                        groups    => [
+                            map {
+                                {
+                                    id               => $_->id,
+                                    name             => $_->get_column('name'),
+                                    recipients_count => $_->get_column('recipients_count'),
+                                    status           => $_->get_column('status'),
+                                }
+                            } $recipient->groups_rs->all()
+                        ],
+                        intents  => [
+                            map {
+
+                                {
+                                    id  => $_->id,
+                                    tag => $_->name
+                                }
+                            } $recipient->entity_rs->all()
+                        ]
                     }
                 } $r->get_recipients->all()
             ]
@@ -85,7 +106,10 @@ sub list_GET {
 						updated_at      => $e->updated_at,
 						tag             => $e->name,
                     }
-                } $c->stash->{collection}->search( { politician_id => $c->stash->{politician}->id } )->all
+                } $c->stash->{collection}->search(
+                    { politician_id => $c->stash->{politician}->id },
+                    { order_by => 'name' }
+                  )->all
             ]
         }
     )
