@@ -167,8 +167,7 @@ SQL_QUERY
 
     return $knowledge_base_rs->search(
         {
-            entities => $cond,
-            active   => 1
+            entities      => $cond,
         }
     )->count;
 }

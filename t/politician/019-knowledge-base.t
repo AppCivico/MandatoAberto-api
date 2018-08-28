@@ -182,59 +182,59 @@ db_transaction {
         list  => 1
     ;
 
-    stash_test 'get_pending_entities' => sub {
-        my $res = shift;
+    # stash_test 'get_pending_entities' => sub {
+    #     my $res = shift;
 
-        is ( $res->{politician_entities}->[0]->{id},  $politician_entity_id, 'entity id' );
-        is ( $res->{politician_entities}->[0]->{tag}, 'Saude',               'entity name' );
-    };
+    #     is ( $res->{politician_entities}->[0]->{id},  $politician_entity_id, 'entity id' );
+    #     is ( $res->{politician_entities}->[0]->{tag}, 'Saude',               'entity name' );
+    # };
 
-    rest_put "/api/politician/$politician_id/knowledge-base/$kb_id",
-        name => 'update politician knowledge base entry',
-        [ active => 1 ]
-    ;
+    # rest_put "/api/politician/$politician_id/knowledge-base/$kb_id",
+    #     name => 'update politician knowledge base entry',
+    #     [ active => 1 ]
+    # ;
 
-	rest_reload_list 'get_pending_entities';
+	# rest_reload_list 'get_pending_entities';
 
-	stash_test 'get_pending_entities.list' => sub {
-		my $res = shift;
+	# stash_test 'get_pending_entities.list' => sub {
+	# 	my $res = shift;
 
-        is ( scalar @{ $res->{politician_entities} }, 0, 'empty array' );
-	};
+    #     is ( scalar @{ $res->{politician_entities} }, 0, 'empty array' );
+	# };
 
-    rest_post "/api/chatbot/issue",
-        name                => "issue creation",
-        automatic_load_item => 0,
-        stash               => "i2",
-        [
-            politician_id  => $politician_id,
-            fb_id          => $recipient_fb_id,
-            message        => $message,
-            security_token => $security_token,
-            entities       => encode_json( { Aborto => [ 'aborto' ] } )
-        ]
-    ;
+    # rest_post "/api/chatbot/issue",
+    #     name                => "issue creation",
+    #     automatic_load_item => 0,
+    #     stash               => "i2",
+    #     [
+    #         politician_id  => $politician_id,
+    #         fb_id          => $recipient_fb_id,
+    #         message        => $message,
+    #         security_token => $security_token,
+    #         entities       => encode_json( { Aborto => [ 'aborto' ] } )
+    #     ]
+    # ;
 
-	rest_reload_list 'get_pending_entities';
+	# rest_reload_list 'get_pending_entities';
 
-	stash_test 'get_pending_entities.list' => sub {
-		my $res = shift;
+	# stash_test 'get_pending_entities.list' => sub {
+	# 	my $res = shift;
 
-		is( scalar @{ $res->{politician_entities} }, 1, 'one row' );
-	};
+	# 	is( scalar @{ $res->{politician_entities} }, 1, 'one row' );
+	# };
 
-    rest_put "/api/politician/$politician_id/knowledge-base/$kb_id",
-        name => 'update politician knowledge base entry',
-        [ active => 0 ]
-    ;
+    # rest_put "/api/politician/$politician_id/knowledge-base/$kb_id",
+    #     name => 'update politician knowledge base entry',
+    #     [ active => 0 ]
+    # ;
 
-    rest_reload_list 'get_pending_entities';
+    # rest_reload_list 'get_pending_entities';
 
-	stash_test 'get_pending_entities.list' => sub {
-		my $res = shift;
+	# stash_test 'get_pending_entities.list' => sub {
+	# 	my $res = shift;
 
-		is( scalar @{ $res->{politician_entities} }, 2, 'two rows' );
-	};
+	# 	is( scalar @{ $res->{politician_entities} }, 2, 'two rows' );
+	# };
 
 };
 
