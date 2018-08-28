@@ -39,10 +39,10 @@ db_transaction {
             is( ref($res->{recipients}), 'ARRAY', 'recipients=arrayref' );
             is( scalar(@{ $res->{recipients} }), '4', 'count=4' );
 
-            # is_deeply(
-            #     [ sort keys %{ $res->{recipients}->[0] } ],
-            #     [ sort qw/ id name cellphone email origin_dialog created_at gender platform groups / ],
-            # );
+            is_deeply(
+                [ sort keys %{ $res->{recipients}->[0] } ],
+                [ sort qw/ id name cellphone email origin_dialog created_at gender platform groups intents/ ],
+            );
         };
     };
 
@@ -82,10 +82,10 @@ db_transaction {
         stash_test 'get_recipient' => sub {
             my $res = shift;
 
-            # is_deeply(
-            #     [ sort keys %{ $res } ],
-            #     [ sort qw/ cellphone created_at email gender groups id intents name origin_dialog platform / ],
-            # );
+            is_deeply(
+                [ sort keys %{ $res } ],
+                [ sort qw/ cellphone created_at email gender groups id intents name origin_dialog platform / ],
+            );
 
             is( ref($res->{groups}), 'ARRAY' );
             is( $res->{groups}->[0]->{id},   $group_id,    'group_id' );
@@ -103,10 +103,10 @@ db_transaction {
         stash_test 'get_recipient.list' => sub {
             my $res = shift;
 
-            # is_deeply(
-            #     [ sort keys %{ $res } ],
-            #     [ sort qw/ cellphone created_at email gender groups id intents name origin_dialog platform / ],
-            # );
+            is_deeply(
+                [ sort keys %{ $res } ],
+                [ sort qw/ cellphone created_at email gender groups id intents name origin_dialog platform / ],
+            );
 
             is( ref($res->{groups}), 'ARRAY' );
             is( $res->{groups}->[0]->{id},   $group_id,    'group_id' );
