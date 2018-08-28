@@ -99,7 +99,26 @@ sub list_GET {
                         gender        => $_->get_column('gender'),
                         origin_dialog => $_->get_column('origin_dialog'),
                         platform      => $_->get_column('platform'),
-                        created_at    => $_->get_column('created_at')
+                        created_at    => $_->get_column('created_at'),
+                        groups        => [
+                            map {
+                                {
+                                    id               => $_->id,
+                                    name             => $_->get_column('name'),
+                                    recipients_count => $_->get_column('recipients_count'),
+                                    status           => $_->get_column('status'),
+                                }
+                            } $_->groups_rs->all()
+                        ],
+                        intents  => [
+                            map {
+
+                                {
+                                    id  => $_->id,
+                                    tag => $_->name
+                                }
+                            } $_->entity_rs->all()
+                        ]
                     }
                 } $c->stash->{collection}->all()
             ],

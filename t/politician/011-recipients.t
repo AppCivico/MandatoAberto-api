@@ -41,7 +41,7 @@ db_transaction {
 
             is_deeply(
                 [ sort keys %{ $res->{recipients}->[0] } ],
-                [ sort qw/ id name cellphone email origin_dialog created_at gender platform / ],
+                [ sort qw/ id name cellphone email origin_dialog created_at gender platform groups / ],
             );
         };
     };

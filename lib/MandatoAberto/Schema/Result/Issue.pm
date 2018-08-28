@@ -293,6 +293,7 @@ sub action_specs {
             } elsif ($values{ignore} == 0 && !$values{reply} && !$values{saved_attachment_id}) {
                 die \['reply', 'missing'];
             }
+
             delete $values{ignore};
 
             my $access_token = $self->politician->fb_page_access_token;

@@ -87,8 +87,9 @@ __PACKAGE__->config(
             intents => [
                 map {
                     {
-                        id  => $_->id,
-                        tag => $_->name
+                        id               => $_->id,
+                        tag              => $_->name,
+                        recipients_count => $_->recipient_count
                     }
                 } $r->entity_rs->all()
             ]
@@ -156,8 +157,9 @@ sub list_GET {
                         intents    => [
                             map {
                                 {
-                                    id  => $_->id,
-                                    tag => $_->name
+                                    id               => $_->id,
+                                    tag              => $_->name,
+                                    recipients_count => $_->recipient_count
                                 }
                             } $kb->entity_rs->all()
                         ]

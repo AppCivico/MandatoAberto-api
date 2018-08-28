@@ -173,6 +173,8 @@ db_transaction {
         is ( $res->{active},             0,                    'not active' );
         is ( $res->{answer},             'foobar',             'updated answer' );
         is ( defined $res->{updated_at}, 1,                    'updated_at is defined' );
+
+        is ( $res->{intents}->[0]->{recipients_count}, 1, 'one recipient' );
     };
 
     # Listando entidades sem nenhum posiocionamento
