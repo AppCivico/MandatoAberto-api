@@ -5,7 +5,6 @@ use namespace::autoclean;
 BEGIN { extends 'CatalystX::Eta::Controller::REST' }
 
 with 'CatalystX::Eta::Controller::AutoBase';
-with 'CatalystX::Eta::Controller::AutoListGET';
 with 'CatalystX::Eta::Controller::AutoObject';
 with 'CatalystX::Eta::Controller::AutoResultGET';
 

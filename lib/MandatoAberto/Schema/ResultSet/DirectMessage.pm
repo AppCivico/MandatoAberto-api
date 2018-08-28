@@ -52,7 +52,7 @@ sub verifiers_specs {
                     }
                 },
                 name => {
-                    required  => 1,
+                    required  => 0,
                     type      => "Str",
                     max_length => 50,
                 },

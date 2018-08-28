@@ -77,12 +77,13 @@ db_transaction {
         [ name => "foobar" ]
     ;
 
-    rest_post "/api/politician/$politician_id/direct-message",
-        name    => "creating direct message without name",
-        is_fail => 1,
-        code    => 400,
-        [ content => fake_words(2)->() ]
-    ;
+    # Agora é permitido criar dm sem nome
+    # rest_post "/api/politician/$politician_id/direct-message",
+    #     name    => "creating direct message without name",
+    #     is_fail => 1,
+    #     code    => 400,
+    #     [ content => fake_words(2)->() ]
+    # ;
 
     rest_post "/api/politician/$politician_id/direct-message",
         name    => "creating direct message with invalid type of group",
