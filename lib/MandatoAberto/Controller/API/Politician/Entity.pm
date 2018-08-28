@@ -14,21 +14,6 @@ __PACKAGE__->config(
     result  => 'DB::PoliticianEntity',
     no_user => 1,
 
-    # AutoListGET
-    list_key => 'politician_entities',
-    build_list_row => sub {
-        my ($r, $self, $c) = @_;
-
-        return {
-            id              => $r->id,
-            recipient_count => $r->recipient_count,
-            created_at      => $r->created_at,
-            updated_at      => $r->updated_at,
-            tag             => $r->name,
-        };
-    },
-
-
     # AutoObject
     object_verify_type => 'int',
     object_key         => 'politician_entity',
@@ -83,7 +68,28 @@ sub result_GET { }
 
 sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }
 
-sub list_GET { }
+sub list_GET {
+    my ($self, $c) = @_;
+
+    return $self->status_ok(
+        $c,
+        entity => {
+            politician_entities => [
+                map {
+                    my $e = $_;
+
+                    +{
+						id              => $e->id,
+						recipient_count => $e->recipient_count,
+						created_at      => $e->created_at,
+						updated_at      => $e->updated_at,
+						tag             => $e->name,
+                    }
+                } $c->stash->{collection}->search( { politician_id => $c->stash->{politician}->id } )->all
+            ]
+        }
+    )
+}
 
 # Listagem de entities sem nenhum posicionamento (politician_knowledge_base)
 sub pending : Chained('base') : PathPart('pending') : Args(0) : ActionClass('REST') { }
