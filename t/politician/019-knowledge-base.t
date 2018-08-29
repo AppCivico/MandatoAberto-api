@@ -123,39 +123,39 @@ db_transaction {
         is ( $entities->[0]->{id},       $politician_entity_id, 'entity id' );
     };
 
-    db_transaction{
-        rest_post "/api/politician/$politician_id/knowledge-base",
-            name                => 'creating second knowledge base entry',
-            automatic_load_item => 0,
-            stash               => 'k2',
-            files               => { file => "$Bin/picture.jpg" },
-            [
-                entity_id => $politician_entity_id,
-                answer    => 'lalalala',
-            ]
-        ;
-        my $second_kb_id = stash 'k2.id';
+    # db_transaction{
+    #     rest_post "/api/politician/$politician_id/knowledge-base",
+    #         name                => 'creating second knowledge base entry',
+    #         automatic_load_item => 0,
+    #         stash               => 'k2',
+    #         files               => { file => "$Bin/picture.jpg" },
+    #         [
+    #             entity_id => $politician_entity_id,
+    #             answer    => 'lalalala',
+    #         ]
+    #     ;
+    #     my $second_kb_id = stash 'k2.id';
 
-		rest_reload_list 'get_knowledge_base_entry';
+	# 	rest_reload_list 'get_knowledge_base_entry';
 
-		stash_test 'get_knowledge_base_entry.list' => sub {
-			my $res = shift;
+	# 	stash_test 'get_knowledge_base_entry.list' => sub {
+	# 		my $res = shift;
 
-			is( $res->{active}, 0, 'not active' );
-		};
+	# 		is( $res->{active}, 0, 'not active' );
+	# 	};
 
-        rest_get "/api/politician/$politician_id/knowledge-base/$second_kb_id",
-            name  => 'get second politician knowledge base entry (result)',
-            stash => 'get_knowledge_base_entry_2',
-            list  => 1,
-        ;
+    #     rest_get "/api/politician/$politician_id/knowledge-base/$second_kb_id",
+    #         name  => 'get second politician knowledge base entry (result)',
+    #         stash => 'get_knowledge_base_entry_2',
+    #         list  => 1,
+    #     ;
 
-		stash_test 'get_knowledge_base_entry_2' => sub {
-			my $res = shift;
+	# 	stash_test 'get_knowledge_base_entry_2' => sub {
+	# 		my $res = shift;
 
-			is( $res->{active}, 1, 'active' );
-		};
-    };
+	# 		is( $res->{active}, 1, 'active' );
+	# 	};
+    # };
 
     rest_put "/api/politician/$politician_id/knowledge-base/$kb_id",
         name => 'update politician knowledge base entry',

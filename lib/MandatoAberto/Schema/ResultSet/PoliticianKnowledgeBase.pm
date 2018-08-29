@@ -80,12 +80,11 @@ sub action_specs {
 					{
 						politician_id => $values{politician_id},
 						entities      => "{@entities}",
-						active        => 1,
 					}
 				)->next;
 
                 if ( $active_knowledge_base_entry ) {
-                    $active_knowledge_base_entry->update( { active => 0 } );
+                    die \['politician_id', 'politician alredy has knowledge base for that entity']
                 }
 
 				$politician_knowledge_base = $self->create(
