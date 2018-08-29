@@ -20,42 +20,41 @@ sub save_asset {
         };
     }
     else {
-		return {attachment_id => '1857777774821032'};
-        # my $res;
-        # eval {
-        #     retry {
-        #         my $url = $ENV{FB_API_URL} . '/me/message_attachments?access_token=' . $opts{access_token};
+        my $res;
+        eval {
+            retry {
+                my $url = $ENV{FB_API_URL} . '/me/message_attachments?access_token=' . $opts{access_token};
 
-        #         $res = $self->ua->post(
-        #             $url,
-		# 			Content_Type => 'form-data',
-        #             Content => [
-        #                 message => encode_json(
-        #                     {
-        #                         attachment => {
-        #                             type    => $opts{attachment_type},
-        #                             payload => {
-        #                                 is_reusable => \1
-        #                             }
-        #                         }
-        #                     }
-        #                 ),
-        #                 filedata => [ $opts{file} ],
-        #                 type     => $opts{mimetype}
-        #             ]
-        #         );
+                $res = $self->ua->post(
+                    $url,
+					Content_Type => 'form-data',
+                    Content => [
+                        message => encode_json(
+                            {
+                                attachment => {
+                                    type    => $opts{attachment_type},
+                                    payload => {
+                                        is_reusable => \1
+                                    }
+                                }
+                            }
+                        ),
+                        filedata => [ $opts{file} ],
+                        type     => $opts{mimetype}
+                    ]
+                );
 
-        #         die $res->decoded_content unless $res->is_success;
+                die $res->decoded_content unless $res->is_success;
 
-        #         my $response = decode_json( $res->decoded_content );
-        #         die \['file', 'invalid response'] unless $response->{attachment_id};
+                my $response = decode_json( $res->decoded_content );
+                die \['file', 'invalid response'] unless $response->{attachment_id};
 
-        #     }
-        #     retry_if { shift() < 3 } catch { die $_; };
-        # };
-        # die $@ if $@;
+            }
+            retry_if { shift() < 3 } catch { die $_; };
+        };
+        die $@ if $@;
 
-        # return decode_json( $res->decoded_content );
+        return decode_json( $res->decoded_content );
     }
 }
 
