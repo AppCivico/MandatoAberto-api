@@ -256,7 +256,7 @@ sub result_GET {
 				map {
 					{
 						id  => $_->id,
-						tag => $_->name,
+						tag => $_->human_name,
                         has_active_knowledge_base => $_->has_active_knowledge_base
 					}
 				} $issue->entity_rs->all()
