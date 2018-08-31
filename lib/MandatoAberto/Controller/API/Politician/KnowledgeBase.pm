@@ -88,7 +88,7 @@ __PACKAGE__->config(
                 map {
                     {
                         id               => $_->id,
-                        tag              => $_->name,
+                        tag              => $_->human_name,
                         recipients_count => $_->recipient_count
                     }
                 } $r->entity_rs->all()
@@ -158,7 +158,7 @@ sub list_GET {
                             map {
                                 {
                                     id               => $_->id,
-                                    tag              => $_->name,
+                                    tag              => $_->human_name,
                                     recipients_count => $_->recipient_count
                                 }
                             } $kb->entity_rs->all()

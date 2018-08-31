@@ -40,7 +40,7 @@ __PACKAGE__->config(
                 map {
                     {
                         id  => $_->id,
-                        tag => $_->name
+                        tag => $_->human_name
                     }
                 } $r->entity_rs->all()
             ]
@@ -110,7 +110,7 @@ sub list_GET {
 
                                 {
                                     id  => $_->id,
-                                    tag => $_->name
+                                    tag => $_->human_name
                                 }
                             } $_->entity_rs->all()
                         ]

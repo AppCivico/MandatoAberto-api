@@ -26,7 +26,7 @@ __PACKAGE__->config(
             recipient_count => $r->recipient_count,
             created_at      => $r->created_at,
             updated_at      => $r->updated_at,
-            tag             => $r->name,
+            tag             => $r->human_name,
             recipients      => [
                 map {
                     my $recipient = $_;
@@ -55,7 +55,7 @@ __PACKAGE__->config(
 
                                 {
                                     id  => $_->id,
-                                    tag => $_->name
+                                    tag => $_->human_name
                                 }
                             } $recipient->entity_rs->all()
                         ]
@@ -103,7 +103,7 @@ sub list_GET {
 						recipient_count => $e->recipient_count,
 						created_at      => $e->created_at,
 						updated_at      => $e->updated_at,
-						tag             => $e->name,
+						tag             => $e->human_name,
                     }
                 } $c->stash->{collection}->search(
                     { politician_id => $c->stash->{politician}->id },
@@ -133,7 +133,7 @@ sub pending_GET {
                             recipient_count => $e->recipient_count,
                             created_at      => $e->created_at,
                             updated_at      => $e->updated_at,
-                            tag             => $e->name,
+                            tag             => $e->human_name,
                             recipients      => [
                                 map {
                                     my $recipient = $_;
