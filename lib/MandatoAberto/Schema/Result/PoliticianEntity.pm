@@ -242,6 +242,12 @@ sub human_name {
     elsif ( $self->name eq 'Seguranca' ){
         $name = 'Segurança';
     }
+	elsif ( $self->name eq 'Direitos_Humanos' ){
+		$name = 'Direitos Humanos';
+	}
+    elsif ( $self->name eq 'Proposta' ) {
+		$name = 'Proposta';
+    }
 
     return $name;
 }
