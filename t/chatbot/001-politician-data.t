@@ -54,7 +54,10 @@ db_transaction {
 
     rest_put "/api/politician/$politician_id",
         name => "Adding picframe URL",
-        [ picframe_url => 'https://foobar.com.br' ]
+        [
+            picframe_url  => 'https://foobar.com.br',
+            picframe_text => 'foobar'
+        ]
     ;
 
     rest_get "/api/chatbot/politician",
@@ -79,6 +82,9 @@ db_transaction {
         is ($res->{contact}->{email},                            $email,                                                                 'email');
         is ($res->{contact}->{url},                              "https://www.google.com",                                               'url');
         is ($res->{picframe_url},                                'https://foobar.com.br',                                                'picframe_url' );
+        is ($res->{picframe_text},                               'foobar',                                                               'picframe_text' );
+        is ($res->{share}->{url},                                'https://foobar.com.br',                                                'share url' );
+        is ($res->{share}->{text},                               'foobar',                                                               'share text' );
         is ($res->{votolegal_integration}->{votolegal_username}, 'fake_username',                                                        'voto legal username');
         is ($res->{votolegal_integration}->{votolegal_url},      'https://dev.votolegal.com.br/em/fake_username?ref=mandatoaberto#doar', 'voto legal url');
         is ($res->{greeting}, 'Olá, sou assistente digital do(a) ${user.office.name} ${user.name} Seja bem-vindo a nossa Rede! Queremos um Brasil melhor e precisamos de sua ajuda.', 'greeting content');

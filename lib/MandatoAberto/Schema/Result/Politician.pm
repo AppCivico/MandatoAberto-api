@@ -103,7 +103,7 @@ __PACKAGE__->table("politician");
   data_type: 'timestamp'
   is_nullable: 1
 
-=head2 picframe_url
+=head2 share_url
 
   data_type: 'text'
   is_nullable: 1
@@ -125,6 +125,11 @@ __PACKAGE__->table("politician");
   is_nullable: 1
 
 =head2 twitter_token_secret
+
+  data_type: 'text'
+  is_nullable: 1
+
+=head2 share_text
 
   data_type: 'text'
   is_nullable: 1
@@ -154,7 +159,7 @@ __PACKAGE__->add_columns(
   { data_type => "boolean", default_value => \"false", is_nullable => 0 },
   "premium_updated_at",
   { data_type => "timestamp", is_nullable => 1 },
-  "picframe_url",
+  "share_url",
   { data_type => "text", is_nullable => 1 },
   "movement_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
@@ -163,6 +168,8 @@ __PACKAGE__->add_columns(
   "twitter_oauth_token",
   { data_type => "text", is_nullable => 1 },
   "twitter_token_secret",
+  { data_type => "text", is_nullable => 1 },
+  "share_text",
   { data_type => "text", is_nullable => 1 },
 );
 
@@ -516,8 +523,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-08-24 17:28:13
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:reUyj5Xg8yuZbO5T1vNBPQ
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-09-05 17:35:36
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:JUpN/2o1dGAWlM7gjXs0+A
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
@@ -613,7 +620,12 @@ sub verifiers_specs {
                     required => 0,
                     type     => "Bool"
                 },
-                picframe_url => {
+                share_text => {
+                    required   => 0,
+                    type       => 'Str',
+                    max_length => 1000
+                },
+                share_url => {
                     required => 0,
                     type     => URI
                 },

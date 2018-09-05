@@ -54,12 +54,18 @@ sub list_GET {
                 my $p = $_;
 
                 +{
-                    user_id               => $p->get_column('user_id'),
-                    name                  => $p->get_column('name'),
-                    gender                => $p->get_column('gender'),
-                    address_city          => $p->get_column('address_city_id'),
-                    address_state         => $p->get_column('address_state_id'),
-                    picframe_url          => $p->get_column('picframe_url'),
+                    user_id        => $p->get_column('user_id'),
+                    name           => $p->get_column('name'),
+                    gender         => $p->get_column('gender'),
+                    address_city   => $p->get_column('address_city_id'),
+                    address_state  => $p->get_column('address_state_id'),
+					picframe_url   => $p->get_column('share_url'),
+					picframe_text  => $p->get_column('share_text'),
+
+                    share => {
+                        url  => $p->get_column('share_url'),
+                        text => $p->get_column('share_text')
+                    },
 
                     (
                         $platform eq 'fb' ?

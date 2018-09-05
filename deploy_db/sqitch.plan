@@ -112,3 +112,4 @@
 0108-add-saved_attachment_id [0107-removing-issues-from-kb] 2018-08-24T14:20:27Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the 'saved_attachment_id' and removing the 'attachment_id' column from the direct message table
 0109-adding-media [0108-add-saved_attachment_id] 2018-08-27T13:14:56Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # adding media on knowledge-base and issues
 0110-add-boolean-on-question [0109-adding-media] 2018-09-05T14:16:09Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the 'active' boolean on the 'question' table
+0111-updating-picframe [0110-add-boolean-on-question] 2018-09-05T20:35:45Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Updating 'picframe' data to be 'share' data on the 'politician' table

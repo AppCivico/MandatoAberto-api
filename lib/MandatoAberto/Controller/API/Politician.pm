@@ -15,6 +15,14 @@ __PACKAGE__->config(
     # AutoResultPUT.
     object_key     => "politician",
     result_put_for => "update",
+    prepare_params_for_update => sub {
+        my ($self, $c, $params) = @_;
+
+		$params->{share_url}  = $c->req->params->{picframe_url}  if $c->req->params->{picframe_url};
+		$params->{share_text} = $c->req->params->{picframe_text} if $c->req->params->{picframe_text};
+
+        return $params;
+    },
 );
 
 sub root : Chained('/api/logged') : PathPart('') : CaptureArgs(0) {
@@ -63,7 +71,12 @@ sub result_GET {
         $c,
         entity => {
             ( map { $_ => $c->stash->{politician}->$_ } qw/
-                name gender premium picframe_url twitter_id/ ),
+                name gender premium twitter_id/ ),
+
+            picframe_url  => $c->stash->{politician}->share_url,
+            picframe_text => $c->stash->{politician}->share_text,
+            share_url     => $c->stash->{politician}->share_url,
+            share_text    => $c->stash->{politician}->share_text,
 
             fb_page_id => $facebook_active_page ? $c->stash->{politician}->fb_page_id : undef,
 
