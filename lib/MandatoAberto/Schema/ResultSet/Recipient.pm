@@ -146,7 +146,15 @@ sub action_specs {
                 return $citizen;
             } else {
                 if ( $values{poll_notification_sent} && $values{poll_notification_sent} == 1 ) {
-                    $existing_citizen->poll_notification->update_or_create( { sent => 1 } );
+                    my $poll = $existing_citizen->politician->get_activated_poll;
+                    die \['politician_id', 'no active poll'] unless $poll;
+
+                    $existing_citizen->poll_notification->update_or_create(
+                        {
+                            sent    => 1,
+                            poll_id => $poll->id
+                        }
+                    );
                 }
 
                 my $updated_citizen = $existing_citizen->update(\%values);

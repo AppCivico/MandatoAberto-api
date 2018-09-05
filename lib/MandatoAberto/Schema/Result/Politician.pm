@@ -1045,6 +1045,12 @@ sub deactivate_chatbot {
     );
 }
 
+sub get_activated_poll {
+    my ($self) = @_;
+
+    return $self->polls->search( { status_id => 1 } )->next;
+}
+
 __PACKAGE__->meta->make_immutable;
 1;
 
