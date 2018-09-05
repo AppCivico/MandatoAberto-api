@@ -270,6 +270,21 @@ __PACKAGE__->belongs_to(
   { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
 );
 
+=head2 poll_notification
+
+Type: might_have
+
+Related object: L<MandatoAberto::Schema::Result::PollNotification>
+
+=cut
+
+__PACKAGE__->might_have(
+  "poll_notification",
+  "MandatoAberto::Schema::Result::PollNotification",
+  { "foreign.recipient_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 poll_results
 
 Type: has_many
@@ -301,8 +316,8 @@ __PACKAGE__->might_have(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-08-03 16:00:29
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:OvGBX/3LDQrMlfH0fZn3KA
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-09-05 18:08:45
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:NzH/enaq3rXF1R3H6ujb5A
 
 __PACKAGE__->load_components("InflateColumn::Serializer", "Core");
 __PACKAGE__->remove_column('groups');
