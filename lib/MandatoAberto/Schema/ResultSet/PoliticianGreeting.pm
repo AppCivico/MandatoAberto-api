@@ -24,12 +24,12 @@ sub verifiers_specs {
                 on_facebook => {
                     required   => 1,
                     type       => 'Str',
-                    max_lenght => 300
+                    max_lenght => 1000
                 },
                 on_website => {
                     required   => 1,
                     type       => 'Str',
-                    max_lenght => 300
+                    max_lenght => 1000
                 },
             }
         ),

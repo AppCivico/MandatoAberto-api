@@ -49,6 +49,8 @@ sub list_GET {
 
     my $politician_id = $c->user->id;
 
+    my $show_question_name = $ENV{SHOW_QUESTION_NAME};
+
     return $self->status_ok(
         $c,
         entity => {
@@ -67,7 +69,7 @@ sub list_GET {
                                 +{
                                     id            => $q->get_column('id'),
                                     name          => $q->get_column('name'),
-                                    content       => $q->get_column('content'),
+                                    content       => $show_question_name ? $q->get_column('content') . ' - ' . $q->get_column('name') : $q->get_column('content'),
                                     citizen_input => $q->get_column('citizen_input'),
 
                                     answer =>
