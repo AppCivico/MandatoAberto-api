@@ -88,7 +88,7 @@ sub list_GET {
                                           )->all()
 
                                 }
-                            } $d->questions->search( { active => 1 } )->all()
+                            } $d->questions->search( { 'me.active' => 1 } )->all()
                         ],
                     }
                 } $c->stash->{collection}->search( { active => 1 }, { prefetch => [ 'questions', { 'questions' => 'answers' } ] })->all()
