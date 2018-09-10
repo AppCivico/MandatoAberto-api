@@ -70,7 +70,7 @@ sub exec_item {
 
     my $recipient = $item->recipient;
 
-    $self->logger->info("Enviando enquete para recipient: $recipient->id") if $self->logger;
+    $self->logger->info("Enviando enquete para recipient") if $self->logger;
 
     my %opts = (
         access_token => $item->poll->politician->fb_page_access_token,
@@ -84,13 +84,6 @@ sub exec_item {
     }
 
     return 0;
-}
-
-
-sub _build_messager {
-	my $self = shift;
-
-	return MandatoAberto::Messager->new( fb_api_url => $ENV{FB_API_URL} );
 }
 
 __PACKAGE__->meta->make_immutable;
