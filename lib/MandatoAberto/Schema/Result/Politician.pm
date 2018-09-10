@@ -818,6 +818,16 @@ sub set_get_started_button_and_persistent_menu {
                             title   => "Ir para o início",
                             type    => 'postback',
                             payload => 'greetings'
+                        },
+						{
+							title   => "Desativar notificações",
+							type    => 'postback',
+							payload => 'add_blacklist'
+						},
+                        {
+                            title   => "Ativar notificações",
+                            type    => 'postback',
+                            payload => 'remove_blacklist'
                         }
                     ]
                 }
