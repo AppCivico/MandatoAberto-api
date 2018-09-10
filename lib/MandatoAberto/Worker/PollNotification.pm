@@ -69,8 +69,6 @@ sub exec_item {
 	my ($self, $item) = @_;
 
     my $recipient = $item->recipient;
-    my $question  = $item->poll->question->content;
-    my @options   = $item->poll->options;
 
     $self->logger->info("Enviando enquete para recipient: $recipient->id") if $self->logger;
 
