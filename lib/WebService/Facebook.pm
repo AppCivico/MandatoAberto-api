@@ -71,10 +71,10 @@ sub send_message {
 		eval {
 			retry {
 				my $url = $ENV{FB_API_URL} . '/me/messages?access_token=' . $opts{access_token};
-
+                print STDERR $opts{content};
 				$res = $self->ua->post(
 					$url,
-					Content_Type => 'form-data',
+					Content_Type => 'application/json',
 					Content      => [$opts{content}]
 				);
 
