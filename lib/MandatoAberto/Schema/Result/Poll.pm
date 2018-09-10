@@ -311,7 +311,7 @@ sub build_content_object {
 	my $first_option  = $options[0];
 	my $second_option = $options[1];
 
-    my $res = encode_json ({
+    my $res = {
         messaging_type => "UPDATE",
         recipient      => {
             id => $recipient->id
@@ -331,7 +331,7 @@ sub build_content_object {
 				},
 			]
         }
-    });
+    };
 
     return $res;
 }
