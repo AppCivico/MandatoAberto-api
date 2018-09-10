@@ -72,6 +72,8 @@ sub exec_item {
     my $question  = $item->poll->question->content;
     my @options   = $item->poll->options;
 
+    $self->logger->info("Enviando enquete para recipient: $recipient->id") if $self->logger;
+
     my %opts = (
         access_token => $item->poll->politician->fb_page_access_token,
         content      => $item->poll->build_content_object( $recipient )
@@ -79,6 +81,7 @@ sub exec_item {
 
     if ( $self->facebook->send_message(%opts) ) {
         $item->delete();
+        $self->logger->info("Enviado com sucesso") if $self->logger;
         return 1;
     }
 
