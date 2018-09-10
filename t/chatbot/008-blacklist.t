@@ -77,6 +77,7 @@ db_transaction {
     rest_post "/api/chatbot/blacklist",
         name                => "sucessful blacklist entry",
         stash               => "b1",
+        code                => 200,
         automatic_load_item => 0,
         [
             fb_id          => $recipient_fb_id,
@@ -87,6 +88,7 @@ db_transaction {
 
     rest_post "/api/chatbot/blacklist",
         name                => "duplicate blacklist entry",
+        code                => 200,
         automatic_load_item => 0,
         [
             fb_id          => $recipient_fb_id,
@@ -94,34 +96,6 @@ db_transaction {
         ]
     ;
 
-    is (
-        $schema->resultset("BlacklistFacebookMessenger")->search(undef)->count,
-        1,
-        'only one entry'
-    );
-
-    rest_reload_list "get_blacklist";
-
-    stash_test "get_blacklist.list" => sub {
-        my $res = shift;
-
-        is ($res->{opt_in}, 0, 'recipient opted out');
-        is ($res->{blacklist_entry_id}, $blacklist_entry_id, 'blacklist_entry_id');
-    };
-
-    rest_delete "/api/chatbot/blacklist/$blacklist_entry_id",
-        name => "deleting blacklist entry",
-        [ security_token => $security_token ]
-    ;
-
-    rest_reload_list "get_blacklist";
-
-    stash_test "get_blacklist.list" => sub {
-        my $res = shift;
-
-        is ($res->{opt_in}, 1, 'recipient opt_in once again');
-        is ($res->{blacklist_entry_id}, undef, 'blacklist_entry_id');
-    };
 };
 
 done_testing();

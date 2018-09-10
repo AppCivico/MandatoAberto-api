@@ -7,10 +7,19 @@ use MandatoAberto::Test::Further;
 my $schema = MandatoAberto->model("DB");
 
 db_transaction {
-    create_politician();
+    create_politician(
+        fb_page_id => 'foobar'
+    );
     my $politician_id = stash "politician.id";
+    my $politician    = $schema->resultset('Politician')->find($politician_id);
+
+    create_recipient(
+        politician_id => $politician_id
+    );
 
     api_auth_as user_id => $politician_id;
+
+    $politician->poll_self_propagation_config->update( { active => 1 } );
 
     # Mantendo o jeito antigo de cadastrar enquetes
     # até a mudança ser feita no front-end

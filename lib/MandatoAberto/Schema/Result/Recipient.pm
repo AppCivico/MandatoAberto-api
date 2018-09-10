@@ -300,6 +300,21 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 poll_self_propagation_queues
+
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::PollSelfPropagationQueue>
+
+=cut
+
+__PACKAGE__->has_many(
+  "poll_self_propagation_queues",
+  "MandatoAberto::Schema::Result::PollSelfPropagationQueue",
+  { "foreign.recipient_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 recipient_network
 
 Type: might_have
@@ -316,8 +331,8 @@ __PACKAGE__->might_have(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-09-05 18:08:45
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:NzH/enaq3rXF1R3H6ujb5A
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-09-10 13:31:45
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:nQgvFtM9v4jvBjsVsVR07w
 
 __PACKAGE__->load_components("InflateColumn::Serializer", "Core");
 __PACKAGE__->remove_column('groups');

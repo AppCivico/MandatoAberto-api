@@ -20,6 +20,10 @@ sub verifiers_specs {
                 recipient_id => {
                     required => 1,
                     type     => 'Int'
+                },
+                active => {
+                    required => 1,
+                    type     => 'Bool'
                 }
             }
         ),
@@ -39,8 +43,16 @@ sub action_specs {
             my $existing_entry = $self->search( { 'me.recipient_id' => $values{recipient_id} } )->next;
 
             if ($existing_entry) {
-                return $existing_entry;
+                if ( $values{active} == 1 ) {
+                    $existing_entry->delete;
+                    return 1;
+                }
+                else {
+                    return $existing_entry;
+                }
+
             } else {
+                delete $values{active};
                 my $blacklist_entry = $self->create(\%values);
 
                 # Por enquanto o controle será feito com uma flag na própria tabela de recipient

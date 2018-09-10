@@ -89,6 +89,25 @@ sub action_specs {
 
             my $poll = $self->create(\%values);
 
+			my $politician = $self->result_source->schema->resultset('Politician')->find($values{politician_id});
+
+			if ( $politician->poll_self_propagation_active ) {
+				my $poll_self_propagation_rs = $self->result_source->schema->resultset('PollSelfPropagationQueue');
+                my @ids = $politician->recipients->get_column('id')->all;
+
+                my @queue;
+                for my $id (@ids) {
+                    my $queue = {
+                        recipient_id => $id,
+                        poll_id      => $poll->id
+                    };
+
+                    push @queue, $queue;
+                }
+
+                $poll_self_propagation_rs->populate(\@queue);
+			}
+
             return $poll;
         }
     };
@@ -113,6 +132,25 @@ sub get_non_propagated_polls {
             'me.id' => \"NOT IN ( SELECT poll_id FROM poll_propagate WHERE politician_id = $politician_id )"
         },
         { prefetch => 'poll_propagates' }
+    );
+}
+
+sub non_self_propagated {
+    my ($self) = @_;
+
+    return $self->search(
+        {
+            'me.notification_sent'                => 0,
+            'poll_self_propagation_config.active' => 1
+        },
+        {
+            prefetch => [
+                'politician',
+                'poll_questions',
+                { 'politician'     => 'poll_self_propagation_config' },
+                { 'poll_questions' => "poll_question_options" }
+            ]
+        }
     );
 }
 

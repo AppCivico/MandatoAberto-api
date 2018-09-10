@@ -462,6 +462,21 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 poll_self_propagation_config
+
+Type: might_have
+
+Related object: L<MandatoAberto::Schema::Result::PollSelfPropagationConfig>
+
+=cut
+
+__PACKAGE__->might_have(
+  "poll_self_propagation_config",
+  "MandatoAberto::Schema::Result::PollSelfPropagationConfig",
+  { "foreign.politician_id" => "self.user_id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 polls
 
 Type: has_many
@@ -523,8 +538,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-09-05 17:35:36
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:JUpN/2o1dGAWlM7gjXs0+A
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-09-10 00:39:45
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:IJ4O33xu4uJ3KTZmueoP2w
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
@@ -1049,6 +1064,12 @@ sub get_activated_poll {
     my ($self) = @_;
 
     return $self->polls->search( { status_id => 1 } )->next;
+}
+
+sub poll_self_propagation_active {
+    my ($self) = @_;
+
+    return $self->poll_self_propagation_config->active;
 }
 
 __PACKAGE__->meta->make_immutable;

@@ -58,4 +58,38 @@ sub save_asset {
     }
 }
 
+sub send_message {
+    my ($self, %opts) = @_;
+
+    if (is_test()) {
+        return {
+            attachment_id => '1857777774821032'
+        };
+    }
+    else {
+        my $res;
+		eval {
+			retry {
+				my $url = $ENV{FB_API_URL} . '/me/messages?access_token=' . $opts{access_token};
+
+				$res = $self->ua->post(
+					$url,
+					Content_Type => 'form-data',
+					Content      => [$opts{content}]
+				);
+
+				die $res->decoded_content unless $res->is_success;
+
+				my $response = decode_json( $res->decoded_content );
+				die 'invalid response' unless $response;
+
+			}
+			retry_if { shift() < 3 } catch { die $_; };
+		};
+		die $@ if $@;
+
+		return decode_json( $res->decoded_content );
+    }
+}
+
 1;
