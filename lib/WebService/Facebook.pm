@@ -78,7 +78,7 @@ sub send_message {
 				$res = $self->ua->post(
 					$url,
 					Content_Type => 'application/json',
-					Content      => [$opts{content}]
+					Content      => $opts{content}
 				);
 
 				die $res->decoded_content unless $res->is_success;

@@ -76,7 +76,7 @@ sub exec_item {
         access_token => $item->poll->politician->fb_page_access_token,
         content      => $item->poll->build_content_object( $recipient )
     );
-    use DDP; p \%opts;
+
     if ( $self->facebook->send_message(%opts) ) {
         $item->delete();
         $self->logger->info("Enviado com sucesso") if $self->logger;
