@@ -314,7 +314,7 @@ sub build_content_object {
     my $res = encode_json ({
         messaging_type => "UPDATE",
         recipient      => {
-            id => $recipient->id
+            id => $recipient->fb_id
         },
         message        => {
             text => $question->content,
