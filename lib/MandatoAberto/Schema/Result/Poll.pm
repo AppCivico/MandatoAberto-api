@@ -225,6 +225,8 @@ __PACKAGE__->belongs_to(
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
 use MandatoAberto::Utils;
 
+use JSON::MaybeXS;
+
 with 'MandatoAberto::Role::Verification';
 with 'MandatoAberto::Role::Verification::TransactionalActions::DBIC';
 
@@ -283,6 +285,55 @@ sub action_specs {
             });
         }
     };
+}
+
+sub question {
+    my ($self) = @_;
+
+    return $self->poll_questions->next;
+}
+
+sub options {
+    my ($self) = @_;
+
+    my $question = $self->question;
+    my @options  = $question->poll_question_options->all();
+
+    return @options;
+}
+
+sub build_content_object {
+    my ($self, $recipient) = @_;
+
+    my $question = $self->question;
+    my @options  = $self->options;
+
+	my $first_option  = $options[0];
+	my $second_option = $options[1];
+
+    my $res = encode_json ({
+        messaging_type => "UPDATE",
+        recipient      => {
+            id => $recipient->id
+        },
+        message        => {
+            text => $question->content,
+			quick_replies => [
+				{
+					content_type => 'text',
+					title        => $first_option->content,
+					payload      => 'pollAnswerPropagate_' . $first_option->id
+				},
+				{
+					content_type => 'text',
+					title        => $second_option->content,
+					payload      => 'pollAnswerPropagate_' . $second_option->id
+				},
+			]
+        }
+    });
+
+    return $res;
 }
 
 __PACKAGE__->meta->make_immutable;

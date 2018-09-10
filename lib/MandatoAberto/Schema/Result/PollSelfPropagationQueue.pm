@@ -65,6 +65,13 @@ __PACKAGE__->table("poll_self_propagation_queue");
   data_type: 'timestamp'
   is_nullable: 1
 
+=head2 id
+
+  data_type: 'integer'
+  is_auto_increment: 1
+  is_nullable: 0
+  sequence: 'poll_self_propagation_queue_id_seq'
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -76,7 +83,26 @@ __PACKAGE__->add_columns(
   { data_type => "boolean", default_value => \"false", is_nullable => 0 },
   "sent_at",
   { data_type => "timestamp", is_nullable => 1 },
+  "id",
+  {
+    data_type         => "integer",
+    is_auto_increment => 1,
+    is_nullable       => 0,
+    sequence          => "poll_self_propagation_queue_id_seq",
+  },
 );
+
+=head1 PRIMARY KEY
+
+=over 4
+
+=item * L</id>
+
+=back
+
+=cut
+
+__PACKAGE__->set_primary_key("id");
 
 =head1 RELATIONS
 
@@ -111,8 +137,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-09-10 13:31:45
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Ji2L4+MmoF80HTEtVLfBbg
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-09-10 15:27:51
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:D++PO8PSmKSv2UovNdNmGw
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

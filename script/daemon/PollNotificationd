@@ -30,7 +30,7 @@ sub gd_preconfig {
     #my $config = new Config::General("$RealBin/../../libre.conf");
     #%config    = $config->getall;
 
-    $0 = "MandatoAberto::Daemon::DirectMessaged";
+    $0 = "MandatoAberto::Daemon::PollNotificationd";
     $|++;
 
     # Logger.
@@ -61,7 +61,7 @@ sub gd_run {
 
     my $cv = AnyEvent->condvar;
 
-    my $worker = MandatoAberto::Worker::DirectMessage->new(
+    my $worker = MandatoAberto::Worker::PollNotification->new(
         schema => get_schema(),
         logger => get_logger(),
         #config => \%config,

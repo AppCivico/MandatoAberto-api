@@ -70,6 +70,9 @@ line
 
 ./script/daemon/Segmenterd restart
 ./script/daemon/Segmenterd status
+
+./script/daemon/PollNotificationd restart
+./script/daemon/PollNotificationd status
 #./script/daemon/DirectMessagesd restart
 #./script/daemon/DirectMessagesd status
 

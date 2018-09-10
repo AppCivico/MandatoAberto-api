@@ -115,3 +115,4 @@
 0111-updating-picframe [0110-add-boolean-on-question] 2018-09-05T20:35:45Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Updating 'picframe' data to be 'share' data on the 'politician' table
 0112-add-poll_notification [0111-updating-picframe] 2018-09-05T21:14:37Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Creating the 'poll_notification' table
 0113-add-poll_self_propagation [0112-add-poll_notification] 2018-09-10T03:36:28Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Creating the 'poll_self_propagation_config' table and adding the 'notification_sent' on the 'poll' table
+0114-add-id-on-psp [0113-add-poll_self_propagation] 2018-09-10T18:25:11Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding id

@@ -22,13 +22,12 @@ has schema => (
 	required => 1,
 );
 
-
 sub listen_queue {
 	my $self = shift;
 
 	$self->logger->debug("Buscando itens na fila...") if $self->logger;
 
-	my @items = $self->schema->resultset('Poll')->non_self_propagated->all;
+	my @items = $self->schema->resultset('PollSelfPropagationQueue')->search( { sent => 0 } )->all;
 
 	if (@items) {
 		$self->logger->info(sprintf("'%d' itens serão processados.", scalar @items)) if $self->logger;
@@ -49,13 +48,12 @@ sub run_once {
 
 	my $item;
 	if (defined($item_id)) {
-		$item = $self->schema->resultset('DirectMessageQueue')->find($item_id);
+		$item = $self->schema->resultset('PollSelfPropagationQueue')->find($item_id);
 	}else {
-		$item = $self->schema->resultset('DirectMessageQueue')->search(
+		$item = $self->schema->resultset('PollSelfPropagationQueue')->search(
 			undef,
 			{
 				rows   => 1,
-				column => [qw(me.id me.content)],
 			},
 		)->next;
 	}
@@ -70,18 +68,21 @@ sub run_once {
 sub exec_item {
 	my ($self, $item) = @_;
 
-	my $direct_message       = $self->schema->resultset("DirectMessage")->find($item->direct_message_id);
-	my $fb_page_access_token = $self->schema->resultset("Politician")->find($direct_message->politician_id)->fb_page_access_token;
-	my @citizens             = $self->schema->resultset("Recipient")->search( { politician_id => $direct_message->politician_id } );
+    my $recipient = $item->recipient;
+    my $question  = $item->poll->question->content;
+    my @options   = $item->poll->options;
 
-	$self->logger->debug($direct_message->content) if $self->logger;
+    my %opts = (
+        access_token => $item->poll->politician->fb_page_access_token,
+        content      => $item->poll->build_content_object( $recipient )
+    );
 
-	if ($self->messager->send($direct_message->content, $fb_page_access_token, @citizens)) {
-		$item->delete();
-		return 1;
-	}
+    if ( $self->facebook->send_message(%opts) ) {
+        $item->delete();
+        return 1;
+    }
 
-	return 0;
+    return 0;
 }
 
 
