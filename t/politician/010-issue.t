@@ -44,7 +44,15 @@ db_transaction {
             politician_id  => $politician_id,
             fb_id          => $recipient_fb_id,
             message        => $message,
-            security_token => $security_token
+            security_token => $security_token,
+            entities       => encode_json(
+                {
+                    Saude => [
+                        'vacinacao',
+                        'posto de saude'
+                    ]
+                }
+            )
         ]
     ;
     my $first_issue_id = stash "i1.id";
@@ -128,7 +136,15 @@ db_transaction {
             politician_id  => $politician_id,
             fb_id          => $recipient_fb_id,
             message        => fake_words(1)->(),
-            security_token => $security_token
+            security_token => $security_token,
+            entities       => encode_json(
+                {
+                    Saude => [
+                        'vacinacao',
+                        'posto de saude'
+                    ]
+                }
+            )
         ]
     ;
     my $second_issue_id = stash "i2.id";
@@ -158,6 +174,37 @@ db_transaction {
     ;
 
     is ($group->discard_changes->recipients_count, 1, 'one recipient on group');
+
+    # Respondendo issue com mídia
+    rest_post "/api/chatbot/issue",
+        name                => "issue creation",
+        automatic_load_item => 0,
+        stash               => "i3",
+        [
+            politician_id  => $politician_id,
+            fb_id          => $recipient_fb_id,
+            message        => fake_words(1)->(),
+            security_token => $security_token,
+            entities       => encode_json(
+                {
+                    Saude => [
+                        'vacinacao',
+                        'posto de saude'
+                    ]
+                }
+            )
+        ]
+    ;
+    my $third_issue_id = stash "i3.id";
+
+    rest_put "/api/politician/$politician_id/issue/$third_issue_id",
+        name  => "updating issue with media",
+        files => { file => "$Bin/picture.jpg", },
+    ;
+
+    my $third_issue = $schema->resultset('Issue')->find($third_issue_id);
+
+    ok ( defined( $third_issue->saved_attachment_id ), 'defined' );
 
     # Por enquanto apenas os issues abertos serão listados
 

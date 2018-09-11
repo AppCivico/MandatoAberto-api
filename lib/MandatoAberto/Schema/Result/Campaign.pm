@@ -66,7 +66,7 @@ __PACKAGE__->table("campaign");
 
   data_type: 'integer'
   is_foreign_key: 1
-  is_nullable: 0
+  is_nullable: 1
 
 =cut
 
@@ -88,7 +88,7 @@ __PACKAGE__->add_columns(
     original      => { default_value => \"now()" },
   },
   "politician_id",
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -132,7 +132,12 @@ __PACKAGE__->belongs_to(
   "politician",
   "MandatoAberto::Schema::Result::Politician",
   { user_id => "politician_id" },
-  { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
+  {
+    is_deferrable => 0,
+    join_type     => "LEFT",
+    on_delete     => "NO ACTION",
+    on_update     => "NO ACTION",
+  },
 );
 
 =head2 poll_propagate
@@ -166,8 +171,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-07-20 12:03:30
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:6X6nx3SC/J+4wTOsb1o9sw
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-07-31 13:22:19
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:5U8tpVS7i/2S+HwmbrBqRQ
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

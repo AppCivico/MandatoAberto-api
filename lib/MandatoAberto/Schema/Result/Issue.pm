@@ -89,6 +89,27 @@ __PACKAGE__->table("issue");
   default_value: true
   is_nullable: 0
 
+=head2 entities
+
+  data_type: 'integer[]'
+  is_nullable: 1
+
+=head2 peding_entity_recognition
+
+  data_type: 'boolean'
+  default_value: false
+  is_nullable: 1
+
+=head2 saved_attachment_id
+
+  data_type: 'text'
+  is_nullable: 1
+
+=head2 saved_attachment_type
+
+  data_type: 'text'
+  is_nullable: 1
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -118,6 +139,14 @@ __PACKAGE__->add_columns(
   { data_type => "text", is_nullable => 1 },
   "open",
   { data_type => "boolean", default_value => \"true", is_nullable => 0 },
+  "entities",
+  { data_type => "integer[]", is_nullable => 1 },
+  "peding_entity_recognition",
+  { data_type => "boolean", default_value => \"false", is_nullable => 1 },
+  "saved_attachment_id",
+  { data_type => "text", is_nullable => 1 },
+  "saved_attachment_type",
+  { data_type => "text", is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -165,8 +194,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-01-31 09:14:05
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:ifYVFfmRGQkBd+RJoGgejA
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-08-24 17:37:39
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:wzHzb4rWSyQ+CymHLUOudA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
@@ -180,7 +209,6 @@ has _httpcb => (
     isa        => "WebService::HttpCallback::Async",
     lazy_build => 1,
 );
-
 
 with 'MandatoAberto::Role::Verification';
 with 'MandatoAberto::Role::Verification::TransactionalActions::DBIC';
@@ -236,6 +264,14 @@ sub verifiers_specs {
 
                         return 1;
                     }
+                },
+                saved_attachment_id => {
+                    required => 0,
+                    type     => 'Str'
+                },
+                saved_attachment_type => {
+                    required => 0,
+                    type     => 'Str'
                 }
             }
         )
@@ -254,9 +290,10 @@ sub action_specs {
 
             if ($values{ignore} == 1 && $values{reply}) {
                 die \['ignore', 'must not have reply'];
-            } elsif ($values{ignore} == 0 && !$values{reply}) {
+            } elsif ($values{ignore} == 0 && !$values{reply} && !$values{saved_attachment_id}) {
                 die \['reply', 'missing'];
             }
+
             delete $values{ignore};
 
             my $access_token = $self->politician->fb_page_access_token;
@@ -306,6 +343,66 @@ sub action_specs {
                     }
                 );
             }
+            elsif ( $values{saved_attachment_id} ) {
+                my $message;
+                # Tratando se a mensagem tem mais de 100 chars
+                if (length $self->message > 100) {
+                    $message = substr $self->message, 0, 97;
+                    $message = $message . "...";
+                }
+                else {
+                    $message = $self->message;
+                }
+
+                $self->_httpcb->add(
+                    url     => $ENV{FB_API_URL} . '/me/messages?access_token=' . $access_token,
+                    method  => "post",
+                    headers => 'Content-Type: application/json',
+                    body    => encode_json {
+                        messaging_type => "UPDATE",
+                        recipient => {
+                            id => $recipient->fb_id
+                        },
+                        message => {
+                            text          => "Voc\ê enviou: " . $message,
+                            quick_replies => [
+                                {
+                                    content_type => 'text',
+                                    title        => 'Voltar ao início',
+                                    payload      => 'mainMenu'
+                                }
+                            ]
+                        }
+                    }
+                );
+
+				$self->_httpcb->add(
+					url     => $ENV{FB_API_URL} . '/me/messages?access_token=' . $access_token,
+					method  => "post",
+					headers => 'Content-Type: application/json',
+					body    => encode_json {
+						messaging_type => "UPDATE",
+						recipient => {
+							id => $recipient->fb_id
+						},
+						message => {
+							attachment => {
+								type    => $values{saved_attachment_type},
+								payload => {
+									attachment_id => $values{saved_attachment_id}
+								}
+							},
+							quick_replies => [
+								{
+									content_type => 'text',
+									title        => 'Voltar ao início',
+									payload      => 'mainMenu'
+								}
+							]
+						}
+					}
+				);
+            }
 
             $self->_httpcb->wait_for_all_responses();
 
@@ -315,6 +412,16 @@ sub action_specs {
             });
         }
     };
+}
+
+sub entity_rs {
+	my ($self) = @_;
+
+	return $self->politician->politician_entities->search(
+		{
+			'me.id' => { 'in' => $self->entities ? $self->entities : 0 },
+		}
+	);
 }
 
 sub _build__httpcb { WebService::HttpCallback::Async->instance }

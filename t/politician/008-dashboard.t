@@ -59,7 +59,15 @@ db_transaction {
             politician_id  => $politician_id,
             fb_id          => 'foobar',
             message        => fake_words(1)->(),
-            security_token => $security_token
+            security_token => $security_token,
+            entities       => encode_json(
+                {
+                    Saude => [
+                        'vacinacao',
+                        'posto de saude'
+                    ]
+                }
+            )
         ]
     ;
     my $issue_id = stash 'i1.id';
@@ -174,7 +182,10 @@ db_transaction {
         name                => 'politician greeting',
         automatic_load_item => 1,
         code                => 200,
-        [ greeting_id => 1 ]
+        [
+            on_facebook => 'Olá, sou assistente digital do(a) ${user.office.name} ${user.name} Seja bem-vindo a nossa Rede! Queremos um Brasil melhor e precisamos de sua ajuda.',
+            on_website  => 'Olá, sou assistente digital do(a) ${user.office.name} ${user.name} Seja bem-vindo a nossa Rede! Queremos um Brasil melhor e precisamos de sua ajuda.'
+        ]
     ;
 
     rest_reload_list "get_politician_dashboard";

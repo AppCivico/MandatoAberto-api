@@ -96,3 +96,23 @@
 0092-drop-notnull-origin_dialog [0091-add-politician_id-on-campaign] 2018-07-20T19:48:39Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Setting the 'origin_dialog' to nullabe
 0093-add-platform [0092-drop-notnull-origin_dialog] 2018-07-20T20:17:26Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the 'platform' column on the 'recipient' table
 0094-updating-greeting-text [0093-add-platform] 2018-07-23T18:49:24Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Updating one greeting text
+0095-add-dm-related [0094-updating-greeting-text] 2018-07-31T16:28:14Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Updating dm related data
+0096-adding-free-text-greeting [0095-add-dm-related] 2018-08-03T17:53:52Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Updating the 'politician_greeting' table to support open text
+0097-adding-active-to-dialog [0096-adding-free-text-greeting] 2018-08-03T18:16:28Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the 'active' boolean to the 'dialog' table and deactivating the 'about me' dialog
+0098-updating-dialog-texts [0097-adding-active-to-dialog] 2018-08-03T18:22:08Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Updating the dialog texts
+0099-add-entity-and-related-tables [0098-updating-dialog-texts] 2018-08-06T03:45:15Z Lucas Ansei,,, <lucas@lucas-G750JX> # Creating the entity and related table
+0100-add-dm-columns [0099-add-entity-and-related-tables] 2018-08-06T23:40:14Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding attachment related columns to the 'direct_message' table
+0101-add-recipient_count-default [0100-add-dm-columns] 2018-08-09T22:51:03Z Lucas Ansei,,, <lucas@lucas-G750JX> # Adding default value for the 'recipient_count' column on the 'politician_entity' table
+0102-update-entity-structure [0101-add-recipient_count-default] 2018-08-10T13:38:58Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Updating the 'entity' structure
+0103-updating-issue [0102-update-entity-structure] 2018-08-10T17:46:20Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding column and dropping not null on issue
+0104-updating-entity-and-issue-structure [0103-updating-issue] 2018-08-22T19:07:02Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Updating 'issues' and 'entity' to centralize on entities instead of sub-entities
+0105-removing-entity-table [0104-updating-entity-and-issue-structure] 2018-08-23T13:17:42Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Removing 'entity' table to make the schema more simple
+0106-remove-question [0105-removing-entity-table] 2018-08-23T20:10:19Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Removing question from the politician_knowledge_base table
+0107-removing-issues-from-kb [0106-remove-question] 2018-08-23T21:16:13Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Removing issues column
+0108-add-saved_attachment_id [0107-removing-issues-from-kb] 2018-08-24T14:20:27Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the 'saved_attachment_id' and removing the 'attachment_id' column from the direct message table
+0109-adding-media [0108-add-saved_attachment_id] 2018-08-27T13:14:56Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # adding media on knowledge-base and issues
+0110-add-boolean-on-question [0109-adding-media] 2018-09-05T14:16:09Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the 'active' boolean on the 'question' table
+0111-updating-picframe [0110-add-boolean-on-question] 2018-09-05T20:35:45Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Updating 'picframe' data to be 'share' data on the 'politician' table
+0112-add-poll_notification [0111-updating-picframe] 2018-09-05T21:14:37Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Creating the 'poll_notification' table
+0113-add-poll_self_propagation [0112-add-poll_notification] 2018-09-10T03:36:28Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Creating the 'poll_self_propagation_config' table and adding the 'notification_sent' on the 'poll' table
+0114-add-id-on-psp [0113-add-poll_self_propagation] 2018-09-10T18:25:11Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding id

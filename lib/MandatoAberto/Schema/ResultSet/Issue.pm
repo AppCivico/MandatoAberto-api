@@ -34,6 +34,10 @@ sub verifiers_specs {
                     required   => 1,
                     type       => "Str",
                 },
+                entities => {
+                    required   => 0,
+                    type       => 'HashRef'
+                }
             }
         ),
     };
@@ -49,10 +53,41 @@ sub action_specs {
             my %values = $r->valid_values;
             not defined $values{$_} and delete $values{$_} for keys %values;
 
-            # Uma issue sempre é criada como aberta
-            $values{open} = 1;
+            my $issue;
+        	$self->result_source->schema->txn_do(sub {
+                # Uma issue sempre é criada como aberta
+                $values{open} = 1;
 
-            my $issue = $self->create(\%values);
+                my $politician = $self->result_source->schema->resultset('Politician')->find( $values{politician_id} );
+                my $recipient  = $politician->recipients->find($values{recipient_id});
+                my $entity_rs  = $self->result_source->schema->resultset('Entity');
+
+                my @entities_id;
+                if ( $values{entities} ) {
+					my $entity_val = $values{entities};
+
+					my @entities = keys %{$entity_val};
+					for my $entity (@entities) {
+
+						if ( scalar @{ $entity_val->{$entity} } > 0 ) {
+
+							my $upsert_entity = $politician->politician_entities->find_or_create( { name => $entity } );
+
+							$recipient->add_to_politician_entity( $upsert_entity->id );
+							push @entities_id, $upsert_entity->id;
+
+						}
+					}
+                }
+
+                $issue = $self->create(
+                    {
+                        %values,
+                        peding_entity_recognition => $values{entities} ? 0 : 1,
+                        ( $values{entities} ? (entities => \@entities_id) : () )
+                    }
+                );
+            });
 
             return $issue;
         }

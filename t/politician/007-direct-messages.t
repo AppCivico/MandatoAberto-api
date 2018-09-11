@@ -77,12 +77,13 @@ db_transaction {
         [ name => "foobar" ]
     ;
 
-    rest_post "/api/politician/$politician_id/direct-message",
-        name    => "creating direct message without name",
-        is_fail => 1,
-        code    => 400,
-        [ content => fake_words(2)->() ]
-    ;
+    # Agora é permitido criar dm sem nome
+    # rest_post "/api/politician/$politician_id/direct-message",
+    #     name    => "creating direct message without name",
+    #     is_fail => 1,
+    #     code    => 400,
+    #     [ content => fake_words(2)->() ]
+    # ;
 
     rest_post "/api/politician/$politician_id/direct-message",
         name    => "creating direct message with invalid type of group",
@@ -222,6 +223,64 @@ db_transaction {
             ]
         ;
     };
+
+    # Testando criação de mensagens diretas com imagem
+    subtest 'direct message with attachment type' => sub {
+
+        rest_post "/api/politician/$politician_id/direct-message",
+            name    => "Must not send 'content' if type is attachment",
+            is_fail => 1,
+            code    => 400,
+            [
+                name    => 'wrong',
+                content => 'foobar',
+                type    => 'attachment'
+            ]
+        ;
+
+        rest_post "/api/politician/$politician_id/direct-message",
+            name    => 'POST without attachment_type',
+            is_fail => 1,
+            code    => 400,
+            [
+                name    => 'foobar',
+                content => 'foobar',
+                type    => 'attachment'
+            ]
+        ;
+
+        rest_post "/api/politician/$politician_id/direct-message",
+            name    => 'POST without attachment url',
+            is_fail => 1,
+            code    => 400,
+            [
+                name            => 'foobar',
+                content         => 'foobar',
+                type            => 'attachment',
+                attachment_type => 'image'
+            ]
+        ;
+
+        rest_post "/api/politician/$politician_id/direct-message",
+            name    => 'POST without attachment url',
+            params => [
+                name            => 'foobar',
+                type            => 'attachment',
+                attachment_type => 'image',
+            ],
+            files => { file => "$Bin/picture.jpg" }
+        ;
+
+    };
+    rest_post "/api/politician/$politician_id/direct-message",
+            name    => 'POST without attachment url',
+            params => [
+                name            => 'foobar',
+                type            => 'attachment',
+                attachment_type => 'image',
+            ],
+            files => { file => "$Bin/picture.jpg", },
+        ;
 };
 
 done_testing();

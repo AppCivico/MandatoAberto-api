@@ -27,10 +27,17 @@ db_transaction {
     ;
 
     rest_post "/api/politician/$politician_id/greeting",
-        name    => 'politician greeting with invalid greeting_id',
+        name    => 'politician greeting without on_facebook',
         is_fail => 1,
         code    => 400,
-        [ greeting_id => 'foobar' ]
+        [ on_website => 'foobar' ]
+    ;
+
+    rest_post "/api/politician/$politician_id/greeting",
+        name    => 'politician greeting without on_website',
+        is_fail => 1,
+        code    => 400,
+        [ on_facebook => 'foobar' ]
     ;
 
     rest_post "/api/politician/$politician_id/greeting",
@@ -38,7 +45,10 @@ db_transaction {
         automatic_load_item => 1,
         stash               => 'g1',
         code                => 200,
-        [ greeting_id => 1 ]
+        [
+            on_facebook => 'foobar',
+            on_website  => 'foobar2'
+        ]
     ;
 
     rest_get "/api/politician/$politician_id/greeting",
@@ -50,27 +60,8 @@ db_transaction {
     stash_test "get_politician_greeting" => sub {
         my $res = shift;
 
-        is ($res->{greetings}->{list}[0]->{id}, 1, 'first greeting');
-        is ($res->{greetings}->{selected}, 1, 'first greeting selected');
-        is ($res->{greetings}->{list}[1]->{id}, 2, 'second greeting');
-    };
-
-    rest_post "/api/politician/$politician_id/greeting",
-        name                => 'politician greeting',
-        automatic_load_item => 1,
-        stash               => 'g2',
-        code                => 200,
-        [ greeting_id => 2 ]
-    ;
-
-    rest_reload_list "get_politician_greeting";
-
-    stash_test "get_politician_greeting.list" => sub {
-        my $res = shift;
-
-        is ($res->{greetings}->{list}[0]->{id}, 2, 'second greeting');
-        is ($res->{greetings}->{list}[1]->{id}, 1, 'first greeting');
-        is ($res->{greetings}->{selected}, 2, 'first greeting selected');
+        is ($res->{on_facebook}, 'foobar',  'greeting on facebook');
+        is ($res->{on_website},  'foobar2', 'greeting on website');
     };
 };
 

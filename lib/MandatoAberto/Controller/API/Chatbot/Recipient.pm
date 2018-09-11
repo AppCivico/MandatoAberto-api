@@ -79,10 +79,11 @@ sub list_GET {
             map {
                 my $c = $_;
 
-                id        => $c->get_column('id'),
-                gender    => $c->get_column('gender'),
-                email     => $c->get_column('email'),
-                cellphone => $c->get_column('cellphone'),
+                id                     => $c->get_column('id'),
+                gender                 => $c->get_column('gender'),
+                email                  => $c->get_column('email'),
+                cellphone              => $c->get_column('cellphone'),
+                poll_notification_sent => $c->poll_notification ? $c->poll_notification->sent : 0,
             } $c->stash->{collection}->search( { fb_id => $fb_id } )->next
         }
     )

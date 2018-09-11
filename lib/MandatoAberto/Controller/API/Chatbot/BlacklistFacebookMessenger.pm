@@ -6,7 +6,6 @@ use namespace::autoclean;
 BEGIN { extends 'CatalystX::Eta::Controller::REST' }
 
 with "CatalystX::Eta::Controller::AutoBase";
-with "CatalystX::Eta::Controller::AutoListPOST";
 
 __PACKAGE__->config(
     # AutoBase.
@@ -14,19 +13,7 @@ __PACKAGE__->config(
 
     # AutoListPOST.
     no_user => 1,
-    prepare_params_for_create => sub {
-        my ($self, $c, $params) = @_;
 
-        my $fb_id = $c->req->params->{fb_id};
-        die \["fb_id", "missing"] unless $fb_id;
-
-        my $recipient = $c->model("DB::Recipient")->search( { 'me.fb_id' => $fb_id } )->next;
-        die \["fb_id", "could not find recipient with that fb_id"] unless $recipient;
-
-        $params->{recipient_id} = $recipient->id;
-
-        return $params;
-    },
 );
 
 sub root : Chained('/api/chatbot/base') : PathPart('') : CaptureArgs(0) { }
@@ -46,7 +33,34 @@ sub object : Chained('base') : PathPart('') : CaptureArgs(1) {
 
 sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }
 
-sub list_POST { }
+sub list_POST {
+    my ($self, $c) = @_;
+
+	my $fb_id = $c->req->params->{fb_id};
+	die \["fb_id", "missing"] unless $fb_id;
+
+	my $recipient = $c->model("DB::Recipient")->search( { 'me.fb_id' => $fb_id } )->next;
+	die \["fb_id", "could not find recipient with that fb_id"] unless $recipient;
+
+	my $active = $c->req->params->{active} || 1;
+	die \['active', 'missing'] unless $active;
+
+    my $blacklist_entry = $c->stash->{collection}->execute(
+        $c,
+        for  => 'create',
+        with => {
+            recipient_id => $recipient->id,
+            active       => $active
+        }
+    );
+
+    return $self->status_ok(
+        $c,
+        entity => {
+            success => 1
+        }
+    );
+}
 
 sub list_GET {
     my ($self, $c) = @_;

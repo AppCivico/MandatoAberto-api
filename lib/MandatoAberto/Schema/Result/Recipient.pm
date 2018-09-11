@@ -144,8 +144,12 @@ __PACKAGE__->table("recipient");
 =head2 platform
 
   data_type: 'text'
-  default_value: 'facebook'
   is_nullable: 0
+
+=head2 entities
+
+  data_type: 'integer[]'
+  is_nullable: 1
 
 =cut
 
@@ -202,7 +206,9 @@ __PACKAGE__->add_columns(
   "twitter_screen_name",
   { data_type => "text", is_nullable => 1 },
   "platform",
-  { data_type => "text", default_value => "facebook", is_nullable => 0 },
+  { data_type => "text", is_nullable => 0 },
+  "entities",
+  { data_type => "integer[]", is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -264,6 +270,21 @@ __PACKAGE__->belongs_to(
   { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
 );
 
+=head2 poll_notification
+
+Type: might_have
+
+Related object: L<MandatoAberto::Schema::Result::PollNotification>
+
+=cut
+
+__PACKAGE__->might_have(
+  "poll_notification",
+  "MandatoAberto::Schema::Result::PollNotification",
+  { "foreign.recipient_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 poll_results
 
 Type: has_many
@@ -275,6 +296,21 @@ Related object: L<MandatoAberto::Schema::Result::PollResult>
 __PACKAGE__->has_many(
   "poll_results",
   "MandatoAberto::Schema::Result::PollResult",
+  { "foreign.recipient_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+=head2 poll_self_propagation_queues
+
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::PollSelfPropagationQueue>
+
+=cut
+
+__PACKAGE__->has_many(
+  "poll_self_propagation_queues",
+  "MandatoAberto::Schema::Result::PollSelfPropagationQueue",
   { "foreign.recipient_id" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
@@ -295,8 +331,8 @@ __PACKAGE__->might_have(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-07-20 17:17:16
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:hwb4dY4tswsu8NuCRCdEfQ
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-09-10 13:31:45
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:nQgvFtM9v4jvBjsVsVR07w
 
 __PACKAGE__->load_components("InflateColumn::Serializer", "Core");
 __PACKAGE__->remove_column('groups');
@@ -393,6 +429,52 @@ sub groups_rs {
             deleted => 0
         }
     );
+}
+
+sub entity_rs {
+	my ($self) = @_;
+
+	return $self->politician->politician_entities->search(
+		{
+			'me.id' => { 'in' => $self->entities ? $self->entities : 0 },
+		}
+	);
+}
+
+sub add_to_politician_entity {
+    my ($self, $politician_entity_id) = @_;
+
+	my $ret;
+	$self->result_source->schema->txn_do(
+		sub {
+			# Verificando se este recipient já estava na entidade.
+			my $recipients_rs = $self->politician->recipients;
+
+			my $already_in_this_group = $recipients_rs->search(
+				{
+					'-and' => [
+						'me.id' => $self->id,
+						\[ '? =ANY(entities)', $politician_entity_id ],
+					],
+				},
+				{ select => [ \1 ] },
+			)->next;
+
+			return if $already_in_this_group;
+
+			$ret = $self->update( { entities => \[ "array_append(entities, ?)", $politician_entity_id ] } );
+
+			$self->politician->politician_entities->search( { 'me.id' => $politician_entity_id } )->update(
+				{
+					recipient_count => \'recipient_count + 1',
+					updated_at      => \'NOW()',
+				}
+			);
+		}
+	);
+
+	return $ret;
+
 }
 
 __PACKAGE__->meta->make_immutable;

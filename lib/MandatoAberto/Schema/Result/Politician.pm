@@ -103,7 +103,7 @@ __PACKAGE__->table("politician");
   data_type: 'timestamp'
   is_nullable: 1
 
-=head2 picframe_url
+=head2 share_url
 
   data_type: 'text'
   is_nullable: 1
@@ -125,6 +125,11 @@ __PACKAGE__->table("politician");
   is_nullable: 1
 
 =head2 twitter_token_secret
+
+  data_type: 'text'
+  is_nullable: 1
+
+=head2 share_text
 
   data_type: 'text'
   is_nullable: 1
@@ -154,7 +159,7 @@ __PACKAGE__->add_columns(
   { data_type => "boolean", default_value => \"false", is_nullable => 0 },
   "premium_updated_at",
   { data_type => "timestamp", is_nullable => 1 },
-  "picframe_url",
+  "share_url",
   { data_type => "text", is_nullable => 1 },
   "movement_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
@@ -163,6 +168,8 @@ __PACKAGE__->add_columns(
   "twitter_oauth_token",
   { data_type => "text", is_nullable => 1 },
   "twitter_token_secret",
+  { data_type => "text", is_nullable => 1 },
+  "share_text",
   { data_type => "text", is_nullable => 1 },
 );
 
@@ -365,6 +372,36 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 politician_entities
+
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::PoliticianEntity>
+
+=cut
+
+__PACKAGE__->has_many(
+  "politician_entities",
+  "MandatoAberto::Schema::Result::PoliticianEntity",
+  { "foreign.politician_id" => "self.user_id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+=head2 politician_knowledge_bases
+
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::PoliticianKnowledgeBase>
+
+=cut
+
+__PACKAGE__->has_many(
+  "politician_knowledge_bases",
+  "MandatoAberto::Schema::Result::PoliticianKnowledgeBase",
+  { "foreign.politician_id" => "self.user_id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 politician_private_reply_config
 
 Type: might_have
@@ -421,6 +458,21 @@ Related object: L<MandatoAberto::Schema::Result::PollPropagate>
 __PACKAGE__->has_many(
   "poll_propagates",
   "MandatoAberto::Schema::Result::PollPropagate",
+  { "foreign.politician_id" => "self.user_id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+=head2 poll_self_propagation_config
+
+Type: might_have
+
+Related object: L<MandatoAberto::Schema::Result::PollSelfPropagationConfig>
+
+=cut
+
+__PACKAGE__->might_have(
+  "poll_self_propagation_config",
+  "MandatoAberto::Schema::Result::PollSelfPropagationConfig",
   { "foreign.politician_id" => "self.user_id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
@@ -486,8 +538,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-07-20 12:03:30
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:KTciFDq48Q65FAWKk81S5Q
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-09-10 00:39:45
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:IJ4O33xu4uJ3KTZmueoP2w
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
@@ -583,7 +635,12 @@ sub verifiers_specs {
                     required => 0,
                     type     => "Bool"
                 },
-                picframe_url => {
+                share_text => {
+                    required   => 0,
+                    type       => 'Str',
+                    max_length => 1000
+                },
+                share_url => {
                     required => 0,
                     type     => URI
                 },
@@ -761,6 +818,16 @@ sub set_get_started_button_and_persistent_menu {
                             title   => "Ir para o início",
                             type    => 'postback',
                             payload => 'greetings'
+                        },
+						{
+							title   => "Desativar notificações",
+							type    => 'postback',
+							payload => 'add_blacklist'
+						},
+                        {
+                            title   => "Ativar notificações",
+                            type    => 'postback',
+                            payload => 'remove_blacklist'
                         }
                     ]
                 }
@@ -1001,6 +1068,18 @@ sub deactivate_chatbot {
             fb_page_access_token => undef
         }
     );
+}
+
+sub get_activated_poll {
+    my ($self) = @_;
+
+    return $self->polls->search( { status_id => 1 } )->next;
+}
+
+sub poll_self_propagation_active {
+    my ($self) = @_;
+
+    return $self->poll_self_propagation_config->active;
 }
 
 __PACKAGE__->meta->make_immutable;

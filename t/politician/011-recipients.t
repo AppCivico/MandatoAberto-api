@@ -41,7 +41,7 @@ db_transaction {
 
             is_deeply(
                 [ sort keys %{ $res->{recipients}->[0] } ],
-                [ sort qw/ id name cellphone email origin_dialog created_at gender platform / ],
+                [ sort qw/ id name cellphone email origin_dialog created_at gender platform groups intents/ ],
             );
         };
     };
@@ -84,7 +84,7 @@ db_transaction {
 
             is_deeply(
                 [ sort keys %{ $res } ],
-                [ sort qw/ cellphone created_at email gender groups id name origin_dialog platform / ],
+                [ sort qw/ cellphone created_at email gender groups id intents name origin_dialog platform / ],
             );
 
             is( ref($res->{groups}), 'ARRAY' );
@@ -105,7 +105,7 @@ db_transaction {
 
             is_deeply(
                 [ sort keys %{ $res } ],
-                [ sort qw/ cellphone created_at email gender groups id name origin_dialog platform / ],
+                [ sort qw/ cellphone created_at email gender groups id intents name origin_dialog platform / ],
             );
 
             is( ref($res->{groups}), 'ARRAY' );

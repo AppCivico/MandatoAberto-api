@@ -61,7 +61,10 @@ db_transaction {
         code                => 200,
         automatic_load_item => 0,
         stash               => 'g1',
-        [ greeting_id => 1 ]
+        [
+            on_facebook => 'Olá, sou assistente digital do(a) ${user.office.name} ${user.name} Seja bem-vindo a nossa Rede! Queremos um Brasil melhor e precisamos de sua ajuda.',
+            on_website  => 'Olá, sou assistente digital do(a) ${user.office.name} ${user.name} Seja bem-vindo a nossa Rede! Queremos um Brasil melhor e precisamos de sua ajuda.'
+        ]
     ;
     my $greeting    = stash "g1";
     my $greeting_id = $greeting->{id};
@@ -93,12 +96,11 @@ db_transaction {
         is ($res->{contact}->{email},        'foobar@email.com',                'email');
         is ($res->{contact}->{url},          "https://www.google.com",          'url');
         is ($res->{greeting}->{id},          $greeting_id,                      'greeting entity id');
-        is ($res->{greeting}->{greeting_id}, 1,                                 'greeting id');
         is ($res->{movement}->{id},          $movement->id,                     'movement id');
         is ($res->{movement}->{name},        $movement->name,                   'movement name');
 
         is (
-            $res->{greeting}->{content},
+            $res->{greeting}->{on_facebook},
             'Olá, sou assistente digital do(a) ${user.office.name} ${user.name} Seja bem-vindo a nossa Rede! Queremos um Brasil melhor e precisamos de sua ajuda.',
             'greeting content'
         );
@@ -186,8 +188,11 @@ db_transaction {
     ;
 
     rest_put "/api/politician/$politician_id",
-        name => "Adding picframe URL",
-        [ picframe_url => 'https://foobar.com.br' ]
+        name => "Adding picframe URL and text",
+        [
+            picframe_url  => 'https://foobar.com.br',
+            picframe_text => 'foobar'
+        ]
     ;
 
     rest_reload_list "get_politician";
@@ -195,8 +200,30 @@ db_transaction {
     stash_test "get_politician.list" => sub {
         my $res = shift;
 
-        is($res->{picframe_url}, 'https://foobar.com.br', 'picframe_url');
+        is($res->{picframe_url},  'https://foobar.com.br', 'picframe_url');
+        is($res->{picframe_text}, 'foobar',                'share_text');
+		is($res->{share_url},     'https://foobar.com.br', 'picframe_url');
+		is($res->{share_text},    'foobar',                'share_text');
     };
+
+    rest_put "/api/politician/$politician_id",
+        name => "Adding picframe URL and text using share",
+        [
+            share_url  => 'https://google.com.br',
+            share_text => 'barbaz'
+        ]
+    ;
+
+	rest_reload_list "get_politician";
+
+	stash_test "get_politician.list" => sub {
+		my $res = shift;
+
+		is($res->{picframe_url},  'https://google.com.br', 'picframe_url');
+		is($res->{picframe_text}, 'barbaz',                'share_text');
+		is($res->{share_url},     'https://google.com.br', 'picframe_url');
+		is($res->{share_text},    'barbaz',                'share_text');
+	};
 
     rest_put "/api/politician/$politician_id",
         name => "Adding picframe URL",
@@ -207,14 +234,6 @@ db_transaction {
         name => "update political movement",
         [ movement_id => 7 ]
     ;
-
-    rest_reload_list "get_politician";
-
-    stash_test "get_politician.list" => sub {
-        my $res = shift;
-
-        is($res->{picframe_url}, 'https://foobar.com.br', 'picframe_url');
-    };
 
     rest_reload_list "get_politician";
 

@@ -69,30 +69,11 @@ sub list_GET {
 
     my $politician_id = $c->user->id;
 
-    my $selected_greeting = $c->stash->{collection}->search( { politician_id => $politician_id } )->next;
-
     return $self->status_ok(
         $c,
         entity => {
-            greetings => {
-                selected => $selected_greeting ? $selected_greeting->greeting_id : 0,
-                list => [
-                    map {
-
-                        my $g = $_;
-
-                        my $greeting_id = $g->get_column('id');
-                        +{
-                            id       => $greeting_id,
-                            content  => $g->get_column('content'),
-                        }
-
-                    } $c->model("DB::Greeting")->search(
-                        undef,
-                        { prefetch => 'politicians_greeting' }
-                    )->all()
-                ]
-            }
+            on_facebook => $c->stash->{politician}->politicians_greeting->next->on_facebook,
+            on_website  => $c->stash->{politician}->politicians_greeting->next->on_website
         }
     );
 }

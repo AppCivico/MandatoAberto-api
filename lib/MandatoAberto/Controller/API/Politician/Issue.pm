@@ -2,11 +2,22 @@ package MandatoAberto::Controller::API::Politician::Issue;
 use Moose;
 use namespace::autoclean;
 
+use WebService::Facebook;
+
+use File::Basename;
+use File::MimeInfo;
+
 BEGIN { extends 'CatalystX::Eta::Controller::REST' }
 
 with "CatalystX::Eta::Controller::AutoBase";
 with "CatalystX::Eta::Controller::AutoResultPUT";
 with "CatalystX::Eta::Controller::AutoResultGET";
+
+has _facebook => (
+	is         => "ro",
+	isa        => "WebService::Facebook",
+	lazy_build => 1,
+);
 
 __PACKAGE__->config(
     # AutoBase.
@@ -34,6 +45,17 @@ __PACKAGE__->config(
             $params->{groups} = \@groups;
         } else {
             $params->{groups} = [];
+        }
+
+        # Tratando resposta por mídia
+        my $file;
+        if ( my $upload = $c->req->upload('file') ) {
+            die \['reply', 'must not be send with file'] if $c->req->params->{reply};
+            my $page_access_token = $c->stash->{politician}->fb_page_access_token;
+
+            $file = $self->_upload_picture($upload, $page_access_token);
+			$params->{saved_attachment_id}   = $file->{attachment_id};
+			$params->{saved_attachment_type} = $file->{attachment_type};
         }
 
         return $params;
@@ -102,9 +124,8 @@ sub list_GET {
         }
     }
 
-    # Desativando paginação por agora
-    # my $page    = $c->req->params->{page}    || 1;
-    # my $results = $c->req->params->{results} || 20;
+    my $page    = $c->req->params->{page}    || 1;
+    my $results = $c->req->params->{results} || 1000;
 
     return $self->status_ok(
         $c,
@@ -153,14 +174,23 @@ sub list_GET {
                                     }
                                 } $i->recipient->groups_rs->all()
                             ]
-                        }
+                        },
+                        intents => [
+                            map {
+                                {
+                                    id   => $_->id,
+                                    tag  => $_->human_name,
+                                    has_active_knowledge_base => $_->has_active_knowledge_base
+                                }
+                            } $i->entity_rs->all()
+                        ]
                     }
                 } $c->stash->{collection}->search(
                     $cond,
                     {
                         prefetch => 'recipient',
-                        # page     => $page,
-                        # rows     => $results,
+                        page     => $page,
+                        rows     => $results,
                         order_by => { '-desc' => 'me.created_at' }
                     }
                   )->all()
@@ -221,10 +251,56 @@ sub result_GET {
                         }
                     } $recipient->groups_rs->all()
                 ]
-            }
+            },
+			intents => [
+				map {
+					{
+						id  => $_->id,
+						tag => $_->human_name,
+                        has_active_knowledge_base => $_->has_active_knowledge_base
+					}
+				} $issue->entity_rs->all()
+			]
         }
     );
 }
+
+sub _upload_picture {
+    my ( $self, $upload, $page_access_token ) = @_;
+
+    my $mimetype = mimetype( $upload->tempname );
+    my $tempname = $upload->tempname;
+
+    my $attachment_type;
+    if ( $mimetype =~ m/^image/ ) {
+        $attachment_type = 'image'
+    }
+    elsif ( $mimetype =~ m/^video/ ) {
+		$attachment_type = 'video'
+    }
+	elsif ( $mimetype =~ m/^audio/ ) {
+		$attachment_type = 'audio'
+    }
+    else {
+        $attachment_type = 'file'
+    }
+
+    die \[ 'picture', 'empty file' ]    unless $upload->size > 0;
+
+    my $asset = $self->_facebook->save_asset(
+        access_token    => $page_access_token,
+        attachment_type => $attachment_type,
+        file            => $tempname,
+        mimetype        => $mimetype
+    );
+
+	return {
+		attachment_id   => $asset->{attachment_id},
+		attachment_type => $attachment_type
+	};
+}
+
+sub _build__facebook { WebService::Facebook->instance }
 
 __PACKAGE__->meta->make_immutable;
 

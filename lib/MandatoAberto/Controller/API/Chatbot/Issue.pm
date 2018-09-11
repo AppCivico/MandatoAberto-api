@@ -3,6 +3,9 @@ use common::sense;
 use Moose;
 use namespace::autoclean;
 
+use JSON;
+use Encode;
+
 BEGIN { extends 'CatalystX::Eta::Controller::REST' }
 
 with "CatalystX::Eta::Controller::AutoBase";
@@ -23,6 +26,13 @@ __PACKAGE__->config(
         die \["fb_id", "could not find recipient with that fb_id"] unless $recipient;
 
         $params->{recipient_id} = $recipient->id;
+
+		my $entities = $c->req->params->{entities};
+        if ( $entities ) {
+			$entities = decode_json(Encode::encode_utf8($entities)) or die \['entities', 'could not decode json'];
+
+			$params->{entities} = $entities;
+        }
 
         return $params;
     },

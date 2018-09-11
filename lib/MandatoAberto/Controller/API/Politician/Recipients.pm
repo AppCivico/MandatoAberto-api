@@ -25,6 +25,7 @@ __PACKAGE__->config(
             gender        => $r->get_column('gender'),
             origin_dialog => $r->get_column('origin_dialog'),
             created_at    => $r->get_column('created_at'),
+            platform      => $r->get_column('platform'),
             groups        => [
                 map {
                     {
@@ -35,7 +36,14 @@ __PACKAGE__->config(
                     }
                 } $r->groups_rs->all()
             ],
-            platform => $r->get_column('platform'),
+            intents  => [
+                map {
+                    {
+                        id  => $_->id,
+                        tag => $_->human_name
+                    }
+                } $r->entity_rs->all()
+            ]
         };
      },
 );
@@ -70,7 +78,7 @@ sub list_GET {
             # mostro todos os recipients, independente da página de origem
             ( $has_active_page ? ( page_id => $politician->fb_page_id ) : () )
         },
-        # { page => $page, rows => $results }
+        { page => $page, rows => $results }
     );
 
     return $self->status_ok(
@@ -86,7 +94,26 @@ sub list_GET {
                         gender        => $_->get_column('gender'),
                         origin_dialog => $_->get_column('origin_dialog'),
                         platform      => $_->get_column('platform'),
-                        created_at    => $_->get_column('created_at')
+                        created_at    => $_->get_column('created_at'),
+                        groups        => [
+                            map {
+                                {
+                                    id               => $_->id,
+                                    name             => $_->get_column('name'),
+                                    recipients_count => $_->get_column('recipients_count'),
+                                    status           => $_->get_column('status'),
+                                }
+                            } $_->groups_rs->all()
+                        ],
+                        intents  => [
+                            map {
+
+                                {
+                                    id  => $_->id,
+                                    tag => $_->human_name
+                                }
+                            } $_->entity_rs->all()
+                        ]
                     }
                 } $c->stash->{collection}->all()
             ],

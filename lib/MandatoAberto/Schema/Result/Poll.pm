@@ -78,6 +78,12 @@ __PACKAGE__->table("poll");
   data_type: 'timestamp'
   is_nullable: 1
 
+=head2 notification_sent
+
+  data_type: 'boolean'
+  default_value: false
+  is_nullable: 0
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -103,6 +109,8 @@ __PACKAGE__->add_columns(
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "updated_at",
   { data_type => "timestamp", is_nullable => 1 },
+  "notification_sent",
+  { data_type => "boolean", default_value => \"false", is_nullable => 0 },
 );
 
 =head1 PRIMARY KEY
@@ -132,6 +140,21 @@ __PACKAGE__->belongs_to(
   "MandatoAberto::Schema::Result::Politician",
   { user_id => "politician_id" },
   { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
+);
+
+=head2 poll_notifications
+
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::PollNotification>
+
+=cut
+
+__PACKAGE__->has_many(
+  "poll_notifications",
+  "MandatoAberto::Schema::Result::PollNotification",
+  { "foreign.poll_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
 );
 
 =head2 poll_propagates
@@ -164,6 +187,21 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 poll_self_propagation_queues
+
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::PollSelfPropagationQueue>
+
+=cut
+
+__PACKAGE__->has_many(
+  "poll_self_propagation_queues",
+  "MandatoAberto::Schema::Result::PollSelfPropagationQueue",
+  { "foreign.poll_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 status
 
 Type: belongs_to
@@ -180,12 +218,14 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-02-20 17:53:18
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:HaRyBJRiXBD/xibKiPsezw
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-09-10 13:31:45
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:3HOo6MBQVh4H8r/dX/78yg
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
 use MandatoAberto::Utils;
+
+use JSON::MaybeXS;
 
 with 'MandatoAberto::Role::Verification';
 with 'MandatoAberto::Role::Verification::TransactionalActions::DBIC';
@@ -245,6 +285,55 @@ sub action_specs {
             });
         }
     };
+}
+
+sub question {
+    my ($self) = @_;
+
+    return $self->poll_questions->next;
+}
+
+sub options {
+    my ($self) = @_;
+
+    my $question = $self->question;
+    my @options  = $question->poll_question_options->all();
+
+    return @options;
+}
+
+sub build_content_object {
+    my ($self, $recipient) = @_;
+
+    my $question = $self->question;
+    my @options  = $self->options;
+
+	my $first_option  = $options[0];
+	my $second_option = $options[1];
+
+    my $res = encode_json ({
+        messaging_type => "UPDATE",
+        recipient      => {
+            id => $recipient->fb_id
+        },
+        message        => {
+            text => $question->content,
+			quick_replies => [
+				{
+					content_type => 'text',
+					title        => $first_option->content,
+					payload      => 'pollAnswerPropagate_' . $first_option->id
+				},
+				{
+					content_type => 'text',
+					title        => $second_option->content,
+					payload      => 'pollAnswerPropagate_' . $second_option->id
+				},
+			]
+        }
+    });
+
+    return $res;
 }
 
 __PACKAGE__->meta->make_immutable;
