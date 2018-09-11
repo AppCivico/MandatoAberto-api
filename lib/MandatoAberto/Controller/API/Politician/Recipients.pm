@@ -65,8 +65,8 @@ sub list_GET {
 
     my $politician = $c->stash->{politician};
 
-    my $page    = $c->req->params->{page}    || 1;
-    my $results = $c->req->params->{results} || 5000;
+    # my $page    = $c->req->params->{page}    || 1;
+    # my $results = $c->req->params->{results} || 5000;
 
     my $has_active_page = $politician->fb_page_id ? 1 : 0;
 
@@ -78,7 +78,7 @@ sub list_GET {
             # mostro todos os recipients, independente da página de origem
             ( $has_active_page ? ( page_id => $politician->fb_page_id ) : () )
         },
-        { page => $page, rows => $results }
+        # { page => $page, rows => $results }
     );
 
     return $self->status_ok(
