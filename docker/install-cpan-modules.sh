@@ -91,5 +91,6 @@ cpanm -n App::Sqitch \
  Starman \
  Template \
  Test::More \
+ LWP::Protocol::https \
  Time::HiRes \
  Try::Tiny::Retry
