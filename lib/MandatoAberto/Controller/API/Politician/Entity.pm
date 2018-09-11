@@ -99,11 +99,11 @@ sub list_GET {
                     my $e = $_;
 
                     +{
-						id              => $e->id,
-						recipient_count => $e->recipient_count,
-						created_at      => $e->created_at,
-						updated_at      => $e->updated_at,
-						tag             => $e->human_name,
+                        id              => $e->id,
+                        recipient_count => $e->recipient_count,
+                        created_at      => $e->created_at,
+                        updated_at      => $e->updated_at,
+                        tag             => $e->human_name,
                     }
                 } $c->stash->{collection}->search(
                     { politician_id => $c->stash->{politician}->id },
@@ -148,7 +148,7 @@ sub pending_GET {
                                     }
                                 } $e->get_recipients->all()
                             ]
-					    }
+                        }
                     }
                     else {  }
                 } $c->stash->{collection}->search(

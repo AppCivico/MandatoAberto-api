@@ -121,8 +121,8 @@ db_transaction {
         is($res->{id}, $citizen_id, 'id');
         is($res->{email}, $email, 'email');
         is($res->{cellphone}, $cellphone, 'cellphone');
-		is($res->{gender}, $gender, 'gender');
-		is($res->{poll_notification_sent}, 0, 'poll notification not sent');
+        is($res->{gender}, $gender, 'gender');
+        is($res->{poll_notification_sent}, 0, 'poll notification not sent');
     };
 
     my $new_email = fake_email()->();

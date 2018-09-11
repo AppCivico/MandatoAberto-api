@@ -205,13 +205,13 @@ sub action_specs {
             not defined $values{$_} and delete $values{$_} for keys %values;
 
             my @entities = @{ $self->entities };
-			my $active_knowledge_base_entry = $self->result_source->schema->resultset('PoliticianKnowledgeBase')->search(
-				{
-					politician_id => $self->politician->id,
-					entities      => "{@entities}",
-					active        => 1,
-				}
-			)->next;
+            my $active_knowledge_base_entry = $self->result_source->schema->resultset('PoliticianKnowledgeBase')->search(
+                {
+                    politician_id => $self->politician->id,
+                    entities      => "{@entities}",
+                    active        => 1,
+                }
+            )->next;
 
             if ( $values{active} == 1 && $active_knowledge_base_entry && $active_knowledge_base_entry->id != $self->id ) {
                 $active_knowledge_base_entry->update( { active => 0 } );
@@ -236,13 +236,13 @@ sub issue_rs {
 }
 
 sub entity_rs {
-	my ($self) = @_;
+    my ($self) = @_;
 
-	return $self->politician->politician_entities->search(
-		{
-			'me.id' => { 'in' => $self->entities ? $self->entities : 0 },
-		}
-	);
+    return $self->politician->politician_entities->search(
+        {
+            'me.id' => { 'in' => $self->entities ? $self->entities : 0 },
+        }
+    );
 }
 
 __PACKAGE__->meta->make_immutable;

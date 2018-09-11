@@ -156,12 +156,12 @@ SQL_QUERY
 sub has_active_knowledge_base {
     my ($self) = @_;
 
-	my $id = $self->id;
+    my $id = $self->id;
 
     my $knowledge_base_rs = $self->result_source->schema->resultset('PoliticianKnowledgeBase');
     $knowledge_base_rs    = $knowledge_base_rs->search( { politician_id => $self->politician->id } );
 
-	my $cond = \[ <<'SQL_QUERY', $id ];
+    my $cond = \[ <<'SQL_QUERY', $id ];
  @> ARRAY[?]::integer[]
 SQL_QUERY
 
@@ -242,11 +242,11 @@ sub human_name {
     elsif ( $self->name eq 'Seguranca' ){
         $name = 'Segurança';
     }
-	elsif ( $self->name eq 'Direitos_Humanos' ){
-		$name = 'Direitos Humanos';
-	}
+    elsif ( $self->name eq 'Direitos_Humanos' ){
+        $name = 'Direitos Humanos';
+    }
     elsif ( $self->name eq 'Proposta' ) {
-		$name = 'Proposta';
+        $name = 'Proposta';
     }
 
     return $name;

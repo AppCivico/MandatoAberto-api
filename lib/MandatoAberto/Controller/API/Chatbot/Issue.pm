@@ -27,11 +27,11 @@ __PACKAGE__->config(
 
         $params->{recipient_id} = $recipient->id;
 
-		my $entities = $c->req->params->{entities};
+        my $entities = $c->req->params->{entities};
         if ( $entities ) {
-			$entities = decode_json(Encode::encode_utf8($entities)) or die \['entities', 'could not decode json'];
+            $entities = decode_json(Encode::encode_utf8($entities)) or die \['entities', 'could not decode json'];
 
-			$params->{entities} = $entities;
+            $params->{entities} = $entities;
         }
 
         return $params;

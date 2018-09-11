@@ -36,14 +36,14 @@ sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }
 sub list_POST {
     my ($self, $c) = @_;
 
-	my $fb_id = $c->req->params->{fb_id};
-	die \["fb_id", "missing"] unless $fb_id;
+    my $fb_id = $c->req->params->{fb_id};
+    die \["fb_id", "missing"] unless $fb_id;
 
-	my $recipient = $c->model("DB::Recipient")->search( { 'me.fb_id' => $fb_id } )->next;
-	die \["fb_id", "could not find recipient with that fb_id"] unless $recipient;
+    my $recipient = $c->model("DB::Recipient")->search( { 'me.fb_id' => $fb_id } )->next;
+    die \["fb_id", "could not find recipient with that fb_id"] unless $recipient;
 
-	my $active = $c->req->params->{active} || 1;
-	die \['active', 'missing'] unless $active;
+    my $active = $c->req->params->{active} || 1;
+    die \['active', 'missing'] unless $active;
 
     my $blacklist_entry = $c->stash->{collection}->execute(
         $c,

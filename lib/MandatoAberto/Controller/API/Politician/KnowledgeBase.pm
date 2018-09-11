@@ -17,9 +17,9 @@ use File::MimeInfo;
 
 
 has _facebook => (
-	is         => "ro",
-	isa        => "WebService::Facebook",
-	lazy_build => 1,
+    is         => "ro",
+    isa        => "WebService::Facebook",
+    lazy_build => 1,
 );
 
 __PACKAGE__->config(
@@ -37,14 +37,14 @@ __PACKAGE__->config(
         die \['entity_id', 'missing'] unless $entity_id;
 
         my $file;
-		if ( my $upload = $c->req->upload("file") ) {
+        if ( my $upload = $c->req->upload("file") ) {
             my $page_access_token = $c->stash->{politician}->fb_page_access_token;
 
-			$file = $self->_upload_picture($upload, $page_access_token);
+            $file = $self->_upload_picture($upload, $page_access_token);
 
-			$params->{saved_attachment_id} = $file->{attachment_id};
-			$params->{attachment_type}     = $file->{attachment_type};
-		}
+            $params->{saved_attachment_id} = $file->{attachment_id};
+            $params->{attachment_type}     = $file->{attachment_type};
+        }
 
         $params->{entities} = [$entity_id];
 
@@ -65,8 +65,8 @@ __PACKAGE__->config(
             my $page_access_token = $c->stash->{politician}->fb_page_access_token;
 
             $file = $self->_upload_picture($upload, $page_access_token);
-			$params->{saved_attachment_id}   = $file->{attachment_id};
-			$params->{saved_attachment_type} = $file->{attachment_type};
+            $params->{saved_attachment_id}   = $file->{attachment_id};
+            $params->{saved_attachment_type} = $file->{attachment_type};
         }
 
         return $params;
@@ -74,7 +74,7 @@ __PACKAGE__->config(
 
     # AutoResultGET
     build_row => sub {
-		my ($r, $self, $c) = @_;
+        my ($r, $self, $c) = @_;
 
         return {
             id                    => $r->id,
@@ -137,10 +137,10 @@ sub list_GET {
         };
     }
     elsif ( $filter eq 'inactive' ) {
-		$cond = {
-			politician_id => $c->stash->{politician}->id,
-			active        => 0
-		};
+        $cond = {
+            politician_id => $c->stash->{politician}->id,
+            active        => 0
+        };
     }
 
     return $self->status_ok(
@@ -181,10 +181,10 @@ sub _upload_picture {
         $attachment_type = 'image'
     }
     elsif ( $mimetype =~ m/^video/ ) {
-		$attachment_type = 'video'
+        $attachment_type = 'video'
     }
-	elsif ( $mimetype =~ m/^audio/ ) {
-		$attachment_type = 'audio'
+    elsif ( $mimetype =~ m/^audio/ ) {
+        $attachment_type = 'audio'
     }
     else {
         $attachment_type = 'file'

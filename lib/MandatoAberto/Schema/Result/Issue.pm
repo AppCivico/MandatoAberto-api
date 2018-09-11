@@ -376,32 +376,32 @@ sub action_specs {
                     }
                 );
 
-				$self->_httpcb->add(
-					url     => $ENV{FB_API_URL} . '/me/messages?access_token=' . $access_token,
-					method  => "post",
-					headers => 'Content-Type: application/json',
-					body    => encode_json {
-						messaging_type => "UPDATE",
-						recipient => {
-							id => $recipient->fb_id
-						},
-						message => {
-							attachment => {
-								type    => $values{saved_attachment_type},
-								payload => {
-									attachment_id => $values{saved_attachment_id}
-								}
-							},
-							quick_replies => [
-								{
-									content_type => 'text',
-									title        => 'Voltar ao início',
-									payload      => 'mainMenu'
-								}
-							]
-						}
-					}
-				);
+                $self->_httpcb->add(
+                    url     => $ENV{FB_API_URL} . '/me/messages?access_token=' . $access_token,
+                    method  => "post",
+                    headers => 'Content-Type: application/json',
+                    body    => encode_json {
+                        messaging_type => "UPDATE",
+                        recipient => {
+                            id => $recipient->fb_id
+                        },
+                        message => {
+                            attachment => {
+                                type    => $values{saved_attachment_type},
+                                payload => {
+                                    attachment_id => $values{saved_attachment_id}
+                                }
+                            },
+                            quick_replies => [
+                                {
+                                    content_type => 'text',
+                                    title        => 'Voltar ao início',
+                                    payload      => 'mainMenu'
+                                }
+                            ]
+                        }
+                    }
+                );
             }
 
             $self->_httpcb->wait_for_all_responses();
@@ -415,13 +415,13 @@ sub action_specs {
 }
 
 sub entity_rs {
-	my ($self) = @_;
+    my ($self) = @_;
 
-	return $self->politician->politician_entities->search(
-		{
-			'me.id' => { 'in' => $self->entities ? $self->entities : 0 },
-		}
-	);
+    return $self->politician->politician_entities->search(
+        {
+            'me.id' => { 'in' => $self->entities ? $self->entities : 0 },
+        }
+    );
 }
 
 sub _build__httpcb { WebService::HttpCallback::Async->instance }

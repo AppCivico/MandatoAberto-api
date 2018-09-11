@@ -8,35 +8,35 @@ use MandatoAberto::Utils;
 my $schema = MandatoAberto->model('DB');
 
 db_transaction {
-	use_ok 'MandatoAberto::Worker::PollNotification';
+    use_ok 'MandatoAberto::Worker::PollNotification';
 
-	my $worker = new_ok('MandatoAberto::Worker::PollNotification', [ schema => $schema ]);
-	ok( $worker->does('MandatoAberto::Worker'), 'worker does MandatoAberto::Worker' );
+    my $worker = new_ok('MandatoAberto::Worker::PollNotification', [ schema => $schema ]);
+    ok( $worker->does('MandatoAberto::Worker'), 'worker does MandatoAberto::Worker' );
 
-	my $security_token = $ENV{CHATBOT_SECURITY_TOKEN};
+    my $security_token = $ENV{CHATBOT_SECURITY_TOKEN};
 
-	create_politician(fb_page_id => fake_words(1)->());
-	my $politician_id = stash "politician.id";
+    create_politician(fb_page_id => fake_words(1)->());
+    my $politician_id = stash "politician.id";
     my $politician    = $schema->resultset('Politician')->find($politician_id);
 
     $politician->poll_self_propagation_config->update( { active => 1 } );
 
-	api_auth_as user_id => $politician_id;
+    api_auth_as user_id => $politician_id;
 
-	my @recipient_ids = ();
-	subtest 'mocking recipients' => sub {
+    my @recipient_ids = ();
+    subtest 'mocking recipients' => sub {
 
-		# Criando três recipients.
-		for (my $i = 0; $i <= 3; $i++) {
-			create_recipient(
-				politician_id  => $politician_id,
-				security_token => $security_token
-			);
+        # Criando três recipients.
+        for (my $i = 0; $i <= 3; $i++) {
+            create_recipient(
+                politician_id  => $politician_id,
+                security_token => $security_token
+            );
 
-			my $recipient_id = stash 'recipient.id';
-			push @recipient_ids, $recipient_id;
-		}
-	};
+            my $recipient_id = stash 'recipient.id';
+            push @recipient_ids, $recipient_id;
+        }
+    };
 
     rest_post "/api/register/poll",
         name                => "Sucessful poll creation",
@@ -51,14 +51,14 @@ db_transaction {
         ]
     ;
     my $poll_id = stash "p1.id";
-	my $poll    = $schema->resultset('Poll')->find($poll_id);
+    my $poll    = $schema->resultset('Poll')->find($poll_id);
 
     my $poll_self_propagation_queue_rs = $schema->resultset('PollSelfPropagationQueue');
     is ( $poll_self_propagation_queue_rs->count, 4, '4 on queue' );
 
-	ok ($worker->run_once(), 'run once');
+    ok ($worker->run_once(), 'run once');
 
-	is ($poll_self_propagation_queue_rs->count, "3", "1 out of queue");
+    is ($poll_self_propagation_queue_rs->count, "3", "1 out of queue");
 };
 
 done_testing();

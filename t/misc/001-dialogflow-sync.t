@@ -16,7 +16,7 @@ db_transaction {
     ok ( $politician_entity_rs->sync_dialogflow, 'sync ok' );
     is ( $politician_entity_rs->count, 3, '3 entities created' );
 
-	create_politician;
+    create_politician;
     ok ( $politician_entity_rs->sync_dialogflow, 'sync ok' );
     is ( $politician_entity_rs->count, 6, '6 entities created' );
 };

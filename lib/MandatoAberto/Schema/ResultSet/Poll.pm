@@ -89,10 +89,10 @@ sub action_specs {
 
             my $poll = $self->create(\%values);
 
-			my $politician = $self->result_source->schema->resultset('Politician')->find($values{politician_id});
+            my $politician = $self->result_source->schema->resultset('Politician')->find($values{politician_id});
 
-			if ( $politician->poll_self_propagation_active ) {
-				my $poll_self_propagation_rs = $self->result_source->schema->resultset('PollSelfPropagationQueue');
+            if ( $politician->poll_self_propagation_active ) {
+                my $poll_self_propagation_rs = $self->result_source->schema->resultset('PollSelfPropagationQueue');
                 my @ids = $politician->recipients->search( { page_id => $politician->fb_page_id } )->get_column('id')->all;
 
                 my @queue;
@@ -106,7 +106,7 @@ sub action_specs {
                 }
 
                 $poll_self_propagation_rs->populate(\@queue);
-			}
+            }
 
             return $poll;
         }

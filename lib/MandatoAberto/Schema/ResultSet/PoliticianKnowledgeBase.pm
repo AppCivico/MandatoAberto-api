@@ -74,25 +74,25 @@ sub action_specs {
 
             my $politician_knowledge_base;
             $self->result_source->schema->txn_do(sub{
-				my @entities = @{ $values{entities} };
+                my @entities = @{ $values{entities} };
 
-				my $active_knowledge_base_entry = $self->search(
-					{
-						politician_id => $values{politician_id},
-						entities      => "{@entities}",
-					}
-				)->next;
+                my $active_knowledge_base_entry = $self->search(
+                    {
+                        politician_id => $values{politician_id},
+                        entities      => "{@entities}",
+                    }
+                )->next;
 
                 if ( $active_knowledge_base_entry ) {
                     die \['politician_id', 'politician alredy has knowledge base for that entity']
                 }
 
-				$politician_knowledge_base = $self->create(
-					{
-						%values,
+                $politician_knowledge_base = $self->create(
+                    {
+                        %values,
                         entities => "{@entities}"
-					}
-				);
+                    }
+                );
             });
 
             return $politician_knowledge_base;

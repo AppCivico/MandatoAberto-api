@@ -34,15 +34,15 @@ sub list_GET {
         }
     );
 
-	my $entities = $c->req->params->{entities};
-	die \['entities', 'missing'] unless $entities;
-	$entities = decode_json(Encode::encode_utf8($entities)) or die \['entities', 'could not decode json'];
+    my $entities = $c->req->params->{entities};
+    die \['entities', 'missing'] unless $entities;
+    $entities = decode_json(Encode::encode_utf8($entities)) or die \['entities', 'could not decode json'];
 
     my @entities_names;
-	my @entities = keys %{$entities};
-	for my $entity (@entities) {
+    my @entities = keys %{$entities};
+    for my $entity (@entities) {
         push @entities_names, $entity;
-	}
+    }
 
     $c->stash->{collection} = $c->stash->{collection}->get_knowledge_base_by_entity_name(@entities_names);
 
@@ -53,8 +53,8 @@ sub list_GET {
                 map {
                     my $k = $_;
                     +{
-						id                    => $k->id,
-						answer                => $k->answer,
+                        id                    => $k->id,
+                        answer                => $k->answer,
                         saved_attachment_type => $k->saved_attachment_type,
                         saved_attachment_id   => $k->saved_attachment_id,
                         entities => [
