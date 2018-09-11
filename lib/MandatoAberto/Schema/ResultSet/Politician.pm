@@ -161,8 +161,8 @@ sub action_specs {
                 }
             );
 
-			$self->result_source->schema->resultset("PoliticianPrivateReplyConfig")->create( { politician_id => $politician->id } );
-			$self->result_source->schema->resultset("PollSelfPropagationConfig")->create( { politician_id => $politician->id } );
+            $self->result_source->schema->resultset("PoliticianPrivateReplyConfig")->create( { politician_id => $politician->id } );
+            $self->result_source->schema->resultset("PollSelfPropagationConfig")->create( { politician_id => $politician->id } );
 
             $politician->send_greetings_email();
             $politician->send_new_register_email();

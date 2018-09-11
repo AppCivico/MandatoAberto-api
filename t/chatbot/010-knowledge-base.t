@@ -7,17 +7,17 @@ use MandatoAberto::Test::Further;
 my $schema = MandatoAberto->model("DB");
 
 db_transaction {
-	my $security_token = $ENV{CHATBOT_SECURITY_TOKEN};
+    my $security_token = $ENV{CHATBOT_SECURITY_TOKEN};
 
-	create_politician(
-		fb_page_id           => fake_words(1)->(),
-		fb_page_access_token => fake_words(1)->()
-	);
-	my $politician    = $schema->resultset('Politician')->find(stash 'politician.id');
-	my $politician_id = $politician->id;
+    create_politician(
+        fb_page_id           => fake_words(1)->(),
+        fb_page_access_token => fake_words(1)->()
+    );
+    my $politician    = $schema->resultset('Politician')->find(stash 'politician.id');
+    my $politician_id = $politician->id;
 
-	create_recipient( politician_id => $politician_id );
-	my $recipient = $schema->resultset('Recipient')->find(stash 'recipient.id');
+    create_recipient( politician_id => $politician_id );
+    my $recipient = $schema->resultset('Recipient')->find(stash 'recipient.id');
 
     # Criando entrada de knowledge-base
     rest_post "/api/chatbot/issue",
@@ -68,8 +68,8 @@ db_transaction {
 
     my $politician_entity_rs = $schema->resultset('PoliticianEntity');
 
-	my $first_entity  = $politician_entity_rs->search( { name => 'Saude' } )->next;
-	my $second_entity = $politician_entity_rs->search( { name => 'Aborto' } )->next;
+    my $first_entity  = $politician_entity_rs->search( { name => 'Saude' } )->next;
+    my $second_entity = $politician_entity_rs->search( { name => 'Aborto' } )->next;
 
     rest_post "/api/politician/$politician_id/knowledge-base",
         name                => 'creating knowledge base entry',

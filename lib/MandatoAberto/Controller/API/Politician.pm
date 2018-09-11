@@ -18,8 +18,8 @@ __PACKAGE__->config(
     prepare_params_for_update => sub {
         my ($self, $c, $params) = @_;
 
-		$params->{share_url}  = $c->req->params->{picframe_url}  if $c->req->params->{picframe_url};
-		$params->{share_text} = $c->req->params->{picframe_text} if $c->req->params->{picframe_text};
+        $params->{share_url}  = $c->req->params->{picframe_url}  if $c->req->params->{picframe_url};
+        $params->{share_text} = $c->req->params->{picframe_text} if $c->req->params->{picframe_text};
 
         return $params;
     },

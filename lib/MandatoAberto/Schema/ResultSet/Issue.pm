@@ -54,7 +54,7 @@ sub action_specs {
             not defined $values{$_} and delete $values{$_} for keys %values;
 
             my $issue;
-        	$self->result_source->schema->txn_do(sub {
+            $self->result_source->schema->txn_do(sub {
                 # Uma issue sempre é criada como aberta
                 $values{open} = 1;
 
@@ -64,20 +64,20 @@ sub action_specs {
 
                 my @entities_id;
                 if ( $values{entities} ) {
-					my $entity_val = $values{entities};
+                    my $entity_val = $values{entities};
 
-					my @entities = keys %{$entity_val};
-					for my $entity (@entities) {
+                    my @entities = keys %{$entity_val};
+                    for my $entity (@entities) {
 
-						if ( scalar @{ $entity_val->{$entity} } > 0 ) {
+                        if ( scalar @{ $entity_val->{$entity} } > 0 ) {
 
-							my $upsert_entity = $politician->politician_entities->find_or_create( { name => $entity } );
+                            my $upsert_entity = $politician->politician_entities->find_or_create( { name => $entity } );
 
-							$recipient->add_to_politician_entity( $upsert_entity->id );
-							push @entities_id, $upsert_entity->id;
+                            $recipient->add_to_politician_entity( $upsert_entity->id );
+                            push @entities_id, $upsert_entity->id;
 
-						}
-					}
+                        }
+                    }
                 }
 
                 $issue = $self->create(

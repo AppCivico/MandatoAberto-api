@@ -18,9 +18,9 @@ with "CatalystX::Eta::Controller::AutoBase";
 with "CatalystX::Eta::Controller::AutoListGET";
 
 has _facebook => (
-	is         => "ro",
-	isa        => "WebService::Facebook",
-	lazy_build => 1,
+    is         => "ro",
+    isa        => "WebService::Facebook",
+    lazy_build => 1,
 );
 
 __PACKAGE__->config(
@@ -76,8 +76,8 @@ sub list_POST {
 
         if ( my $upload = $c->req->upload("file") ) {
             $file = $self->_upload_picture($upload, $page_access_token);
-			$c->req->params->{saved_attachment_id} = $file->{attachment_id};
-			$c->req->params->{attachment_type}     = $file->{attachment_type};
+            $c->req->params->{saved_attachment_id} = $file->{attachment_id};
+            $c->req->params->{attachment_type}     = $file->{attachment_type};
         }
 
         $c->req->params->{attachment_type} ne 'template' ? () :
@@ -166,10 +166,10 @@ sub _upload_picture {
         $attachment_type = 'image'
     }
     elsif ( $mimetype =~ m/^video/ ) {
-		$attachment_type = 'video'
+        $attachment_type = 'video'
     }
-	elsif ( $mimetype =~ m/^audio/ ) {
-		$attachment_type = 'audio'
+    elsif ( $mimetype =~ m/^audio/ ) {
+        $attachment_type = 'audio'
     }
     else {
         $attachment_type = 'file'

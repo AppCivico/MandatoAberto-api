@@ -432,48 +432,48 @@ sub groups_rs {
 }
 
 sub entity_rs {
-	my ($self) = @_;
+    my ($self) = @_;
 
-	return $self->politician->politician_entities->search(
-		{
-			'me.id' => { 'in' => $self->entities ? $self->entities : 0 },
-		}
-	);
+    return $self->politician->politician_entities->search(
+        {
+            'me.id' => { 'in' => $self->entities ? $self->entities : 0 },
+        }
+    );
 }
 
 sub add_to_politician_entity {
     my ($self, $politician_entity_id) = @_;
 
-	my $ret;
-	$self->result_source->schema->txn_do(
-		sub {
-			# Verificando se este recipient já estava na entidade.
-			my $recipients_rs = $self->politician->recipients;
+    my $ret;
+    $self->result_source->schema->txn_do(
+        sub {
+            # Verificando se este recipient já estava na entidade.
+            my $recipients_rs = $self->politician->recipients;
 
-			my $already_in_this_group = $recipients_rs->search(
-				{
-					'-and' => [
-						'me.id' => $self->id,
-						\[ '? =ANY(entities)', $politician_entity_id ],
-					],
-				},
-				{ select => [ \1 ] },
-			)->next;
+            my $already_in_this_group = $recipients_rs->search(
+                {
+                    '-and' => [
+                        'me.id' => $self->id,
+                        \[ '? =ANY(entities)', $politician_entity_id ],
+                    ],
+                },
+                { select => [ \1 ] },
+            )->next;
 
-			return if $already_in_this_group;
+            return if $already_in_this_group;
 
-			$ret = $self->update( { entities => \[ "array_append(entities, ?)", $politician_entity_id ] } );
+            $ret = $self->update( { entities => \[ "array_append(entities, ?)", $politician_entity_id ] } );
 
-			$self->politician->politician_entities->search( { 'me.id' => $politician_entity_id } )->update(
-				{
-					recipient_count => \'recipient_count + 1',
-					updated_at      => \'NOW()',
-				}
-			);
-		}
-	);
+            $self->politician->politician_entities->search( { 'me.id' => $politician_entity_id } )->update(
+                {
+                    recipient_count => \'recipient_count + 1',
+                    updated_at      => \'NOW()',
+                }
+            );
+        }
+    );
 
-	return $ret;
+    return $ret;
 
 }
 

@@ -308,8 +308,8 @@ sub build_content_object {
     my $question = $self->question;
     my @options  = $self->options;
 
-	my $first_option  = $options[0];
-	my $second_option = $options[1];
+    my $first_option  = $options[0];
+    my $second_option = $options[1];
 
     my $res = encode_json ({
         messaging_type => "UPDATE",
@@ -318,18 +318,18 @@ sub build_content_object {
         },
         message        => {
             text => $question->content,
-			quick_replies => [
-				{
-					content_type => 'text',
-					title        => $first_option->content,
-					payload      => 'pollAnswerPropagate_' . $first_option->id
-				},
-				{
-					content_type => 'text',
-					title        => $second_option->content,
-					payload      => 'pollAnswerPropagate_' . $second_option->id
-				},
-			]
+            quick_replies => [
+                {
+                    content_type => 'text',
+                    title        => $first_option->content,
+                    payload      => 'pollAnswerPropagate_' . $first_option->id
+                },
+                {
+                    content_type => 'text',
+                    title        => $second_option->content,
+                    payload      => 'pollAnswerPropagate_' . $second_option->id
+                },
+            ]
         }
     });
 

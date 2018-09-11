@@ -202,8 +202,8 @@ db_transaction {
 
         is($res->{picframe_url},  'https://foobar.com.br', 'picframe_url');
         is($res->{picframe_text}, 'foobar',                'share_text');
-		is($res->{share_url},     'https://foobar.com.br', 'picframe_url');
-		is($res->{share_text},    'foobar',                'share_text');
+        is($res->{share_url},     'https://foobar.com.br', 'picframe_url');
+        is($res->{share_text},    'foobar',                'share_text');
     };
 
     rest_put "/api/politician/$politician_id",
@@ -214,16 +214,16 @@ db_transaction {
         ]
     ;
 
-	rest_reload_list "get_politician";
+    rest_reload_list "get_politician";
 
-	stash_test "get_politician.list" => sub {
-		my $res = shift;
+    stash_test "get_politician.list" => sub {
+        my $res = shift;
 
-		is($res->{picframe_url},  'https://google.com.br', 'picframe_url');
-		is($res->{picframe_text}, 'barbaz',                'share_text');
-		is($res->{share_url},     'https://google.com.br', 'picframe_url');
-		is($res->{share_text},    'barbaz',                'share_text');
-	};
+        is($res->{picframe_url},  'https://google.com.br', 'picframe_url');
+        is($res->{picframe_text}, 'barbaz',                'share_text');
+        is($res->{share_url},     'https://google.com.br', 'picframe_url');
+        is($res->{share_text},    'barbaz',                'share_text');
+    };
 
     rest_put "/api/politician/$politician_id",
         name => "Adding picframe URL",

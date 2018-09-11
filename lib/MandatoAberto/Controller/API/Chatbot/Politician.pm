@@ -59,8 +59,8 @@ sub list_GET {
                     gender         => $p->get_column('gender'),
                     address_city   => $p->get_column('address_city_id'),
                     address_state  => $p->get_column('address_state_id'),
-					picframe_url   => $p->get_column('share_url'),
-					picframe_text  => $p->get_column('share_text'),
+                    picframe_url   => $p->get_column('share_url'),
+                    picframe_text  => $p->get_column('share_text'),
 
                     share => {
                         url  => $p->get_column('share_url'),

@@ -8,9 +8,9 @@ use WebService::Dialogflow;
 extends "DBIx::Class::ResultSet";
 
 has _dialogflow => (
-	is         => "ro",
-	isa        => "WebService::Dialogflow",
-	lazy_build => 1,
+    is         => "ro",
+    isa        => "WebService::Dialogflow",
+    lazy_build => 1,
 );
 
 sub sync_with_dialogflow {
@@ -19,9 +19,9 @@ sub sync_with_dialogflow {
     my @entities_names;
     my $res = $self->_dialogflow->get_entities;
 
-	for my $entity ( @{ $res->{entityTypes} } ) {
-		push @entities_names, $entity->{displayName};
-	}
+    for my $entity ( @{ $res->{entityTypes} } ) {
+        push @entities_names, $entity->{displayName};
+    }
 
     $self->result_source->schema->txn_do(sub{
         for my $entity_name (@entities_names) {
