@@ -497,6 +497,15 @@ sub human_name {
     elsif ( $self->name eq 'propostas_criancas' ) {
         $name = 'propostas para crianças';
     }
+    elsif ( $self->name eq 'Infraestrutura' ) {
+        $name = 'Infraestrutura'
+    }
+    elsif ( $self->name eq 'propostas_saude' ) {
+        $name = 'Propostas para a saúde';
+    }
+    elsif ( $self->name eq 'relacao_congresso' ) {
+		$name = 'Relação com o congresso';
+    }
 
     return $name;
 }
