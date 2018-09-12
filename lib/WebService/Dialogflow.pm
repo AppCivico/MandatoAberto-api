@@ -16,6 +16,8 @@ sub get_entities {
 
     die \['DIALOGFLOW_DEVELOPER_ACCESS_TOKEN', 'missing'] unless $ENV{DIALOGFLOW_DEVELOPER_ACCESS_TOKEN};
 
+    my $project = $ENV{DIALOGFLOW_PROJECT_NAME} || 'mandato-aberto';
+
     my $res;
     if (is_test()) {
         $res = $MandatoAberto::Test::Further::dialogflow_response;
@@ -23,7 +25,7 @@ sub get_entities {
     else {
         eval {
             retry {
-                my $url = $ENV{DIALOGFLOW_URL} . '/v2/projects/mandato-aberto/agent/entityTypes';
+                my $url = $ENV{DIALOGFLOW_URL} . "/v2/projects/$project/agent/entityTypes";
                 $res = $self->furl->get(
                     $url,
                     [ 'Authorization', $ENV{DIALOGFLOW_DEVELOPER_ACCESS_TOKEN} ]
