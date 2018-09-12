@@ -106,21 +106,24 @@ sub list_GET {
     if ( $filter eq 'open' ) {
         $cond = {
             'me.politician_id' => $politician_id,,
-            open               => 1
+            open               => 1,
+            'me.message'       => { '!=' => 'Participar' }
         }
     }
     elsif ( $filter eq 'ignored' ) {
         $cond = {
             'me.politician_id' => $politician_id,,
             open               => 0,
-            reply              => \'IS NULL'
+            reply              => \'IS NULL',
+            'me.message'       => { '!=' => 'Participar' }
         }
     }
     else {
         $cond = {
             'me.politician_id' => $politician_id,,
             open               => 0,
-            reply              => \'IS NOT NULL'
+            reply              => \'IS NOT NULL',
+            'me.message'       => { '!=' => 'Participar' }
         }
     }
 

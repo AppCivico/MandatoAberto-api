@@ -127,7 +127,7 @@ sub list_GET {
 
                     +{
                         campaign_id         => $dm->get_column('campaign_id'),
-                        content             => $dm->get_column('content'),
+                        content             => $dm->get_column('content') ? $dm->get_column('content') : '(Campanha realizada com mídia de imagem ou áudio)',
                         created_at          => $dm->get_column('created_at'),
                         name                => $dm->get_column('name'),
                         saved_attachment_id => $dm->get_column('saved_attachment_id'),

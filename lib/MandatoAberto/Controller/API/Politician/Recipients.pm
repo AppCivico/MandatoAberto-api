@@ -86,9 +86,13 @@ sub list_GET {
         entity => {
             recipients => [
                 map {
+                    # Tratando caso de pessoas que entraram no banco com o nome undefined undefined
+                    my $name = $_->get_column('name');
+                    $name = $name eq 'undefined undefined' ? 'Não definido' : $name;
+
                     +{
                         id            => $_->get_column('id'),
-                        name          => $_->get_column('name'),
+                        name          => $name,
                         cellphone     => $_->get_column('cellphone'),
                         email         => $_->get_column('email'),
                         gender        => $_->get_column('gender'),

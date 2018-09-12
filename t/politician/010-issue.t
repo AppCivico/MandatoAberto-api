@@ -128,6 +128,26 @@ db_transaction {
         is ( $res->{ignored}, 1, 'issue was ignored' );
     };
 
+    # Testando issue com conteúdo "Participar"
+    rest_post "/api/chatbot/issue",
+        name                => "issue creation",
+        automatic_load_item => 0,
+        stash               => "i9",
+        [
+            politician_id  => $politician_id,
+            fb_id          => $recipient_fb_id,
+            message        => 'Participar',
+            security_token => $security_token
+        ]
+    ;
+
+    rest_reload_list 'get_issues';
+    stash_test 'get_issues.list' => sub {
+        my $res = shift;
+
+        is ( scalar @{ $res->{issues} }, 0, 'no open issues' );
+    };
+
     rest_post "/api/chatbot/issue",
         name                => "issue creation",
         automatic_load_item => 0,
