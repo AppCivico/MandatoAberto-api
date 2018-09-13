@@ -38,7 +38,7 @@ while ( my $row = $csv->getline($fh) ) {
             politician_id => $politician_id
         }
     )->next;
-    die 'could not find entity for that politician with name: ' . $row->[2];
+    next unless $politician_entity;
 
     my $kb = {
         politician_id => $politician_id,
