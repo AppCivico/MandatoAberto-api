@@ -45,9 +45,11 @@ sub action_specs {
             if ($existing_entry) {
                 if ( $values{active} == 1 ) {
                     $existing_entry->delete;
+                    $self->result_source->schema->resultset("Recipient")->find($values{recipient_id})->update( { fb_opt_in => 1 } );
                     return 1;
                 }
                 else {
+                    $self->result_source->schema->resultset("Recipient")->find($values{recipient_id})->update( { fb_opt_in => 0 } );
                     return $existing_entry;
                 }
 
