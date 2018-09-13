@@ -175,8 +175,82 @@ SQL_QUERY
 sub human_name {
     my ($self) = @_;
 
+    # TODO passar isso para uma coluna no banco
+
     my $name;
-    if ( $self->name eq 'direitos_animais' ) {
+    if ( $self->name eq 'Aborto' ) {
+        $name = 'Aborto';
+    }
+    elsif ( $self->name eq 'Bolsa_Familia' ) {
+        $name = 'Bolsa Família';
+    }
+    elsif ( $self->name eq 'Combate_a_corrupcao' ) {
+        $name = 'Combate a Corrupção';
+    }
+    elsif ( $self->name eq 'Desemprego' ) {
+        $name = 'Desemprego';
+    }
+    elsif ( $self->name eq 'Direita_ou_Esquerda' ) {
+        $name = 'Direita ou Esquerda';
+    }
+    elsif ( $self->name eq 'Economia' ){
+        $name = 'Economia';
+    }
+    elsif ( $self->name eq 'Educacao' ){
+        $name = 'Educação';
+    }
+    elsif ( $self->name eq 'Emprego' ){
+        $name = 'Emprego';
+    }
+    elsif ( $self->name eq 'Gastos_Publicos' ){
+        $name = 'Gastos Públicos';
+    }
+    elsif ( $self->name eq 'Impostos' ){
+        $name = 'Impostos';
+    }
+    elsif ( $self->name eq 'Infraestrutura' ){
+        $name = 'Infraestrutura';
+    }
+    elsif ( $self->name eq 'Lava_Jato' ){
+        $name = 'Lava Jato';
+    }
+    elsif ( $self->name eq 'Partido' ){
+        $name = 'Partido';
+    }
+    elsif ( $self->name eq 'Politica' ){
+        $name = 'Política';
+    }
+    elsif ( $self->name eq 'Politica_Externa' ){
+        $name = 'Política Externa';
+    }
+    elsif ( $self->name eq 'Presidente' ){
+        $name = 'Presidente';
+    }
+    elsif ( $self->name eq 'Previdencia_Social' ){
+        $name = 'Previdência Social';
+    }
+    elsif ( $self->name eq 'Privatizacao' ){
+        $name = 'Privatização';
+    }
+    elsif ( $self->name eq 'Programas_Sociais' ){
+        $name = 'Programas Sociais';
+    }
+    elsif ( $self->name eq 'Reforma_Trabalhista' ){
+        $name = 'Reforma Trabalhista';
+    }
+    elsif ( $self->name eq 'Saude' ){
+        $name = 'Saúde';
+    }
+    elsif ( $self->name eq 'Seguranca' ){
+        $name = 'Segurança';
+    }
+    elsif ( $self->name eq 'Direitos_Humanos' ){
+        $name = 'Direitos Humanos';
+    }
+    elsif ( $self->name eq 'Proposta' ) {
+        $name = 'Proposta';
+    }
+    elsif ( $self->name eq 'direitos_animais' ) {
         $name = 'direitos dos animais';
     }
     elsif ( $self->name eq 'ciencia_tecnologia_inovacao' ) {
@@ -504,7 +578,7 @@ sub human_name {
         $name = 'Propostas para a saúde';
     }
     elsif ( $self->name eq 'relacao_congresso' ) {
-		$name = 'Relação com o congresso';
+        $name = 'Relação com o congresso';
     }
 
     return $name;
