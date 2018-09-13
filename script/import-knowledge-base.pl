@@ -43,7 +43,7 @@ while ( my $row = $csv->getline($fh) ) {
     my $kb = {
         politician_id => $politician_id,
         entities      => [ $politician_entity->id ],
-        answer        => $row->[1],
+        answer        => $row->[0],
     };
 
     push @rows, $kb;
