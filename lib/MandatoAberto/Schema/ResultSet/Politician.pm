@@ -208,4 +208,15 @@ sub get_politicians {
     ]
 }
 
+sub with_active_fb_page {
+    my ( $self ) = @_;
+
+    return $self->search(
+        {
+            fb_page_id           => \'IS NOT NULL',
+            fb_page_access_token => \'IS NOT NULL'
+        }
+    );
+}
+
 1;
