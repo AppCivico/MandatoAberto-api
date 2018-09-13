@@ -17,7 +17,7 @@ my $politician_rs        = $schema->resultset('Politician');
 my $politician_id = 0;
 
 # Setando politician_id correto para o usuário respectivo
-$politician_id = 1;
+$politician_id = 2;
 
 my @rows;
 my $csv = Text::CSV->new(
@@ -38,12 +38,12 @@ while ( my $row = $csv->getline($fh) ) {
             politician_id => $politician_id
         }
     )->next;
-    die 'could not find entity for that politician with name: ' . $row->[2];
+    next unless $politician_entity;
 
     my $kb = {
         politician_id => $politician_id,
         entities      => [ $politician_entity->id ],
-        answer        => $row->[1],
+        answer        => $row->[0],
     };
 
     push @rows, $kb;
