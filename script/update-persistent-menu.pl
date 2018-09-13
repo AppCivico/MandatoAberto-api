@@ -17,6 +17,8 @@ my $politician_rs = $schema->resultset('Politician')->with_active_fb_page;
 while ( my $politician = $politician_rs->next() ) {
     my $access_token = $politician->fb_page_access_token;
 
+    print STDERR "\npolitician_id: " . $politician->id . "\n";
+
     my $url = "https://graph.facebook.com/v2.6/me/messenger_profile?access_token=$access_token";
 
 	my $res = $furl->post(
