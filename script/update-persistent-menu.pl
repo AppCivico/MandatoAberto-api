@@ -54,7 +54,8 @@ while ( my $politician = $politician_rs->next() ) {
 		}
 	);
 
-    die $res->decoded_content unless $res->is_success;
+	print STDERR "\nfailed for id: " . $politician->id . "\n" unless $res->is_success;
+    print STDERR "\ndecoded content: " . $res->decoded_content . "\n" unless $res->is_success;
 }
 
 1;
