@@ -17,7 +17,7 @@ my $politician_rs        = $schema->resultset('Politician');
 my $politician_id = 0;
 
 # Setando politician_id correto para o usuário respectivo
-$politician_id = 1;
+$politician_id = 2;
 
 my @rows;
 my $csv = Text::CSV->new(
