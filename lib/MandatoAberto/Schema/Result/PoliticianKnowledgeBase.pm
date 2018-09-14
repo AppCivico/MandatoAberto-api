@@ -69,7 +69,7 @@ __PACKAGE__->table("politician_knowledge_base");
 =head2 answer
 
   data_type: 'text'
-  is_nullable: 0
+  is_nullable: 1
 
 =head2 updated_at
 
@@ -110,7 +110,7 @@ __PACKAGE__->add_columns(
   "active",
   { data_type => "boolean", default_value => \"true", is_nullable => 0 },
   "answer",
-  { data_type => "text", is_nullable => 0 },
+  { data_type => "text", is_nullable => 1 },
   "updated_at",
   { data_type => "timestamp", is_nullable => 1 },
   "created_at",
@@ -156,8 +156,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-08-24 17:37:39
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:rAS+z1veqng1WBN4rI8yfw
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-09-14 11:24:48
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:mLemE036rquaQxAAlD84Bw
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

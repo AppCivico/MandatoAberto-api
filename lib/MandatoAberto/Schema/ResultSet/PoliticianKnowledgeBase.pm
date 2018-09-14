@@ -23,7 +23,7 @@ sub verifiers_specs {
                     type       => "Int",
                 },
                 answer => {
-                    required   => 1,
+                    required   => 0,
                     type       => 'Str',
                     max_lenght => 300
                 },
@@ -75,6 +75,10 @@ sub action_specs {
             my $politician_knowledge_base;
             $self->result_source->schema->txn_do(sub{
                 my @entities = @{ $values{entities} };
+
+                if ( $values{saved_attachment_id} ) {
+                    die \['saved_attachment_type', 'missing'] unless $values{saved_attachment_type};
+                }
 
                 my $active_knowledge_base_entry = $self->search(
                     {
