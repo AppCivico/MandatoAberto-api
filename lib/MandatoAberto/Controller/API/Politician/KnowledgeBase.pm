@@ -42,8 +42,8 @@ __PACKAGE__->config(
 
             $file = $self->_upload_picture($upload, $page_access_token);
 
-            $params->{saved_attachment_id} = $file->{attachment_id};
-            $params->{attachment_type}     = $file->{attachment_type};
+            $params->{saved_attachment_id}   = $file->{attachment_id};
+            $params->{saved_attachment_type} = $file->{attachment_type};
         }
 
         $params->{entities} = [$entity_id];
