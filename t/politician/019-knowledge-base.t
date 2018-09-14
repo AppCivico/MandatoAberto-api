@@ -61,14 +61,6 @@ db_transaction {
     my $question = fake_sentences(1)->();
     my $answer   = fake_sentences(2)->();
 
-
-    rest_post "/api/politician/$politician_id/knowledge-base",
-        name    => 'creating knowledge base entry without answer',
-        is_fail => 1,
-        code    => 400,
-        [ entity_id => $politician_entity_id ]
-    ;
-
     rest_post "/api/politician/$politician_id/knowledge-base",
         name    => 'creating knowledge base entry with invalid entity_id',
         is_fail => 1,
