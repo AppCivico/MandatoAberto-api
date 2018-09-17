@@ -618,7 +618,7 @@ sub verifiers_specs {
                                 fb_page_id => $fb_page_id,
                                 user_id    => { '!=' => $self->user_id }
                             }
-                        )->count and die \["fb_page_id", "alredy exists"];
+                        )->count and die \["fb_page_id", "page already in use"];
 
                         return 1;
                     }
