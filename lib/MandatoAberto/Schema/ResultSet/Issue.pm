@@ -66,18 +66,12 @@ sub action_specs {
                 if ( $values{entities} ) {
                     my $entity_val = $values{entities};
 
-                    my @entities = keys %{$entity_val};
-                    for my $entity (@entities) {
+                    my $intent = $entity_val->{queryResult}->{intent}->{displayName};
 
-                        if ( scalar @{ $entity_val->{$entity} } > 0 ) {
+                    my $upsert_entity = $politician->politician_entities->find_or_create( { name => $intent } );
 
-                            my $upsert_entity = $politician->politician_entities->find_or_create( { name => $entity } );
-
-                            $recipient->add_to_politician_entity( $upsert_entity->id );
-                            push @entities_id, $upsert_entity->id;
-
-                        }
-                    }
+                    $recipient->add_to_politician_entity( $upsert_entity->id );
+                    push @entities_id, $upsert_entity->id;
                 }
 
                 $issue = $self->create(
