@@ -103,7 +103,7 @@ db_transaction {
         [
             entity_id => $politician_entity_id,
             answer    => $answer,
-            type      => ['posicionamento']
+            type      => 'posicionamento'
         ]
     ;
     my $kb_id = stash 'k1.id';
@@ -139,13 +139,15 @@ db_transaction {
         is ( defined $res->{created_at}, 1,                     'created_at is defined' );
         is ( ref $entities,              'ARRAY',               'entities is an array' );
         is ( $entities->[0]->{id},       $politician_entity_id, 'entity id' );
+        is ( ref $res->{type},           '',                    'type is a string' );
+        is ( $res->{type},               'posicionamento',      'kb is of posicionamento type' );
     };
 
     rest_put "/api/politician/$politician_id/knowledge-base/$kb_id",
         name => 'update politician knowledge base entry',
         [
             active   => 0,
-            answer   => 'foobar'
+            answer   => 'foobar',
         ]
     ;
 
@@ -157,15 +159,13 @@ db_transaction {
         is ( $res->{active},             0,                    'not active' );
         is ( $res->{answer},             'foobar',             'updated answer' );
         is ( defined $res->{updated_at}, 1,                    'updated_at is defined' );
-        is ( ref $res->{type},           'ARRAY',              'type is an array' );
-        is ( $res->{type}->[0],          'Posicionamento',     'kb is of posicionamento type' );
 
         is ( $res->{intents}->[0]->{recipients_count}, 1, 'one recipient' );
     };
 
     rest_put "/api/politician/$politician_id/knowledge-base/$kb_id",
         name => 'update politician knowledge base entry',
-        [ type => [ 'Posicionamento', 'Proposta' ] ]
+        [ type => 'Proposta' ]
     ;
 
 
@@ -174,9 +174,7 @@ db_transaction {
     stash_test 'get_knowledge_base_entry.list' => sub {
         my $res = shift;
 
-        is ( scalar @{ $res->{type} }, 2, 'two types'  );
-		is( $res->{type}->[0], 'Posicionamento', '"Posicionamento" type' );
-		is( $res->{type}->[1], 'Proposta',       '"Proposta" type' );
+		is( $res->{type}, 'proposta', '"Proposta" type' );
     };
 
     # Listando entidades sem nenhum posiocionamento

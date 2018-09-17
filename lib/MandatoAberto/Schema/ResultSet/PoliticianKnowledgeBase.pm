@@ -58,13 +58,12 @@ sub verifiers_specs {
                 },
                 type => {
                     required   => 1,
-                    type       => 'ArrayRef[Str]',
+                    type       => 'Str',
                     post_check => sub {
-                        my $types = $_[0]->get_value('type');
+                        my $type = $_[0]->get_value('type');
 
-                        for my $type ( @{ $types } ) {
-                            die \['type', 'invalid'] unless $type =~ m/^(Posicionamento|Proposta|Histórico)$/;
-                        }
+                        my $available_type = $self->result_source->schema->resultset('AvailableType')->search( { name => $type } )->next;
+                        die \['type', 'invalid'] unless $available_type;
 
                         return 1;
                     }
@@ -87,7 +86,6 @@ sub action_specs {
 
             my $politician_knowledge_base;
             $self->result_source->schema->txn_do(sub{
-                my @types    = @{ $values{type} };
                 my @entities = @{ $values{entities} };
 
                 if ( $values{saved_attachment_id} ) {
@@ -98,6 +96,7 @@ sub action_specs {
                     {
                         politician_id => $values{politician_id},
                         entities      => "{@entities}",
+                        type          => $values{type}
                     }
                 )->next;
 
@@ -109,7 +108,6 @@ sub action_specs {
                     {
                         %values,
                         entities => \@entities,
-                        type     => \@types
                     }
                 );
             });

@@ -33,10 +33,10 @@ db_transaction {
                 {
 					"responseId" => "63f36f86-1379-4cd0-bf8d-d1932f29c5c4",
 					"queryResult" => {
-						"queryText" => "Quais são suas propostas para os direitos dos animais?",
+						"queryText" => "O que você acha sobre o aborto?",
 						"parameters" => {
-							"tipos_de_pergunta"    => ["Proposta"],
-                            "direitos_dos_animais" => ["Direitos dos animais"]
+							"tipos_de_pergunta" => ["Proposta"],
+                            "aborto"            => ["Aborto"]
 						},
 						"allRequiredParamsPresent" => 1,
 						"fulfillmentMessages" => [
@@ -48,7 +48,7 @@ db_transaction {
 						],
 						"intent" => {
 							"name" => "projects/marina-chatbot/agent/intents/e4ec7ee6-5624-47ea-ace9-5ed2a95255ce",
-							"displayName" => "direitos_animais"
+							"displayName" => "Aborto"
 						},
 						"intentDetectionConfidence" => 0.87,
 						"languageCode" => "pt-br"
@@ -72,10 +72,10 @@ db_transaction {
 				{
 					"responseId" => "63f36f86-1379-4cd0-bf8d-d1932f29c5c4",
 					"queryResult" => {
-						"queryText" => "Quais são suas propostas para os direitos dos animais?",
+						"queryText" => "Quais são suas propostas para a saude?",
 						"parameters" => {
-							"tipos_de_pergunta"    => ["Proposta"],
-							"direitos_dos_animais" => ["Direitos dos animais"]
+							"tipos_de_pergunta" => ["Proposta"],
+							"saude"             => ["Saude"]
 						},
 						"allRequiredParamsPresent" => 1,
 						"fulfillmentMessages" => [
@@ -87,7 +87,7 @@ db_transaction {
 						],
 						"intent" => {
 							"name" => "projects/marina-chatbot/agent/intents/e4ec7ee6-5624-47ea-ace9-5ed2a95255ce",
-							"displayName" => "direitos_animais"
+							"displayName" => "Saude"
 						},
 						"intentDetectionConfidence" => 0.87,
 						"languageCode" => "pt-br"
@@ -109,21 +109,35 @@ db_transaction {
     my $second_entity = $politician_entity_rs->search( { name => 'Aborto' } )->next;
 
     rest_post "/api/politician/$politician_id/knowledge-base",
-        name                => 'creating knowledge base entry',
+        name                => 'creating knowledge base entry (Saude - posicionamento)',
         automatic_load_item => 0,
         stash               => 'k1',
         [
             entity_id => $first_entity->id,
             answer    => 'foobar',
+            type      => 'posicionamento'
+        ]
+    ;
+
+
+    rest_post "/api/politician/$politician_id/knowledge-base",
+        name                => 'creating knowledge base entry (Saude - proposta)',
+        automatic_load_item => 0,
+        stash               => 'k3',
+        [
+            entity_id => $first_entity->id,
+            answer    => 'foobarz',
+            type      => 'proposta'
         ]
     ;
 
     rest_post "/api/politician/$politician_id/knowledge-base",
-        name  => 'creating knowledge base entry',
+        name  => 'creating knowledge base entry (ABORTO - posicionamento)',
         stash => 'k2',
         [
             entity_id => $second_entity->id,
             answer    => 'posicionamento sobre o aborto',
+			type      => 'posicionamento'
         ]
     ;
 
@@ -153,7 +167,7 @@ db_transaction {
 						],
 						"intent" => {
 							"name" => "projects/marina-chatbot/agent/intents/e4ec7ee6-5624-47ea-ace9-5ed2a95255ce",
-							"displayName" => "direitos_animais"
+							"displayName" => "Saude"
 						},
 						"intentDetectionConfidence" => 0.87,
 						"languageCode" => "pt-br"
