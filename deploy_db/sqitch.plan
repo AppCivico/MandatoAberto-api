@@ -117,3 +117,4 @@
 0113-add-poll_self_propagation [0112-add-poll_notification] 2018-09-10T03:36:28Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Creating the 'poll_self_propagation_config' table and adding the 'notification_sent' on the 'poll' table
 0114-add-id-on-psp [0113-add-poll_self_propagation] 2018-09-10T18:25:11Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding id
 0115-drop-notnull-on-answer [0114-add-id-on-psp] 2018-09-14T14:25:00Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Removing 'not null' constraint on the 'politician_knowledge_base'
+0116-add-available_types [0115-drop-notnull-on-answer] 2018-09-18T16:56:44Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding 'types' to the knowledge base
