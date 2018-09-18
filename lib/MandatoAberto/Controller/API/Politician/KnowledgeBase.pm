@@ -70,7 +70,7 @@ __PACKAGE__->config(
             $params->{saved_attachment_type} = $file->{attachment_type};
         }
 
-		$params->{type} = lc $params->{type} if $params->{type};
+        $params->{type} = lc $params->{type} if $params->{type};
 
         return $params;
     },

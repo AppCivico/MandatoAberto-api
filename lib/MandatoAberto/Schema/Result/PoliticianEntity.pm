@@ -461,13 +461,13 @@ sub human_name {
         $name = 'transparência no governo';
     }
     elsif ( $self->name eq 'reforma' ) {
-        $name = ' previdência	reforma da previdência';
+        $name = ' previdência reforma da previdência';
     }
     elsif ( $self->name eq 'reforma_tributaria' ) {
         $name = 'reforma tributária';
     }
     elsif ( $self->name eq 'reforma' ) {
-        $name = 'lítica	reforma política';
+        $name = 'lítica reforma política';
     }
     elsif ( $self->name eq 'gestao_municipios' ) {
         $name = 'gestão dos municípios';

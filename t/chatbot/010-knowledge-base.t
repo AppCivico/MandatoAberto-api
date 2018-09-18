@@ -31,29 +31,29 @@ db_transaction {
             security_token => $security_token,
             entities       => encode_json(
                 {
-					"responseId" => "63f36f86-1379-4cd0-bf8d-d1932f29c5c4",
-					"queryResult" => {
-						"queryText" => "O que você acha sobre o aborto?",
-						"parameters" => {
-							"tipos_de_pergunta" => ["Proposta"],
+                    "responseId" => "63f36f86-1379-4cd0-bf8d-d1932f29c5c4",
+                    "queryResult" => {
+                        "queryText" => "O que você acha sobre o aborto?",
+                        "parameters" => {
+                            "tipos_de_pergunta" => ["Proposta"],
                             "aborto"            => ["Aborto"]
-						},
-						"allRequiredParamsPresent" => 1,
-						"fulfillmentMessages" => [
-							{
-								"text" => {
-									"text" => [""]
-								}
-							}
-						],
-						"intent" => {
-							"name" => "projects/marina-chatbot/agent/intents/e4ec7ee6-5624-47ea-ace9-5ed2a95255ce",
-							"displayName" => "Aborto"
-						},
-						"intentDetectionConfidence" => 0.87,
-						"languageCode" => "pt-br"
-					}
-				}
+                        },
+                        "allRequiredParamsPresent" => 1,
+                        "fulfillmentMessages" => [
+                            {
+                                "text" => {
+                                    "text" => [""]
+                                }
+                            }
+                        ],
+                        "intent" => {
+                            "name" => "projects/marina-chatbot/agent/intents/e4ec7ee6-5624-47ea-ace9-5ed2a95255ce",
+                            "displayName" => "Aborto"
+                        },
+                        "intentDetectionConfidence" => 0.87,
+                        "languageCode" => "pt-br"
+                    }
+                }
             )
         ]
     ;
@@ -69,30 +69,30 @@ db_transaction {
             message        => 'O que você acha sobre o aborto?',
             security_token => $security_token,
             entities       => encode_json(
-				{
-					"responseId" => "63f36f86-1379-4cd0-bf8d-d1932f29c5c4",
-					"queryResult" => {
-						"queryText" => "Quais são suas propostas para a saude?",
-						"parameters" => {
-							"tipos_de_pergunta" => ["Proposta"],
-							"saude"             => ["Saude"]
-						},
-						"allRequiredParamsPresent" => 1,
-						"fulfillmentMessages" => [
-							{
-								"text" => {
-									"text" => [""]
-								}
-							}
-						],
-						"intent" => {
-							"name" => "projects/marina-chatbot/agent/intents/e4ec7ee6-5624-47ea-ace9-5ed2a95255ce",
-							"displayName" => "Saude"
-						},
-						"intentDetectionConfidence" => 0.87,
-						"languageCode" => "pt-br"
-					}
-				}
+                {
+                    "responseId" => "63f36f86-1379-4cd0-bf8d-d1932f29c5c4",
+                    "queryResult" => {
+                        "queryText" => "Quais são suas propostas para a saude?",
+                        "parameters" => {
+                            "tipos_de_pergunta" => ["Proposta"],
+                            "saude"             => ["Saude"]
+                        },
+                        "allRequiredParamsPresent" => 1,
+                        "fulfillmentMessages" => [
+                            {
+                                "text" => {
+                                    "text" => [""]
+                                }
+                            }
+                        ],
+                        "intent" => {
+                            "name" => "projects/marina-chatbot/agent/intents/e4ec7ee6-5624-47ea-ace9-5ed2a95255ce",
+                            "displayName" => "Saude"
+                        },
+                        "intentDetectionConfidence" => 0.87,
+                        "languageCode" => "pt-br"
+                    }
+                }
             )
         ]
     ;
@@ -137,7 +137,7 @@ db_transaction {
         [
             entity_id => $second_entity->id,
             answer    => 'posicionamento sobre o aborto',
-			type      => 'posicionamento'
+            type      => 'posicionamento'
         ]
     ;
 
@@ -149,30 +149,30 @@ db_transaction {
             security_token => $security_token,
             politician_id  => $politician_id,
             entities       => encode_json(
-				{
-					"responseId" => "63f36f86-1379-4cd0-bf8d-d1932f29c5c4",
-					"queryResult" => {
-						"queryText" => "Quais são suas propostas para os direitos dos animais?",
-						"parameters" => {
-							"tipos_de_pergunta"    => ["Proposta"],
-							"direitos_dos_animais" => ["Direitos dos animais"]
-						},
-						"allRequiredParamsPresent" => 1,
-						"fulfillmentMessages" => [
-							{
-								"text" => {
-									"text" => [""]
-								}
-							}
-						],
-						"intent" => {
-							"name" => "projects/marina-chatbot/agent/intents/e4ec7ee6-5624-47ea-ace9-5ed2a95255ce",
-							"displayName" => "Saude"
-						},
-						"intentDetectionConfidence" => 0.87,
-						"languageCode" => "pt-br"
-					}
-				}
+                {
+                    "responseId" => "63f36f86-1379-4cd0-bf8d-d1932f29c5c4",
+                    "queryResult" => {
+                        "queryText" => "Quais são suas propostas para os direitos dos animais?",
+                        "parameters" => {
+                            "tipos_de_pergunta"    => ["Proposta"],
+                            "direitos_dos_animais" => ["Direitos dos animais"]
+                        },
+                        "allRequiredParamsPresent" => 1,
+                        "fulfillmentMessages" => [
+                            {
+                                "text" => {
+                                    "text" => [""]
+                                }
+                            }
+                        ],
+                        "intent" => {
+                            "name" => "projects/marina-chatbot/agent/intents/e4ec7ee6-5624-47ea-ace9-5ed2a95255ce",
+                            "displayName" => "Saude"
+                        },
+                        "intentDetectionConfidence" => 0.87,
+                        "languageCode" => "pt-br"
+                    }
+                }
             )
         ]
     ;
@@ -197,30 +197,30 @@ db_transaction {
             security_token => $security_token,
             politician_id  => $politician_id,
             entities       => encode_json(
-				{
-					"responseId" => "63f36f86-1379-4cd0-bf8d-d1932f29c5c4",
-					"queryResult" => {
-						"queryText" => "Quais são suas propostas para os direitos dos animais?",
-						"parameters" => {
-							"tipos_de_pergunta"    => ["Proposta"],
-							"direitos_dos_animais" => ["Direitos dos animais"]
-						},
-						"allRequiredParamsPresent" => 1,
-						"fulfillmentMessages" => [
-							{
-								"text" => {
-									"text" => [""]
-								}
-							}
-						],
-						"intent" => {
-							"name" => "projects/marina-chatbot/agent/intents/e4ec7ee6-5624-47ea-ace9-5ed2a95255ce",
-							"displayName" => "privilegios_politicos"
-						},
-						"intentDetectionConfidence" => 0.87,
-						"languageCode" => "pt-br"
-					}
-				}
+                {
+                    "responseId" => "63f36f86-1379-4cd0-bf8d-d1932f29c5c4",
+                    "queryResult" => {
+                        "queryText" => "Quais são suas propostas para os direitos dos animais?",
+                        "parameters" => {
+                            "tipos_de_pergunta"    => ["Proposta"],
+                            "direitos_dos_animais" => ["Direitos dos animais"]
+                        },
+                        "allRequiredParamsPresent" => 1,
+                        "fulfillmentMessages" => [
+                            {
+                                "text" => {
+                                    "text" => [""]
+                                }
+                            }
+                        ],
+                        "intent" => {
+                            "name" => "projects/marina-chatbot/agent/intents/e4ec7ee6-5624-47ea-ace9-5ed2a95255ce",
+                            "displayName" => "privilegios_politicos"
+                        },
+                        "intentDetectionConfidence" => 0.87,
+                        "languageCode" => "pt-br"
+                    }
+                }
             )
         ]
     ;

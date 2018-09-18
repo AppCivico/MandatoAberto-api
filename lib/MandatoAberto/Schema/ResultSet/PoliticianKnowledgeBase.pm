@@ -129,17 +129,17 @@ sub get_knowledge_base_by_entity_name {
         $ret = $self->search( { 'me.id' => \'IN (0)' } );
     }
     else {
-		$ret = $self->search(
-			{
-				'-or' => [
-					map {
-						my $entity_id = $_;
-						\[ "? = ANY(entities)", $entity_id ] ## no critic
-					} @ids
-				],
-			},
-			{ prefetch => { 'politician' => 'politician_entities' } }
-		);
+        $ret = $self->search(
+            {
+                '-or' => [
+                    map {
+                        my $entity_id = $_;
+                        \[ "? = ANY(entities)", $entity_id ] ## no critic
+                    } @ids
+                ],
+            },
+            { prefetch => { 'politician' => 'politician_entities' } }
+        );
     }
 
     return $ret

@@ -36,14 +36,14 @@ sub list_GET {
 
     my $entities = $c->req->params->{entities};
     die \['entities', 'missing'] unless $entities;
-	$entities = decode_json(Encode::encode_utf8($entities)) or die \['entities', 'could not decode json'];
+    $entities = decode_json(Encode::encode_utf8($entities)) or die \['entities', 'could not decode json'];
 
-	my @required_json_fields = qw (intent parameters);
-	die \['entities', "missing 'queryResult' param"] unless $entities->{queryResult};
+    my @required_json_fields = qw (intent parameters);
+    die \['entities', "missing 'queryResult' param"] unless $entities->{queryResult};
 
-	for (@required_json_fields) {
-		die \['entities', "missing '$_' param"] unless $entities->{queryResult}->{$_};
-	}
+    for (@required_json_fields) {
+        die \['entities', "missing '$_' param"] unless $entities->{queryResult}->{$_};
+    }
 
     # TODO melhorar esse bloco
     my @entities_names;

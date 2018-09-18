@@ -64,7 +64,7 @@ __PACKAGE__->config(
             ],
             knowledge_base => {
                 pending_types => $r->pending_knowledge_base_types,
-				registered    => [
+                registered    => [
                     map {
                         +{
                             id                    => $_->id,
@@ -77,7 +77,7 @@ __PACKAGE__->config(
                             saved_attachment_type => $_->saved_attachment_type,
                         }
                     } $r->knowledge_base_rs->all()
-				]
+                ]
             }
         };
     },
