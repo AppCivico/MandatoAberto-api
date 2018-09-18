@@ -36,13 +36,18 @@ sub list_GET {
 
     my $entities = $c->req->params->{entities};
     die \['entities', 'missing'] unless $entities;
-    $entities = decode_json(Encode::encode_utf8($entities)) or die \['entities', 'could not decode json'];
+	$entities = decode_json(Encode::encode_utf8($entities)) or die \['entities', 'could not decode json'];
 
+	my @required_json_fields = qw (intent parameters);
+	die \['entities', "missing 'queryResult' param"] unless $entities->{queryResult};
+
+	for (@required_json_fields) {
+		die \['entities', "missing '$_' param"] unless $entities->{queryResult}->{$_};
+	}
+
+    # TODO melhorar esse bloco
     my @entities_names;
-    my @entities = keys %{$entities};
-    for my $entity (@entities) {
-        push @entities_names, $entity;
-    }
+    push @entities_names, $entities->{queryResult}->{intent}->{displayName};
 
     $c->stash->{collection} = $c->stash->{collection}->get_knowledge_base_by_entity_name(@entities_names);
 
@@ -57,6 +62,7 @@ sub list_GET {
                         answer                => $k->answer,
                         saved_attachment_type => $k->saved_attachment_type,
                         saved_attachment_id   => $k->saved_attachment_id,
+                        type                  => $k->type,
                         entities => [
                             map {
                                 my $e = $_;

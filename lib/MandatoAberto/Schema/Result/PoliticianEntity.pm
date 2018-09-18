@@ -153,23 +153,47 @@ SQL_QUERY
     return $self->result_source->schema->resultset('Recipient')->search( { entities => $cond } );
 }
 
+sub knowledge_base_rs {
+    my ($self) = @_;
+
+    my $cond = \[ <<'SQL_QUERY', $self->id ];
+ @> ARRAY[?]::integer[]
+SQL_QUERY
+
+    return $self->politician->politician_knowledge_bases->search( { entities => $cond } );
+}
+
 sub has_active_knowledge_base {
     my ($self) = @_;
 
     my $id = $self->id;
 
-    my $knowledge_base_rs = $self->result_source->schema->resultset('PoliticianKnowledgeBase');
-    $knowledge_base_rs    = $knowledge_base_rs->search( { politician_id => $self->politician->id } );
+    my $knowledge_base_rs = $self->knowledge_base_rs;
 
-    my $cond = \[ <<'SQL_QUERY', $id ];
- @> ARRAY[?]::integer[]
-SQL_QUERY
+    return $knowledge_base_rs->count;
+}
 
-    return $knowledge_base_rs->search(
-        {
-            entities      => $cond,
-        }
-    )->count;
+sub pending_knowledge_base_types {
+    my ($self) = @_;
+
+    my @available_types = $self->result_source->schema->resultset('AvailableType')->get_column('name')->all();
+
+    my $knowledge_base_rs = $self->knowledge_base_rs;
+
+    for ( my $i = 0; $i < scalar @available_types; $i++ ) {
+        my $type = $available_types[$i];
+
+        my $count = $knowledge_base_rs->search(
+            {
+                active => 1,
+                type   => $type
+            }
+        )->count;
+
+        splice @available_types, $i, 1 if $count == 1;
+    }
+
+    return \@available_types;
 }
 
 sub human_name {

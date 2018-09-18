@@ -56,6 +56,18 @@ sub verifiers_specs {
                         return 1;
                     }
                 },
+                type => {
+                    required   => 1,
+                    type       => 'Str',
+                    post_check => sub {
+                        my $type = $_[0]->get_value('type');
+
+                        my $available_type = $self->result_source->schema->resultset('AvailableType')->search( { name => $type } )->next;
+                        die \['type', 'invalid'] unless $available_type;
+
+                        return 1;
+                    }
+                }
             }
         ),
     };
@@ -84,6 +96,7 @@ sub action_specs {
                     {
                         politician_id => $values{politician_id},
                         entities      => "{@entities}",
+                        type          => $values{type}
                     }
                 )->next;
 
@@ -94,7 +107,7 @@ sub action_specs {
                 $politician_knowledge_base = $self->create(
                     {
                         %values,
-                        entities => "{@entities}"
+                        entities => \@entities,
                     }
                 );
             });
@@ -109,19 +122,27 @@ sub get_knowledge_base_by_entity_name {
 
     my $politician_entity_rs = $self->result_source->schema->resultset('PoliticianEntity');
 
+    my $ret;
     my @ids = map { $_->id } $politician_entity_rs->search( { name => { -in => \@entity_names } } )->all;
 
-    return $self->search(
-        {
-            '-or' => [
-                map {
-                    my $entity_id = $_;
-                    \[ "? = ANY(entities)", $entity_id ] ## no critic
-                } @ids
-            ],
-        },
-        { prefetch => { 'politician' => 'politician_entities' } }
-    );
+    if ( scalar @ids == 0 ) {
+        $ret = $self->search( { 'me.id' => \'IN (0)' } );
+    }
+    else {
+		$ret = $self->search(
+			{
+				'-or' => [
+					map {
+						my $entity_id = $_;
+						\[ "? = ANY(entities)", $entity_id ] ## no critic
+					} @ids
+				],
+			},
+			{ prefetch => { 'politician' => 'politician_entities' } }
+		);
+    }
+
+    return $ret
 }
 
 1;

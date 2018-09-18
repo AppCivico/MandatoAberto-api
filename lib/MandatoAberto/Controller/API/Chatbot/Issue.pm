@@ -31,6 +31,13 @@ __PACKAGE__->config(
         if ( $entities ) {
             $entities = decode_json(Encode::encode_utf8($entities)) or die \['entities', 'could not decode json'];
 
+            my @required_json_fields = qw (intent parameters);
+            die \['entities', "missing 'queryResult' param"] unless $entities->{queryResult};
+
+            for (@required_json_fields) {
+                die \['entities', "missing '$_' param"] unless $entities->{queryResult}->{$_}
+            }
+
             $params->{entities} = $entities;
         }
 

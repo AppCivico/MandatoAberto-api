@@ -47,6 +47,7 @@ __PACKAGE__->config(
         }
 
         $params->{entities} = [$entity_id];
+        $params->{type}     = lc $params->{type} if $params->{type};
 
         return $params;
     },
@@ -69,6 +70,8 @@ __PACKAGE__->config(
             $params->{saved_attachment_type} = $file->{attachment_type};
         }
 
+		$params->{type} = lc $params->{type} if $params->{type};
+
         return $params;
     },
 
@@ -79,6 +82,7 @@ __PACKAGE__->config(
         return {
             id                    => $r->id,
             active                => $r->active,
+            type                  => $r->type,
             answer                => $r->answer,
             updated_at            => $r->updated_at,
             created_at            => $r->created_at,
@@ -154,6 +158,7 @@ sub list_GET {
                         id         => $kb->id,
                         answer     => $kb->answer,
                         created_at => $kb->created_at,
+                        type       => $kb->type,
                         intents    => [
                             map {
                                 {

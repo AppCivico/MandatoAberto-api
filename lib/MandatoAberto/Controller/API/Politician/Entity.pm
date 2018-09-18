@@ -61,7 +61,33 @@ __PACKAGE__->config(
                         ]
                     }
                 } $r->get_recipients->all()
-            ]
+            ],
+            knowledge_base => {
+                pending_types => $r->pending_knowledge_base_types,
+				registered    => [
+                    map {
+                        +{
+                            id                    => $_->id,
+                            active                => $_->active,
+                            type                  => $_->type,
+                            answer                => $_->answer,
+                            updated_at            => $_->updated_at,
+                            created_at            => $_->created_at,
+                            saved_attachment_id   => $_->saved_attachment_id,
+                            saved_attachment_type => $_->saved_attachment_type,
+                            intents => [
+                                map {
+                                    +{
+                                        id               => $_->id,
+                                        tag              => $_->human_name,
+                                        recipients_count => $_->recipient_count
+                                    }
+                                } $_->entity_rs->all()
+                            ]
+                        }
+                    } $r->knowledge_base_rs->all()
+				]
+            }
         };
     },
 );
