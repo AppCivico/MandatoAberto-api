@@ -75,15 +75,6 @@ __PACKAGE__->config(
                             created_at            => $_->created_at,
                             saved_attachment_id   => $_->saved_attachment_id,
                             saved_attachment_type => $_->saved_attachment_type,
-                            intents => [
-                                map {
-                                    +{
-                                        id               => $_->id,
-                                        tag              => $_->human_name,
-                                        recipients_count => $_->recipient_count
-                                    }
-                                } $_->entity_rs->all()
-                            ]
                         }
                     } $r->knowledge_base_rs->all()
 				]
