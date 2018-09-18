@@ -122,19 +122,27 @@ sub get_knowledge_base_by_entity_name {
 
     my $politician_entity_rs = $self->result_source->schema->resultset('PoliticianEntity');
 
+    my $ret;
     my @ids = map { $_->id } $politician_entity_rs->search( { name => { -in => \@entity_names } } )->all;
 
-    return $self->search(
-        {
-            '-or' => [
-                map {
-                    my $entity_id = $_;
-                    \[ "? = ANY(entities)", $entity_id ] ## no critic
-                } @ids
-            ],
-        },
-        { prefetch => { 'politician' => 'politician_entities' } }
-    );
+    if ( scalar @ids == 0 ) {
+        $ret = $self->search( { 'me.id' => \'IN (0)' } );
+    }
+    else {
+		$ret = $self->search(
+			{
+				'-or' => [
+					map {
+						my $entity_id = $_;
+						\[ "? = ANY(entities)", $entity_id ] ## no critic
+					} @ids
+				],
+			},
+			{ prefetch => { 'politician' => 'politician_entities' } }
+		);
+    }
+
+    return $ret
 }
 
 1;

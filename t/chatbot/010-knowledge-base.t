@@ -116,7 +116,7 @@ db_transaction {
             entity_id => $first_entity->id,
             answer    => 'foobar',
             type      => 'posicionamento'
-        ]
+        ],
     ;
 
 
@@ -180,7 +180,55 @@ db_transaction {
     stash_test 'get_knowledge_base' => sub {
         my $res = shift;
 
-        is ( scalar @{ $res->{knowledge_base} }, 2, '2 rows' )
+        is ( scalar @{ $res->{knowledge_base} }, 2, '2 rows' );
+
+        ok ( defined $res->{knowledge_base}->[0]->{answer},   'answer is defined' );
+        ok ( ref $res->{knowledge_base}->[0]->{answer} eq '', 'answer is a string' );
+        ok ( defined $res->{knowledge_base}->[0]->{type},     'type is defined' );
+        ok ( ref $res->{knowledge_base}->[0]->{type} eq '',   'type is a string' );
+        ok ( ref $res->{knowledge_base}->[0]->{type} eq '',   'type is a string' );
+    };
+
+    rest_get '/api/chatbot/knowledge-base',
+        name  => 'get knowledge base with no knowledge base registered for that entity',
+        stash => 'get_knowledge_base',
+        list  => 1,
+        [
+            security_token => $security_token,
+            politician_id  => $politician_id,
+            entities       => encode_json(
+				{
+					"responseId" => "63f36f86-1379-4cd0-bf8d-d1932f29c5c4",
+					"queryResult" => {
+						"queryText" => "Quais são suas propostas para os direitos dos animais?",
+						"parameters" => {
+							"tipos_de_pergunta"    => ["Proposta"],
+							"direitos_dos_animais" => ["Direitos dos animais"]
+						},
+						"allRequiredParamsPresent" => 1,
+						"fulfillmentMessages" => [
+							{
+								"text" => {
+									"text" => [""]
+								}
+							}
+						],
+						"intent" => {
+							"name" => "projects/marina-chatbot/agent/intents/e4ec7ee6-5624-47ea-ace9-5ed2a95255ce",
+							"displayName" => "privilegios_politicos"
+						},
+						"intentDetectionConfidence" => 0.87,
+						"languageCode" => "pt-br"
+					}
+				}
+            )
+        ]
+    ;
+
+    stash_test 'get_knowledge_base' => sub {
+        my $res = shift;
+
+        is ( scalar @{ $res->{knowledge_base} }, 0, '0 rows' )
     }
 };
 
