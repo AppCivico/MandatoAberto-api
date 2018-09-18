@@ -63,6 +63,18 @@ db_transaction {
 
     api_auth_as user_id => $politician_id;
 
+    rest_post "/api/politician/$politician_id/knowledge-base",
+        name                => 'creating knowledge base entry',
+        automatic_load_item => 0,
+        stash               => 'k1',
+        [
+            entity_id => $politician_entity_id,
+            answer    => 'foobar',
+            type      => 'posicionamento'
+        ]
+    ;
+    my $kb_id = stash 'k1.id';
+
     rest_get "/api/politician/$politician_id/intent",
         name  => 'get entities',
         stash => 'get_entities',
@@ -85,8 +97,15 @@ db_transaction {
 
     stash_test 'get_entity_result' => sub {
         my $res = shift;
+		# use DDP;
+		# p $res;
+
         ok ( my $recipient_res = $res->{recipients}->[0], 'recipient ok' );
         is ( $recipient_res->{id}, $recipient->id, 'recipient id' );
+
+        ok( ref $res->{knowledge_base} eq 'HASH',                      'knowledge_base is a hash' );
+		ok( ref $res->{knowledge_base}->{pending_types} eq 'ARRAY',    'pending_types is an array' );
+		is( scalar @{ $res->{knowledge_base}->{pending_types} }, 2,    'pending_types has 2 entries' );
     };
 
     # Listando entidades sem nenhum posiocionamento
@@ -95,6 +114,12 @@ db_transaction {
         stash => 'get_pending_entities',
         list  => 1
     ;
+
+    stash_test 'get_pending_entities' => sub {
+        my $res = shift;
+
+        # use DDP; p $res;
+    };
 };
 
 done_testing();
