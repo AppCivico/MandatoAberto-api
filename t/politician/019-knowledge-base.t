@@ -122,6 +122,36 @@ db_transaction {
         is ( $res->{knowledge_base}->[0]->{answer}, $answer, 'kb answer' );
     };
 
+    rest_post "/api/politician/$politician_id/knowledge-base",
+        name                => 'creating knowledge base entry',
+        automatic_load_item => 0,
+        stash               => 'k1',
+        [
+            entity_id => $politician_entity_id,
+            answer    => 'upsert',
+            type      => 'posicionamento'
+        ]
+    ;
+
+    rest_reload_list 'get_knowledge_base';
+    stash_test 'get_knowledge_base.list' => sub {
+        my $res = shift;
+
+        is ( scalar @{ $res->{knowledge_base} },    1,        'one item in the array' );
+        is ( $res->{knowledge_base}->[0]->{id},     $kb_id,   'kb id' );
+        is ( $res->{knowledge_base}->[0]->{answer}, 'upsert', 'kb answer' );
+    };
+
+    rest_post "/api/politician/$politician_id/knowledge-base",
+        name                => 'creating knowledge base entry',
+        automatic_load_item => 0,
+        [
+            entity_id => $politician_entity_id,
+            answer    => $answer,
+            type      => 'posicionamento'
+        ]
+    ;
+
     rest_get "/api/politician/$politician_id/knowledge-base/$kb_id",
         name  => 'get politician knowledge base entry (result)',
         stash => 'get_knowledge_base_entry',
