@@ -108,6 +108,9 @@ sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }
 sub list_GET {
     my ($self, $c) = @_;
 
+    my $filter = $c->req->params->{filter} || 'all';
+    die \['filter', 'invalid'] unless $filter =~ m/(all|active)/;
+
     return $self->status_ok(
         $c,
         entity => {
@@ -115,13 +118,33 @@ sub list_GET {
                 map {
                     my $e = $_;
 
-                    +{
-                        id              => $e->id,
-                        recipient_count => $e->recipient_count,
-                        created_at      => $e->created_at,
-                        updated_at      => $e->updated_at,
-                        tag             => $e->human_name,
+                    if ( $filter eq 'all' ) {
+						+{
+							id              => $e->id,
+							recipient_count => $e->recipient_count,
+							created_at      => $e->created_at,
+							updated_at      => $e->updated_at,
+							tag             => $e->human_name,
+							knowledge_base  => {
+								pending_types => [ map { { type => $_ } } $e->pending_knowledge_base_types ],
+							}
+						}
                     }
+                    else {
+						if ( $e->has_active_knowledge_base ) {
+							+{
+								id              => $e->id,
+								recipient_count => $e->recipient_count,
+								created_at      => $e->created_at,
+								updated_at      => $e->updated_at,
+								tag             => $e->human_name,
+                                knowledge_base  => {
+								    pending_types => [ map { { type => $_ } } $e->pending_knowledge_base_types ],
+							    }
+							};
+						} else { }
+                    }
+
                 } $c->stash->{collection}->search(
                     { politician_id => $c->stash->{politician}->id },
                     { order_by => 'name' }
