@@ -168,9 +168,9 @@ sub has_active_knowledge_base {
 
     my $id = $self->id;
 
-    my $knowledge_base_rs = $self->knowledge_base_rs;
+    my $knowledge_base_rs = $self->knowledge_base_rs->search( { active => 1 } );
 
-    return $knowledge_base_rs->count;
+    return $knowledge_base_rs->count > 0 ? 1 : 0;
 }
 
 sub pending_knowledge_base_types {
