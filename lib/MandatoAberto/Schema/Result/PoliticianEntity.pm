@@ -193,7 +193,7 @@ sub pending_knowledge_base_types {
         splice @available_types, $i, 1 if $count == 1;
     }
 
-    return \@available_types;
+    return @available_types;
 }
 
 sub human_name {

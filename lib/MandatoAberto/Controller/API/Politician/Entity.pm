@@ -63,7 +63,7 @@ __PACKAGE__->config(
                 } $r->get_recipients->all()
             ],
             knowledge_base => {
-                pending_types => $r->pending_knowledge_base_types,
+                pending_types => [ map { { type => $_ } } $r->pending_knowledge_base_types ],
                 registered    => [
                     map {
                         +{
