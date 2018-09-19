@@ -101,15 +101,22 @@ sub action_specs {
                 )->next;
 
                 if ( $active_knowledge_base_entry ) {
-                    die \['politician_id', 'politician alredy has knowledge base for that entity']
+                    $politician_knowledge_base = $active_knowledge_base_entry->update(
+                        {
+                            %values,
+                            updated_at => \'NOW()',
+                            entities   => \@entities,
+                        }
+                    );
                 }
-
-                $politician_knowledge_base = $self->create(
-                    {
-                        %values,
-                        entities => \@entities,
-                    }
-                );
+                else {
+                    $politician_knowledge_base = $self->create(
+                        {
+                            %values,
+                            entities => \@entities,
+                        }
+                    );
+                }
             });
 
             return $politician_knowledge_base;
