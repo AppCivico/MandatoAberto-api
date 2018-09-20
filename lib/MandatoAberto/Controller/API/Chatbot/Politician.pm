@@ -84,8 +84,16 @@ sub list_GET {
                             map {
                                 my $vl = $_;
 
+                                my $url;
+                                if ( $vl->custom_url ) {
+                                    $url = $vl->custom_url
+                                }
+                                else {
+                                    $url = $vl->website_url . '?ref=mandatoaberto#doar';
+                                }
+
                                 votolegal_username => $vl->get_column("username"),
-                                votolegal_url      => $vl->get_column("website_url") . '?ref=mandatoaberto#doar'
+                                votolegal_url      => $url,
                             } $p->politician_votolegal_integrations->all()
                         }
                     ) : ()

@@ -58,6 +58,7 @@ __PACKAGE__->config(
         $params->{politician_id} = $politician->id;
         $params->{votolegal_id}  = $res->{id};
         $params->{username}      = $res->{username};
+        $params->{custom_url}    = $res->{custom_url};
 
         return $params;
     },
