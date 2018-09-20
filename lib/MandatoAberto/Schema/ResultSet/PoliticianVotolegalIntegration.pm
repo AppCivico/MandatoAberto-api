@@ -39,6 +39,10 @@ sub verifiers_specs {
                     required   => 0,
                     type       => "Str",
                     max_length => 80
+                },
+                custom_url => {
+                    required => 0,
+                    type     => 'Str'
                 }
             }
         ),
