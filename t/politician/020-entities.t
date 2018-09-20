@@ -113,6 +113,35 @@ db_transaction {
         is( $res->{tag},                                         'direitos dos animais', 'human name' );
     };
 
+    rest_post "/api/politician/$politician_id/knowledge-base",
+        name                => 'creating knowledge base entry',
+        automatic_load_item => 0,
+        stash               => 'k2',
+        [
+            entity_id => $politician_entity_id,
+            answer    => 'bazbar',
+            type      => 'proposta'
+        ]
+    ;
+
+    rest_post "/api/politician/$politician_id/knowledge-base",
+        name                => 'creating knowledge base entry',
+        automatic_load_item => 0,
+        stash               => 'k1',
+        [
+            entity_id => $politician_entity_id,
+            answer    => 'quux',
+            type      => 'histórico'
+        ]
+    ;
+
+    rest_reload_list 'get_entity_result';
+    stash_test 'get_entity_result.list' => sub {
+        my $res = shift;
+
+        is( scalar @{ $res->{knowledge_base}->{pending_types} }, 0, 'no pending types' );
+    };
+
     # Listando entidades sem nenhum posiocionamento
     rest_get "/api/politician/$politician_id/intent/pending",
         name  => 'get pending entities',

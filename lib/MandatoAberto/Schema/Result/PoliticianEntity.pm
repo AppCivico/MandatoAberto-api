@@ -180,6 +180,7 @@ sub pending_knowledge_base_types {
 
     my $knowledge_base_rs = $self->knowledge_base_rs;
 
+    my @pending_types;
     for ( my $i = 0; $i < scalar @available_types; $i++ ) {
         my $type = $available_types[$i];
 
@@ -190,10 +191,10 @@ sub pending_knowledge_base_types {
             }
         )->count;
 
-        splice @available_types, $i, 1 if $count == 1;
+        push @pending_types, $type if $count == 0;
     }
 
-    return @available_types;
+    return @pending_types;
 }
 
 sub human_name {
