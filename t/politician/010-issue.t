@@ -46,30 +46,30 @@ db_transaction {
             message        => $message,
             security_token => $security_token,
             entities       => encode_json(
-                {
-                    "responseId" => "63f36f86-1379-4cd0-bf8d-d1932f29c5c4",
-                    "queryResult" => {
-                        "queryText" => "Quais são suas propostas para os direitos dos animais?",
-                        "parameters" => {
-                            "tipos_de_pergunta"    => ["Proposta"],
-                            "direitos_dos_animais" => ["Direitos dos animais"]
-                        },
-                        "allRequiredParamsPresent" => 1,
-                        "fulfillmentMessages" => [
-                            {
-                                "text" => {
-                                    "text" => [""]
-                                }
-                            }
-                        ],
-                        "intent" => {
-                            "name" => "projects/marina-chatbot/agent/intents/e4ec7ee6-5624-47ea-ace9-5ed2a95255ce",
-                            "displayName" => "direitos_animais"
-                        },
-                        "intentDetectionConfidence" => 0.87,
-                        "languageCode" => "pt-br"
-                    }
-                }
+				{
+					id        => 'a8736300-e5b3-4ab8-a29e-c379ef7f61de',
+					timestamp => '2018-09-19T21 => 39 => 43.452Z',
+					lang      => 'pt-br',
+					result    => {
+						source           => 'agent',
+						resolvedQuery    => 'O que você acha do aborto?',
+						action           => '',
+						actionIncomplete => 0,
+						parameters       => {},
+						contexts         => [],
+						metadata         => {
+							intentId                  => '4c3f7241-6990-4c92-8332-cfb8d437e3d1',
+							webhookUsed               => 0,
+							webhookForSlotFillingUsed => 0,
+							isFallbackIntent          => 0,
+							intentName                => 'direitos_animais'
+						},
+						fulfillment => { speech =>  '', messages =>  [] },
+						score       => 1
+					},
+					status    => { code =>  200, errorType =>  'success' },
+					sessionId => '1938538852857638'
+				}
             )
         ]
     ;
@@ -176,30 +176,30 @@ db_transaction {
             message        => fake_words(1)->(),
             security_token => $security_token,
             entities       => encode_json(
-                {
-                    "responseId" => "63f36f86-1379-4cd0-bf8d-d1932f29c5c4",
-                    "queryResult" => {
-                        "queryText" => "Quais são suas propostas para os direitos dos animais?",
-                        "parameters" => {
-                            "tipos_de_pergunta"    => ["Proposta"],
-                            "direitos_dos_animais" => ["Direitos dos animais"]
-                        },
-                        "allRequiredParamsPresent" => 1,
-                        "fulfillmentMessages" => [
-                            {
-                                "text" => {
-                                    "text" => [""]
-                                }
-                            }
-                        ],
-                        "intent" => {
-                            "name" => "projects/marina-chatbot/agent/intents/e4ec7ee6-5624-47ea-ace9-5ed2a95255ce",
-                            "displayName" => "direitos_animais"
-                        },
-                        "intentDetectionConfidence" => 0.87,
-                        "languageCode" => "pt-br"
-                    }
-                }
+				{
+					id        => 'a8736300-e5b3-4ab8-a29e-c379ef7f61de',
+					timestamp => '2018-09-19T21 => 39 => 43.452Z',
+					lang      => 'pt-br',
+					result    => {
+						source           => 'agent',
+						resolvedQuery    => 'O que você acha do aborto?',
+						action           => '',
+						actionIncomplete => 0,
+						parameters       => {},
+						contexts         => [],
+						metadata         => {
+							intentId                  => '4c3f7241-6990-4c92-8332-cfb8d437e3d1',
+							webhookUsed               => 0,
+							webhookForSlotFillingUsed => 0,
+							isFallbackIntent          => 0,
+							intentName                => 'direitos_animais'
+						},
+						fulfillment => { speech =>  '', messages =>  [] },
+						score       => 1
+					},
+					status    => { code =>  200, errorType =>  'success' },
+					sessionId => '1938538852857638'
+				}
             )
         ]
     ;
@@ -242,30 +242,30 @@ db_transaction {
             message        => fake_words(1)->(),
             security_token => $security_token,
             entities       => encode_json(
-                {
-                    "responseId" => "63f36f86-1379-4cd0-bf8d-d1932f29c5c4",
-                    "queryResult" => {
-                        "queryText" => "Quais são suas propostas para os direitos dos animais?",
-                        "parameters" => {
-                            "tipos_de_pergunta"    => ["Proposta"],
-                            "direitos_dos_animais" => ["Direitos dos animais"]
-                        },
-                        "allRequiredParamsPresent" => 1,
-                        "fulfillmentMessages" => [
-                            {
-                                "text" => {
-                                    "text" => [""]
-                                }
-                            }
-                        ],
-                        "intent" => {
-                            "name" => "projects/marina-chatbot/agent/intents/e4ec7ee6-5624-47ea-ace9-5ed2a95255ce",
-                            "displayName" => "direitos_animais"
-                        },
-                        "intentDetectionConfidence" => 0.87,
-                        "languageCode" => "pt-br"
-                    }
-                }
+				{
+					id        => 'a8736300-e5b3-4ab8-a29e-c379ef7f61de',
+					timestamp => '2018-09-19T21 => 39 => 43.452Z',
+					lang      => 'pt-br',
+					result    => {
+						source           => 'agent',
+						resolvedQuery    => 'O que você acha do aborto?',
+						action           => '',
+						actionIncomplete => 0,
+						parameters       => {},
+						contexts         => [],
+						metadata         => {
+							intentId                  => '4c3f7241-6990-4c92-8332-cfb8d437e3d1',
+							webhookUsed               => 0,
+							webhookForSlotFillingUsed => 0,
+							isFallbackIntent          => 0,
+							intentName                => 'direitos_animais'
+						},
+						fulfillment => { speech =>  '', messages =>  [] },
+						score       => 1
+					},
+					status    => { code =>  200, errorType =>  'success' },
+					sessionId => '1938538852857638'
+				}
             )
         ]
     ;

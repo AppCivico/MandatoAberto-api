@@ -66,7 +66,8 @@ sub action_specs {
                 if ( $values{entities} ) {
                     my $entity_val = $values{entities};
 
-                    my $intent = $entity_val->{queryResult}->{intent}->{displayName};
+                    my $intent = $entity_val->{result}->{metadata}->{intentName};
+                    die \['intentName', 'missing'] unless $intent;
 
                     my $upsert_entity = $politician->politician_entities->find_or_create( { name => $intent } );
 
