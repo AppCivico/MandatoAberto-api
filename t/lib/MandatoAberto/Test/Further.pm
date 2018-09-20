@@ -242,6 +242,14 @@ sub setup_votolegal_integration_success {
     };
 }
 
+sub setup_votolegal_integration_success_with_custom_url {
+	$votolegal_response = {
+		id         => fake_int(1, 100)->(),
+		username   => 'fake_username',
+        custom_url => 'https://www.foobar.com.br'
+	};
+}
+
 sub setup_votolegal_integration_fail {
     $votolegal_response = {
         votolegal_email => 'non existent on voto legal'
