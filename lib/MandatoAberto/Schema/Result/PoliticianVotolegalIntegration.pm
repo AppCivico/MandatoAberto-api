@@ -87,6 +87,11 @@ __PACKAGE__->table("politician_votolegal_integration");
   data_type: 'text'
   is_nullable: 1
 
+=head2 custom_url
+
+  data_type: 'text'
+  is_nullable: 1
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -115,6 +120,8 @@ __PACKAGE__->add_columns(
   "username",
   { data_type => "text", is_nullable => 0 },
   "greeting",
+  { data_type => "text", is_nullable => 1 },
+  "custom_url",
   { data_type => "text", is_nullable => 1 },
 );
 
@@ -148,8 +155,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-06-19 15:04:19
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Gz3boqcL5prHep1YR80bjw
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-09-20 17:35:22
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:XsSQ4jc+82ac1QGoD4Ossw
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

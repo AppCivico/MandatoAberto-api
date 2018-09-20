@@ -168,9 +168,9 @@ sub has_active_knowledge_base {
 
     my $id = $self->id;
 
-    my $knowledge_base_rs = $self->knowledge_base_rs;
+    my $knowledge_base_rs = $self->knowledge_base_rs->search( { active => 1 } );
 
-    return $knowledge_base_rs->count;
+    return $knowledge_base_rs->count > 0 ? 1 : 0;
 }
 
 sub pending_knowledge_base_types {
@@ -180,6 +180,7 @@ sub pending_knowledge_base_types {
 
     my $knowledge_base_rs = $self->knowledge_base_rs;
 
+    my @pending_types;
     for ( my $i = 0; $i < scalar @available_types; $i++ ) {
         my $type = $available_types[$i];
 
@@ -190,10 +191,10 @@ sub pending_knowledge_base_types {
             }
         )->count;
 
-        splice @available_types, $i, 1 if $count == 1;
+        push @pending_types, $type if $count == 0;
     }
 
-    return \@available_types;
+    return @pending_types;
 }
 
 sub human_name {
@@ -461,13 +462,13 @@ sub human_name {
         $name = 'transparência no governo';
     }
     elsif ( $self->name eq 'reforma' ) {
-        $name = ' previdência	reforma da previdência';
+        $name = ' previdência reforma da previdência';
     }
     elsif ( $self->name eq 'reforma_tributaria' ) {
         $name = 'reforma tributária';
     }
     elsif ( $self->name eq 'reforma' ) {
-        $name = 'lítica	reforma política';
+        $name = 'lítica reforma política';
     }
     elsif ( $self->name eq 'gestao_municipios' ) {
         $name = 'gestão dos municípios';

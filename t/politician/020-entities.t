@@ -31,28 +31,28 @@ db_transaction {
             security_token => $security_token,
             entities       => encode_json(
 				{
-					"responseId" => "63f36f86-1379-4cd0-bf8d-d1932f29c5c4",
-					"queryResult" => {
-						"queryText" => "Quais são suas propostas para os direitos dos animais?",
-						"parameters" => {
-							"tipos_de_pergunta"    => ["Proposta"],
-							"direitos_dos_animais" => ["Direitos dos animais"]
+					id        => 'a8736300-e5b3-4ab8-a29e-c379ef7f61de',
+					timestamp => '2018-09-19T21 => 39 => 43.452Z',
+					lang      => 'pt-br',
+					result    => {
+						source           => 'agent',
+						resolvedQuery    => 'O que você acha do aborto?',
+						action           => '',
+						actionIncomplete => 0,
+						parameters       => {},
+						contexts         => [],
+						metadata         => {
+							intentId                  => '4c3f7241-6990-4c92-8332-cfb8d437e3d1',
+							webhookUsed               => 0,
+							webhookForSlotFillingUsed => 0,
+							isFallbackIntent          => 0,
+							intentName                => 'direitos_animais'
 						},
-						"allRequiredParamsPresent" => 1,
-						"fulfillmentMessages" => [
-							{
-								"text" => {
-									"text" => [""]
-								}
-							}
-						],
-						"intent" => {
-							"name" => "projects/marina-chatbot/agent/intents/e4ec7ee6-5624-47ea-ace9-5ed2a95255ce",
-							"displayName" => "direitos_animais"
-						},
-						"intentDetectionConfidence" => 0.87,
-						"languageCode" => "pt-br"
-					}
+						fulfillment => { speech =>  '', messages =>  [] },
+						score       => 1
+					},
+					status    => { code =>  200, errorType =>  'success' },
+					sessionId => '1938538852857638'
 				}
             )
         ],
@@ -97,15 +97,49 @@ db_transaction {
 
     stash_test 'get_entity_result' => sub {
         my $res = shift;
-		# use DDP;
-		# p $res;
+
+        my $registered_kb = $res->{knowledge_base}->{registered}->[0];
 
         ok ( my $recipient_res = $res->{recipients}->[0], 'recipient ok' );
         is ( $recipient_res->{id}, $recipient->id, 'recipient id' );
 
-        ok( ref $res->{knowledge_base} eq 'HASH',                      'knowledge_base is a hash' );
-		ok( ref $res->{knowledge_base}->{pending_types} eq 'ARRAY',    'pending_types is an array' );
-		is( scalar @{ $res->{knowledge_base}->{pending_types} }, 2,    'pending_types has 2 entries' );
+        ok( ref $res->{knowledge_base} eq 'HASH',                                        'knowledge_base is a hash' );
+        ok( ref $res->{knowledge_base}->{pending_types} eq 'ARRAY',                      'pending_types is an array' );
+        ok( ref $res->{knowledge_base}->{registered} eq 'ARRAY',                         'registered is an array' );
+        is( scalar @{ $res->{knowledge_base}->{pending_types} }, 2,                      'pending_types has 2 entries' );
+        is( $registered_kb->{active},                            1,                      'active' );
+        is( $registered_kb->{answer},                            'foobar',               'answer' );
+        is( $res->{recipient_count},                             1,                      'one recipient' );
+        is( $res->{tag},                                         'direitos dos animais', 'human name' );
+    };
+
+    rest_post "/api/politician/$politician_id/knowledge-base",
+        name                => 'creating knowledge base entry',
+        automatic_load_item => 0,
+        stash               => 'k2',
+        [
+            entity_id => $politician_entity_id,
+            answer    => 'bazbar',
+            type      => 'proposta'
+        ]
+    ;
+
+    rest_post "/api/politician/$politician_id/knowledge-base",
+        name                => 'creating knowledge base entry',
+        automatic_load_item => 0,
+        stash               => 'k1',
+        [
+            entity_id => $politician_entity_id,
+            answer    => 'quux',
+            type      => 'histórico'
+        ]
+    ;
+
+    rest_reload_list 'get_entity_result';
+    stash_test 'get_entity_result.list' => sub {
+        my $res = shift;
+
+        is( scalar @{ $res->{knowledge_base}->{pending_types} }, 0, 'no pending types' );
     };
 
     # Listando entidades sem nenhum posiocionamento

@@ -46,28 +46,28 @@ db_transaction {
             security_token => $security_token,
             entities       => encode_json(
 				{
-					"responseId" => "63f36f86-1379-4cd0-bf8d-d1932f29c5c4",
-					"queryResult" => {
-						"queryText" => "Quais são suas propostas para os direitos dos animais?",
-						"parameters" => {
-							"tipos_de_pergunta"    => ["Proposta"],
-							"direitos_dos_animais" => ["Direitos dos animais"]
+					id        => 'a8736300-e5b3-4ab8-a29e-c379ef7f61de',
+					timestamp => '2018-09-19T21 => 39 => 43.452Z',
+					lang      => 'pt-br',
+					result    => {
+						source           => 'agent',
+						resolvedQuery    => 'O que você acha do aborto?',
+						action           => '',
+						actionIncomplete => 0,
+						parameters       => {},
+						contexts         => [],
+						metadata         => {
+							intentId                  => '4c3f7241-6990-4c92-8332-cfb8d437e3d1',
+							webhookUsed               => 0,
+							webhookForSlotFillingUsed => 0,
+							isFallbackIntent          => 0,
+							intentName                => 'Saude'
 						},
-						"allRequiredParamsPresent" => 1,
-						"fulfillmentMessages" => [
-							{
-								"text" => {
-									"text" => [""]
-								}
-							}
-						],
-						"intent" => {
-							"name" => "projects/marina-chatbot/agent/intents/e4ec7ee6-5624-47ea-ace9-5ed2a95255ce",
-							"displayName" => "Saude"
-						},
-						"intentDetectionConfidence" => 0.87,
-						"languageCode" => "pt-br"
-					}
+						fulfillment => { speech =>  '', messages =>  [] },
+						score       => 1
+					},
+					status    => { code =>  200, errorType =>  'success' },
+					sessionId => '1938538852857638'
 				}
             )
         ]
@@ -122,6 +122,36 @@ db_transaction {
         is ( $res->{knowledge_base}->[0]->{answer}, $answer, 'kb answer' );
     };
 
+    rest_post "/api/politician/$politician_id/knowledge-base",
+        name                => 'creating knowledge base entry',
+        automatic_load_item => 0,
+        stash               => 'k1',
+        [
+            entity_id => $politician_entity_id,
+            answer    => 'upsert',
+            type      => 'posicionamento'
+        ]
+    ;
+
+    rest_reload_list 'get_knowledge_base';
+    stash_test 'get_knowledge_base.list' => sub {
+        my $res = shift;
+
+        is ( scalar @{ $res->{knowledge_base} },    1,        'one item in the array' );
+        is ( $res->{knowledge_base}->[0]->{id},     $kb_id,   'kb id' );
+        is ( $res->{knowledge_base}->[0]->{answer}, 'upsert', 'kb answer' );
+    };
+
+    rest_post "/api/politician/$politician_id/knowledge-base",
+        name                => 'creating knowledge base entry',
+        automatic_load_item => 0,
+        [
+            entity_id => $politician_entity_id,
+            answer    => $answer,
+            type      => 'posicionamento'
+        ]
+    ;
+
     rest_get "/api/politician/$politician_id/knowledge-base/$kb_id",
         name  => 'get politician knowledge base entry (result)',
         stash => 'get_knowledge_base_entry',
@@ -174,7 +204,7 @@ db_transaction {
     stash_test 'get_knowledge_base_entry.list' => sub {
         my $res = shift;
 
-		is( $res->{type}, 'proposta', '"Proposta" type' );
+        is( $res->{type}, 'proposta', '"Proposta" type' );
     };
 
     # Listando entidades sem nenhum posiocionamento
@@ -196,13 +226,13 @@ db_transaction {
     #     [ active => 1 ]
     # ;
 
-	# rest_reload_list 'get_pending_entities';
+    # rest_reload_list 'get_pending_entities';
 
-	# stash_test 'get_pending_entities.list' => sub {
-	# 	my $res = shift;
+    # stash_test 'get_pending_entities.list' => sub {
+    # 	my $res = shift;
 
     #     is ( scalar @{ $res->{politician_entities} }, 0, 'empty array' );
-	# };
+    # };
 
     # rest_post "/api/chatbot/issue",
     #     name                => "issue creation",
@@ -217,13 +247,13 @@ db_transaction {
     #     ]
     # ;
 
-	# rest_reload_list 'get_pending_entities';
+    # rest_reload_list 'get_pending_entities';
 
-	# stash_test 'get_pending_entities.list' => sub {
-	# 	my $res = shift;
+    # stash_test 'get_pending_entities.list' => sub {
+    # 	my $res = shift;
 
-	# 	is( scalar @{ $res->{politician_entities} }, 1, 'one row' );
-	# };
+    # 	is( scalar @{ $res->{politician_entities} }, 1, 'one row' );
+    # };
 
     # rest_put "/api/politician/$politician_id/knowledge-base/$kb_id",
     #     name => 'update politician knowledge base entry',
@@ -232,11 +262,11 @@ db_transaction {
 
     # rest_reload_list 'get_pending_entities';
 
-	# stash_test 'get_pending_entities.list' => sub {
-	# 	my $res = shift;
+    # stash_test 'get_pending_entities.list' => sub {
+    # 	my $res = shift;
 
-	# 	is( scalar @{ $res->{politician_entities} }, 2, 'two rows' );
-	# };
+    # 	is( scalar @{ $res->{politician_entities} }, 2, 'two rows' );
+    # };
 
 };
 
