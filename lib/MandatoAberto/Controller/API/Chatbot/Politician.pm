@@ -89,11 +89,11 @@ sub list_GET {
                                     $url = $vl->custom_url
                                 }
                                 else {
-                                    $url = $vl->website_url . '?ref=mandatoaberto#doar';
+                                    $url = $vl->website_url;
                                 }
 
                                 votolegal_username => $vl->get_column("username"),
-                                votolegal_url      => $url,
+                                votolegal_url      => $url . '?ref=mandatoaberto#doar',
                             } $p->politician_votolegal_integrations->all()
                         }
                     ) : ()
