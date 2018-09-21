@@ -83,6 +83,9 @@ sub action_specs {
                 die \['comment_id', 'missing'];
             }
 
+            $values{post_id}    = substr $values{post_id},    16 if $values{post_id} && length $values{post_id} > 15;
+            $values{comment_id} = substr $values{comment_id}, 16 if $values{comment_id} && length $values{comment_id} > 15;
+
             my $item_id;
             if ($item eq 'post') {
                 $item_id = $values{post_id};
