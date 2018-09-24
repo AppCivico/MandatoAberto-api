@@ -4,6 +4,7 @@
 BEGIN;
 
 ALTER TABLE recipient ALTER COLUMN entities SET DEFAULT '{}';
+UPDATE recipient SET entities = '{}' WHERE entities = null;
 ALTER TABLE recipient ALTER COLUMN entities SET NOT NULL;
 
 COMMIT;
