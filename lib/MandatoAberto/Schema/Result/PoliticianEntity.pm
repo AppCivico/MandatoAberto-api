@@ -210,7 +210,7 @@ sub get_knowledge_bases_by_types {
 
 			+{
 				id                    => $kb ? $kb->id                    : undef,
-				active                => $kb ? $kb->active                : 1,
+				active                => $kb ? $kb->active                : 0,
 				type                  => $kb ? $kb->type                  : $_,
 				answer                => $kb ? $kb->answer                : undef,
 				updated_at            => $kb ? $kb->updated_at            : undef,
