@@ -5,6 +5,5 @@ BEGIN;
 
 ALTER TABLE recipient ALTER COLUMN entities SET DEFAULT '{}'::int[];
 UPDATE recipient SET entities = '{}'::int[] WHERE entities = null;
-ALTER TABLE recipient ALTER COLUMN entities SET NOT NULL;
 
 COMMIT;
