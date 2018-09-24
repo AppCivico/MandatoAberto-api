@@ -197,6 +197,31 @@ sub pending_knowledge_base_types {
     return @pending_types;
 }
 
+sub get_knowledge_bases_by_types {
+    my ($self) = @_;
+
+	my @available_types = $self->result_source->schema->resultset('AvailableType')->get_column('name')->all();
+
+	my $knowledge_base_rs = $self->knowledge_base_rs;
+
+    return [
+        map {
+            my $kb = $knowledge_base_rs->search( { type => $_ } )->next;
+
+			+{
+				id                    => $kb ? $kb->id                    : undef,
+				active                => $kb ? $kb->active                : undef,
+				type                  => $kb ? $kb->type                  : $_,
+				answer                => $kb ? $kb->answer                : undef,
+				updated_at            => $kb ? $kb->updated_at            : undef,
+				created_at            => $kb ? $kb->created_at            : undef,
+				saved_attachment_id   => $kb ? $kb->saved_attachment_id   : undef,
+				saved_attachment_type => $kb ? $kb->saved_attachment_type : undef,
+			}
+        } @available_types
+    ]
+}
+
 sub human_name {
     my ($self) = @_;
 
