@@ -190,6 +190,9 @@ _build_mailer	./lib/MandatoAberto/Worker/Email.pm	/^sub _build_mailer {$/;"	s
 _build_messager	./lib/MandatoAberto/Worker/DirectMessage.pm	/^sub _build_messager {$/;"	s
 _build_rule_empty	./lib/MandatoAberto/Schema/ResultSet/Recipient.pm	/^sub _build_rule_empty {$/;"	s
 _build_rule_gender_is	./lib/MandatoAberto/Schema/ResultSet/Recipient.pm	/^sub _build_rule_gender_is {$/;"	s
+_build_rule_gender_is_not	./lib/MandatoAberto/Schema/ResultSet/Recipient.pm	/^sub _build_rule_gender_is_not {$/;"	s
+_build_rule_intent_is	./lib/MandatoAberto/Schema/ResultSet/Recipient.pm	/^sub _build_rule_intent_is {$/;"	s
+_build_rule_intent_is_not	./lib/MandatoAberto/Schema/ResultSet/Recipient.pm	/^sub _build_rule_intent_is_not {$/;"	s
 _build_rule_question_answer_equals	./lib/MandatoAberto/Schema/ResultSet/Recipient.pm	/^sub _build_rule_question_answer_equals {$/;"	s
 _build_rule_question_answer_not_equals	./lib/MandatoAberto/Schema/ResultSet/Recipient.pm	/^sub _build_rule_question_answer_not_equals {$/;"	s
 _build_rule_question_is_answered	./lib/MandatoAberto/Schema/ResultSet/Recipient.pm	/^sub _build_rule_question_is_answered {$/;"	s
@@ -303,6 +306,8 @@ base	./lib/MandatoAberto/Controller/API/Register/Dialog.pm	/^sub base : Chained(
 base	./lib/MandatoAberto/Controller/API/Register/Politician.pm	/^sub base : Chained('root') : PathPart('politician') : CaptureArgs(0) { }$/;"	s
 base	./lib/MandatoAberto/Controller/API/Register/Poll.pm	/^sub base : Chained('root') : PathPart('poll') : CaptureArgs(0) {$/;"	s
 base	./lib/MandatoAberto/Controller/API/State.pm	/^sub base : Chained('root') : PathPart('state') : CaptureArgs(0) { }$/;"	s
+batch_ignore	./lib/MandatoAberto/Controller/API/Politician/Issue.pm	/^sub batch_ignore : Chained('base') : PathPart('batch-ignore') : Args(0) : ActionClass('REST') { }$/;"	s
+batch_ignore_PUT	./lib/MandatoAberto/Controller/API/Politician/Issue.pm	/^sub batch_ignore_PUT {$/;"	s
 build_content_object	./lib/MandatoAberto/Schema/Result/Poll.pm	/^sub build_content_object {$/;"	s
 build_email	./lib/MandatoAberto/Mailer/Template.pm	/^sub build_email {$/;"	s
 build_message	./lib/MandatoAberto/Messager/Template.pm	/^sub build_message {$/;"	s
@@ -320,6 +325,7 @@ create	./lib/MandatoAberto/Controller/API/Register/Poll.pm	/^sub create : Chaine
 create_POST	./lib/MandatoAberto/Controller/API/Register/Dialog.pm	/^sub create_POST {$/;"	s
 create_POST	./lib/MandatoAberto/Controller/API/Register/Politician.pm	/^sub create_POST {$/;"	s
 create_POST	./lib/MandatoAberto/Controller/API/Register/Poll.pm	/^sub create_POST {$/;"	s
+create_intent	./lib/WebService/Dialogflow.pm	/^sub create_intent {$/;"	s
 deactivate_chatbot	./lib/MandatoAberto/Schema/Result/Politician.pm	/^sub deactivate_chatbot {$/;"	s
 deactivate_premium	./lib/MandatoAberto/Schema/Result/Politician.pm	/^sub deactivate_premium {$/;"	s
 default	./lib/MandatoAberto/Controller/Root.pm	/^sub default :Path {$/;"	s
@@ -356,7 +362,9 @@ get_current_pendency	./lib/MandatoAberto/Schema/Result/Politician.pm	/^sub get_c
 get_dialogs_with_data	./lib/MandatoAberto/Schema/ResultSet/Dialog.pm	/^sub get_dialogs_with_data {$/;"	s
 get_entities	./lib/WebService/Dialogflow.pm	/^sub get_entities {$/;"	s
 get_groups_ordered_by_recipient_count	./lib/MandatoAberto/Schema/ResultSet/Group.pm	/^sub get_groups_ordered_by_recipient_count {$/;"	s
+get_intents	./lib/WebService/Dialogflow.pm	/^sub get_intents {$/;"	s
 get_knowledge_base_by_entity_name	./lib/MandatoAberto/Schema/ResultSet/PoliticianKnowledgeBase.pm	/^sub get_knowledge_base_by_entity_name {$/;"	s
+get_knowledge_bases_by_types	./lib/MandatoAberto/Schema/Result/PoliticianEntity.pm	/^sub get_knowledge_bases_by_types {$/;"	s
 get_last_sent_private_reply	./lib/MandatoAberto/Schema/ResultSet/PrivateReply.pm	/^sub get_last_sent_private_reply {$/;"	s
 get_long_lived_access_token	./lib/MandatoAberto/Schema/Result/Politician.pm	/^sub get_long_lived_access_token {$/;"	s
 get_mandatoaberto_api_url_for	./lib/MandatoAberto/Utils.pm	/^sub get_mandatoaberto_api_url_for {$/;"	s
