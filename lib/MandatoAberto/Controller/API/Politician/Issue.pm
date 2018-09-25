@@ -35,7 +35,7 @@ __PACKAGE__->config(
         my $ignore_flag = $c->req->params->{ignore} || 0;
         $params->{ignore} = $ignore_flag;
 
-        $params->{open} = 0;
+		$params->{open} = 0;
 
         if ($c->req->params->{groups}) {
             $c->req->params->{groups} =~ s/(\[|\]|(\s))//g;
@@ -105,25 +105,28 @@ sub list_GET {
     my $cond;
     if ( $filter eq 'open' ) {
         $cond = {
-            'me.politician_id' => $politician_id,,
+            'me.politician_id' => $politician_id,
             open               => 1,
-            'me.message'       => { '!=' => 'Participar' }
+            'me.message'       => { '!=' => 'Participar' },
+            deleted            => 0
         }
     }
     elsif ( $filter eq 'ignored' ) {
         $cond = {
-            'me.politician_id' => $politician_id,,
+            'me.politician_id' => $politician_id,
             open               => 0,
             reply              => \'IS NULL',
-            'me.message'       => { '!=' => 'Participar' }
+            'me.message'       => { '!=' => 'Participar' },
+            deleted            => 0
         }
     }
     else {
         $cond = {
-            'me.politician_id' => $politician_id,,
+            'me.politician_id' => $politician_id,
             open               => 0,
             reply              => \'IS NOT NULL',
-            'me.message'       => { '!=' => 'Participar' }
+            'me.message'       => { '!=' => 'Participar' },
+            deleted            => 0
         }
     }
 
@@ -277,7 +280,7 @@ sub batch_ignore_PUT {
 
     my $ids = $c->req->params->{ids};
     die \['ids', 'missing'] unless $ids;
-    # use DDP; p $ids;
+
     $c->stash->{collection}->execute(
         $c,
         for  => 'batch_ignore',
