@@ -268,6 +268,33 @@ sub result_GET {
     );
 }
 
+sub batch_ignore : Chained('base') : PathPart('batch-ignore') : Args(0) : ActionClass('REST') { }
+
+sub batch_ignore_PUT {
+    my ($self, $c) = @_;
+
+    $c->stash->{collection} = $c->stash->{collection}->search( { politician_id => $c->stash->{politician}->id } );
+
+    my $ids = $c->req->params->{ids};
+    die \['ids', 'missing'] unless $ids;
+    # use DDP; p $ids;
+    $c->stash->{collection}->execute(
+        $c,
+        for  => 'batch_ignore',
+        with => {
+            politician_id => $c->stash->{politician}->id,
+            ids           => $ids
+        }
+    );
+
+    return $self->status_ok(
+        $c,
+        entity => {
+
+        }
+    )
+}
+
 sub _upload_picture {
     my ( $self, $upload, $page_access_token ) = @_;
 
