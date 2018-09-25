@@ -281,19 +281,22 @@ sub batch_ignore_PUT {
     my $ids = $c->req->params->{ids};
     die \['ids', 'missing'] unless $ids;
 
+    $ids =~ s/(\[|\]|(\s))//g;
+	my @ids = split(',', $ids);
+
     $c->stash->{collection}->execute(
         $c,
         for  => 'batch_ignore',
         with => {
             politician_id => $c->stash->{politician}->id,
-            ids           => $ids
+            ids           => \@ids
         }
     );
 
     return $self->status_ok(
         $c,
         entity => {
-
+            sucess => 1
         }
     )
 }
