@@ -48,30 +48,30 @@ db_transaction {
             message        => $message,
             security_token => $security_token,
             entities       => encode_json(
-				{
-					id        => 'a8736300-e5b3-4ab8-a29e-c379ef7f61de',
-					timestamp => '2018-09-19T21 => 39 => 43.452Z',
-					lang      => 'pt-br',
-					result    => {
-						source           => 'agent',
-						resolvedQuery    => 'O que você acha do aborto?',
-						action           => '',
-						actionIncomplete => 0,
-						parameters       => {},
-						contexts         => [],
-						metadata         => {
-							intentId                  => '4c3f7241-6990-4c92-8332-cfb8d437e3d1',
-							webhookUsed               => 0,
-							webhookForSlotFillingUsed => 0,
-							isFallbackIntent          => 0,
-							intentName                => 'direitos_animais'
-						},
-						fulfillment => { speech =>  '', messages =>  [] },
-						score       => 1
-					},
-					status    => { code =>  200, errorType =>  'success' },
-					sessionId => '1938538852857638'
-				}
+                {
+                    id        => 'a8736300-e5b3-4ab8-a29e-c379ef7f61de',
+                    timestamp => '2018-09-19T21 => 39 => 43.452Z',
+                    lang      => 'pt-br',
+                    result    => {
+                        source           => 'agent',
+                        resolvedQuery    => 'O que você acha do aborto?',
+                        action           => '',
+                        actionIncomplete => 0,
+                        parameters       => {},
+                        contexts         => [],
+                        metadata         => {
+                            intentId                  => '4c3f7241-6990-4c92-8332-cfb8d437e3d1',
+                            webhookUsed               => 0,
+                            webhookForSlotFillingUsed => 0,
+                            isFallbackIntent          => 0,
+                            intentName                => 'direitos_animais'
+                        },
+                        fulfillment => { speech =>  '', messages =>  [] },
+                        score       => 1
+                    },
+                    status    => { code =>  200, errorType =>  'success' },
+                    sessionId => '1938538852857638'
+                }
             )
         ]
     ;
@@ -179,43 +179,43 @@ db_transaction {
             message        => fake_words(1)->(),
             security_token => $security_token,
             entities       => encode_json(
-				{
-					id        => 'a8736300-e5b3-4ab8-a29e-c379ef7f61de',
-					timestamp => '2018-09-19T21 => 39 => 43.452Z',
-					lang      => 'pt-br',
-					result    => {
-						source           => 'agent',
-						resolvedQuery    => 'O que você acha do aborto?',
-						action           => '',
-						actionIncomplete => 0,
-						parameters       => {},
-						contexts         => [],
-						metadata         => {
-							intentId                  => '4c3f7241-6990-4c92-8332-cfb8d437e3d1',
-							webhookUsed               => 0,
-							webhookForSlotFillingUsed => 0,
-							isFallbackIntent          => 0,
-							intentName                => 'direitos_animais'
-						},
-						fulfillment => { speech =>  '', messages =>  [] },
-						score       => 1
-					},
-					status    => { code =>  200, errorType =>  'success' },
-					sessionId => '1938538852857638'
-				}
+                {
+                    id        => 'a8736300-e5b3-4ab8-a29e-c379ef7f61de',
+                    timestamp => '2018-09-19T21 => 39 => 43.452Z',
+                    lang      => 'pt-br',
+                    result    => {
+                        source           => 'agent',
+                        resolvedQuery    => 'O que você acha do aborto?',
+                        action           => '',
+                        actionIncomplete => 0,
+                        parameters       => {},
+                        contexts         => [],
+                        metadata         => {
+                            intentId                  => '4c3f7241-6990-4c92-8332-cfb8d437e3d1',
+                            webhookUsed               => 0,
+                            webhookForSlotFillingUsed => 0,
+                            isFallbackIntent          => 0,
+                            intentName                => 'direitos_animais'
+                        },
+                        fulfillment => { speech =>  '', messages =>  [] },
+                        score       => 1
+                    },
+                    status    => { code =>  200, errorType =>  'success' },
+                    sessionId => '1938538852857638'
+                }
             )
         ]
     ;
     my $second_issue_id = stash "i2.id";
-	my $second_issue    = $issue_rs->find($second_issue_id);
+    my $second_issue    = $issue_rs->find($second_issue_id);
 
     # Testando batch ignore de issues
     db_transaction{
-		$first_issue->update( { reply => undef, open => 1 } );
-		$second_issue->update( { reply => undef, open => 1 } );
+        $first_issue->update( { reply => undef, open => 1 } );
+        $second_issue->update( { reply => undef, open => 1 } );
 
         $first_issue  = $first_issue->discard_changes;
-		$second_issue = $second_issue->discard_changes;
+        $second_issue = $second_issue->discard_changes;
 
         rest_put "/api/politician/$politician_id/issue/batch-ignore",
             name    => 'batch ignore without ids',
@@ -280,30 +280,30 @@ db_transaction {
             message        => fake_words(1)->(),
             security_token => $security_token,
             entities       => encode_json(
-				{
-					id        => 'a8736300-e5b3-4ab8-a29e-c379ef7f61de',
-					timestamp => '2018-09-19T21 => 39 => 43.452Z',
-					lang      => 'pt-br',
-					result    => {
-						source           => 'agent',
-						resolvedQuery    => 'O que você acha do aborto?',
-						action           => '',
-						actionIncomplete => 0,
-						parameters       => {},
-						contexts         => [],
-						metadata         => {
-							intentId                  => '4c3f7241-6990-4c92-8332-cfb8d437e3d1',
-							webhookUsed               => 0,
-							webhookForSlotFillingUsed => 0,
-							isFallbackIntent          => 0,
-							intentName                => 'direitos_animais'
-						},
-						fulfillment => { speech =>  '', messages =>  [] },
-						score       => 1
-					},
-					status    => { code =>  200, errorType =>  'success' },
-					sessionId => '1938538852857638'
-				}
+                {
+                    id        => 'a8736300-e5b3-4ab8-a29e-c379ef7f61de',
+                    timestamp => '2018-09-19T21 => 39 => 43.452Z',
+                    lang      => 'pt-br',
+                    result    => {
+                        source           => 'agent',
+                        resolvedQuery    => 'O que você acha do aborto?',
+                        action           => '',
+                        actionIncomplete => 0,
+                        parameters       => {},
+                        contexts         => [],
+                        metadata         => {
+                            intentId                  => '4c3f7241-6990-4c92-8332-cfb8d437e3d1',
+                            webhookUsed               => 0,
+                            webhookForSlotFillingUsed => 0,
+                            isFallbackIntent          => 0,
+                            intentName                => 'direitos_animais'
+                        },
+                        fulfillment => { speech =>  '', messages =>  [] },
+                        score       => 1
+                    },
+                    status    => { code =>  200, errorType =>  'success' },
+                    sessionId => '1938538852857638'
+                }
             )
         ]
     ;
@@ -314,7 +314,7 @@ db_transaction {
         files => { file => "$Bin/picture.jpg", },
     ;
 
-	my $third_issue    = $issue_rs->find($third_issue_id);
+    my $third_issue    = $issue_rs->find($third_issue_id);
     ok ( defined( $third_issue->saved_attachment_id ), 'defined' );
 };
 

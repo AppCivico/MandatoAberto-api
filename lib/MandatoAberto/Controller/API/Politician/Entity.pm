@@ -103,26 +103,26 @@ sub list_GET {
                     my $e = $_;
 
                     if ( $filter eq 'all' ) {
-						+{
-							id              => $e->id,
-							recipient_count => $e->recipient_count,
-							created_at      => $e->created_at,
-							updated_at      => $e->updated_at,
-							tag             => $e->human_name,
-							knowledge_base  => $e->get_knowledge_bases_by_types()
-						}
+                        +{
+                            id              => $e->id,
+                            recipient_count => $e->recipient_count,
+                            created_at      => $e->created_at,
+                            updated_at      => $e->updated_at,
+                            tag             => $e->human_name,
+                            knowledge_base  => $e->get_knowledge_bases_by_types()
+                        }
                     }
                     else {
-						if ( $e->has_active_knowledge_base ) {
-							+{
-								id              => $e->id,
-								recipient_count => $e->recipient_count,
-								created_at      => $e->created_at,
-								updated_at      => $e->updated_at,
-								tag             => $e->human_name,
+                        if ( $e->has_active_knowledge_base ) {
+                            +{
+                                id              => $e->id,
+                                recipient_count => $e->recipient_count,
+                                created_at      => $e->created_at,
+                                updated_at      => $e->updated_at,
+                                tag             => $e->human_name,
                                 knowledge_base  => $e->get_knowledge_bases_by_types()
-							};
-						} else { }
+                            };
+                        } else { }
                     }
 
                 } $c->stash->{collection}->search(

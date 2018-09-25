@@ -35,7 +35,7 @@ __PACKAGE__->config(
         my $ignore_flag = $c->req->params->{ignore} || 0;
         $params->{ignore} = $ignore_flag;
 
-		$params->{open} = 0;
+        $params->{open} = 0;
 
         if ($c->req->params->{groups}) {
             $c->req->params->{groups} =~ s/(\[|\]|(\s))//g;

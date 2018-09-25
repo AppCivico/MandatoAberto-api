@@ -211,14 +211,14 @@ sub structure_GET {
                     name      => 'GENDER_IS_NOT',
                     has_value => 1
                 },
-				{
-					name      => 'INTENT_IS',
-					has_value => 1
-				},
-				{
-					name      => 'INTENT_IS_NOT',
-					has_value => 1
-				},
+                {
+                    name      => 'INTENT_IS',
+                    has_value => 1
+                },
+                {
+                    name      => 'INTENT_IS_NOT',
+                    has_value => 1
+                },
             ],
         },
     );

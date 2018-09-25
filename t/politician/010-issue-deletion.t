@@ -7,14 +7,14 @@ use MandatoAberto::Test::Further;
 my $schema = MandatoAberto->model("DB");
 
 db_transaction {
-	my $issue_rs      = $schema->resultset('Issue');
+    my $issue_rs      = $schema->resultset('Issue');
     my $recipient_rs  = $schema->resultset('Recipient');
     my $politician_rs = $schema->resultset('Politician');
 
-	my $politician = create_politician(
-		fb_page_id           => fake_words(1)->(),
-		fb_page_access_token => fake_words(1)->()
-	);
+    my $politician = create_politician(
+        fb_page_id           => fake_words(1)->(),
+        fb_page_access_token => fake_words(1)->()
+    );
     my $politician_id = $politician->{id};
     $politician       = $politician_rs->find($politician_id);
 

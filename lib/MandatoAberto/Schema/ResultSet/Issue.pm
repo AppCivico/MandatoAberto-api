@@ -121,10 +121,10 @@ sub action_specs {
             return $issue;
         },
         batch_ignore => sub {
-			my $r = shift;
+            my $r = shift;
 
-			my %values = $r->valid_values;
-			not defined $values{$_} and delete $values{$_} for keys %values;
+            my %values = $r->valid_values;
+            not defined $values{$_} and delete $values{$_} for keys %values;
 
             $self->result_source->schema->txn_do(sub {
                 for my $id ( @{ $values{ids} } ) {

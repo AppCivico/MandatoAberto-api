@@ -215,18 +215,18 @@ sub search_by_filter {
         elsif ($name eq 'GENDER_IS') {
             push @where_attrs, $self->_build_rule_gender_is($value);
         }
-		elsif ($name eq 'GENDER_IS_NOT') {
-			push @where_attrs, $self->_build_rule_gender_is_not($value);
-		}
+        elsif ($name eq 'GENDER_IS_NOT') {
+            push @where_attrs, $self->_build_rule_gender_is_not($value);
+        }
         elsif ($name eq 'EMPTY') {
             push @where_attrs, $self->_build_rule_empty();
         }
         elsif ($name eq 'INTENT_IS') {
             push @where_attrs, $self->_build_rule_intent_is($value);
         }
-		elsif ($name eq 'INTENT_IS_NOT') {
-			push @where_attrs, $self->_build_rule_intent_is_not($value);
-		}
+        elsif ($name eq 'INTENT_IS_NOT') {
+            push @where_attrs, $self->_build_rule_intent_is_not($value);
+        }
         else {
             die "rule name '$name' does not exists.";
         }
@@ -330,9 +330,9 @@ SQL_QUERY
 }
 
 sub _build_rule_gender_is_not {
-	my ($self, $value) = @_;
+    my ($self, $value) = @_;
 
-	return \[ <<'SQL_QUERY', $value ];
+    return \[ <<'SQL_QUERY', $value ];
 gender != ?
 SQL_QUERY
 }
@@ -340,15 +340,15 @@ SQL_QUERY
 sub _build_rule_intent_is {
     my ($self, $value) = @_;
 
-	return \[ <<'SQL_QUERY', $value ];
+    return \[ <<'SQL_QUERY', $value ];
 ? = ANY (entities::int[])
 SQL_QUERY
 }
 
 sub _build_rule_intent_is_not {
-	my ($self, $value) = @_;
+    my ($self, $value) = @_;
 
-	return \[ <<'SQL_QUERY', $value ];
+    return \[ <<'SQL_QUERY', $value ];
 NOT (? = ANY (entities::int[]))
 SQL_QUERY
 }

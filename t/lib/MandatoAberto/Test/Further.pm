@@ -222,32 +222,32 @@ sub create_issue {
 
     my $security_token = $ENV{CHATBOT_SECURITY_TOKEN};
 
-	my $fake_entity = encode_json(
-		{
-			id        => 'a8736300-e5b3-4ab8-a29e-c379ef7f61de',
-			timestamp => '2018-09-19T21 => 39 => 43.452Z',
-			lang      => 'pt-br',
-			result    => {
-				source           => 'agent',
-				resolvedQuery    => 'O que você já fez pelos direitos animais??',
-				action           => '',
-				actionIncomplete => 0,
-				parameters       => {},
-				contexts         => [],
-				metadata         => {
-					intentId                  => '4c3f7241-6990-4c92-8332-cfb8d437e3d1',
-					webhookUsed               => 0,
-					webhookForSlotFillingUsed => 0,
-					isFallbackIntent          => 0,
-					intentName                => 'direitos_animais'
-				},
-				fulfillment => { speech =>  '', messages =>  [] },
-				score       => 1
-			},
-			status    => { code =>  200, errorType =>  'success' },
-			sessionId => '1938538852857638'
-		}
-	);
+    my $fake_entity = encode_json(
+        {
+            id        => 'a8736300-e5b3-4ab8-a29e-c379ef7f61de',
+            timestamp => '2018-09-19T21 => 39 => 43.452Z',
+            lang      => 'pt-br',
+            result    => {
+                source           => 'agent',
+                resolvedQuery    => 'O que você já fez pelos direitos animais??',
+                action           => '',
+                actionIncomplete => 0,
+                parameters       => {},
+                contexts         => [],
+                metadata         => {
+                    intentId                  => '4c3f7241-6990-4c92-8332-cfb8d437e3d1',
+                    webhookUsed               => 0,
+                    webhookForSlotFillingUsed => 0,
+                    isFallbackIntent          => 0,
+                    intentName                => 'direitos_animais'
+                },
+                fulfillment => { speech =>  '', messages =>  [] },
+                score       => 1
+            },
+            status    => { code =>  200, errorType =>  'success' },
+            sessionId => '1938538852857638'
+        }
+    );
 
     return $obj->rest_post(
         '/api/chatbot/issue',
@@ -271,11 +271,11 @@ sub setup_votolegal_integration_success {
 }
 
 sub setup_votolegal_integration_success_with_custom_url {
-	$votolegal_response = {
-		id         => fake_int(1, 100)->(),
-		username   => 'fake_username',
+    $votolegal_response = {
+        id         => fake_int(1, 100)->(),
+        username   => 'fake_username',
         custom_url => 'https://www.foobar.com.br'
-	};
+    };
 }
 
 sub setup_votolegal_integration_fail {
