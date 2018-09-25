@@ -226,7 +226,7 @@ db_transaction {
         rest_put "/api/politician/$politician_id/issue/batch-ignore",
             name => 'batch ignore',
             code => 200,
-            [ ids => [ $first_issue_id, $second_issue_id ] ]
+            [ ids => "$first_issue_id, $second_issue_id" ]
         ;
 
         rest_get "/api/politician/$politician_id/issue",
