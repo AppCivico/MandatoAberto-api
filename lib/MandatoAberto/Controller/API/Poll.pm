@@ -68,7 +68,8 @@ sub list_GET {
                         id          => $p->get_column('id'),
                         name        => $p->get_column('name'),
                         status_id   => $p->get_column('status_id'),
-                        active_time => $p->created_at->subtract_datetime( DateTime->now() ),
+
+                        ( $p->status_id == 1 ? ( active_time => $p->created_at->subtract_datetime( DateTime->now() ) ) : ( ) ),
 
                         questions => [
                             map {
