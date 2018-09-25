@@ -110,6 +110,12 @@ __PACKAGE__->table("issue");
   data_type: 'text'
   is_nullable: 1
 
+=head2 deleted
+
+  data_type: 'boolean'
+  default_value: false
+  is_nullable: 0
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -147,6 +153,8 @@ __PACKAGE__->add_columns(
   { data_type => "text", is_nullable => 1 },
   "saved_attachment_type",
   { data_type => "text", is_nullable => 1 },
+  "deleted",
+  { data_type => "boolean", default_value => \"false", is_nullable => 0 },
 );
 
 =head1 PRIMARY KEY
@@ -194,8 +202,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-08-24 17:37:39
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:wzHzb4rWSyQ+CymHLUOudA
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-09-25 14:43:58
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:jYBCVca0RmbGz7EExCBIJw
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
@@ -224,9 +232,10 @@ sub verifiers_specs {
                     required   => 1,
                     type       => "Bool",
                     post_check => sub {
-                        my $open_boolean = $_[0]->get_value('open');
+                        my $open_boolean    = $_[0]->get_value('open');
+                        my $deleted_boolean = $_[0]->get_value('deleted');
 
-                        if (!$self->open) {
+                        if (!$self->open && !$deleted_boolean) {
                             die \["open", "issue is alredy closed"];
                         }
 
@@ -272,6 +281,10 @@ sub verifiers_specs {
                 saved_attachment_type => {
                     required => 0,
                     type     => 'Str'
+                },
+                deleted => {
+                    required => 0,
+                    type     => 'Bool'
                 }
             }
         )
@@ -290,7 +303,7 @@ sub action_specs {
 
             if ($values{ignore} == 1 && $values{reply}) {
                 die \['ignore', 'must not have reply'];
-            } elsif ($values{ignore} == 0 && !$values{reply} && !$values{saved_attachment_id}) {
+            } elsif ($values{ignore} == 0 && !$values{reply} && !$values{saved_attachment_id} && !$values{deleted} ) {
                 die \['reply', 'missing'];
             }
 
