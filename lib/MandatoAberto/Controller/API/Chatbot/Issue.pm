@@ -35,7 +35,7 @@ __PACKAGE__->config(
             $params->{entities} = $entities;
         }
 
-        $params->{entities} = undef if $params->{entities} eq '{}';
+        $params->{entities} = undef if $params->{entities} && $params->{entities} eq '{}';
 
         return $params;
     },
