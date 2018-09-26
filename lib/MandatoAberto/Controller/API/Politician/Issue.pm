@@ -164,7 +164,7 @@ sub list_GET {
                         ignored      => $ignored_flag,
                         replied      => $replied_flag,
                         message      => $i->get_column('message'),
-                        created_at   => $i->get_column('created_at'),
+                        created_at   => $i->created_at->set_time_zone( 'America/Sao_Paulo' ),
                         recipient    => {
                             id              => $i->get_column('recipient_id'),
                             name            => $i->recipient->get_column('name'),
