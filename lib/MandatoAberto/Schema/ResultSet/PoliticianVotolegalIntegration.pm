@@ -43,6 +43,10 @@ sub verifiers_specs {
                 custom_url => {
                     required => 0,
                     type     => 'Str'
+                },
+                active => {
+                    required => 1,
+                    type     => 'Bool'
                 }
             }
         ),

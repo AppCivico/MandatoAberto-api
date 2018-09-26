@@ -32,6 +32,8 @@ __PACKAGE__->config(
         my $politician = $c->stash->{politician};
         die \['politician_id', 'no active fb_page_id for this politician'] unless $politician->fb_page_id;
 
+        my $active = $c->stash->{active} || 1;
+
         my $res;
         if ( is_test() ) {
             $res = $MandatoAberto::Test::Further::votolegal_response;
@@ -41,6 +43,7 @@ __PACKAGE__->config(
                 $ENV{VOTOLEGAL_API_URL} . '/candidate/mandatoaberto_integration',
                 [],
                 {
+                    active           => $active,
                     page_id          => $politician->fb_page_id,
                     security_token   => $security_token,
                     email            => $votolegal_email,
@@ -59,6 +62,7 @@ __PACKAGE__->config(
         $params->{votolegal_id}  = $res->{id};
         $params->{username}      = $res->{username};
         $params->{custom_url}    = $res->{custom_url};
+        $params->{active}        = $active;
 
         return $params;
     },
