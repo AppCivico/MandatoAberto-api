@@ -28,10 +28,11 @@ __PACKAGE__->config(
         $params->{recipient_id} = $recipient->id;
 
         my $entities = $c->req->params->{entities};
-        if ( $entities ) {
+
+        if ( $entities && $entities ne '{}' ) {
             $entities = decode_json(Encode::encode_utf8($entities)) or die \['entities', 'could not decode json'];
 
-            my @required_json_fields = qw (metadata resolvedQuery); Fundo partidário
+            my @required_json_fields = qw (metadata resolvedQuery);
             die \['entities', "missing 'result' param"] unless $entities->{result};
 
             for (@required_json_fields) {
@@ -40,6 +41,8 @@ __PACKAGE__->config(
 
             $params->{entities} = $entities;
         }
+
+        $params->{entities} = undef if $params->{entities} eq '{}';
 
         return $params;
     },
