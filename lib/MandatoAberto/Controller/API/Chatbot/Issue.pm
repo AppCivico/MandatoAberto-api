@@ -28,11 +28,14 @@ __PACKAGE__->config(
         $params->{recipient_id} = $recipient->id;
 
         my $entities = $c->req->params->{entities};
-        if ( $entities ) {
+
+        if ( $entities && $entities ne '{}' ) {
             $entities = decode_json(Encode::encode_utf8($entities)) or die \['entities', 'could not decode json'];
 
             $params->{entities} = $entities;
         }
+
+        $params->{entities} = undef if $params->{entities} eq '{}';
 
         return $params;
     },

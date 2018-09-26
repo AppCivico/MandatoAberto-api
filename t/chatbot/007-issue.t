@@ -131,6 +131,20 @@ db_transaction {
     $issue = $schema->resultset("Issue")->find(stash "i2.id");
 
     ok ($issue->peding_entity_recognition eq '1', 'Issue needs to be recognized');
+
+    # Creating issue with empty entities object
+    rest_post "/api/chatbot/issue",
+        name                => "issue creation",
+        automatic_load_item => 0,
+        stash               => "i3",
+        [
+            entities       => '{}',
+            politician_id  => $politician_id,
+            fb_id          => $recipient_fb_id,
+            message        => fake_words(1)->(),
+            security_token => $security_token,
+        ],
+    ;
 };
 
 done_testing();
