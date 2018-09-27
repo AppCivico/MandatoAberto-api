@@ -263,6 +263,24 @@ sub create_issue {
     );
 }
 
+sub create_knowledge_base {
+    my (%opts) = @_;
+
+    my $politician_id = $opts{politician_id};
+
+    return $obj->rest_post(
+        "/api/politician/$politician_id/knowledge-base",
+        name                => 'create issue',
+        stash               => 'issue',
+        automatic_load_item => 0,
+        params              => {
+            answer => fake_words(3)->(),
+            type   => fake_pick( qw( posicionamento histórico proposta ) )->(),
+            %opts,
+        }
+    );
+}
+
 sub setup_votolegal_integration_success {
     $votolegal_response = {
         id       => fake_int(1, 100)->(),
