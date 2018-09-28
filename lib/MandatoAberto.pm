@@ -1,15 +1,19 @@
 package MandatoAberto;
 use Mojo::Base 'Mojolicious';
 
-# This method will run once at server start
+use MandatoAberto::SchemaConnected;
+
 sub startup {
-  my $self = shift;
+    my $self = shift;
 
-  # Router
-  my $r = $self->routes;
+    # Helpers.
+    $self->helper(schema => sub { state $schema = MandatoAberto::SchemaConnected->get_schema(@_) });
 
-  # Normal route to controller
-  $r->get('/')->to('example#welcome');
+    # Router
+    my $r = $self->routes;
+
+    # Normal route to controller
+    $r->get('/')->to('example#welcome');
 }
 
 1;
