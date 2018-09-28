@@ -61,7 +61,6 @@ sub action_specs {
             my $r = shift;
 
             my %values = $r->valid_values;
-
             not defined $values{$_} and delete $values{$_} for keys %values;
 
             my $username         = $values{username};

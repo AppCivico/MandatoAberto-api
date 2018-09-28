@@ -132,6 +132,24 @@ db_transaction {
         is ( $res->{votolegal_integration}->{votolegal_email},      'foobar@email.com', 'votolegal email' );
         is ( $res->{votolegal_integration}->{greeting}, undef,     'votolegal greeting' );
     };
+
+    # Deactivating integration
+    rest_post "/api/politician/$politician_id/votolegal-integration",
+        name                => "Creating Voto Legal integration",
+        automatic_load_item => 0,
+        [
+            votolegal_email  => 'foobar@email.com',
+            active           => 0
+        ]
+    ;
+
+    rest_reload_list 'get_politician_data';
+	stash_test "get_politician_data.list" => sub {
+		my $res = shift;
+
+		is( $res->{votolegal_integration}, undef, 'votolegal integration does not exists' );
+	};
+
 };
 
 done_testing();

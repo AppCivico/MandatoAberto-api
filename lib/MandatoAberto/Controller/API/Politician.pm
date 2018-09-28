@@ -18,8 +18,18 @@ __PACKAGE__->config(
     prepare_params_for_update => sub {
         my ($self, $c, $params) = @_;
 
-        $params->{share_url}  = $c->req->params->{picframe_url}  if $c->req->params->{picframe_url};
-        $params->{share_text} = $c->req->params->{picframe_text} if $c->req->params->{picframe_text};
+        my $share_url  = $c->req->params->{picframe_url}  || $c->req->params->{share_url};
+        my $share_text = $c->req->params->{picframe_text} || $c->req->params->{share_text};
+
+        $params->{share_url}  = $share_url;
+        $params->{share_text} = $share_text;
+
+        if ( (defined $c->req->params->{picframe_url} && $c->req->params->{picframe_url} eq '') || (defined $c->req->params->{share_url} && $c->req->params->{share_url} eq '') ) {
+            $params->{share_url} = 'SET_NULL';
+        }
+		if ( (defined $c->req->params->{picframe_text} && $c->req->params->{picframe_text} eq '') || (defined $c->req->params->{share_text} && $c->req->params->{share_text} eq '') ) {
+            $params->{share_text} = 'SET_NULL';
+		}
 
         return $params;
     },

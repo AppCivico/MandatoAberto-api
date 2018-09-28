@@ -181,13 +181,6 @@ db_transaction {
     ;
 
     rest_put "/api/politician/$politician_id",
-        name    => "Adding picframe URL with invalid url",
-        is_fail => 1,
-        code    => 400,
-        [ picframe_url => 'foobar' ]
-    ;
-
-    rest_put "/api/politician/$politician_id",
         name => "Adding picframe URL and text",
         [
             picframe_url  => 'https://foobar.com.br',
@@ -224,6 +217,25 @@ db_transaction {
         is($res->{share_url},     'https://google.com.br', 'picframe_url');
         is($res->{share_text},    'barbaz',                'share_text');
     };
+
+    rest_put "/api/politician/$politician_id",
+        name => "Removing share data",
+        [
+            share_url  => '',
+            share_text => ''
+        ]
+    ;
+
+	rest_reload_list "get_politician";
+
+	stash_test "get_politician.list" => sub {
+		my $res = shift;
+
+		is($res->{picframe_url},  undef, 'picframe_url');
+		is($res->{picframe_text}, undef,'share_text');
+		is($res->{share_url},     undef, 'picframe_url');
+		is($res->{share_text},    undef,                'share_text');
+	};
 
     rest_put "/api/politician/$politician_id",
         name => "Adding picframe URL",
