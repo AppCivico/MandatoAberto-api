@@ -45,7 +45,7 @@ sub list_available_GET {
 					    }
                     }
                     else { }
-                } $c->stash->{collection}->entities_with_available_knowledge_bases->search(
+                } $politician->politician_entities->entities_with_available_knowledge_bases->search(
                     { politician_id => $politician->id },
                     { page => $page, rows => $results }
                   )->all()
