@@ -229,7 +229,25 @@ db_transaction {
         my $res = shift;
 
         is ( scalar @{ $res->{knowledge_base} }, 0, '0 rows' )
-    }
+    };
+
+    # Testando knowledge base com apenas a string do tema
+    rest_get '/api/chatbot/knowledge-base',
+        name  => 'get knowledge base with no knowledge base registered for that entity',
+        stash => 'get_knowledge_base',
+        list  => 1,
+        [
+            security_token => $security_token,
+            politician_id  => $politician_id,
+            entities       => 'Saude'
+        ]
+    ;
+
+    stash_test 'get_knowledge_base' => sub {
+        my $res = shift;
+
+        is ( scalar @{ $res->{knowledge_base} }, 2, '2 rows' )
+    };
 };
 
 done_testing();

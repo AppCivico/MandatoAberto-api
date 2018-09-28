@@ -27,6 +27,8 @@ sub list_GET {
     my $politician_id = $c->req->params->{politician_id};
     die \["politician_id", "missing"] unless $politician_id;
 
+    my $politician = $c->model('DB::Politician')->find($politician_id);
+
     $c->stash->{collection} = $c->stash->{collection}->search(
         {
             'me.politician_id' => $politician_id,
@@ -36,18 +38,28 @@ sub list_GET {
 
     my $entities = $c->req->params->{entities};
     die \['entities', 'missing'] unless $entities;
-    $entities = decode_json(Encode::encode_utf8($entities)) or die \['entities', 'could not decode json'];
 
-    my @required_json_fields = qw (metadata resolvedQuery); Fundo partidário
-    die \['entities', "missing 'result' param"] unless $entities->{result};
-
-    for (@required_json_fields) {
-        die \['entities', "missing '$_' param"] unless $entities->{result}->{$_}
-    }
-
-    # TODO melhorar esse bloco
     my @entities_names;
-    push @entities_names, $entities->{result}->{metadata}->{intentName};
+
+    $entities = eval { decode_json( Encode::encode_utf8($entities) ) } || $entities;
+
+    if ($@) {
+
+        if ( $politician->politician_entities->entity_exists($entities) ) {
+            push @entities_names, $entities;
+        }
+    }
+    else {
+        my @required_json_fields = qw (metadata resolvedQuery);
+        die \['entities', "missing 'result' param"] unless $entities->{result};
+
+        for (@required_json_fields) {
+            die \['entities', "missing '$_' param"] unless $entities->{result}->{$_}
+        }
+
+        # TODO melhorar esse bloco
+        push @entities_names, $entities->{result}->{metadata}->{intentName};
+    }
 
     $c->stash->{collection} = $c->stash->{collection}->get_knowledge_base_by_entity_name(@entities_names);
 
