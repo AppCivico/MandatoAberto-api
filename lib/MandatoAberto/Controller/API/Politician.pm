@@ -63,7 +63,7 @@ sub result_GET {
         $facebook_active_page = $c->stash->{politician}->get_current_facebook_page();
     }
 
-    my $votolegal_integration = $c->stash->{politician}->get_votolegal_integration;
+    my $votolegal_integration = $c->stash->{politician}->get_votolegal_integration if $c->stash->{politician}->has_votolegal_integration;
 
     my $has_movement = $c->stash->{politician}->movement ? 1 : 0;
 
