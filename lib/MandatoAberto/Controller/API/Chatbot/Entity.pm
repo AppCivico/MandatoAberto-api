@@ -37,14 +37,11 @@ sub list_available_GET {
                 map {
                     my $e = $_;
 
-                    if ( $e->has_active_knowledge_base ) {
-					    +{
-                            id         => $e->id,
-                            name       => $e->name,
-                            human_name => $e->human_name
-					    }
+                    +{
+                        id         => $e->id,
+                        name       => $e->name,
+                        human_name => $e->human_name
                     }
-                    else { }
                 } $politician->politician_entities->entities_with_available_knowledge_bases->search(
                     undef,
                     { page => $page, rows => $results }
