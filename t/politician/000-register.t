@@ -2,52 +2,65 @@ use common::sense;
 use FindBin qw($Bin);
 use lib "$Bin/../lib";
 
-use MandatoAberto::Test::Further;
+use MandatoAberto::Test;
 
-my $schema = MandatoAberto->model("DB");
+my $t = test_instance;
+my $schema = get_schema;
 
 db_transaction {
     my $email = fake_email()->();
 
-    rest_post "/api/register/politician",
-        name                => "Sucessful politician creation",
-        stash               => "d1",
-        automatic_load_item => 0,
-        [
-            email            => $email,
-            password         => '1234567',
-            name             => 'Lucas Ansei',
-            address_state_id => 26,
-            address_city_id  => 9508,
-            party_id         => fake_int(1, 35)->(),
-            office_id        => fake_int(1, 8)->(),
-            gender           => fake_pick(qw/F M/)->(),
-            movement_id      => fake_int(1, 7)->()
-        ]
-    ;
+    subtest 'User | create' => sub {
 
-    is($schema->resultset('EmailQueue')->count, "2", "greetings and new register emails");
-    is($schema->resultset('PoliticianPrivateReplyConfig')->count, "1", "one config created");
+        $t->post_ok(
+            '/api/register/politician',
+            form => {
+                email    => $email,
+                password => '1234567',
+                name     => 'Lucas Ansei',
+                address_state_id => 26,
+                address_city_id  => 9508,
+                party_id         => fake_int(1, 35)->(),
+                office_id        => fake_int(1, 8)->(),
+                gender           => fake_pick(qw/F M/)->(),
+                movement_id      => fake_int(1, 7)->(),
+            }
+        )
+        ->status_is(201)
+        ->json_has('/id');
 
-    is (
-        $schema->resultset("Politician")->find(stash "d1.id")->user->email,
-        $email,
-        "created user and politician",
-    );
+        is( $schema->resultset('EmailQueue')->count, "2", "greetings and new register emails" );
+        is( $schema->resultset('PoliticianPrivateReplyConfig')->count, "1", "one config created" );
 
-    rest_post "/api/register/politician",
-        name    => "politician without email",
-        is_fail => 1,
-        [
-            password         => '1234567',
-            name             => 'Lucas Ansei',
-            address_state_id => 26,
-            address_city_id  => 9508,
-            party_id         => fake_int(1, 35)->(),
-            office_id        => fake_int(1, 8)->(),
-            gender           => fake_pick(qw/F M/)->(),
-        ]
-    ;
+        my $user_id = $t->tx->res->json->{id};
+        is(
+            $schema->resultset("Politician")->find($user_id)->user->email,
+            $email,
+            "created user and politician",
+        );
+    };
+
+    subtest 'User | create without email' => sub {
+
+        $t->post_ok(
+            '/api/register/politician',
+            form => {
+                password         => '1234567',
+                name             => 'Lucas Ansei',
+                address_state_id => 26,
+                address_city_id  => 9508,
+                party_id         => fake_int(1, 35)->(),
+                office_id        => fake_int(1, 8)->(),
+                gender           => fake_pick(qw/F M/)->(),
+            }
+        )
+        ->status_is(400);
+    };
+};
+
+done_testing();
+
+__END__
 
     rest_post "/api/register/politician",
         name    => "politician without name",

@@ -45,8 +45,10 @@ sub execute {
     my $result = $dm->apply;
 
     unless ( $dm->success ) {
-        $c->stash->{rest} = { form_error => $dm->errors, error => 'form_error' };
-        $c->res->code(400);
+        $c->render(
+            json   => { form_error => $dm->errors, error => 'form_error' },
+            status => 400,
+        );
         $c->detach();
     }
 
