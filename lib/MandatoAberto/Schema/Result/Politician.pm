@@ -713,6 +713,15 @@ sub action_specs {
                 defined $values{$_} or die \[ "$_", "missing"] for qw/ twitter_token_secret twitter_oauth_token twitter_id /
             }
 
+            if ( !$values{share_text} && !$values{share_url} ) {
+                $self->update(
+                    {
+                        share_text => undef,
+                        share_url  => undef,
+                    }
+                );
+            }
+
             if ($values{address_city_id} && !$values{address_state_id}) {
                 my $address_state = $self->address_state_id;
 
