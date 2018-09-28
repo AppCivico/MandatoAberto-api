@@ -62,7 +62,7 @@ sub entities_with_available_knowledge_bases {
 
     return $self->search(
         \[ <<'SQL_QUERY' ],
-            EXISTS( SELECT 1 FROM politician_knowledge_base kb, politician_entity e WHERE e.id = ANY( entities::int[] ) AND kb.active = true )
+
 SQL_QUERY
     );
 }

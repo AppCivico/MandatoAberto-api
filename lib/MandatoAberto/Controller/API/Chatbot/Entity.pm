@@ -9,7 +9,7 @@ with "CatalystX::Eta::Controller::AutoBase";
 
 __PACKAGE__->config(
     # AutoBase.
-    result => "DB::PoliticianEntity",
+    result => "DB::ViewAvailableEntities",
 );
 
 sub root : Chained('/api/chatbot/base') : PathPart('') : CaptureArgs(0) { }
@@ -42,9 +42,13 @@ sub list_available_GET {
                         name       => $e->name,
                         human_name => $e->human_name
                     }
-                } $politician->politician_entities->entities_with_available_knowledge_bases->search(
+                } $c->stash->{collection}->search(
                     undef,
-                    { page => $page, rows => $results }
+                    {
+                        bind => [ $politician->user_id, $politician->user_id ],
+                        page => $page,
+                        rows => $results
+                    }
                   )->all()
             ]
         }
