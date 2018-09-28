@@ -28,7 +28,7 @@ sub list_available_GET {
 	die \['fb_page_id', 'could not find politician with that fb_page_id'] unless $politician;
 
     my $page    = $c->req->params->{page} || 1;
-    my $results = 11;
+    my $results = 10;
 
     return $self->status_ok(
         $c,
