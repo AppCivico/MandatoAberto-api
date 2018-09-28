@@ -52,9 +52,21 @@ sub entity_exists {
                 \[ <<'SQL_QUERY', $name ],
                     EXISTS( SELECT 1 FROM politician_entity WHERE name = ? )
 SQL_QUERY
-                ],
+            ],
         }
     )->count > 0 ? 1 : 0;
+}
+
+sub entities_with_available_knowledge_bases {
+    my ($self) = @_;
+
+    my @entities_names = $self->search(undef)->get_column('id')->all();
+
+    return $self->search(
+        \[ <<'SQL_QUERY', @entities_names ],
+            EXISTS( SELECT 1 FROM politician_knowledge_base WHERE ? = ANY(entities::int[]) )
+SQL_QUERY
+    );
 }
 
 sub _build__dialogflow { WebService::Dialogflow->instance }
