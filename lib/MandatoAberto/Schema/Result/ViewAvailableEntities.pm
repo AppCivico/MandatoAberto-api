@@ -24,6 +24,7 @@ WHERE
     kb.politician_id = ? AND
     e.id = ANY ( kb.entities::int[] ) AND
     kb.active = true
+GROUP BY e.id, e.name
 SQL_QUERY
 
 sub human_name {
