@@ -32,7 +32,8 @@ __PACKAGE__->config(
         my $politician = $c->stash->{politician};
         die \['politician_id', 'no active fb_page_id for this politician'] unless $politician->fb_page_id;
 
-        my $active = $c->stash->{active} || 1;
+        my $active = $c->req->params->{active};
+        $active = 1 unless defined $active;
 
         my $res;
         if ( is_test() ) {
