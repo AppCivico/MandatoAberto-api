@@ -46,7 +46,7 @@ sub list_available_GET {
                     }
                     else { }
                 } $politician->politician_entities->entities_with_available_knowledge_bases->search(
-                    { politician_id => $politician->id },
+                    undef,
                     { page => $page, rows => $results }
                   )->all()
             ]
