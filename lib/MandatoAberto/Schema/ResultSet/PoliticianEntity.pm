@@ -60,11 +60,9 @@ SQL_QUERY
 sub entities_with_available_knowledge_bases {
     my ($self) = @_;
 
-    my @entities_names = $self->search(undef)->get_column('id')->all();
-
     return $self->search(
-        \[ <<'SQL_QUERY', @entities_names ],
-            EXISTS( SELECT 1 FROM politician_knowledge_base WHERE ? = ANY(entities::int[]) )
+        \[ <<'SQL_QUERY' ],
+            EXISTS( SELECT 1 FROM politician_knowledge_base kb, politician_entity e WHERE e.id = ANY( entities::int[] ) AND kb.active = true )
 SQL_QUERY
     );
 }
