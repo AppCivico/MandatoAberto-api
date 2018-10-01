@@ -64,5 +64,34 @@ sub api_auth_as {
     return $user_session;
 }
 
+sub create_politician {
+    my (%opts) = @_;
+
+    my %params = (
+        email            => fake_email()->(),
+        password         => 'foobarpass',
+        name             => fake_name()->(),
+        address_state_id => 26,
+        address_city_id  => 9508,
+        party_id         => fake_int(1, 35)->(),
+        office_id        => fake_int(1, 8)->(),
+        gender           => fake_pick(qw/F M/)->(),
+        movement_id      => fake_int(1, 7)->(),
+        %opts
+    );
+
+    return $t->post_ok(
+        '/api/register/politician',
+        form => {
+            name                => 'add politician',
+            automatic_load_item => 0,
+            stash               => "politician",
+            %params,
+        },
+    )
+    ->status_is(201)
+    ->json_has('/id');
+}
+
 1;
 

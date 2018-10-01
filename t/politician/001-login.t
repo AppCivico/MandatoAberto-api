@@ -2,9 +2,10 @@ use common::sense;
 use FindBin qw($Bin);
 use lib "$Bin/../lib";
 
-use MandatoAberto::Test::Further;
+use MandatoAberto::Test;
 
-my $schema = MandatoAberto->model("DB");
+my $t = test_instance;
+my $schema = get_schema;
 
 db_transaction {
     my $email    = fake_email()->();
@@ -14,7 +15,15 @@ db_transaction {
         email    => $email,
         password => $password
     );
-    my $politician_id = stash "politician.id";
+
+    ok my $politician_id = $t->tx->res->json->{id};
+};
+
+done_testing();
+
+__END__
+
+
 
     rest_post "/api/login",
         name    => "wrong login",
