@@ -43,6 +43,30 @@ sub sync_dialogflow {
     return 1;
 }
 
+sub entity_exists {
+    my ($self, $name) = @_;
+
+    return $self->search(
+        {
+            '-and' => [
+                \[ <<'SQL_QUERY', $name ],
+                    EXISTS( SELECT 1 FROM politician_entity WHERE name = ? )
+SQL_QUERY
+            ],
+        }
+    )->count > 0 ? 1 : 0;
+}
+
+sub entities_with_available_knowledge_bases {
+    my ($self) = @_;
+
+    return $self->search(
+        \[ <<'SQL_QUERY' ],
+
+SQL_QUERY
+    );
+}
+
 sub _build__dialogflow { WebService::Dialogflow->instance }
 
 1;

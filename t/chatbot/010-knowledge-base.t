@@ -30,30 +30,30 @@ db_transaction {
             message        => 'Como faço para me vacinar?',
             security_token => $security_token,
             entities       => encode_json(
-				{
-					id        => 'a8736300-e5b3-4ab8-a29e-c379ef7f61de',
-					timestamp => '2018-09-19T21 => 39 => 43.452Z',
-					lang      => 'pt-br',
-					result    => {
-						source           => 'agent',
-						resolvedQuery    => 'O que você acha do aborto?',
-						action           => '',
-						actionIncomplete => 0,
-						parameters       => {},
-						contexts         => [],
-						metadata         => {
-							intentId                  => '4c3f7241-6990-4c92-8332-cfb8d437e3d1',
-							webhookUsed               => 0,
-							webhookForSlotFillingUsed => 0,
-							isFallbackIntent          => 0,
-							intentName                => 'Aborto'
-						},
-						fulfillment => { speech =>  '', messages =>  [] },
-						score       => 1
-					},
-					status    => { code =>  200, errorType =>  'success' },
-					sessionId => '1938538852857638'
-				}
+                {
+                    id        => 'a8736300-e5b3-4ab8-a29e-c379ef7f61de',
+                    timestamp => '2018-09-19T21 => 39 => 43.452Z',
+                    lang      => 'pt-br',
+                    result    => {
+                        source           => 'agent',
+                        resolvedQuery    => 'O que você acha do aborto?',
+                        action           => '',
+                        actionIncomplete => 0,
+                        parameters       => {},
+                        contexts         => [],
+                        metadata         => {
+                            intentId                  => '4c3f7241-6990-4c92-8332-cfb8d437e3d1',
+                            webhookUsed               => 0,
+                            webhookForSlotFillingUsed => 0,
+                            isFallbackIntent          => 0,
+                            intentName                => 'Aborto'
+                        },
+                        fulfillment => { speech =>  '', messages =>  [] },
+                        score       => 1
+                    },
+                    status    => { code =>  200, errorType =>  'success' },
+                    sessionId => '1938538852857638'
+                }
             )
         ]
     ;
@@ -69,30 +69,30 @@ db_transaction {
             message        => 'O que você acha sobre o aborto?',
             security_token => $security_token,
             entities       => encode_json(
-				{
-					id        => 'a8736300-e5b3-4ab8-a29e-c379ef7f61de',
-					timestamp => '2018-09-19T21 => 39 => 43.452Z',
-					lang      => 'pt-br',
-					result    => {
-						source           => 'agent',
-						resolvedQuery    => 'O que você acha do aborto?',
-						action           => '',
-						actionIncomplete => 0,
-						parameters       => {},
-						contexts         => [],
-						metadata         => {
-							intentId                  => '4c3f7241-6990-4c92-8332-cfb8d437e3d1',
-							webhookUsed               => 0,
-							webhookForSlotFillingUsed => 0,
-							isFallbackIntent          => 0,
-							intentName                => 'Saude'
-						},
-						fulfillment => { speech =>  '', messages =>  [] },
-						score       => 1
-					},
-					status    => { code =>  200, errorType =>  'success' },
-					sessionId => '1938538852857638'
-				}
+                {
+                    id        => 'a8736300-e5b3-4ab8-a29e-c379ef7f61de',
+                    timestamp => '2018-09-19T21 => 39 => 43.452Z',
+                    lang      => 'pt-br',
+                    result    => {
+                        source           => 'agent',
+                        resolvedQuery    => 'O que você acha do aborto?',
+                        action           => '',
+                        actionIncomplete => 0,
+                        parameters       => {},
+                        contexts         => [],
+                        metadata         => {
+                            intentId                  => '4c3f7241-6990-4c92-8332-cfb8d437e3d1',
+                            webhookUsed               => 0,
+                            webhookForSlotFillingUsed => 0,
+                            isFallbackIntent          => 0,
+                            intentName                => 'Saude'
+                        },
+                        fulfillment => { speech =>  '', messages =>  [] },
+                        score       => 1
+                    },
+                    status    => { code =>  200, errorType =>  'success' },
+                    sessionId => '1938538852857638'
+                }
             )
         ]
     ;
@@ -149,30 +149,30 @@ db_transaction {
             security_token => $security_token,
             politician_id  => $politician_id,
             entities       => encode_json(
-				{
-					id        => 'a8736300-e5b3-4ab8-a29e-c379ef7f61de',
-					timestamp => '2018-09-19T21 => 39 => 43.452Z',
-					lang      => 'pt-br',
-					result    => {
-						source           => 'agent',
-						resolvedQuery    => 'O que você acha do aborto?',
-						action           => '',
-						actionIncomplete => 0,
-						parameters       => {},
-						contexts         => [],
-						metadata         => {
-							intentId                  => '4c3f7241-6990-4c92-8332-cfb8d437e3d1',
-							webhookUsed               => 0,
-							webhookForSlotFillingUsed => 0,
-							isFallbackIntent          => 0,
-							intentName                => 'Saude'
-						},
-						fulfillment => { speech =>  '', messages =>  [] },
-						score       => 1
-					},
-					status    => { code =>  200, errorType =>  'success' },
-					sessionId => '1938538852857638'
-				}
+                {
+                    id        => 'a8736300-e5b3-4ab8-a29e-c379ef7f61de',
+                    timestamp => '2018-09-19T21 => 39 => 43.452Z',
+                    lang      => 'pt-br',
+                    result    => {
+                        source           => 'agent',
+                        resolvedQuery    => 'O que você acha do aborto?',
+                        action           => '',
+                        actionIncomplete => 0,
+                        parameters       => {},
+                        contexts         => [],
+                        metadata         => {
+                            intentId                  => '4c3f7241-6990-4c92-8332-cfb8d437e3d1',
+                            webhookUsed               => 0,
+                            webhookForSlotFillingUsed => 0,
+                            isFallbackIntent          => 0,
+                            intentName                => 'Saude'
+                        },
+                        fulfillment => { speech =>  '', messages =>  [] },
+                        score       => 1
+                    },
+                    status    => { code =>  200, errorType =>  'success' },
+                    sessionId => '1938538852857638'
+                }
             )
         ]
     ;
@@ -197,30 +197,30 @@ db_transaction {
             security_token => $security_token,
             politician_id  => $politician_id,
             entities       => encode_json(
-				{
-					id        => 'a8736300-e5b3-4ab8-a29e-c379ef7f61de',
-					timestamp => '2018-09-19T21 => 39 => 43.452Z',
-					lang      => 'pt-br',
-					result    => {
-						source           => 'agent',
-						resolvedQuery    => 'O que você acha do aborto?',
-						action           => '',
-						actionIncomplete => 0,
-						parameters       => {},
-						contexts         => [],
-						metadata         => {
-							intentId                  => '4c3f7241-6990-4c92-8332-cfb8d437e3d1',
-							webhookUsed               => 0,
-							webhookForSlotFillingUsed => 0,
-							isFallbackIntent          => 0,
-							intentName                => 'privilegios_politicos'
-						},
-						fulfillment => { speech =>  '', messages =>  [] },
-						score       => 1
-					},
-					status    => { code =>  200, errorType =>  'success' },
-					sessionId => '1938538852857638'
-				}
+                {
+                    id        => 'a8736300-e5b3-4ab8-a29e-c379ef7f61de',
+                    timestamp => '2018-09-19T21 => 39 => 43.452Z',
+                    lang      => 'pt-br',
+                    result    => {
+                        source           => 'agent',
+                        resolvedQuery    => 'O que você acha do aborto?',
+                        action           => '',
+                        actionIncomplete => 0,
+                        parameters       => {},
+                        contexts         => [],
+                        metadata         => {
+                            intentId                  => '4c3f7241-6990-4c92-8332-cfb8d437e3d1',
+                            webhookUsed               => 0,
+                            webhookForSlotFillingUsed => 0,
+                            isFallbackIntent          => 0,
+                            intentName                => 'privilegios_politicos'
+                        },
+                        fulfillment => { speech =>  '', messages =>  [] },
+                        score       => 1
+                    },
+                    status    => { code =>  200, errorType =>  'success' },
+                    sessionId => '1938538852857638'
+                }
             )
         ]
     ;
@@ -229,7 +229,25 @@ db_transaction {
         my $res = shift;
 
         is ( scalar @{ $res->{knowledge_base} }, 0, '0 rows' )
-    }
+    };
+
+    # Testando knowledge base com apenas a string do tema
+    rest_get '/api/chatbot/knowledge-base',
+        name  => 'get knowledge base with no knowledge base registered for that entity',
+        stash => 'get_knowledge_base',
+        list  => 1,
+        [
+            security_token => $security_token,
+            politician_id  => $politician_id,
+            entities       => 'Saude'
+        ]
+    ;
+
+    stash_test 'get_knowledge_base' => sub {
+        my $res = shift;
+
+        is ( scalar @{ $res->{knowledge_base} }, 2, '2 rows' )
+    };
 };
 
 done_testing();

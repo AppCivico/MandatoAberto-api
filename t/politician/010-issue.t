@@ -12,6 +12,8 @@ db_transaction {
     my $recipient_fb_id = fake_words(1)->();
     my $message         = fake_words(1)->();
 
+    my $issue_rs = $schema->resultset('Issue');
+
     create_politician(
         fb_page_id           => fake_words(1)->(),
         fb_page_access_token => fake_words(1)->()
@@ -46,34 +48,35 @@ db_transaction {
             message        => $message,
             security_token => $security_token,
             entities       => encode_json(
-				{
-					id        => 'a8736300-e5b3-4ab8-a29e-c379ef7f61de',
-					timestamp => '2018-09-19T21 => 39 => 43.452Z',
-					lang      => 'pt-br',
-					result    => {
-						source           => 'agent',
-						resolvedQuery    => 'O que você acha do aborto?',
-						action           => '',
-						actionIncomplete => 0,
-						parameters       => {},
-						contexts         => [],
-						metadata         => {
-							intentId                  => '4c3f7241-6990-4c92-8332-cfb8d437e3d1',
-							webhookUsed               => 0,
-							webhookForSlotFillingUsed => 0,
-							isFallbackIntent          => 0,
-							intentName                => 'direitos_animais'
-						},
-						fulfillment => { speech =>  '', messages =>  [] },
-						score       => 1
-					},
-					status    => { code =>  200, errorType =>  'success' },
-					sessionId => '1938538852857638'
-				}
+                {
+                    id        => 'a8736300-e5b3-4ab8-a29e-c379ef7f61de',
+                    timestamp => '2018-09-19T21 => 39 => 43.452Z',
+                    lang      => 'pt-br',
+                    result    => {
+                        source           => 'agent',
+                        resolvedQuery    => 'O que você acha do aborto?',
+                        action           => '',
+                        actionIncomplete => 0,
+                        parameters       => {},
+                        contexts         => [],
+                        metadata         => {
+                            intentId                  => '4c3f7241-6990-4c92-8332-cfb8d437e3d1',
+                            webhookUsed               => 0,
+                            webhookForSlotFillingUsed => 0,
+                            isFallbackIntent          => 0,
+                            intentName                => 'direitos_animais'
+                        },
+                        fulfillment => { speech =>  '', messages =>  [] },
+                        score       => 1
+                    },
+                    status    => { code =>  200, errorType =>  'success' },
+                    sessionId => '1938538852857638'
+                }
             )
         ]
     ;
     my $first_issue_id = stash "i1.id";
+    my $first_issue    = $issue_rs->find($first_issue_id);
 
     rest_get "/api/politician/$politician_id/issue",
         name    => "get issues without login",
@@ -176,34 +179,69 @@ db_transaction {
             message        => fake_words(1)->(),
             security_token => $security_token,
             entities       => encode_json(
-				{
-					id        => 'a8736300-e5b3-4ab8-a29e-c379ef7f61de',
-					timestamp => '2018-09-19T21 => 39 => 43.452Z',
-					lang      => 'pt-br',
-					result    => {
-						source           => 'agent',
-						resolvedQuery    => 'O que você acha do aborto?',
-						action           => '',
-						actionIncomplete => 0,
-						parameters       => {},
-						contexts         => [],
-						metadata         => {
-							intentId                  => '4c3f7241-6990-4c92-8332-cfb8d437e3d1',
-							webhookUsed               => 0,
-							webhookForSlotFillingUsed => 0,
-							isFallbackIntent          => 0,
-							intentName                => 'direitos_animais'
-						},
-						fulfillment => { speech =>  '', messages =>  [] },
-						score       => 1
-					},
-					status    => { code =>  200, errorType =>  'success' },
-					sessionId => '1938538852857638'
-				}
+                {
+                    id        => 'a8736300-e5b3-4ab8-a29e-c379ef7f61de',
+                    timestamp => '2018-09-19T21 => 39 => 43.452Z',
+                    lang      => 'pt-br',
+                    result    => {
+                        source           => 'agent',
+                        resolvedQuery    => 'O que você acha do aborto?',
+                        action           => '',
+                        actionIncomplete => 0,
+                        parameters       => {},
+                        contexts         => [],
+                        metadata         => {
+                            intentId                  => '4c3f7241-6990-4c92-8332-cfb8d437e3d1',
+                            webhookUsed               => 0,
+                            webhookForSlotFillingUsed => 0,
+                            isFallbackIntent          => 0,
+                            intentName                => 'direitos_animais'
+                        },
+                        fulfillment => { speech =>  '', messages =>  [] },
+                        score       => 1
+                    },
+                    status    => { code =>  200, errorType =>  'success' },
+                    sessionId => '1938538852857638'
+                }
             )
         ]
     ;
     my $second_issue_id = stash "i2.id";
+    my $second_issue    = $issue_rs->find($second_issue_id);
+
+    # Testando batch ignore de issues
+    db_transaction{
+        $first_issue->update( { reply => undef, open => 1 } );
+        $second_issue->update( { reply => undef, open => 1 } );
+
+        $first_issue  = $first_issue->discard_changes;
+        $second_issue = $second_issue->discard_changes;
+
+        rest_put "/api/politician/$politician_id/issue/batch-ignore",
+            name    => 'batch ignore without ids',
+            is_fail => 1,
+            code    => 400
+        ;
+
+        rest_put "/api/politician/$politician_id/issue/batch-ignore",
+            name => 'batch ignore',
+            code => 200,
+            [ ids => "$first_issue_id, $second_issue_id" ]
+        ;
+
+        rest_get "/api/politician/$politician_id/issue",
+            name  => 'get ignored issues',
+            stash => 'get_ignored_issues',
+            list  => 1,
+            [ filter => 'ignored' ]
+        ;
+
+        stash_test 'get_ignored_issues' => sub {
+            my $res = shift;
+
+            is( scalar @{ $res->{issues} }, 2, '2 ignored issues' );
+        }
+    };
 
     # Criando um grupo para adicionar o recipiente
     # no fechamento da segunda issue
@@ -242,30 +280,30 @@ db_transaction {
             message        => fake_words(1)->(),
             security_token => $security_token,
             entities       => encode_json(
-				{
-					id        => 'a8736300-e5b3-4ab8-a29e-c379ef7f61de',
-					timestamp => '2018-09-19T21 => 39 => 43.452Z',
-					lang      => 'pt-br',
-					result    => {
-						source           => 'agent',
-						resolvedQuery    => 'O que você acha do aborto?',
-						action           => '',
-						actionIncomplete => 0,
-						parameters       => {},
-						contexts         => [],
-						metadata         => {
-							intentId                  => '4c3f7241-6990-4c92-8332-cfb8d437e3d1',
-							webhookUsed               => 0,
-							webhookForSlotFillingUsed => 0,
-							isFallbackIntent          => 0,
-							intentName                => 'direitos_animais'
-						},
-						fulfillment => { speech =>  '', messages =>  [] },
-						score       => 1
-					},
-					status    => { code =>  200, errorType =>  'success' },
-					sessionId => '1938538852857638'
-				}
+                {
+                    id        => 'a8736300-e5b3-4ab8-a29e-c379ef7f61de',
+                    timestamp => '2018-09-19T21 => 39 => 43.452Z',
+                    lang      => 'pt-br',
+                    result    => {
+                        source           => 'agent',
+                        resolvedQuery    => 'O que você acha do aborto?',
+                        action           => '',
+                        actionIncomplete => 0,
+                        parameters       => {},
+                        contexts         => [],
+                        metadata         => {
+                            intentId                  => '4c3f7241-6990-4c92-8332-cfb8d437e3d1',
+                            webhookUsed               => 0,
+                            webhookForSlotFillingUsed => 0,
+                            isFallbackIntent          => 0,
+                            intentName                => 'direitos_animais'
+                        },
+                        fulfillment => { speech =>  '', messages =>  [] },
+                        score       => 1
+                    },
+                    status    => { code =>  200, errorType =>  'success' },
+                    sessionId => '1938538852857638'
+                }
             )
         ]
     ;
@@ -276,59 +314,8 @@ db_transaction {
         files => { file => "$Bin/picture.jpg", },
     ;
 
-    my $third_issue = $schema->resultset('Issue')->find($third_issue_id);
-
+    my $third_issue    = $issue_rs->find($third_issue_id);
     ok ( defined( $third_issue->saved_attachment_id ), 'defined' );
-
-    # Por enquanto apenas os issues abertos serão listados
-
-    # rest_reload_list "get_issues";
-
-    # stash_test "get_issues.list" => sub {
-    #     my $res = shift;
-
-    #     is ($res->{issues}->[0]->{message}, $message, 'issue message');
-    #     is ($res->{issues}->[0]->{open},  0, 'issue status');
-    #     is ($res->{issues}->[0]->{reply}, undef, 'issue reply');
-    # };
-
-    # rest_post "/api/chatbot/issue",
-    #     name                => "issue creation",
-    #     automatic_load_item => 0,
-    #     stash               => "i2",
-    #     [
-    #         politician_id => $politician_id,
-    #         fb_id         => $recipient_fb_id,
-    #         message       => $message
-    #     ]
-    # ;
-    # my $second_issue_id = stash "i2.id";
-
-    # rest_reload_list "get_issues";
-
-    # stash_test "get_issues.list" => sub {
-    #     my $res = shift;
-
-    #     is ($res->{issues}->[1]->{message}, $message, 'issue message');
-    #     is ($res->{issues}->[1]->{open},  1, 'issue status');
-    #     is ($res->{issues}->[1]->{reply}, undef, 'issue reply');
-    # };
-
-    # my $reply = fake_words(2)->();
-    # rest_put "/api/politician/$politician_id/issue/$second_issue_id",
-    #     name => 'updating second issue',
-    #     [ reply => $reply ]
-    # ;
-
-    # rest_reload_list "get_issues";
-
-    # stash_test "get_issues.list" => sub {
-    #     my $res = shift;
-
-    #     is ($res->{issues}->[1]->{message}, $message, 'issue message');
-    #     is ($res->{issues}->[1]->{open},  0, 'issue status');
-    #     is ($res->{issues}->[1]->{reply}, $reply, 'issue reply');
-    # };
 };
 
 done_testing();

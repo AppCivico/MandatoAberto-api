@@ -69,22 +69,22 @@ db_transaction {
     };
 
     db_transaction {
-		setup_votolegal_integration_success_with_custom_url();
-		rest_post "/api/politician/$politician_id/votolegal-integration",
-		  name                => "Creating Voto Legal integration",
-		  automatic_load_item => 0,
-		  [ votolegal_email  => 'foobar@email.com' ];
+        setup_votolegal_integration_success_with_custom_url();
+        rest_post "/api/politician/$politician_id/votolegal-integration",
+          name                => "Creating Voto Legal integration",
+          automatic_load_item => 0,
+          [ votolegal_email  => 'foobar@email.com' ];
 
-		rest_reload_list 'get_politician_data';
-		stash_test "get_politician_data.list" => sub {
-			my $res = shift;
+        rest_reload_list 'get_politician_data';
+        stash_test "get_politician_data.list" => sub {
+            my $res = shift;
 
-			my $votolegal_integration = $res->{votolegal_integration};
+            my $votolegal_integration = $res->{votolegal_integration};
 
-			is( $votolegal_integration->{votolegal_username}, 'fake_username', 'voto legal username' );
-			ok( defined( $votolegal_integration->{votolegal_url} ), 'voto legal url' );
-			is( $votolegal_integration->{votolegal_url}, 'https://www.foobar.com.br?ref=mandatoaberto#doar', 'custom_url' );
-		};
+            is( $votolegal_integration->{votolegal_username}, 'fake_username', 'voto legal username' );
+            ok( defined( $votolegal_integration->{votolegal_url} ), 'voto legal url' );
+            is( $votolegal_integration->{votolegal_url}, 'https://www.foobar.com.br?ref=mandatoaberto#doar', 'custom_url' );
+        };
     };
 
     create_politician();
@@ -132,6 +132,24 @@ db_transaction {
         is ( $res->{votolegal_integration}->{votolegal_email},      'foobar@email.com', 'votolegal email' );
         is ( $res->{votolegal_integration}->{greeting}, undef,     'votolegal greeting' );
     };
+
+    # Deactivating integration
+    rest_post "/api/politician/$politician_id/votolegal-integration",
+        name                => "Creating Voto Legal integration",
+        automatic_load_item => 0,
+        [
+            votolegal_email  => 'foobar@email.com',
+            active           => 0
+        ]
+    ;
+
+    rest_reload_list 'get_politician_data';
+	stash_test "get_politician_data.list" => sub {
+		my $res = shift;
+
+		is( $res->{votolegal_integration}, undef, 'votolegal integration does not exists' );
+	};
+
 };
 
 done_testing();

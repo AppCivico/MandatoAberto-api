@@ -105,25 +105,28 @@ sub list_GET {
     my $cond;
     if ( $filter eq 'open' ) {
         $cond = {
-            'me.politician_id' => $politician_id,,
+            'me.politician_id' => $politician_id,
             open               => 1,
-            'me.message'       => { '!=' => 'Participar' }
+            'me.message'       => { '!=' => 'Participar' },
+            deleted            => 0
         }
     }
     elsif ( $filter eq 'ignored' ) {
         $cond = {
-            'me.politician_id' => $politician_id,,
+            'me.politician_id' => $politician_id,
             open               => 0,
             reply              => \'IS NULL',
-            'me.message'       => { '!=' => 'Participar' }
+            'me.message'       => { '!=' => 'Participar' },
+            deleted            => 0
         }
     }
     else {
         $cond = {
-            'me.politician_id' => $politician_id,,
+            'me.politician_id' => $politician_id,
             open               => 0,
             reply              => \'IS NOT NULL',
-            'me.message'       => { '!=' => 'Participar' }
+            'me.message'       => { '!=' => 'Participar' },
+            deleted            => 0
         }
     }
 
@@ -161,7 +164,7 @@ sub list_GET {
                         ignored      => $ignored_flag,
                         replied      => $replied_flag,
                         message      => $i->get_column('message'),
-                        created_at   => $i->get_column('created_at'),
+                        created_at   => $i->created_at->set_time_zone( 'America/Sao_Paulo' ),
                         recipient    => {
                             id              => $i->get_column('recipient_id'),
                             name            => $i->recipient->get_column('name'),
@@ -266,6 +269,36 @@ sub result_GET {
             ]
         }
     );
+}
+
+sub batch_ignore : Chained('base') : PathPart('batch-ignore') : Args(0) : ActionClass('REST') { }
+
+sub batch_ignore_PUT {
+    my ($self, $c) = @_;
+
+    $c->stash->{collection} = $c->stash->{collection}->search( { politician_id => $c->stash->{politician}->id } );
+
+    my $ids = $c->req->params->{ids};
+    die \['ids', 'missing'] unless $ids;
+
+    $ids =~ s/(\[|\]|(\s))//g;
+	my @ids = split(',', $ids);
+
+    $c->stash->{collection}->execute(
+        $c,
+        for  => 'batch_ignore',
+        with => {
+            politician_id => $c->stash->{politician}->id,
+            ids           => \@ids
+        }
+    );
+
+    return $self->status_ok(
+        $c,
+        entity => {
+            sucess => 1
+        }
+    )
 }
 
 sub _upload_picture {

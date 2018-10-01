@@ -99,30 +99,30 @@ db_transaction {
             message        => fake_words(1)->(),
             security_token => $security_token,
             entities       => encode_json(
-				{
-					id        => 'a8736300-e5b3-4ab8-a29e-c379ef7f61de',
-					timestamp => '2018-09-19T21 => 39 => 43.452Z',
-					lang      => 'pt-br',
-					result    => {
-						source           => 'agent',
-						resolvedQuery    => 'O que você acha do aborto?',
-						action           => '',
-						actionIncomplete => 0,
-						parameters       => {},
-						contexts         => [],
-						metadata         => {
-							intentId                  => '4c3f7241-6990-4c92-8332-cfb8d437e3d1',
-							webhookUsed               => 0,
-							webhookForSlotFillingUsed => 0,
-							isFallbackIntent          => 0,
-							intentName                => 'direitos_animais'
-						},
-						fulfillment => { speech =>  '', messages =>  [] },
-						score       => 1
-					},
-					status    => { code =>  200, errorType =>  'success' },
-					sessionId => '1938538852857638'
-				}
+                {
+                    id        => 'a8736300-e5b3-4ab8-a29e-c379ef7f61de',
+                    timestamp => '2018-09-19T21 => 39 => 43.452Z',
+                    lang      => 'pt-br',
+                    result    => {
+                        source           => 'agent',
+                        resolvedQuery    => 'O que você acha do aborto?',
+                        action           => '',
+                        actionIncomplete => 0,
+                        parameters       => {},
+                        contexts         => [],
+                        metadata         => {
+                            intentId                  => '4c3f7241-6990-4c92-8332-cfb8d437e3d1',
+                            webhookUsed               => 0,
+                            webhookForSlotFillingUsed => 0,
+                            isFallbackIntent          => 0,
+                            intentName                => 'direitos_animais'
+                        },
+                        fulfillment => { speech =>  '', messages =>  [] },
+                        score       => 1
+                    },
+                    status    => { code =>  200, errorType =>  'success' },
+                    sessionId => '1938538852857638'
+                }
             )
         ],
     ;
@@ -150,6 +150,20 @@ db_transaction {
     $issue = $schema->resultset("Issue")->find(stash "i2.id");
 
     ok ($issue->peding_entity_recognition eq '1', 'Issue needs to be recognized');
+
+    # Creating issue with empty entities object
+    rest_post "/api/chatbot/issue",
+        name                => "issue creation",
+        automatic_load_item => 0,
+        stash               => "i3",
+        [
+            entities       => '{}',
+            politician_id  => $politician_id,
+            fb_id          => $recipient_fb_id,
+            message        => fake_words(1)->(),
+            security_token => $security_token,
+        ],
+    ;
 };
 
 done_testing();

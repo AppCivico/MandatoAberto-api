@@ -1,226 +1,31 @@
-use utf8;
-package MandatoAberto::Schema::Result::PoliticianEntity;
+use common::sense;
 
-# Created by DBIx::Class::Schema::Loader
-# DO NOT MODIFY THE FIRST PART OF THIS FILE
+package MandatoAberto::Schema::Result::ViewAvailableEntities;
+use base qw(DBIx::Class::Core);
 
-=head1 NAME
+__PACKAGE__->table_class('DBIx::Class::ResultSource::View');
 
-MandatoAberto::Schema::Result::PoliticianEntity
+# For the time being this is necessary even for virtual views
+__PACKAGE__->table('ViewAvailableEntities');
 
-=cut
+__PACKAGE__->add_columns(qw( id name ));
 
-use strict;
-use warnings;
+# do not attempt to deploy() this view
+__PACKAGE__->result_source_instance->is_virtual(1);
 
-use Moose;
-use MooseX::NonMoose;
-use MooseX::MarkAsMethods autoclean => 1;
-extends 'DBIx::Class::Core';
-
-=head1 COMPONENTS LOADED
-
-=over 4
-
-=item * L<DBIx::Class::InflateColumn::DateTime>
-
-=item * L<DBIx::Class::TimeStamp>
-
-=item * L<DBIx::Class::PassphraseColumn>
-
-=back
-
-=cut
-
-__PACKAGE__->load_components("InflateColumn::DateTime", "TimeStamp", "PassphraseColumn");
-
-=head1 TABLE: C<politician_entity>
-
-=cut
-
-__PACKAGE__->table("politician_entity");
-
-=head1 ACCESSORS
-
-=head2 id
-
-  data_type: 'integer'
-  is_auto_increment: 1
-  is_nullable: 0
-  sequence: 'politician_entity_id_seq'
-
-=head2 politician_id
-
-  data_type: 'integer'
-  is_foreign_key: 1
-  is_nullable: 0
-
-=head2 recipient_count
-
-  data_type: 'integer'
-  default_value: 0
-  is_nullable: 0
-
-=head2 updated_at
-
-  data_type: 'timestamp'
-  is_nullable: 1
-
-=head2 created_at
-
-  data_type: 'timestamp'
-  default_value: current_timestamp
-  is_nullable: 1
-  original: {default_value => \"now()"}
-
-=head2 name
-
-  data_type: 'text'
-  is_nullable: 0
-
-=cut
-
-__PACKAGE__->add_columns(
-  "id",
-  {
-    data_type         => "integer",
-    is_auto_increment => 1,
-    is_nullable       => 0,
-    sequence          => "politician_entity_id_seq",
-  },
-  "politician_id",
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
-  "recipient_count",
-  { data_type => "integer", default_value => 0, is_nullable => 0 },
-  "updated_at",
-  { data_type => "timestamp", is_nullable => 1 },
-  "created_at",
-  {
-    data_type     => "timestamp",
-    default_value => \"current_timestamp",
-    is_nullable   => 1,
-    original      => { default_value => \"now()" },
-  },
-  "name",
-  { data_type => "text", is_nullable => 0 },
-);
-
-=head1 PRIMARY KEY
-
-=over 4
-
-=item * L</id>
-
-=back
-
-=cut
-
-__PACKAGE__->set_primary_key("id");
-
-=head1 RELATIONS
-
-=head2 politician
-
-Type: belongs_to
-
-Related object: L<MandatoAberto::Schema::Result::Politician>
-
-=cut
-
-__PACKAGE__->belongs_to(
-  "politician",
-  "MandatoAberto::Schema::Result::Politician",
-  { user_id => "politician_id" },
-  { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
-);
-
-
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-08-23 10:07:33
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:fLqIsKjnOl5idRdMfAv+/A
-
-
-# You can replace this text with custom code or comments, and it will be preserved on regeneration
-
-sub get_recipients {
-    my ($self) = @_;
-
-    my $id = $self->id;
-
-    my $cond = \[ <<'SQL_QUERY', $id ];
- @> ARRAY[?]::integer[]
+__PACKAGE__->result_source_instance->view_definition(<<'SQL_QUERY');
+SELECT
+    e.id, e.name
+FROM
+    politician_entity e,
+    politician_knowledge_base kb
+WHERE
+    e.politician_id = ? AND
+    kb.politician_id = ? AND
+    e.id = ANY ( kb.entities::int[] ) AND
+    kb.active = true
+GROUP BY e.id, e.name
 SQL_QUERY
-
-    return $self->result_source->schema->resultset('Recipient')->search( { entities => $cond } );
-}
-
-sub knowledge_base_rs {
-    my ($self) = @_;
-
-    my $cond = \[ <<'SQL_QUERY', $self->id ];
- @> ARRAY[?]::integer[]
-SQL_QUERY
-
-    return $self->politician->politician_knowledge_bases->search( { entities => $cond } );
-}
-
-sub has_active_knowledge_base {
-    my ($self) = @_;
-
-    my $id = $self->id;
-
-    my $knowledge_base_rs = $self->knowledge_base_rs->search( { active => 1 } );
-
-    return $knowledge_base_rs->count > 0 ? 1 : 0;
-}
-
-sub pending_knowledge_base_types {
-    my ($self) = @_;
-
-    my @available_types = $self->result_source->schema->resultset('AvailableType')->get_column('name')->all();
-
-    my $knowledge_base_rs = $self->knowledge_base_rs;
-
-    my @pending_types;
-    for ( my $i = 0; $i < scalar @available_types; $i++ ) {
-        my $type = $available_types[$i];
-
-        my $count = $knowledge_base_rs->search(
-            {
-                active => 1,
-                type   => $type
-            }
-        )->count;
-
-        push @pending_types, $type if $count == 0;
-    }
-
-    return @pending_types;
-}
-
-sub get_knowledge_bases_by_types {
-    my ($self) = @_;
-
-    my @available_types = $self->result_source->schema->resultset('AvailableType')->get_column('name')->all();
-
-    my $knowledge_base_rs = $self->knowledge_base_rs;
-
-    return [
-        map {
-            my $kb = $knowledge_base_rs->search( { type => $_ } )->next;
-
-            +{
-                id                    => $kb ? $kb->id                    : undef,
-                active                => $kb ? $kb->active                : undef,
-                type                  => $kb ? $kb->type                  : $_,
-                answer                => $kb ? $kb->answer                : undef,
-                updated_at            => $kb ? $kb->updated_at            : undef,
-                created_at            => $kb ? $kb->created_at            : undef,
-                saved_attachment_id   => $kb ? $kb->saved_attachment_id   : undef,
-                saved_attachment_type => $kb ? $kb->saved_attachment_type : undef,
-            }
-        } @available_types
-    ]
-}
 
 sub human_name {
     my ($self) = @_;
@@ -634,5 +439,4 @@ sub human_name {
     return $name;
 }
 
-__PACKAGE__->meta->make_immutable;
 1;

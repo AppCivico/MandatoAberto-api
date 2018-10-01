@@ -642,7 +642,7 @@ sub verifiers_specs {
                 },
                 share_url => {
                     required => 0,
-                    type     => URI
+                    type     => 'Str'
                 },
                 deactivate_chatbot => {
                     required => 0,
@@ -713,6 +713,11 @@ sub action_specs {
                 defined $values{$_} or die \[ "$_", "missing"] for qw/ twitter_token_secret twitter_oauth_token twitter_id /
             }
 
+            if ( ( $values{share_text} && $values{share_text} eq 'SET_NULL' ) && ( $values{share_url} && $values{share_url} eq 'SET_NULL' ) ) {
+                $values{share_text} = undef;
+                $values{share_url}  = undef;
+            }
+
             if ($values{address_city_id} && !$values{address_state_id}) {
                 my $address_state = $self->address_state_id;
 
@@ -754,9 +759,9 @@ sub action_specs {
 
             # Caso ocorra mudança no fb_page_id e o político possuir integração do voto legal
             # devo avisar o novo page_id ao voto legal
-            if ( $self->fb_page_id && ( $values{fb_page_id} && $self->has_votolegal_integration() ) ) {
-                $self->politician_votolegal_integrations->next->update_votolegal_integration();
-            }
+            # if ( $self->fb_page_id && ( $values{fb_page_id} && $self->has_votolegal_integration() ) ) {
+            #     $self->politician_votolegal_integrations->next->update_votolegal_integration();
+            # }
 
             if ( $values{deactivate_chatbot} ) {
                 $self->deactivate_chatbot();
@@ -1050,7 +1055,10 @@ sub send_new_register_email {
 sub has_votolegal_integration {
     my ($self) = @_;
 
-    return $self->politician_votolegal_integrations->count > 0 ? 1 : 0;
+    my $integration = $self->politician_votolegal_integrations->next;
+    return 0 unless $integration;
+
+    return $integration->active ? 1 : 0;
 }
 
 sub get_votolegal_integration {

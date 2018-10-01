@@ -62,23 +62,7 @@ __PACKAGE__->config(
                     }
                 } $r->get_recipients->all()
             ],
-            knowledge_base => {
-                pending_types => [ map { { type => $_ } } $r->pending_knowledge_base_types ],
-                registered    => [
-                    map {
-                        +{
-                            id                    => $_->id,
-                            active                => $_->active,
-                            type                  => $_->type,
-                            answer                => $_->answer,
-                            updated_at            => $_->updated_at,
-                            created_at            => $_->created_at,
-                            saved_attachment_id   => $_->saved_attachment_id,
-                            saved_attachment_type => $_->saved_attachment_type,
-                        }
-                    } $r->knowledge_base_rs->all()
-                ]
-            }
+            knowledge_base => $r->get_knowledge_bases_by_types()
         };
     },
 );
@@ -119,30 +103,26 @@ sub list_GET {
                     my $e = $_;
 
                     if ( $filter eq 'all' ) {
-						+{
-							id              => $e->id,
-							recipient_count => $e->recipient_count,
-							created_at      => $e->created_at,
-							updated_at      => $e->updated_at,
-							tag             => $e->human_name,
-							knowledge_base  => {
-								pending_types => [ map { { type => $_ } } $e->pending_knowledge_base_types ],
-							}
-						}
+                        +{
+                            id              => $e->id,
+                            recipient_count => $e->recipient_count,
+                            created_at      => $e->created_at,
+                            updated_at      => $e->updated_at,
+                            tag             => $e->human_name,
+                            knowledge_base  => $e->get_knowledge_bases_by_types()
+                        }
                     }
                     else {
-						if ( $e->has_active_knowledge_base ) {
-							+{
-								id              => $e->id,
-								recipient_count => $e->recipient_count,
-								created_at      => $e->created_at,
-								updated_at      => $e->updated_at,
-								tag             => $e->human_name,
-                                knowledge_base  => {
-								    pending_types => [ map { { type => $_ } } $e->pending_knowledge_base_types ],
-							    }
-							};
-						} else { }
+                        if ( $e->has_active_knowledge_base ) {
+                            +{
+                                id              => $e->id,
+                                recipient_count => $e->recipient_count,
+                                created_at      => $e->created_at,
+                                updated_at      => $e->updated_at,
+                                tag             => $e->human_name,
+                                knowledge_base  => $e->get_knowledge_bases_by_types()
+                            };
+                        } else { }
                     }
 
                 } $c->stash->{collection}->search(

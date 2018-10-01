@@ -223,7 +223,7 @@ db_transaction {
         [
             page_id        => $page_id,
             item           => 'post',
-            post_id        => fake_words(2)->(),
+            post_id        => '136021913750928_204125850273867',
             permalink      => fake_words(2)->(),
             security_token => $security_token,
             user_id        => 'foobar'
