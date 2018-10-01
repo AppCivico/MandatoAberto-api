@@ -187,8 +187,7 @@ sub structure_GET {
             valid_operators => [ qw/ AND OR / ],
 
             valid_rules => [
-                {
-                    poll => [
+                poll => [
                     {
                         name      => 'QUESTION_ANSWER_EQUALS',
                         has_value => 1,
@@ -226,7 +225,6 @@ sub structure_GET {
 					    has_value => 1
 					},
                 ]
-                }
             ],
         },
     );
