@@ -1,6 +1,8 @@
 package MandatoAberto::Controller;
 use Mojo::Base 'Mojolicious::Controller';
 
+use Data::Dumper;
+
 sub reply_not_found {
     my $c = shift;
 
@@ -49,7 +51,7 @@ sub reply_exception {
             );
         }
 
-        $c->log->error( Dumper $an_error, @other_errors );
+        $c->app->log->error( Dumper $an_error->message->message, @other_errors );
 
         return $c->render(
             json   => { error => "Internal server error" },
