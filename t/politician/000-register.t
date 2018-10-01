@@ -56,172 +56,175 @@ db_transaction {
         )
         ->status_is(400);
     };
-};
 
-done_testing();
+    subtest 'User | create without name' => sub {
 
-__END__
+        $t->post_ok(
+            '/api/register/politician',
+            form => {
+                email            => fake_email()->(),
+                password         => '1234567',
+                address_state_id => 26,
+                address_city_id  => 9508,
+                party_id         => fake_int(1, 35)->(),
+                office_id        => fake_int(1, 8)->(),
+                gender           => fake_pick(qw/F M/)->(),
+            }
+        )
+        ->status_is(400);
+    };
 
-    rest_post "/api/register/politician",
-        name    => "politician without name",
-        is_fail => 1,
-        [
-            email            => fake_email()->(),
-            password         => '1234567',
-            address_state_id => 26,
-            address_city_id  => 9508,
-            party_id         => fake_int(1, 35)->(),
-            office_id        => fake_int(1, 8)->(),
-            gender           => fake_pick(qw/F M/)->(),
-        ]
-    ;
+    subtest 'User | create without address data' => sub {
 
-    rest_post "/api/register/politician",
-        name    => "politician without address data",
-        is_fail => 1,
-        [
-            email         => fake_email()->(),
-            password      => '1234567',
-            name          => 'Lucas Ansei',
-            party_id      => fake_int(1, 35)->(),
-            office_id     => fake_int(1, 8)->(),
-            gender        => fake_pick(qw/F M/)->(),
-        ]
-    ;
+        $t->post_ok(
+            '/api/register/politician',
+            form => {
+                email         => fake_email()->(),
+                password      => '1234567',
+                name          => 'Lucas Ansei',
+                party_id      => fake_int(1, 35)->(),
+                office_id     => fake_int(1, 8)->(),
+                gender        => fake_pick(qw/F M/)->(),
+            }
+        )
+        ->status_is(400);
+    };
 
-    rest_post "/api/register/politician",
-        name    => "politician with invalid address_state_id",
-        is_fail => 1,
-        [
-            email            => fake_email()->(),
-            password         => '1234567',
-            name             => 'Lucas Ansei',
-            address_state_id => 'ZL',
-            address_city_id  => 9508,
-            party_id         => fake_int(1, 35)->(),
-            office_id        => fake_int(1, 8)->(),
-            gender           => fake_pick(qw/F M/)->(),
-        ]
-    ;
+    subtest 'User | create with invalid address_state_id' => sub {
 
-    rest_post "/api/register/politician",
-        name    => "politician with invalid address_city_id",
-        is_fail => 1,
-        [
-            email            => fake_email()->(),
-            password         => '1234567',
-            name             => 'Lucas Ansei',
-            address_state_id => 26,
-            address_city_id  => 'Rapture',
-            party_id         => fake_int(1, 35)->(),
-            office_id        => fake_int(1, 8)->(),
-            gender           => fake_pick(qw/F M/)->(),
-        ]
-    ;
+        $t->post_ok(
+            '/api/register/politician',
+            form => {
+                email            => fake_email()->(),
+                password         => '1234567',
+                name             => 'Lucas Ansei',
+                address_state_id => 'ZL',
+                address_city_id  => 9508,
+                party_id         => fake_int(1, 35)->(),
+                office_id        => fake_int(1, 8)->(),
+                gender           => fake_pick(qw/F M/)->(),
+            }
+        )
+        ->status_is(400);
+    };
 
-    rest_post "/api/register/politician",
-        name    => "politician with invalid address_city_id that does not belogs to state",
-        is_fail => 1,
-        [
-            email            => fake_email()->(),
-            password         => '1234567',
-            name             => 'Lucas Ansei',
-            address_state_id => 26,
-            address_city_id  => 400,
-            party_id         => fake_int(1, 35)->(),
-            office_id        => fake_int(1, 8)->(),
-            gender           => fake_pick(qw/F M/)->(),
-        ]
-    ;
+    subtest 'User | create with invalid address_city_id' => sub {
 
-    rest_post "/api/register/politician",
-        name    => "politician without party",
-        is_fail => 1,
-        [
-            email            => fake_email()->(),
-            password         => '1234567',
-            name             => 'Lucas Ansei',
-            address_state_id => 26,
-            address_city_id  => 9508,
-            office_id        => fake_int(1, 8)->(),
-            gender           => fake_pick(qw/F M/)->(),
-        ]
-    ;
+        $t->post_ok(
+            '/api/register/politician',
+            form => {
+                email            => fake_email()->(),
+                password         => '1234567',
+                name             => 'Lucas Ansei',
+                address_state_id => 26,
+                address_city_id  => 'Rapture',
+                party_id         => fake_int(1, 35)->(),
+                office_id        => fake_int(1, 8)->(),
+                gender           => fake_pick(qw/F M/)->(),
+            }
+        )
+        ->status_is(400);
 
-    rest_post "/api/register/politician",
-        name    => "politician without office",
-        is_fail => 1,
-        [
-            email            => fake_email()->(),
-            password         => '1234567',
-            name             => 'Lucas Ansei',
-            address_state_id => 26,
-            address_city_id  => 9508,
-            party_id         => fake_int(1, 35)->(),
-            gender           => fake_pick(qw/F M/)->(),
-        ]
-    ;
+        $t->post_ok(
+            '/api/register/politician',
+            form => {
+                email            => fake_email()->(),
+                password         => '1234567',
+                name             => 'Lucas Ansei',
+                address_state_id => 26,
+                address_city_id  => 400,
+                party_id         => fake_int(1, 35)->(),
+                office_id        => fake_int(1, 8)->(),
+                gender           => fake_pick(qw/F M/)->(),
+            }
+        )
+        ->status_is(400);
+    };
 
-    # Partido e cargo devem ser integers
-    rest_post "/api/register/politician",
-        name    => "politician with invalid party",
-        is_fail => 1,
-        [
-            email            => fake_email()->(),
-            password         => '1234567',
-            name             => 'Lucas Ansei',
-            address_state_id => 26,
-            address_city_id  => 9508,
-            party_id         => 'AppCivico',
-            office_id        => fake_int(1, 8)->(),
-            gender           => fake_pick(qw/F M/)->(),
-        ]
-    ;
+    subtest 'User | create without party' => sub {
 
-    # Partido e cargo devem ser integers
-    rest_post "/api/register/politician",
-        name    => "politician with invalid party",
-        is_fail => 1,
-        [
-            email            => fake_email()->(),
-            password         => '1234567',
-            name             => 'Lucas Ansei',
-            address_state_id => 26,
-            address_city_id  => 9508,
-            party_id         => fake_int(1, 35)->(),
-            office_id        => 'Developer',
-            gender           => fake_pick(qw/F M/)->(),
-        ]
-    ;
+        $t->post_ok(
+            '/api/register/politician',
+            form => {
+                email            => fake_email()->(),
+                password         => '1234567',
+                name             => 'Lucas Ansei',
+                address_state_id => 26,
+                address_city_id  => 9508,
+                office_id        => fake_int(1, 8)->(),
+                gender           => fake_pick(qw/F M/)->(),
+            }
+        )
+        ->status_is(400);
+    };
 
-    rest_post "/api/register/politician",
-        name    => "politician without gender",
-        is_fail => 1,
-        [
-            email            => fake_email()->(),
-            password         => '1234567',
-            name             => 'Lucas Ansei',
-            address_state_id => 26,
-            address_city_id  => 9508,
-            party_id         => fake_int(1, 35)->(),
-            office_id        => fake_int(1, 8)->(),
-        ]
-    ;
+    subtest 'User | create without office' => sub {
 
-    rest_post "/api/register/politician",
-        name    => "politician with invalid gender",
-        is_fail => 1,
-        [
-            email            => fake_email()->(),
-            password         => '1234567',
-            name             => 'Lucas Ansei',
-            address_state_id => 26,
-            address_city_id  => 9508,
-            party_id         => fake_int(1, 35)->(),
-            office_id        => fake_int(1, 8)->(),
-            gender           => "A",
-        ]
-    ;
+        $t->post_ok(
+            '/api/register/politician',
+            form => {
+                email            => fake_email()->(),
+                password         => '1234567',
+                name             => 'Lucas Ansei',
+                address_state_id => 26,
+                address_city_id  => 9508,
+                party_id         => fake_int(1, 35)->(),
+                gender           => fake_pick(qw/F M/)->(),
+            }
+        )
+        ->status_is(400);
+    };
+
+    subtest 'User | create with invalid party' => sub {
+
+        $t->post_ok(
+            '/api/register/politician',
+            form => {
+                email            => fake_email()->(),
+                password         => '1234567',
+                name             => 'Lucas Ansei',
+                address_state_id => 26,
+                address_city_id  => 9508,
+                party_id         => 'AppCivico',
+                office_id        => fake_int(1, 8)->(),
+                gender           => fake_pick(qw/F M/)->(),
+            }
+        )
+        ->status_is(400);
+
+        $t->post_ok(
+            '/api/register/politician',
+            form => {
+                email            => fake_email()->(),
+                password         => '1234567',
+                name             => 'Lucas Ansei',
+                address_state_id => 26,
+                address_city_id  => 9508,
+                party_id         => fake_int(1, 35)->(),
+                office_id        => 'Developer',
+                gender           => fake_pick(qw/F M/)->(),
+            }
+        )
+        ->status_is(400);
+    };
+
+    subtest 'User | create with invalid gender' => sub {
+
+        $t->post_ok(
+            '/api/register/politician',
+            form => {
+                email            => fake_email()->(),
+                password         => '1234567',
+                name             => 'Lucas Ansei',
+                address_state_id => 26,
+                address_city_id  => 9508,
+                party_id         => fake_int(1, 35)->(),
+                office_id        => fake_int(1, 8)->(),
+                gender           => "A",
+            }
+        )
+        ->status_is(400);
+    };
 };
 
 done_testing();
