@@ -1,7 +1,7 @@
 package MandatoAberto::Controller::Register::Politician;
 use Mojo::Base 'Mojolicious::Controller';
 
-use MandatoAberto::Utils qw/ is_test /;
+use MandatoAberto::Utils qw(is_test);
 
 sub post {
     my $c = shift;

@@ -1,6 +1,7 @@
 package MandatoAberto;
 use Mojo::Base 'Mojolicious';
 
+use MandatoAberto::Controller;
 use MandatoAberto::SchemaConnected;
 
 sub startup {
@@ -10,17 +11,15 @@ sub startup {
     $self->helper(detach => sub { die "MOJO_DETACH\n" });
     $self->helper(schema => sub { state $schema = MandatoAberto::SchemaConnected->get_schema(@_) });
 
+    # Overwrite default helpers.
+    $self->controller_class('MandatoAberto::Controller');
+    $self->helper('reply.exception' => sub { MandatoAberto::Controller::reply_exception(@_) });
+    $self->helper('reply.not_found' => sub { MandatoAberto::Controller::reply_not_found(@_) });
+
     # Hooks.
     $self->hook(around_dispatch => sub {
         my ($next, $c) = @_;
         return if eval { $next->(); 1 };
-        if ('REF' eq ref $@ && 'ARRAY' eq ref $${@}) {
-            my $err = ${$@};
-            return $c->render(
-                json   => { form_error => { $err->[0] => $err->[1] } },
-                status => 400,
-            );
-        }
         die $@ unless $@ eq "MOJO_DETACH\n";
     });
 
