@@ -19,10 +19,14 @@ sub sync_dialogflow {
     my $politician_rs = $self->result_source->schema->resultset('Politician');
 
     my @entities_names;
-    my $res = $self->_dialogflow->get_entities;
+    my $res = $self->_dialogflow->get_intents;
 
-    for my $entity ( @{ $res->{entityTypes} } ) {
-        push @entities_names, $entity->{displayName};
+    for my $entity ( @{ $res->{intents} } ) {
+        my $name = $entity->{displayName};
+
+        if ( $self->skip_intent($name) == 0 ) {
+            push @entities_names, $name;
+        }
     }
 
     $self->result_source->schema->txn_do(
@@ -41,6 +45,16 @@ sub sync_dialogflow {
     );
 
     return 1;
+}
+
+sub skip_intent {
+    my ($self, $name) = @_;
+
+    my @non_theme_intents = qw( Fallback Agradecimento Contatos FaleConosco Pergunta Saudação Trajetoria Voluntário Participar );
+
+    my $skip_intent = grep { $_ eq $name } @non_theme_intents;
+
+    return $skip_intent;
 }
 
 sub entity_exists {

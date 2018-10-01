@@ -379,5 +379,56 @@ sub setup_dialogflow_entities_response {
     }
 }
 
+sub setup_dialogflow_intents_response {
+    $dialogflow_response = {
+        "intents" => [
+            {
+                "name"         => "projects/mandato-aberto/agent/intents/09fe19c6-1dc6-417c-9e2b-a81edd8e1e31",
+                "displayName"  => "saude",
+                "priority"     => 500000,
+                "webhookState" => "WEBHOOK_STATE_ENABLED"
+            },
+            {
+                "name"         => "projects/mandato-aberto/agent/intents/9eca11c4-90d9-4e7a-b199-03030e1f237d",
+                "displayName"  => "aborto",
+                "priority"     => 500000,
+                "webhookState" => "WEBHOOK_STATE_ENABLED"
+            },
+            {
+                "name"         => "projects/mandato-aberto/agent/intents/1dab4a2a-db67-451a-a49b-723c39a3775f",
+                "displayName"  => "mobilidade_urbana",
+                "priority"     => 500000,
+                "webhookState" => "WEBHOOK_STATE_ENABLED"
+            },
+        ]
+    }
+}
+
+sub setup_dialogflow_intents_response_with_skip {
+	$dialogflow_response = {
+		"intents" => [
+			{
+				"name"         => "projects/mandato-aberto/agent/intents/09fe19c6-1dc6-417c-9e2b-a81edd8e1e31",
+				"displayName"  => "saude",
+				"priority"     => 500000,
+				"webhookState" => "WEBHOOK_STATE_ENABLED"
+			},
+			{
+				"name"         => "projects/mandato-aberto/agent/intents/9eca11c4-90d9-4e7a-b199-03030e1f237d",
+				"displayName"  => "aborto",
+				"priority"     => 500000,
+				"webhookState" => "WEBHOOK_STATE_ENABLED"
+			},
+			{
+				"name"         => "projects/mandato-aberto/agent/intents/1dab4a2a-db67-451a-a49b-723c39a3775f",
+				"displayName"  => "Fallback",
+				"priority"     => 500000,
+				"webhookState" => "WEBHOOK_STATE_ENABLED"
+			},
+		]
+	  };
+}
+
+
 1;
 
