@@ -53,12 +53,12 @@ sub api_auth_as {
     my $schema = get_schema;
     my $user = $schema->resultset('User')->find($user_id);
 
-    my $user_session = $user->create_session();
+    my $user_session = $user->new_session();
 
     $t->ua->on(start => sub {
         my ($ua, $tx) = @_;
 
-        $tx->req->headers->header( 'X-Api-Key' => $user_session->get_column('api_key') );
+        $tx->req->headers->header('X-Api-Key' => $user_session->{api_key});
     });
 
     return $user_session;
