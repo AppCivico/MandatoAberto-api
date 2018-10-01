@@ -20,10 +20,14 @@ sub startup {
     # Router
     my $r = $self->routes;
 
-    # Normal route to controller
     my $api = $r->any('/api');
+
+    # Register.
     my $register = $api->any('/register');
     $register->post('/politician')->to('register-politician#post');
+
+    # Login.
+    $api->post('/login')->to('login#post');
 }
 
 1;

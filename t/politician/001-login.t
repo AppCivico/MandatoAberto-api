@@ -13,10 +13,51 @@ db_transaction {
 
     create_politician(
         email    => $email,
-        password => $password
+        password => $password,
     );
 
     ok my $politician_id = $t->tx->res->json->{id};
+
+    subtest 'Politician | wrong login' => sub {
+
+        $t->post_ok(
+            '/api/login',
+            form => {
+                email    => $email,
+                password => "ALL YOUR BASE ARE BELONG TO US",
+            }
+        )
+        ->status_is(400);
+    };
+
+    subtest 'Politician | not existent' => sub {
+
+        $t->post_ok(
+            '/api/login',
+            form => {
+                email    => 'fooobar@email.com',
+                password => $password,
+            }
+        )
+        ->status_is(400);
+    };
+
+    api_auth_as user_id => 1;
+    is ($schema->resultset('EmailQueue')->count, "2", "only greetings and new register emails queued");
+
+    subtest 'Admin | approve politician' => sub {
+
+        $t->post_ok(
+            '/api/login',
+            form => {
+                approved      => 1,
+                politician_id => $politician_id,
+            }
+        )
+        ->status_is(200);
+
+        is ($schema->resultset('EmailQueue')->count, "3", "all emails queued");
+    };
 };
 
 done_testing();
@@ -24,29 +65,6 @@ done_testing();
 __END__
 
 
-
-    rest_post "/api/login",
-        name    => "wrong login",
-        is_fail => 1,
-        [
-            email    => $email,
-            password => "ALL YOUR BASE ARE BELONG TO US",
-        ],
-    ;
-
-    rest_post "/api/login",
-        name    => "user not existent",
-        is_fail => 1,
-        code    => 400,
-        [
-            email    => 'fooobar@email.com',
-            password => $password,
-        ],
-    ;
-
-    api_auth_as user_id => 1;
-
-    is ($schema->resultset('EmailQueue')->count, "2", "only greetings and new register emails queued");
 
     rest_post "/api/admin/politician/approve",
         name => "approving politician",
@@ -57,7 +75,6 @@ __END__
         ]
     ;
 
-    is ($schema->resultset('EmailQueue')->count, "3", "all emails queued");
 
     $schema->resultset("User")->find($politician_id)->update({ approved => 1 });
 
