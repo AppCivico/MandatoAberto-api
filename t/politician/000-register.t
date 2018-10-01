@@ -9,6 +9,7 @@ my $schema = MandatoAberto->model("DB");
 db_transaction {
     my $email = fake_email()->();
 
+	setup_dialogflow_intents_response();
     rest_post "/api/register/politician",
         name                => "Sucessful politician creation",
         stash               => "d1",
@@ -26,6 +27,7 @@ db_transaction {
         ]
     ;
 
+	is($schema->resultset('PoliticianEntity')->count, "3", "3 entities created");
     is($schema->resultset('EmailQueue')->count, "2", "greetings and new register emails");
     is($schema->resultset('PoliticianPrivateReplyConfig')->count, "1", "one config created");
 

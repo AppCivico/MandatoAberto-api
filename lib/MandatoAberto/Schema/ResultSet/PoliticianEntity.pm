@@ -47,6 +47,36 @@ sub sync_dialogflow {
     return 1;
 }
 
+sub sync_dialogflow_one_politician {
+    my ($self, $politician_id) = @_;
+
+	my @entities_names;
+	my $res = $self->_dialogflow->get_intents;
+
+	for my $entity ( @{ $res->{intents} } ) {
+		my $name = $entity->{displayName};
+
+		if ( $self->skip_intent($name) == 0 ) {
+			push @entities_names, $name;
+		}
+	}
+
+	$self->result_source->schema->txn_do(
+		sub{
+            for my $entity_name (@entities_names) {
+                $self->find_or_create(
+                    {
+                        politician_id => $politician_id,
+                        name          => $entity_name
+                    }
+                );
+            }
+		}
+	);
+
+	return 1;
+}
+
 sub skip_intent {
     my ($self, $name) = @_;
 
