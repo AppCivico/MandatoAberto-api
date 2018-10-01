@@ -25,8 +25,6 @@ sub generate_access_token {
 sub get_entities {
     my ( $self, %opts ) = @_;
 
-    my $access_token = $self->generate_access_token();
-
     my $project = $ENV{DIALOGFLOW_PROJECT_NAME} || 'mandato-aberto';
 
     my $res;
@@ -34,6 +32,8 @@ sub get_entities {
         $res = $MandatoAberto::Test::Further::dialogflow_response;
     }
     else {
+        my $access_token = $self->generate_access_token();
+
         eval {
             retry {
                 my $url = $ENV{DIALOGFLOW_URL} . "/v2/projects/$project/agent/entityTypes";
@@ -57,8 +57,6 @@ sub get_entities {
 sub get_intents {
     my ( $self, %opts ) = @_;
 
-	my $access_token = $self->generate_access_token();
-
     my $project = $ENV{DIALOGFLOW_PROJECT_NAME} || 'mandato-aberto';
 
     my $res;
@@ -66,6 +64,8 @@ sub get_intents {
         $res = $MandatoAberto::Test::Further::dialogflow_response;
     }
     else {
+        my $access_token = $self->generate_access_token();
+
         eval {
             retry {
                 my $url = $ENV{DIALOGFLOW_URL} . "/v2/projects/$project/agent/intents";
@@ -89,8 +89,6 @@ sub get_intents {
 sub create_intent {
     my ( $self, %opts ) = @_;
 
-    my $access_token = $self->generate_access_token();
-
     my $project = $ENV{DIALOGFLOW_PROJECT_NAME} || 'mandato-aberto';
 
     my $res;
@@ -98,6 +96,8 @@ sub create_intent {
         $res = $MandatoAberto::Test::Further::dialogflow_response;
     }
     else {
+        my $access_token = $self->generate_access_token();
+
         eval {
             retry {
                 my $url = $ENV{DIALOGFLOW_URL} . "/v2/projects/$project/agent/intents?languageCode=pt-BR";
