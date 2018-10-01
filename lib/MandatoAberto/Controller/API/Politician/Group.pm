@@ -187,44 +187,50 @@ sub structure_GET {
             valid_operators => [ qw/ AND OR / ],
 
             valid_rules => [
-                poll => [
-                    {
-                        name      => 'QUESTION_ANSWER_EQUALS',
-                        has_value => 1,
-                    },
-                    {
-                        name      => 'QUESTION_ANSWER_NOT_EQUALS',
-                        has_value => 1,
-                    },
-                    {
-                        name      => 'QUESTION_IS_NOT_ANSWERED',
-                        has_value => 0,
-                    },
-                    {
-                        name      => 'QUESTION_IS_ANSWERED',
-                        has_value => 0,
-                    },
-                ],
-                gender => [
-                    {
-                        name      => 'GENDER_IS',
-                        has_value => 1
-                    },
-                    {
-                        name      => 'GENDER_IS_NOT',
-                        has_value => 1
-                    },
-                ],
-                intent => [
-					{
-						name      => 'INTENT_IS',
-						has_value => 1
-					},
-					{
-					    name      => 'INTENT_IS_NOT',
-					    has_value => 1
-					},
-                ]
+                {
+                    poll => [
+                        {
+                            name      => 'QUESTION_ANSWER_EQUALS',
+                            has_value => 1,
+                        },
+                        {
+                            name      => 'QUESTION_ANSWER_NOT_EQUALS',
+                            has_value => 1,
+                        },
+                        {
+                            name      => 'QUESTION_IS_NOT_ANSWERED',
+                            has_value => 0,
+                        },
+                        {
+                            name      => 'QUESTION_IS_ANSWERED',
+                            has_value => 0,
+                        },
+                    ]
+                },
+                {
+					gender => [
+						{
+							name      => 'GENDER_IS',
+							has_value => 1
+						},
+						{
+							name      => 'GENDER_IS_NOT',
+							has_value => 1
+						},
+					],
+                },
+                {
+					intent => [
+						{
+							name      => 'INTENT_IS',
+							has_value => 1
+						},
+						{
+							name      => 'INTENT_IS_NOT',
+							has_value => 1
+						},
+					]
+                }
             ],
         },
     );
