@@ -205,31 +205,27 @@ sub structure_GET {
                             name      => 'QUESTION_IS_ANSWERED',
                             has_value => 0,
                         },
+                    ],
+                    gender => [
+                        {
+                            name      => 'GENDER_IS',
+                            has_value => 1
+                        },
+                        {
+                            name      => 'GENDER_IS_NOT',
+                            has_value => 1
+                        },
+                    ],
+                    intent => [
+                        {
+                            name      => 'INTENT_IS',
+                            has_value => 1
+                        },
+                        {
+                            name      => 'INTENT_IS_NOT',
+                            has_value => 1
+                        },
                     ]
-                },
-                {
-					gender => [
-						{
-							name      => 'GENDER_IS',
-							has_value => 1
-						},
-						{
-							name      => 'GENDER_IS_NOT',
-							has_value => 1
-						},
-					],
-                },
-                {
-					intent => [
-						{
-							name      => 'INTENT_IS',
-							has_value => 1
-						},
-						{
-							name      => 'INTENT_IS_NOT',
-							has_value => 1
-						},
-					]
                 }
             ],
         },
