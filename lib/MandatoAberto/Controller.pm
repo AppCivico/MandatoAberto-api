@@ -1,6 +1,8 @@
 package MandatoAberto::Controller;
 use Mojo::Base 'Mojolicious::Controller';
 
+use Moose::Role;
+use Moose::Util::TypeConstraints;
 use Data::Dumper;
 
 sub reply_not_found {
@@ -51,12 +53,70 @@ sub reply_exception {
             );
         }
 
-        $c->app->log->error( Dumper $an_error->message->message, @other_errors );
+        $c->app->log->error( Dumper $an_error->message, @other_errors );
 
         return $c->render(
             json   => { error => "Internal server error" },
             status => 500,
         );
+    }
+}
+
+
+
+sub validate_request_params {
+    my ($c, %fields) = @_;
+
+    foreach my $key (keys %fields) {
+        my $me   = $fields{$key};
+        my $type = $me->{type};
+
+        my $val  = $c->req->params->to_hash->{$key};
+        $val = '' if !defined $val && $me->{clean_undef};
+        if (!defined $val && $me->{required} && !( $me->{undef_is_valid} && !defined $val ) ) {
+            $c->render(
+                json   => { error => 'form_error', form_error => { $key => 'missing' } },
+                status => 400,
+            );
+            return $c->detach();
+        }
+
+        if (
+               defined $val
+            && $val eq ''
+            && (   $me->{empty_is_invalid}
+                || $type eq 'Bool'
+                || $type eq 'Int'
+                || $type eq 'Num'
+                || ref $type eq 'MooseX::Types::TypeDecorator' )
+          ) {
+
+            $c->render(
+                json   => { error => 'form_error', form_error => { $key => 'empty_is_invalid' } },
+                status => 400,
+            );
+            return $c->detach;
+        }
+
+        next unless $val;
+
+        my $cons = Moose::Util::TypeConstraints::find_or_parse_type_constraint($type);
+
+        if (!defined $cons) {
+            $c->render(
+                json   => { error => 'form_error', error => "Unknown type constraint '$type'" },
+                status => 400,
+            );
+            return $c->detach;
+        }
+
+        if ( !$cons->check($val) ) {
+            $c->render(
+                json   => { error => 'form_error', form_error => { $key => 'invalid' } },
+                status => 400,
+            );
+            return $c->detach;
+        }
     }
 }
 
