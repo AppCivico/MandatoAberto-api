@@ -65,7 +65,7 @@ sub get_intents {
     }
     else {
         my $access_token = $self->generate_access_token();
-
+        use DDP; p $access_token;
         eval {
             retry {
                 my $url = $ENV{DIALOGFLOW_URL} . "/v2/projects/$project/agent/intents";
