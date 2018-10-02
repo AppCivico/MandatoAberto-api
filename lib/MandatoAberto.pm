@@ -11,7 +11,10 @@ sub startup {
     # Plugins.
     $self->plugin('Detach');
     #$self->plugin(bcrypt => { cost => 6 });
-    $self->plugin('SimpleAuthentication');
+    $self->plugin('SimpleAuthentication', {
+        load_user     => sub { MandatoAberto::Authentication::load_user(@_) },
+        validate_user => sub { MandatoAberto::Authentication::validate_user(@_) },
+    });
 
     # Helpers.
     $self->helper(schema => sub { state $schema = MandatoAberto::SchemaConnected->get_schema(@_) });
@@ -34,12 +37,11 @@ sub startup {
     $api->post('/login')->to('login#post');
 
     # Admin.
-    #my $admin = $api->any('/admin')->over(authenticated => 1);
-    my $admin = $api->route('/admin');
+    my $admin = $api->route('/admin')->over(authenticated => 1);
 
     # Admin::Politician
     my $admin_politician = $admin->route('/politician');
-    $admin_politician->post('/approve')->to('admin-politician-approve#post')->over(authenticated => 1);
+    $admin_politician->post('/approve')->to('admin-politician-approve#post');
 }
 
 1;
