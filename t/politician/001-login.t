@@ -20,8 +20,18 @@ db_transaction {
 
     subtest 'Admin | approve politician' => sub {
 
-        api_auth_as user_id => 1;
+        api_auth_as user_id => $politician_id;
+        $t->post_ok(
+            '/api/admin/politician/approve',
+            form => {
+                approved      => 1,
+                politician_id => $politician_id,
+            }
+        )
+        ->status_is(403)
+        ->json_has('/error');
 
+        api_auth_as user_id => 1;
         $t->post_ok(
             '/api/admin/politician/approve',
             form => {

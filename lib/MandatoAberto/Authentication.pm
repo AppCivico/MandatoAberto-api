@@ -10,7 +10,7 @@ sub load_user {
     if (defined $api_key) {
         my $user_session = $c->app->schema->resultset('UserSession')->search(
             { 'me.api_key' => $api_key },
-            { prefetch => [qw( user )] },
+            { prefetch => [ { 'user' => { 'user_roles' => 'role' } } ] },
         )->next;
 
         if (ref $user_session) {

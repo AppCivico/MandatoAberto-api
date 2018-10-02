@@ -2,6 +2,7 @@ package MandatoAberto;
 use Mojo::Base 'Mojolicious';
 
 use MandatoAberto::Authentication;
+use MandatoAberto::Authorization;
 use MandatoAberto::Controller;
 use MandatoAberto::SchemaConnected;
 
@@ -10,11 +11,21 @@ sub startup {
 
     # Plugins.
     $self->plugin('Detach');
-    #$self->plugin(bcrypt => { cost => 6 });
+
     $self->plugin('SimpleAuthentication', {
-        load_user     => sub { MandatoAberto::Authentication::load_user(@_) },
+        load_user     => sub { MandatoAberto::Authentication::load_user(@_)     },
         validate_user => sub { MandatoAberto::Authentication::validate_user(@_) },
     });
+
+    $self->plugin(
+        authorization => {
+            has_priv    => sub { return MandatoAberto::Authorization->has_priv(@_)   },
+            is_role     => sub { return MandatoAberto::Authorization->is_role(@_)    },
+            user_privs  => sub { return MandatoAberto::Authorization->user_privs(@_) },
+            user_role   => sub { return MandatoAberto::Authorization->user_role(@_)  },
+            fail_render => MandatoAberto::Authorization->fail_render(),
+        }
+    );
 
     # Helpers.
     $self->helper(schema => sub { state $schema = MandatoAberto::SchemaConnected->get_schema(@_) });
@@ -37,7 +48,7 @@ sub startup {
     $api->post('/login')->to('login#post');
 
     # Admin.
-    my $admin = $api->route('/admin')->over(authenticated => 1);
+    my $admin = $api->route('/admin')->over(authenticated => 1)->over(has_priv => 'admin');
 
     # Admin::Politician
     my $admin_politician = $admin->route('/politician');
