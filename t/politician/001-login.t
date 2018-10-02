@@ -17,12 +17,10 @@ db_transaction {
     );
 
     ok my $politician_id = $t->tx->res->json->{id};
-    #ok $schema->resultset('User')->search( { 'me.id' => $politian_id } )->update( { 'approved' => 'True' } ), 'approve user';
 
     subtest 'Admin | approve politician' => sub {
 
         api_auth_as user_id => 1;
-        #is ($schema->resultset('EmailQueue')->count, "2", "only greetings and new register emails queued");
 
         $t->post_ok(
             '/api/admin/politician/approve',
@@ -33,10 +31,12 @@ db_transaction {
         )
         ->status_is(200);
 
-        #is( $schema->resultset('EmailQueue')->count, '3', 'all emails queued' );
+        is( $schema->resultset('EmailQueue')->count, '3', 'all emails queued' );
     };
 
     subtest 'Politician | right login' => sub {
+
+        api_auth_as 'nobody';
 
         $t->post_ok(
             '/api/login',
@@ -45,7 +45,21 @@ db_transaction {
                 password => $password,
             }
         )
-        ->status_is(200);
+        ->status_is(200)
+        ->json_has('/api_key')
+        ->json_is('/roles' => ['politician'])
+        ->json_is('/user_id' => $politician_id);
+
+        ok(
+            $schema->resultset('UserSession')->search(
+                {
+                    'user.id'        => $politician_id,
+                    'me.valid_until' => { '>=' => \'NOW()' }
+                },
+                { join => "user" },
+            )->next,
+            'created user session',
+        );
     };
 
     subtest 'Politician | wrong login' => sub {
@@ -72,54 +86,6 @@ db_transaction {
         ->status_is(400);
     };
 
-};
-
-done_testing();
-
-__END__
-
-    rest_post "/api/admin/politician/approve",
-        name => "approving politician",
-        code => 200,
-        [
-            approved      => 1,
-            politician_id => $politician_id
-        ]
-    ;
-
-
-    $schema->resultset("User")->find($politician_id)->update({ approved => 1 });
-
-    rest_post "/api/login",
-        name  => "login",
-        code  => 200,
-        stash => "l1",
-        [
-            email    => $email,
-            password => $password,
-        ],
-    ;
-
-    ok (
-        my $user_session = $schema->resultset("UserSession")->search(
-            {
-                "user.id"   => stash "politician.id",
-                # valid_until => { ">=" => \"NOW()" }
-            },
-            { join => "user" },
-        )->next,
-        "created user session",
-    );
-
-    # A resposta foi a esperada?
-    is_deeply(
-        stash "l1",
-        {
-            api_key => $user_session->api_key,
-            roles   => ["politician"],
-            user_id => $user_session->user->id,
-        },
-    );
 };
 
 done_testing();

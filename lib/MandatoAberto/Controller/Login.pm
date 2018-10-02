@@ -32,11 +32,11 @@ sub post {
     my $password = $c->req->param('password');
 
     if ($c->authenticate($email, $password)) {
-        my $ipAddr = $c->req->header("CF-Connecting-IP") || $c->req->header("X-Forwarded-For") || $c->req->address;
+        my $ip_address = $c->req->headers->header("CF-Connecting-IP") || $c->req->headers->header("X-Forwarded-For") || $c->tx->remote_address;
 
-        my $session = $c->user->obj->new_session(
+        my $session = $c->current_user->new_session(
             %{ $c->req->params->to_hash },
-            ip => $ipAddr,
+            ip => $ip_address,
         );
 
         return $c->render(
@@ -47,10 +47,8 @@ sub post {
 
     return $c->render(
         json   => { error => 'Bad email or password' },
-        status => 200,
+        status => 400,
     );
-
-    return $c->status_bad_request($c, message => 'Bad email or password.');
 }
 
 1;

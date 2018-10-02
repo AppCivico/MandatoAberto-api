@@ -4,33 +4,37 @@ use Mojo::Base 'MandatoAberto::Controller';
 sub post {
     my $c = shift;
 
-    use DDP; p $c->is_user_authenticated;
     # TODO assert role.
     my $admin_id = $c->current_user->id;
 
-    my $politician_id = $c->req->params->{politician_id};
-    die \['politician_id', 'missing'] unless $politician_id;
+    $c->validate_request_params(
+        politician_id => {
+            type     => 'Int',
+            required => 1,
+        },
+        approved => {
+            type     => 'Bool',
+            required => 1,
+        },
+    );
 
-    my $politician = $c->stash->{collection}->find($politician_id);
-    die \['politician_id', 'could not find politician with that id'] unless $politician;
+    my $politician_id = $c->req->param('politician_id');
+    my $approved = $c->req->param('approved');
 
-    die \['approved', 'missing'] unless exists $c->req->params->{approved};
-    my $approved = $c->req->params->{approved};
+    my $politician = $c->schema->resultset('Politician')->find($politician_id);
 
-    my $current_approved_status = $politician->user->approved;
+    my $current_approved_status = $politician->user->get_column('approved');
     die \["approved", "politician current alredy is: $current_approved_status"] if $current_approved_status == $approved;
 
-    if ( $approved ) {
+    if ($approved) {
         $politician->user->approve($admin_id);
     } else {
         $politician->user->disapprove($admin_id);
     }
 
-    return $c->status_ok(
-        $c,
-        entity => {
-            id => $politician->id,
-        }
+    return $c->render(
+        json   => { id => $politician->id },
+        status => 200,
     );
 }
 
