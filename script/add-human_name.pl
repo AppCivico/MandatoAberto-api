@@ -21,7 +21,7 @@ while ( my $row = $csv->getline($fh) ) {
     while ( my $politician = $politician_rs->next() ) {
         my $entity = $politician_entity_rs->search(
             {
-                politician_id => $politician->id,
+                politician_id => $politician->user_id,
                 name          => $row->[0]
             }
         )->next;
