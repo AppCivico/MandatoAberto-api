@@ -124,3 +124,4 @@
 0120-add-deleted-boolean [0119-set-notnull] 2018-09-25T18:42:44Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the 'deleted' boolean on the 'issue' table
 0121-add-active-bool [0120-add-deleted-boolean] 2018-09-26T13:44:13Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the 'active' boolean on the 'politician_votolegal_integration'
 0122-add-use_dialogflow [0121-add-active-bool] 2018-10-01T16:26:58Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the 'use_dialogflow' on the 'politician' table
+0123-add-human_name [0122-add-use_dialogflow] 2018-10-02T19:43:27Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding 'human_name' on the 'politician_entities'
