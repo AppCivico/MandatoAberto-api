@@ -57,6 +57,8 @@ sub list_GET {
 
     my $politician_id = $c->user->id;
 
+    my $now = DateTime->now;
+
     return $self->status_ok(
         $c,
         entity => {
@@ -68,8 +70,9 @@ sub list_GET {
                         id          => $p->get_column('id'),
                         name        => $p->get_column('name'),
                         status_id   => $p->get_column('status_id'),
+                        created_at  => $p->created_at,
 
-                        ( $p->status_id == 1 ? ( active_time => $p->created_at->subtract_datetime( DateTime->now() ) ) : ( ) ),
+                        ( $p->status_id == 1 ? ( active_time => $now->subtract_datetime( $p->created_at )->in_units('days') ) : ( ) ),
 
                         questions => [
                             map {

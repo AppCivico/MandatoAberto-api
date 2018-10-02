@@ -104,7 +104,7 @@ db_transaction {
         ok( ref $res->{knowledge_base} eq 'ARRAY',                         'pending_types is an array' );
         is( scalar @{ $res->{knowledge_base} },    3,                      'pending_types has 3 entries' );
         is( $res->{recipient_count},               1,                      'one recipient' );
-        is( $res->{tag},                           'direitos dos animais', 'human name' );
+        #is( $res->{tag},                           'direitos dos animais', 'human name' );
     };
 
     rest_post "/api/politician/$politician_id/knowledge-base",
