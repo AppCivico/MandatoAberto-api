@@ -18,6 +18,7 @@ sub generate_access_token {
     die 'fail generating access token for dialogflow' unless $access_token;
 
     $access_token =~ s/\s+$//;
+    $access_token = substr($access_token, 0, 0, 'Bearer ');
 
     return $access_token;
 }
