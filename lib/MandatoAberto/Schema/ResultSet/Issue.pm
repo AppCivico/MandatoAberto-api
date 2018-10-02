@@ -103,6 +103,8 @@ sub action_specs {
                     my $intent = $entity_val->{result}->{metadata}->{intentName};
                     die \['intentName', 'missing'] unless $intent;
 
+                    $intent = lc $intent;
+
                     my $upsert_entity = $politician->politician_entities->find_or_create( { name => $intent } );
 
                     $recipient->add_to_politician_entity( $upsert_entity->id );

@@ -25,6 +25,7 @@ sub sync_dialogflow {
         my $name = $entity->{displayName};
 
         if ( $self->skip_intent($name) == 0 ) {
+            $name = lc $name;
             push @entities_names, $name;
         }
     }
@@ -57,6 +58,7 @@ sub sync_dialogflow_one_politician {
 		my $name = $entity->{displayName};
 
 		if ( $self->skip_intent($name) == 0 ) {
+            $name = lc $name;
 			push @entities_names, $name;
 		}
 	}
@@ -89,6 +91,8 @@ sub skip_intent {
 
 sub entity_exists {
     my ($self, $name) = @_;
+
+    $name = lc $name;
 
     return $self->search(
         {

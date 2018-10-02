@@ -46,6 +46,7 @@ sub list_GET {
     if ($@) {
 
         if ( $politician->politician_entities->entity_exists($entities) ) {
+            $entities = lc $entities;
             push @entities_names, $entities;
         }
     }
@@ -58,7 +59,10 @@ sub list_GET {
         }
 
         # TODO melhorar esse bloco
-        push @entities_names, $entities->{result}->{metadata}->{intentName};
+        my $entity_name = $entities->{result}->{metadata}->{intentName};
+        $entity_name    = lc $entity_name;
+
+        push @entities_names, $entity_name;
     }
 
     $c->stash->{collection} = $c->stash->{collection}->get_knowledge_base_by_entity_name(@entities_names);

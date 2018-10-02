@@ -105,8 +105,8 @@ db_transaction {
 
     my $politician_entity_rs = $schema->resultset('PoliticianEntity');
 
-    my $first_entity  = $politician_entity_rs->search( { name => 'Saude' } )->next;
-    my $second_entity = $politician_entity_rs->search( { name => 'Aborto' } )->next;
+    my $first_entity  = $politician_entity_rs->search( { name => 'saude' } )->next;
+    my $second_entity = $politician_entity_rs->search( { name => 'aborto' } )->next;
 
     rest_post "/api/politician/$politician_id/knowledge-base",
         name                => 'creating knowledge base entry (Saude - posicionamento)',
