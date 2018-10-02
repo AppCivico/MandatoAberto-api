@@ -181,34 +181,6 @@ sub structure_GET {
     # my $filter = $c->req->params->{filter} || 'poll';
     # die \['filter', 'invalid'] unless $filter =~ m/^(poll|gender|intent)$/;
 
-    my $ret;
-    $ret = {
-        valid_rules => [
-            {
-                poll => [
-                    {
-                        name      => 'QUESTION_ANSWER_EQUALS',
-                        has_value => 1,
-                    },
-                    {
-                        name      => 'QUESTION_ANSWER_NOT_EQUALS',
-                        has_value => 1,
-                    },
-                    {
-                        name      => 'QUESTION_IS_NOT_ANSWERED',
-                        has_value => 0,
-                    },
-                    {
-                        name      => 'QUESTION_IS_ANSWERED',
-                        has_value => 0,
-                    },
-                ]
-            }
-        ]
-    };
-
-    use DDP; p $ret;
-
     return $self->status_ok(
         $c,
         entity => {
@@ -219,28 +191,34 @@ sub structure_GET {
                     poll => [
                         {
                             name      => 'QUESTION_ANSWER_EQUALS',
+                            has_field => 1,
                             has_value => 1,
                         },
                         {
                             name      => 'QUESTION_ANSWER_NOT_EQUALS',
+                            has_field => 1,
                             has_value => 1,
                         },
                         {
                             name      => 'QUESTION_IS_NOT_ANSWERED',
+                            has_field => 1,
                             has_value => 0,
                         },
                         {
                             name      => 'QUESTION_IS_ANSWERED',
+                            has_field => 1,
                             has_value => 0,
                         },
                     ],
                     gender => [
                         {
                             name      => 'GENDER_IS',
+                            has_field => 0,
                             has_value => 1
                         },
                         {
                             name      => 'GENDER_IS_NOT',
+                            has_field => 0,
                             has_value => 1
                         },
                     ],
@@ -248,10 +226,12 @@ sub structure_GET {
 					intent => [
 						{
 							name      => 'INTENT_IS',
+                            has_field => 0,
 							has_value => 1
 						},
 						{
 							name      => 'INTENT_IS_NOT',
+                            has_field => 0,
 							has_value => 1
 						},
 					]
