@@ -62,8 +62,6 @@ sub reply_exception {
     }
 }
 
-
-
 sub validate_request_params {
     my ($c, %fields) = @_;
 
