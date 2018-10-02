@@ -18,7 +18,6 @@ sub generate_access_token {
     die 'fail generating access token for dialogflow' unless $access_token;
 
     $access_token =~ s/\s+$//;
-    $access_token = substr($access_token, 0, 0, 'Bearer ');
 
     return $access_token;
 }
@@ -40,7 +39,7 @@ sub get_entities {
                 my $url = $ENV{DIALOGFLOW_URL} . "/v2/projects/$project/agent/entityTypes";
                 $res = $self->furl->get(
                     $url,
-                    [ 'Authorization', $access_token ]
+                    [ 'Authorization', "Bearer $access_token" ]
                 );
 
                 die $res->decoded_content unless $res->is_success;
@@ -70,7 +69,7 @@ sub get_intents {
         eval {
             retry {
                 my $url = $ENV{DIALOGFLOW_URL} . "/v2/projects/$project/agent/intents";
-                p my $v = 'access_token dentro do eval: ' . $access_token;
+                p my $v = 'access_token dentro do eval: ' . "Bearer $access_token";
                 $res = $self->furl->get(
                     $url,
                     [ 'Authorization', $access_token ]
@@ -105,7 +104,7 @@ sub create_intent {
                 my $url = $ENV{DIALOGFLOW_URL} . "/v2/projects/$project/agent/intents?languageCode=pt-BR";
                 $res = $self->furl->post(
                     $url,
-                    [ 'Authorization', $access_token ]
+                    [ 'Authorization', "Bearer $access_token" ]
                 );
 
                 die $res->decoded_content unless $res->is_success;
