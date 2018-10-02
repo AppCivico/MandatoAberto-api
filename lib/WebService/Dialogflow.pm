@@ -69,7 +69,7 @@ sub get_intents {
         eval {
             retry {
                 my $url = $ENV{DIALOGFLOW_URL} . "/v2/projects/$project/agent/intents";
-                p 'access_token dentro do eval: ' . $access_token;
+                p my $v = 'access_token dentro do eval: ' . $access_token;
                 $res = $self->furl->get(
                     $url,
                     [ 'Authorization', $access_token ]
