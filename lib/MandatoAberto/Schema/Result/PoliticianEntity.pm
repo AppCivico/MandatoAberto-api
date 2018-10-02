@@ -630,18 +630,18 @@ sub human_name {
     elsif ( $self->name eq 'relacao_congresso' ) {
         $name = 'Relação com o congresso';
     }
-	elsif ( $self->name eq 'geracao_empregos' ) {
-		$name = 'Geração de empregos';
-	}
-	elsif ( $self->name eq 'educacao' ) {
-		$name = 'Educação';
-	}
-	elsif ( $self->name eq 'saude' ) {
-		$name = 'Saúde';
-	}
-	elsif ( $self->name eq 'meio_ambiente' ) {
-		$name = 'Meio Ambiente';
-	}
+    elsif ( $self->name eq 'geracao_empregos' ) {
+        $name = 'Geração de empregos';
+    }
+    elsif ( $self->name eq 'educacao' ) {
+        $name = 'Educação';
+    }
+    elsif ( $self->name eq 'saude' ) {
+        $name = 'Saúde';
+    }
+    elsif ( $self->name eq 'meio_ambiente' ) {
+        $name = 'Meio Ambiente';
+    }
     elsif ( $self->name eq 'direitos_humanos' ) {
         $name = 'Direitos humanos';
     }
