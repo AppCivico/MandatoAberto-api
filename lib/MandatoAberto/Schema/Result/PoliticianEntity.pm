@@ -645,6 +645,9 @@ sub human_name {
     elsif ( $self->name eq 'direitos_humanos' ) {
         $name = 'Direitos humanos';
     }
+    elsif ( $self->name eq 'direitos_sociais' ) {
+        $name = 'Direitos sociais';
+    }
 
     return $name;
 }

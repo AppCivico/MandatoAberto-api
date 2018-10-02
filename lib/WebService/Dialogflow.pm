@@ -39,7 +39,7 @@ sub get_entities {
                 my $url = $ENV{DIALOGFLOW_URL} . "/v2/projects/$project/agent/entityTypes";
                 $res = $self->furl->get(
                     $url,
-                    [ 'Authorization', $access_token ]
+                    [ 'Authorization', "Bearer $access_token" ]
                 );
 
                 die $res->decoded_content unless $res->is_success;
@@ -65,15 +65,16 @@ sub get_intents {
     }
     else {
         my $access_token = $self->generate_access_token();
-
+        use DDP; p $access_token;
         eval {
             retry {
                 my $url = $ENV{DIALOGFLOW_URL} . "/v2/projects/$project/agent/intents";
+                p my $v = 'access_token dentro do eval: ' . "Bearer $access_token";
                 $res = $self->furl->get(
                     $url,
-                    [ 'Authorization', $access_token ]
+                    [ 'Authorization', "Bearer $access_token" ]
                 );
-
+                p $res->request->header;
                 die $res->decoded_content unless $res->is_success;
             }
             retry_if { shift() < 3 } catch { die $_; };
@@ -103,7 +104,7 @@ sub create_intent {
                 my $url = $ENV{DIALOGFLOW_URL} . "/v2/projects/$project/agent/intents?languageCode=pt-BR";
                 $res = $self->furl->post(
                     $url,
-                    [ 'Authorization', $access_token ]
+                    [ 'Authorization', "Bearer $access_token" ]
                 );
 
                 die $res->decoded_content unless $res->is_success;
