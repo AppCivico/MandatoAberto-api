@@ -235,77 +235,77 @@ sub human_name_r {
     # TODO passar isso para uma coluna no banco
 
     my $name;
-    if ( $self->name eq 'Aborto' ) {
-        $name = 'Aborto';
+    if ( $self->name eq 'aborto' ) {
+        $name = 'aborto';
     }
-    elsif ( $self->name eq 'Bolsa_Familia' ) {
-        $name = 'Bolsa Família';
+    elsif ( $self->name eq 'bolsa_familia' ) {
+        $name = 'bolsa família';
     }
-    elsif ( $self->name eq 'Combate_a_corrupcao' ) {
-        $name = 'Combate a Corrupção';
+    elsif ( $self->name eq 'combate_a_corrupcao' ) {
+        $name = 'combate a corrupção';
     }
-    elsif ( $self->name eq 'Desemprego' ) {
-        $name = 'Desemprego';
+    elsif ( $self->name eq 'desemprego' ) {
+        $name = 'desemprego';
     }
-    elsif ( $self->name eq 'Direita_ou_Esquerda' ) {
-        $name = 'Direita ou Esquerda';
+    elsif ( $self->name eq 'direita_ou_esquerda' ) {
+        $name = 'direita ou esquerda';
     }
-    elsif ( $self->name eq 'Economia' ){
-        $name = 'Economia';
+    elsif ( $self->name eq 'economia' ){
+        $name = 'economia';
     }
-    elsif ( $self->name eq 'Educacao' ){
-        $name = 'Educação';
+    elsif ( $self->name eq 'educacao' ){
+        $name = 'educação';
     }
-    elsif ( $self->name eq 'Emprego' ){
-        $name = 'Emprego';
+    elsif ( $self->name eq 'emprego' ){
+        $name = 'emprego';
     }
-    elsif ( $self->name eq 'Gastos_Publicos' ){
-        $name = 'Gastos Públicos';
+    elsif ( $self->name eq 'gastos_publicos' ){
+        $name = 'gastos públicos';
     }
-    elsif ( $self->name eq 'Impostos' ){
-        $name = 'Impostos';
+    elsif ( $self->name eq 'impostos' ){
+        $name = 'impostos';
     }
-    elsif ( $self->name eq 'Infraestrutura' ){
-        $name = 'Infraestrutura';
+    elsif ( $self->name eq 'infraestrutura' ){
+        $name = 'infraestrutura';
     }
-    elsif ( $self->name eq 'Lava_Jato' ){
-        $name = 'Lava Jato';
+    elsif ( $self->name eq 'lava_jato' ){
+        $name = 'lava jato';
     }
-    elsif ( $self->name eq 'Partido' ){
-        $name = 'Partido';
+    elsif ( $self->name eq 'partido' ){
+        $name = 'partido';
     }
-    elsif ( $self->name eq 'Politica' ){
-        $name = 'Política';
+    elsif ( $self->name eq 'politica' ){
+        $name = 'política';
     }
-    elsif ( $self->name eq 'Politica_Externa' ){
-        $name = 'Política Externa';
+    elsif ( $self->name eq 'politica_externa' ){
+        $name = 'política externa';
     }
-    elsif ( $self->name eq 'Presidente' ){
-        $name = 'Presidente';
+    elsif ( $self->name eq 'presidente' ){
+        $name = 'presidente';
     }
-    elsif ( $self->name eq 'Previdencia_Social' ){
-        $name = 'Previdência Social';
+    elsif ( $self->name eq 'previdencia_social' ){
+        $name = 'previdência social';
     }
-    elsif ( $self->name eq 'Privatizacao' ){
-        $name = 'Privatização';
+    elsif ( $self->name eq 'privatizacao' ){
+        $name = 'privatização';
     }
-    elsif ( $self->name eq 'Programas_Sociais' ){
-        $name = 'Programas Sociais';
+    elsif ( $self->name eq 'programas_sociais' ){
+        $name = 'programas sociais';
     }
-    elsif ( $self->name eq 'Reforma_Trabalhista' ){
-        $name = 'Reforma Trabalhista';
+    elsif ( $self->name eq 'reforma_trabalhista' ){
+        $name = 'reforma trabalhista';
     }
-    elsif ( $self->name eq 'Saude' ){
-        $name = 'Saúde';
+    elsif ( $self->name eq 'saude' ){
+        $name = 'saúde';
     }
-    elsif ( $self->name eq 'Seguranca' ){
-        $name = 'Segurança';
+    elsif ( $self->name eq 'seguranca' ){
+        $name = 'segurança';
     }
-    elsif ( $self->name eq 'Direitos_Humanos' ){
-        $name = 'Direitos Humanos';
+    elsif ( $self->name eq 'direitos_humanos' ){
+        $name = 'direitos humanos';
     }
-    elsif ( $self->name eq 'Proposta' ) {
-        $name = 'Proposta';
+    elsif ( $self->name eq 'proposta' ) {
+        $name = 'proposta';
     }
     elsif ( $self->name eq 'direitos_animais' ) {
         $name = 'direitos dos animais';
@@ -353,7 +353,7 @@ sub human_name_r {
         $name = 'sistema financeiro';
     }
     elsif ( $self->name eq 'etica_politica' ) {
-        $name = 'Ética na política';
+        $name = 'ética na política';
     }
     elsif ( $self->name eq 'etica_politica' ) {
         $name = 'combate de privilégios';
@@ -368,7 +368,7 @@ sub human_name_r {
         $name = 'privilégios do judiciário';
     }
     elsif ( $self->name eq 'conducao_economia' ) {
-        $name = 'Condução da economia';
+        $name = 'condução da economia';
     }
     elsif ( $self->name eq 'refis' ) {
         $name = 'refis';
@@ -407,7 +407,7 @@ sub human_name_r {
         $name = 'concessões e licitações';
     }
     elsif ( $self->name eq 'tamanho_estado' ) {
-        $name = 'tamanho do Estado';
+        $name = 'tamanho do estado';
     }
     elsif ( $self->name eq 'abertura_economia' ) {
         $name = 'abertura da economia';
@@ -421,8 +421,8 @@ sub human_name_r {
     elsif ( $self->name eq 'idosos' ) {
         $name = 'políticas para idosos';
     }
-    elsif ( $self->name eq 'propostas_LGBT' ) {
-        $name = 'propostas para LGBTs';
+    elsif ( $self->name eq 'propostas_lgbt' ) {
+        $name = 'propostas para lgbts';
     }
     elsif ( $self->name eq 'proposta_mulheres' ) {
         $name = 'propostas para mulheres ';
@@ -481,8 +481,8 @@ sub human_name_r {
     elsif ( $self->name eq 'relacoes_exteriores' ) {
         $name = 'relações exteriores';
     }
-    elsif ( $self->name eq 'Brasil_mundo' ) {
-        $name = 'papel do Brasil no mundo';
+    elsif ( $self->name eq 'brasil_mundo' ) {
+        $name = 'papel do brasil no mundo';
     }
     elsif ( $self->name eq 'carga_tributaria' ) {
         $name = 'economia de baixo carbono';
@@ -560,12 +560,12 @@ sub human_name_r {
         $name = 'esporte';
     }
     elsif ( $self->name eq 'propostas_saúde' ) {
-        $name = 'SUS e propostas para a saúde';
+        $name = 'sus e propostas para a saúde';
     }
     elsif ( $self->name eq 'atencao_basica' ) {
-        $name = 'atenção básica e Saúde da Família';
+        $name = 'atenção básica e saúde da família';
     }
-    elsif ( $self->name eq 'Saude_Familia' ) {
+    elsif ( $self->name eq 'saude_familia' ) {
         $name = 'saúde da fam';
     }
     elsif ( $self->name eq 'melhoria_saude' ) {
@@ -574,14 +574,14 @@ sub human_name_r {
     elsif ( $self->name eq 'saude_mental' ) {
         $name = 'saúde mental';
     }
-    elsif ( $self->name eq 'saude_LGBTI' ) {
-        $name = 'saúde para LGBTI';
+    elsif ( $self->name eq 'saude_lgbti' ) {
+        $name = 'saúde para lgbti';
     }
     elsif ( $self->name eq 'saude_mulheres' ) {
         $name = 'saúde para mulheres';
     }
-    elsif ( $self->name eq 'Qualidade_vida_idosos' ) {
-        $name = 'Qualidade de vida para idosos';
+    elsif ( $self->name eq 'qualidade_vida_idosos' ) {
+        $name = 'qualidade de vida para idosos';
     }
     elsif ( $self->name eq 'qualidade_vida' ) {
         $name = 'qualidade de vida';
@@ -589,14 +589,14 @@ sub human_name_r {
     elsif ( $self->name eq 'sistema_prisional' ) {
         $name = 'sistema prisional';
     }
-    elsif ( $self->name eq 'Seguranca_publica' ) {
-        $name = 'Segurança pública';
+    elsif ( $self->name eq 'seguranca_publica' ) {
+        $name = 'segurança pública';
     }
     elsif ( $self->name eq 'desenvolvimento_sustentavel' ) {
         $name = 'desenvolvimento sustentável';
     }
-    elsif ( $self->name eq 'Petrobras' ) {
-        $name = 'Petrobras';
+    elsif ( $self->name eq 'petrobras' ) {
+        $name = 'petrobras';
     }
     elsif ( $self->name eq 'politica_cidades' ) {
         $name = 'política para cidades';
@@ -628,32 +628,32 @@ sub human_name_r {
     elsif ( $self->name eq 'propostas_criancas' ) {
         $name = 'propostas para crianças';
     }
-    elsif ( $self->name eq 'Infraestrutura' ) {
-        $name = 'Infraestrutura'
+    elsif ( $self->name eq 'infraestrutura' ) {
+        $name = 'infraestrutura'
     }
     elsif ( $self->name eq 'propostas_saude' ) {
-        $name = 'Propostas para a saúde';
+        $name = 'propostas para a saúde';
     }
     elsif ( $self->name eq 'relacao_congresso' ) {
-        $name = 'Relação com o congresso';
+        $name = 'relação com o congresso';
     }
     elsif ( $self->name eq 'geracao_empregos' ) {
-        $name = 'Geração de empregos';
+        $name = 'geração de empregos';
     }
     elsif ( $self->name eq 'educacao' ) {
-        $name = 'Educação';
+        $name = 'educação';
     }
     elsif ( $self->name eq 'saude' ) {
-        $name = 'Saúde';
+        $name = 'saúde';
     }
     elsif ( $self->name eq 'meio_ambiente' ) {
-        $name = 'Meio Ambiente';
+        $name = 'meio ambiente';
     }
     elsif ( $self->name eq 'direitos_humanos' ) {
-        $name = 'Direitos humanos';
+        $name = 'direitos humanos';
     }
     elsif ( $self->name eq 'direitos_sociais' ) {
-        $name = 'Direitos sociais';
+        $name = 'direitos sociais';
     }
 
     return $name;
