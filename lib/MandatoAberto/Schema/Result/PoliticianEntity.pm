@@ -229,7 +229,7 @@ sub get_knowledge_bases_by_types {
     ]
 }
 
-sub human_name {
+sub human_name_r {
     my ($self) = @_;
 
     # TODO passar isso para uma coluna no banco
