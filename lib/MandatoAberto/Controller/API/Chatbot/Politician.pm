@@ -61,6 +61,7 @@ sub list_GET {
                     address_state  => $p->get_column('address_state_id'),
                     picframe_url   => $p->get_column('share_url'),
                     picframe_text  => $p->get_column('share_text'),
+                    use_dialogflow => $p->get_column('use_dialogflow'),
 
                     share => {
                         url  => $p->get_column('share_url'),

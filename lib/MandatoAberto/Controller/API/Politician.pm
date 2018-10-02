@@ -81,7 +81,7 @@ sub result_GET {
         $c,
         entity => {
             ( map { $_ => $c->stash->{politician}->$_ } qw/
-                name gender premium twitter_id/ ),
+                name gender premium twitter_id use_dialogflow/ ),
 
             picframe_url  => $c->stash->{politician}->share_url,
             picframe_text => $c->stash->{politician}->share_text,

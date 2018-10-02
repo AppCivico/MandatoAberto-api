@@ -134,39 +134,45 @@ sub action_specs {
             my %values = $r->valid_values;
             not defined $values{$_} and delete $values{$_} for keys %values;
 
-            if (length $values{password} < 6) {
-                die \["password", "must have at least 6 characters"];
-            }
+            my $politician;
+            $self->result_source->schema->txn_do(sub{
+				if (length $values{password} < 6) {
+					die \["password", "must have at least 6 characters"];
+				}
 
-            if (length $values{gender} > 1 || !($values{gender} eq "F" || $values{gender} eq "M" ) ) {
-                die \["gender", "must be F or M"];
-            }
+				if (length $values{gender} > 1 || !($values{gender} eq "F" || $values{gender} eq "M" ) ) {
+					die \["gender", "must be F or M"];
+				}
 
-            my $user = $self->result_source->schema->resultset("User")->create(
-                { ( map { $_ => $values{$_} } qw(email password) ) },
-            );
+				my $user = $self->result_source->schema->resultset("User")->create({ ( map { $_ => $values{$_} } qw(email password) ) },);
 
-            $user->add_to_roles( { id => 2 } );
+				$user->add_to_roles( { id => 2 } );
 
-            my $politician = $self->create(
-                {
-                    (
-                        map { $_ => $values{$_} } qw(
-                            name address_state_id address_city_id party_id
-                            office_id fb_page_id fb_page_access_token gender
-                            movement_id
-                        )
-                    ),
-                    user_id => $user->id,
-                }
-            );
+				$politician = $self->create(
+					{
+						(
+							map { $_ => $values{$_} }
+							  qw(
+							  name address_state_id address_city_id party_id
+							  office_id fb_page_id fb_page_access_token gender
+							  movement_id
+							  )
+						),
+						user_id => $user->id,
+					}
+				);
 
-            $self->result_source->schema->resultset("PoliticianPrivateReplyConfig")->create( { politician_id => $politician->id } );
-            $self->result_source->schema->resultset("PollSelfPropagationConfig")->create( { politician_id => $politician->id } );
+                # TODO passar essas duas configurações para triggers no banco
+				$self->result_source->schema->resultset("PoliticianPrivateReplyConfig")->create( { politician_id => $politician->id } );
+				$self->result_source->schema->resultset("PollSelfPropagationConfig")->create( { politician_id => $politician->id } );
 
-            $politician->send_greetings_email();
-            $politician->send_new_register_email();
-            $user->send_email_confirmation();
+				$politician->send_greetings_email();
+				$politician->send_new_register_email();
+				$user->send_email_confirmation();
+
+                my $entity_rs = $self->result_source->schema->resultset('PoliticianEntity');
+                $entity_rs->sync_dialogflow_one_politician($politician->id);
+            });
 
             return $politician
         }

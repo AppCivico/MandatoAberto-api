@@ -11,10 +11,19 @@ has 'furl' => ( is => 'rw', lazy => 1, builder => '_build_furl' );
 
 sub _build_furl { Furl->new() }
 
+sub generate_access_token {
+    my ($self) = @_;
+
+    my $access_token = `gcloud auth application-default print-access-token`;
+    die 'fail generating access token for dialogflow' unless $access_token;
+
+    $access_token =~ s/\s+$//;
+
+    return $access_token;
+}
+
 sub get_entities {
     my ( $self, %opts ) = @_;
-
-    die \['DIALOGFLOW_DEVELOPER_ACCESS_TOKEN', 'missing'] unless $ENV{DIALOGFLOW_DEVELOPER_ACCESS_TOKEN};
 
     my $project = $ENV{DIALOGFLOW_PROJECT_NAME} || 'mandato-aberto';
 
@@ -23,12 +32,14 @@ sub get_entities {
         $res = $MandatoAberto::Test::Further::dialogflow_response;
     }
     else {
+        my $access_token = $self->generate_access_token();
+
         eval {
             retry {
                 my $url = $ENV{DIALOGFLOW_URL} . "/v2/projects/$project/agent/entityTypes";
                 $res = $self->furl->get(
                     $url,
-                    [ 'Authorization', $ENV{DIALOGFLOW_DEVELOPER_ACCESS_TOKEN} ]
+                    [ 'Authorization', $access_token ]
                 );
 
                 die $res->decoded_content unless $res->is_success;
@@ -46,8 +57,6 @@ sub get_entities {
 sub get_intents {
     my ( $self, %opts ) = @_;
 
-    die \['DIALOGFLOW_DEVELOPER_ACCESS_TOKEN', 'missing'] unless $ENV{DIALOGFLOW_DEVELOPER_ACCESS_TOKEN};
-
     my $project = $ENV{DIALOGFLOW_PROJECT_NAME} || 'mandato-aberto';
 
     my $res;
@@ -55,12 +64,14 @@ sub get_intents {
         $res = $MandatoAberto::Test::Further::dialogflow_response;
     }
     else {
+        my $access_token = $self->generate_access_token();
+
         eval {
             retry {
                 my $url = $ENV{DIALOGFLOW_URL} . "/v2/projects/$project/agent/intents";
                 $res = $self->furl->get(
                     $url,
-                    [ 'Authorization', $ENV{DIALOGFLOW_DEVELOPER_ACCESS_TOKEN} ]
+                    [ 'Authorization', $access_token ]
                 );
 
                 die $res->decoded_content unless $res->is_success;
@@ -78,8 +89,6 @@ sub get_intents {
 sub create_intent {
     my ( $self, %opts ) = @_;
 
-    die \['DIALOGFLOW_DEVELOPER_ACCESS_TOKEN', 'missing'] unless $ENV{DIALOGFLOW_DEVELOPER_ACCESS_TOKEN};
-
     my $project = $ENV{DIALOGFLOW_PROJECT_NAME} || 'mandato-aberto';
 
     my $res;
@@ -87,12 +96,14 @@ sub create_intent {
         $res = $MandatoAberto::Test::Further::dialogflow_response;
     }
     else {
+        my $access_token = $self->generate_access_token();
+
         eval {
             retry {
                 my $url = $ENV{DIALOGFLOW_URL} . "/v2/projects/$project/agent/intents?languageCode=pt-BR";
                 $res = $self->furl->post(
                     $url,
-                    [ 'Authorization', $ENV{DIALOGFLOW_DEVELOPER_ACCESS_TOKEN} ]
+                    [ 'Authorization', $access_token ]
                 );
 
                 die $res->decoded_content unless $res->is_success;

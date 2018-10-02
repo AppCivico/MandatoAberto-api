@@ -134,6 +134,12 @@ __PACKAGE__->table("politician");
   data_type: 'text'
   is_nullable: 1
 
+=head2 use_dialogflow
+
+  data_type: 'boolean'
+  default_value: false
+  is_nullable: 0
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -171,6 +177,8 @@ __PACKAGE__->add_columns(
   { data_type => "text", is_nullable => 1 },
   "share_text",
   { data_type => "text", is_nullable => 1 },
+  "use_dialogflow",
+  { data_type => "boolean", default_value => \"false", is_nullable => 0 },
 );
 
 =head1 PRIMARY KEY
@@ -538,8 +546,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-09-10 00:39:45
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:IJ4O33xu4uJ3KTZmueoP2w
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-10-01 13:35:33
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:rjmKIkvxAhrmmnuaq2LtjQ
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
@@ -694,6 +702,10 @@ sub verifiers_specs {
                         return 1;
                     }
                 },
+                use_dialogflow => {
+                    required => 0,
+                    type     => 'Bool'
+                }
             }
         ),
     };
