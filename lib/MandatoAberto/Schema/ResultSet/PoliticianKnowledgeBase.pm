@@ -25,7 +25,7 @@ sub verifiers_specs {
                 answer => {
                     required   => 0,
                     type       => 'Str',
-                    max_lenght => 300
+                    max_lenght => 2000
                 },
                 saved_attachment_type => {
                     required => 0,
