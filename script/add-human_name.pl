@@ -17,8 +17,10 @@ open my $fh, "<:encoding(utf8)", $filename or die "failed to create $filename: $
 my $politician_rs        = $schema->resultset('Politician');
 my $politician_entity_rs = $schema->resultset('PoliticianEntity');
 
+my @politicians = $politician_rs->all();
+
 while ( my $row = $csv->getline($fh) ) {
-    while ( my $politician = $politician_rs->next() ) {
+    for my $politician ( @politicians ) {
         my $entity = $politician_entity_rs->search(
             {
                 politician_id => $politician->user_id,
@@ -27,7 +29,7 @@ while ( my $row = $csv->getline($fh) ) {
         )->next;
 
         $entity->update( { human_name => $row->[1] } ) if $entity;
-	}
+    }
 }
 
 1;
