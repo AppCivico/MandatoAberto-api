@@ -6,11 +6,10 @@ use MandatoAberto::Types qw(EmailAddress);
 sub post {
     my $c = shift;
 
-    my $email = $c->req->param('email') || '';
+    my $email = $c->req->param('email') || q{};
     $c->req->params->param(email => lc $email);
-    if (length $email < 3) {
-        die \['email', 'missing'];
-    }
+    $email = $c->req->param('email');
+    die \['email', 'missing'] unless length $email > 3;
 
     $c->validate_request_params(
         email => {
@@ -26,16 +25,13 @@ sub post {
     my $user = $c->schema->resultset('User')->search( { email => $c->req->param('email') } )->next;
     die \['email', 'email does not exists'] unless $user;
 
-    if ($user) {
+    if (ref $user) {
         $user->approved == 1 ? () : die \['approved', 'user not approved']
     }
 
-    my $authenticate = $c->authenticate({
-        ( map { $_ => $c->req->params->param($_) } qw(email password) ),
-        approved => 1
-    });
+    my $password = $c->req->param('password');
 
-    if ($authenticate) {
+    if ($c->authenticate($email, $password)) {
         my $ipAddr = $c->req->header("CF-Connecting-IP") || $c->req->header("X-Forwarded-For") || $c->req->address;
 
         my $session = $c->user->obj->new_session(
@@ -43,8 +39,16 @@ sub post {
             ip => $ipAddr,
         );
 
-        return $c->status_ok($c, entity => $session);
+        return $c->render(
+            json   => $session,
+            status => 200,
+        );
     }
+
+    return $c->render(
+        json   => { error => 'Bad email or password' },
+        status => 200,
+    );
 
     return $c->status_bad_request($c, message => 'Bad email or password.');
 }
