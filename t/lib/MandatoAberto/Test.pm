@@ -48,18 +48,28 @@ sub db_transaction (&) {
 sub api_auth_as {
     my (%args) = @_;
 
-    my $user_id = $args{user_id} or die "missing 'user_id'";
+    if (exists $args{user_id}) {
+        my $user_id = $args{user_id};
 
-    my $schema = get_schema;
-    my $user = $schema->resultset('User')->find($user_id);
+        my $schema = get_schema;
+        my $user = $schema->resultset('User')->find($user_id);
 
-    my $user_session = $user->new_session();
+        my $user_session = $user->new_session();
 
-    $t->ua->on(start => sub {
-        my ($ua, $tx) = @_;
-
-        $tx->req->headers->header('X-Api-Key' => $user_session->{api_key});
-    });
+        $t->ua->on(start => sub {
+            my ($ua, $tx) = @_;
+            $tx->req->headers->header('X-API-Key' => $user_session->{api_key});
+        });
+    }
+    elsif (exists $args{nobody}) {
+        $t->ua->on(start => sub {
+            my ($ua, $tx) = @_;
+            $tx->req->headers->remove('X-API-Key');
+        });
+    }
+    else {
+        die __PACKAGE__ . ": invalid params for 'api_auth_as'";
+    }
 
     return $user_session;
 }
