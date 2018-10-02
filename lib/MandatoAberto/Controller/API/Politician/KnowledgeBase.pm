@@ -47,7 +47,9 @@ __PACKAGE__->config(
         }
 
         $params->{entities} = [$entity_id];
-        $params->{type}     = lc $params->{type} if $params->{type};
+
+        $params->{type} ||= 'posicionamento';
+        $params->{type} = lc $params->{type} if $params->{type};
 
         return $params;
     },
