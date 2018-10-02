@@ -72,7 +72,7 @@ sub get_intents {
                 p my $v = 'access_token dentro do eval: ' . "Bearer $access_token";
                 $res = $self->furl->get(
                     $url,
-                    [ 'Authorization', $access_token ]
+                    [ 'Authorization', "Bearer $access_token" ]
                 );
                 p $res->request->header;
                 die $res->decoded_content unless $res->is_success;
