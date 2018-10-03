@@ -12,7 +12,16 @@ sub register {
     $register->post('/politician')->to('register-politician#post');
 
     # Login.
-    $api->post('/login')->to('login#post');
+    my $login = $api->route('/login');
+    $login->post('/')->to('login#post');
+
+    # Login::ForgotPassword
+    my $forgot_password = $login->route('/forgot_password');
+    $forgot_password->post('/')->to('login-forgot_password#post');
+
+    # Login::Reset
+    my $reset = $forgot_password->route('/reset');
+    $reset->post('/:token')->to('login-reset#post');
 
     # Admin.
     my $admin = $api->route('/admin')->over(authenticated => 1)->over(has_priv => 'admin');
