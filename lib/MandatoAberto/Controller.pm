@@ -52,7 +52,14 @@ sub reply_exception {
             );
         }
 
-        $c->app->log->fatal( $an_error->message, @other_errors );
+        $c->app->log->fatal(
+            (
+                ref $an_error && $an_error->can('message')
+                ? $an_error->message
+                : $an_error
+            ),
+            @other_errors
+        );
 
         return $c->render(
             json   => { error => "Internal server error" },
