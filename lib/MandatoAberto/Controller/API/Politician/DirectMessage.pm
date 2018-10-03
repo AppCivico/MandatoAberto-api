@@ -116,7 +116,7 @@ sub list_GET {
     my $politician_id = $c->stash->{politician}->id;
 
     my $page    = $c->req->params->{page}    || 1;
-    my $results = $c->req->params->{results} || 1000;
+    my $results = $c->req->params->{results} || 5000;
 
     return $self->status_ok(
         $c,
