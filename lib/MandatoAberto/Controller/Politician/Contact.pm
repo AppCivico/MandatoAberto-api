@@ -1,24 +1,6 @@
 package MandatoAberto::Controller::Politician::Contact;
 use Mojo::Base 'Mojolicious::Controller';
 
-# __PACKAGE__->config(
-#     # AutoBase.
-#     result => "DB::PoliticianContact",
-
-#     list_key  => "politician_contact",
-#     build_row => sub {
-#         return { $_[0]->get_columns() };
-#     },
-
-#     prepare_params_for_create => sub {
-#         my ($self, $c, $params) = @_;
-
-#         $params->{politician_id} = $c->current_user->id;
-
-#         return $params;
-#     },
-# );
-
 sub post {
     my $c = shift;
 
