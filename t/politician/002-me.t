@@ -130,212 +130,198 @@ db_transaction {
         )
         ->status_is(202)
         ->header_like(Location => qr{/api/politician/[0-9]+$});
-    };
-};
 
-done_testing();
-
-__END__
-
-    rest_put "/api/politician/$politician_id",
-        name => "update politician",
-        [
-
-        ]
-    ;
-
-    rest_reload_list "get_politician";
-
-    stash_test "get_politician.list" => sub {
-        my $res = shift;
-
-        is($res->{name},         "Ansei Lucas", "name updated");
-        is($res->{city}->{name}, "Ubatuba",   "city updated");
+        $t->get_ok("/api/politician/$politician_id")
+        ->status_is(200)
+        ->json_is('/name',      "Ansei Lucas", "name updated")
+        ->json_is('/city/name', "Ubatuba",     "city updated");
     };
 
-    # Mudando a senha
-    rest_post "/api/login",
-        name  => "login with current password",
-        code  => 200,
-        [
-            email    => $email,
-            password => $password,
-        ],
-    ;
+    subtest 'Politician | change password' => sub {
+        $t->post_ok(
+            '/api/login',
+            form => {
+                email    => $email,
+                password => $password,
+            }
+        )
+        ->status_is(200)
+        ->json_has('/api_key');
 
-    rest_put "/api/politician/$politician_id",
-        name    => "new password with less than 6 chars",
-        is_fail => 1,
-        code    => 400,
-        [ new_password => "12345" ]
-    ;
+        $t->put_ok(
+            "/api/politician/$politician_id",
+            form => {
+                new_password => "12345",
+            },
+        )
+        ->status_is(400);
 
-    rest_put "/api/politician/$politician_id",
-        name    => "new password",
-        [ new_password => "123456" ]
-    ;
+        $t->put_ok(
+            "/api/politician/$politician_id",
+            form => {
+                new_password => "123456",
+            },
+        )
+        ->status_is(202)
+        ->header_like(Location => qr{/api/politician/[0-9]+$});
 
-    rest_post "/api/login",
-        name    => "login with old password",
-        is_fail => 1,
-        code    => 400,
-        [
-            email    => $email,
-            password => $password,
-        ],
-    ;
+        # Login with old password.
+        $t->post_ok(
+            '/api/login',
+            form => {
+                email    => $email,
+                password => $password,
+            }
+        )
+        ->status_is(400);
 
-    rest_post "/api/login",
-        name => "login with new password",
-        code => 200,
-        [
-            email    => $email,
-            password => '123456',
-        ],
-    ;
-
-    rest_put "/api/politician/$politician_id",
-        name => "Adding picframe URL and text",
-        [
-            picframe_url  => 'https://foobar.com.br',
-            picframe_text => 'foobar'
-        ]
-    ;
-
-    rest_reload_list "get_politician";
-
-    stash_test "get_politician.list" => sub {
-        my $res = shift;
-
-        is($res->{picframe_url},  'https://foobar.com.br', 'picframe_url');
-        is($res->{picframe_text}, 'foobar',                'share_text');
-        is($res->{share_url},     'https://foobar.com.br', 'picframe_url');
-        is($res->{share_text},    'foobar',                'share_text');
+        # Login with right password.
+        $t->post_ok(
+            '/api/login',
+            form => {
+                email    => $email,
+                password => '123456',
+            }
+        )
+        ->status_is(200)
+        ->json_has('/api_key');
     };
 
-    rest_put "/api/politician/$politician_id",
-        name => "Adding picframe URL and text using share",
-        [
-            share_url  => 'https://google.com.br',
-            share_text => 'barbaz'
-        ]
-    ;
+    subtest 'Politician | social share' => sub {
 
-    rest_reload_list "get_politician";
+        $t->put_ok(
+            "/api/politician/$politician_id",
+            form => {
+                picframe_url  => 'https://foobar.com.br',
+                picframe_text => 'foobar',
+            }
+        )
+        ->status_is(202)
+        ->json_has('/id');
 
-    stash_test "get_politician.list" => sub {
-        my $res = shift;
+        $t->get_ok("/api/politician/$politician_id")
+        ->status_is(200)
+        ->json_is('/picframe_url',  'https://foobar.com.br', 'picframe_url')
+        ->json_is('/picframe_text', 'foobar',                'share_text')
+        ->json_is('/share_url',     'https://foobar.com.br', 'picframe_url')
+        ->json_is('/share_text',    'foobar',                'share_text');
 
-        is($res->{picframe_url},  'https://google.com.br', 'picframe_url');
-        is($res->{picframe_text}, 'barbaz',                'share_text');
-        is($res->{share_url},     'https://google.com.br', 'picframe_url');
-        is($res->{share_text},    'barbaz',                'share_text');
+        $t->put_ok(
+            "/api/politician/$politician_id",
+            form => {
+                share_url  => 'https://google.com.br',
+                share_text => 'barbaz',
+            }
+        )
+        ->status_is(202)
+        ->json_has('/id');
+
+        $t->get_ok("/api/politician/$politician_id")
+        ->status_is(200)
+        ->json_is('/picframe_url',  'https://google.com.br', 'picframe_url')
+        ->json_is('/picframe_text', 'barbaz',                'share_text')
+        ->json_is('/share_url',     'https://google.com.br', 'picframe_url')
+        ->json_is('/share_text',    'barbaz',                'share_text');
+
+        # Remove data.
+        $t->put_ok(
+            "/api/politician/$politician_id",
+            form => {
+                share_url  => '',
+                share_text => '',
+            }
+        )
+        ->status_is(202)
+        ->json_has('/id');
+
+        $t->get_ok("/api/politician/$politician_id")
+        ->status_is(200)
+        ->json_is('/picframe_url',  undef, 'picframe_url')
+        ->json_is('/picframe_text', undef,'share_text')
+        ->json_is('/share_url',     undef, 'picframe_url')
+        ->json_is('/share_text',    undef, 'share_text');
+
+        $t->put_ok(
+            "/api/politician/$politician_id",
+            form => { deactivate_chatbot => 1 }
+        )
+        ->status_is(202);
+
+        $t->put_ok(
+            "/api/politician/$politician_id",
+            form => { movement_id => 7 }
+        )
+        ->status_is(202);
+
+        $t->get_ok("/api/politician/$politician_id")
+        ->status_is(200)
+        ->json_is('/movement/id', 7, 'movement_id=7');
+
+        $t->put_ok(
+            "/api/politician/$politician_id",
+            form => {
+                twitter_id           => '707977922439733248',
+                twitter_token_secret => 'foobar'
+            }
+        )
+        ->status_is(400);
+
+        $t->put_ok(
+            "/api/politician/$politician_id",
+            form => {
+                twitter_id           => '707977922439733248',
+                twitter_oauth_token  => 'foobar'
+            }
+        )
+        ->status_is(400);
+
+        $t->put_ok(
+            "/api/politician/$politician_id",
+            form => {
+                twitter_oauth_token  => 'foobar',
+                twitter_token_secret => 'foobar'
+            }
+        )
+        ->status_is(400);
+
+        $t->put_ok(
+            "/api/politician/$politician_id",
+            form => {
+                twitter_id           => 'this is a text',
+                twitter_oauth_token  => 'foobar',
+                twitter_token_secret => 'foobar'
+            }
+        )
+        ->status_is(400);
+
+        $t->put_ok(
+            "/api/politician/$politician_id",
+            form => {
+                twitter_id           => '707977922439733248',
+                twitter_oauth_token  => 'foobar',
+                twitter_token_secret => 'foobar'
+            }
+        );
+
+        $t->get_ok("/api/politician/$politician_id")
+        ->status_is(200)
+        ->json_is('/twitter_id', '707977922439733248', 'twitter_id');
     };
 
-    rest_put "/api/politician/$politician_id",
-        name => "Removing share data",
-        [
-            share_url  => '',
-            share_text => ''
-        ]
-    ;
+    subtest 'Politician | only get me' => sub {
 
-	rest_reload_list "get_politician";
+        create_politician;
+        my $politician_id = $t->tx->res->json->{id};
 
-	stash_test "get_politician.list" => sub {
-		my $res = shift;
+        $t->get_ok("/api/politician/$politician_id")
+        ->status_is(403);
 
-		is($res->{picframe_url},  undef, 'picframe_url');
-		is($res->{picframe_text}, undef,'share_text');
-		is($res->{share_url},     undef, 'picframe_url');
-		is($res->{share_text},    undef,                'share_text');
-	};
-
-    rest_put "/api/politician/$politician_id",
-        name => "Adding picframe URL",
-        [ deactivate_chatbot => 1 ]
-    ;
-
-    rest_put "/api/politician/$politician_id",
-        name => "update political movement",
-        [ movement_id => 7 ]
-    ;
-
-    rest_reload_list "get_politician";
-
-    stash_test "get_politician.list" => sub {
-        my $res = shift;
-
-        is ($res->{movement}->{id}, 7, 'movement id');
+        $t->put_ok(
+            "/api/politician/$politician_id",
+            form => { name => fake_name()->() }
+        )
+        ->status_is(403);
     };
-
-    rest_put "/api/politician/$politician_id",
-        name    => "Adding twitter data without oauth",
-        is_fail => 1,
-        code    => 400,
-        [
-            twitter_id           => '707977922439733248',
-            twitter_token_secret => 'foobar'
-        ]
-    ;
-
-    rest_put "/api/politician/$politician_id",
-        name    => "Adding twitter data without twitter_token_secret",
-        is_fail => 1,
-        code    => 400,
-        [
-            twitter_id           => '707977922439733248',
-            twitter_oauth_token  => 'foobar'
-        ]
-    ;
-
-    rest_put "/api/politician/$politician_id",
-        name    => "Adding twitter data without twitter_id",
-        is_fail => 1,
-        code    => 400,
-        [
-            twitter_oauth_token  => 'foobar',
-            twitter_token_secret => 'foobar'
-        ]
-    ;
-
-    rest_put "/api/politician/$politician_id",
-        name    => "Adding twitter data with invalid twitter_id",
-        is_fail => 1,
-        code    => 400,
-        [
-            twitter_id           => 'this is a text',
-            twitter_oauth_token  => 'foobar',
-            twitter_token_secret => 'foobar'
-        ]
-    ;
-
-    rest_put "/api/politician/$politician_id",
-        name    => "Adding twitter data",
-        [
-            twitter_id           => '707977922439733248',
-            twitter_oauth_token  => 'foobar',
-            twitter_token_secret => 'foobar'
-        ]
-    ;
-
-    rest_reload_list "get_politician";
-
-    stash_test "get_politician.list" => sub {
-        my $res = shift;
-
-        is ($res->{twitter_id}, '707977922439733248', 'twitter id');
-    };
-
-
-    create_politician;
-    rest_get [ "api", "politician", stash "politician.id" ], name => "can't get other politician", is_fail => 1, code => 403;
-    rest_put [ "api", "politician", stash "politician.id" ],
-        name    => "can't put other politician",
-        is_fail => 1,
-        code    => 403,
-        [ name => fake_name()->() ]
-    ;
 };
 
 done_testing();
