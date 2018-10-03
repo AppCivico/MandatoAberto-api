@@ -1,15 +1,13 @@
-#!/usr/bin/env bash
-
-if [ -d "script" ]; then
-  cd script;
+#!/bin/bash -e
+if [ -d "bin" ]; then
+  cd bin;
 fi
 
-source ../envfile.sh
+GIT_DIR=$(git rev-parse --show-toplevel)
+CWD=$(pwd)
+source $GIT_DIR/envfile.sh
+cd $GIT_DIR/bin
 
-perl mandatoaberto_create.pl model DB DBIC::Schema MandatoAberto::Schema create=static components=TimeStamp,PassphraseColumn 'dbi:Pg:dbname=mandatoaberto_dev;host=localhost' postgres trustable quote_names=1 overwrite_modifications=1
+dbicdump -o dump_directory=../../lib -o components='["TimeStamp", "PassphraseColumn"]' -o overwrite_modifications=1 -o generate_pod=1 MandatoAberto::Schema "dbi:Pg:dbname=${POSTGRESQL_DBNAME};host=${POSTGRESQL_HOST}" $POSTGRESQL_USER $POSTGRESQL_PASSWORD
 
-cd ..;
-
-rm -f lib/MandatoAberto/Model/DB.pm.new;
-rm -f t/model_DB.t;
-rm -f t/model_DB.t.new;
+cd $CWD
