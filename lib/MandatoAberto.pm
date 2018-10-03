@@ -56,7 +56,8 @@ sub startup {
 
     # Politician.
     my $politician = $api->route('/politician')->over(has_priv => ['politician', 'admin']);
-    $politician->get('/:id')->to('politician#get');
+    my $politician_object = $politician->route('/:politician_id')->under->to('politician#stuff');
+    $politician_object->get->to('politician#get');
     $politician->post('/:id/contact')->to('politician-contact#post');
     $politician->post('/:id/greeting')->to('politician-greeting#post');
 }
