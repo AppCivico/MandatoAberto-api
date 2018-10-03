@@ -1,7 +1,5 @@
 package MandatoAberto::Controller;
 use Mojo::Base 'Mojolicious::Controller';
-use Moo;
-use MooX::Types::MooseLike::Base qw(:all);
 
 sub reply_not_found {
     my $c = shift;
