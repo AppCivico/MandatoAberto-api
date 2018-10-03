@@ -45,6 +45,14 @@ sub register {
     my $politician_greeting = $politician_result->route('/greeting');
     $politician_greeting->get->to('politician-greeting#get');
     $politician_greeting->post->to('politician-greeting#post');
+
+    # Politician::DirectMessage
+    my $direct_message = $politician_result->route('/direct-message');
+    $direct_message->post->to('politician-direct_message#post');
+
+    # Chatbot
+    my $chatbot = $api->route('/chatbot')->under->to('chatbot#validade_security_token');
+    $chatbot->post('/recipient')->to('chatbot-recipient#post');
 }
 
 1;
