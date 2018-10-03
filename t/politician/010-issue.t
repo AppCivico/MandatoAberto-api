@@ -207,6 +207,37 @@ db_transaction {
         }
     };
 
+	# Testando batch delete de issues
+	db_transaction{
+		$first_issue->update( { reply => undef, open => 1 } );
+		$second_issue->update( { reply => undef, open => 1 } );
+
+		$first_issue  = $first_issue->discard_changes;
+		$second_issue = $second_issue->discard_changes;
+
+		rest_put "/api/politician/$politician_id/issue/batch-delete",
+		  name    => 'batch delete without ids',
+		  is_fail => 1,
+		  code    => 400;
+
+		rest_put "/api/politician/$politician_id/issue/batch-delete",
+		  name => 'batch delete',
+		  code => 200,
+		  [ ids => "$first_issue_id, $second_issue_id" ];
+
+		rest_get "/api/politician/$politician_id/issue",
+		  name  => 'get deleted issues',
+		  stash => 'get_deleted_issues',
+		  list  => 1,
+		  [ filter => 'open' ];
+
+		stash_test 'get_deleted_issues' => sub {
+			my $res = shift;
+
+			is( scalar @{ $res->{issues} }, 0, '0 issues' );
+		  }
+	};
+
     # Criando um grupo para adicionar o recipiente
     # no fechamento da segunda issue
     my $group = $schema->resultset("Group")->create(
