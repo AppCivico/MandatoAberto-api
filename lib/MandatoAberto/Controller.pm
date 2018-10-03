@@ -3,7 +3,6 @@ use Mojo::Base 'Mojolicious::Controller';
 
 use Moose::Role;
 use Moose::Util::TypeConstraints;
-use Data::Dumper;
 
 sub reply_not_found {
     my $c = shift;
@@ -53,7 +52,7 @@ sub reply_exception {
             );
         }
 
-        $c->app->log->error( Dumper $an_error->message, @other_errors );
+        $c->app->log->fatal( $an_error->message, @other_errors );
 
         return $c->render(
             json   => { error => "Internal server error" },
