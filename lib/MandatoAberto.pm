@@ -53,6 +53,10 @@ sub startup {
     # Admin::Politician
     my $admin_politician = $admin->route('/politician');
     $admin_politician->post('/approve')->to('admin-politician-approve#post');
+
+    # Politician.
+    my $politician = $api->route('/politician')->over(has_priv => ['politician', 'admin']);
+    $politician->get('/:id')->to('politician#get');
 }
 
 1;
