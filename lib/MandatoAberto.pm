@@ -59,8 +59,14 @@ sub startup {
     my $politician_result = $politician_list->route('/:politician_id')->under->to('politician#stuff');
     $politician_result->get->to('politician#get');
     $politician_result->put->to('politician#put');
-    $politician_result->post('/contact')->to('politician-contact#post');
-    $politician_result->post('/greeting')->to('politician-greeting#post');
+
+    # Politician::Contact.
+    my $politician_contact = $politician_result->route('/contact')->under;
+    $politician_contact->post->to('politician-contact#post');
+
+    # Politician::Greeting.
+    my $politician_greeting = $politician_result->route('/greeting')->under;
+    $politician_greeting->post->to('politician-greeting#post');
 }
 
 1;
