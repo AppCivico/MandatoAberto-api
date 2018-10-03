@@ -48,10 +48,14 @@ db_transaction {
             url      => "https://www.google.com",
         }
     )
-    ->status_is(200);
+    ->status_is(200)
+    ->json_has('/id')
+    ->json_is('/cellphone' => undef)
+    ->json_is('/instagram' => undef)
+    ->json_is('/twitter'   => '@lucas_ansei')
+    ->json_is('/facebook'  => 'https://facebook.com/lucasansei');
 
     my $contact_id = $t->tx->res->json->{id};
-
 };
 
 done_testing();
