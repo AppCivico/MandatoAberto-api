@@ -13,13 +13,17 @@ sub user_privs {
 }
 
 sub has_priv {
-    my ($self, $c, $role) = @_;
+    my ($self, $c, $roles) = @_;
 
     my $user = $c->current_user;
     if (ref $user) {
-        my @roles = map { $_->role->get_column('name') } $user->user_roles->all();
-        if( grep { $role eq $_ } @roles ) {
-            return 1;
+        my @roles = 'ARRAY' eq ref $roles ? @{ $roles } : ($roles);
+        my @user_roles = map { $_->role->get_column('name') } $user->user_roles->all();
+
+        for my $role (@roles) {
+            if( grep { $role eq $_ } @user_roles ) {
+                return 1;
+            }
         }
     }
     return 0;
