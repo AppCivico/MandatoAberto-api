@@ -1,43 +1,24 @@
 package MandatoAberto::Controller::Politician;
-use Mojo::Base 'Mojolicious::Controller';
+use Mojo::Base 'MandatoAberto::Controller';
 
-# __PACKAGE__->config(
-#     # AutoBase.
-#     result => "DB::Politician",
-
-#     # AutoResultPUT.
-#     object_key     => "politician",
-#     result_put_for => "update",
-#     prepare_params_for_update => sub {
-#         my ($self, $c, $params) = @_;
-
-#         my $share_url  = $c->req->params->{picframe_url}  || $c->req->params->{share_url};
-#         my $share_text = $c->req->params->{picframe_text} || $c->req->params->{share_text};
-
-#         $params->{share_url}  = $share_url;
-#         $params->{share_text} = $share_text;
-
-#         if ( (defined $c->req->params->{picframe_url} && $c->req->params->{picframe_url} eq '') || (defined $c->req->params->{share_url} && $c->req->params->{share_url} eq '') ) {
-#             $params->{share_url} = 'SET_NULL';
-#         }
-# 		if ( (defined $c->req->params->{picframe_text} && $c->req->params->{picframe_text} eq '') || (defined $c->req->params->{share_text} && $c->req->params->{share_text} eq '') ) {
-#             $params->{share_text} = 'SET_NULL';
-# 		}
-
-#         return $params;
-#     },
-# );
-
-sub stuff {
+sub stasher {
     my $c = shift;
 
-    my $politician = $c->schema->resultset('Politician')->search( { 'me.user_id' => $c->param('politician_id') } )->next;
-    if (ref($politician)) {
-        $c->stash(politician => $politician);
-        return $c;
-    };
-    $c->reply_not_found;
-    $c->detach();
+    my $politician_id = $c->param('politician_id');
+
+    my $politician = $c->schema->resultset('Politician')->search( { 'me.user_id' => $politician_id } )->next;
+    if (!ref $politician) {
+        $c->reply_not_found;
+        $c->detach();
+    }
+
+    $c->stash(politician => $politician);
+
+    if ($politician_id != $c->current_user->id) {
+        $c->reply_forbidden();
+        $c->detach;
+    }
+    return $c;
 }
 
 sub put {
