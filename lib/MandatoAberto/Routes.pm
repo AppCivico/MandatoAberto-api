@@ -22,7 +22,7 @@ sub register {
     $admin_politician->post('/approve')->to('admin-politician-approve#post');
 
     # Politician.
-    my $politician_list = $api->route('/politician')->over(has_priv => ['politician', 'admin']);
+    my $politician_list = $api->route('/politician')->over(has_priv => 'politician');
     my $politician_result = $politician_list->route('/:politician_id')->under->to('politician#stasher');
     $politician_result->get->to('politician#get');
     $politician_result->put->to('politician#put');
