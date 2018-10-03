@@ -37,25 +37,40 @@ db_transaction {
     ->status_is(403)
     ->json_has('/error');
 
-    api_auth_as user_id => $politician_id;
+    subtest 'Politician | contact' => sub {
 
-    $t->post_ok(
-        "/api/politician/$politician_id/contact",
-        form => {
-            twitter  => '@lucas_ansei',
-            facebook => 'https://facebook.com/lucasansei',
-            email    => 'foobar@email.com',
-            url      => "https://www.google.com",
-        }
-    )
-    ->status_is(200)
-    ->json_has('/id')
-    ->json_is('/cellphone' => undef)
-    ->json_is('/instagram' => undef)
-    ->json_is('/twitter'   => '@lucas_ansei')
-    ->json_is('/facebook'  => 'https://facebook.com/lucasansei');
+        api_auth_as user_id => $politician_id;
 
-    my $contact_id = $t->tx->res->json->{id};
+        $t->post_ok(
+            "/api/politician/$politician_id/contact",
+            form => {
+                twitter  => '@lucas_ansei',
+                facebook => 'https://facebook.com/lucasansei',
+                email    => 'foobar@email.com',
+                url      => "https://www.google.com",
+            }
+        )
+        ->status_is(200)
+        ->json_has('/id')
+        ->json_is('/cellphone' => undef)
+        ->json_is('/instagram' => undef)
+        ->json_is('/twitter'   => '@lucas_ansei')
+        ->json_is('/facebook'  => 'https://facebook.com/lucasansei');
+
+        my $contact_id = $t->tx->res->json->{id};
+    };
+
+    subtest 'Politician | greeting' => sub {
+
+        $t->post_ok(
+            "/api/politician/$politician_id/greeting",
+            form => {
+                on_facebook => 'Olá, sou assistente digital do(a) ${user.office.name} ${user.name} Seja bem-vindo a nossa Rede! Queremos um Brasil melhor e precisamos de sua ajuda.',
+                on_website  => 'Olá, sou assistente digital do(a) ${user.office.name} ${user.name} Seja bem-vindo a nossa Rede! Queremos um Brasil melhor e precisamos de sua ajuda.'
+            }
+        )
+        ->status_is(200);
+    };
 };
 
 done_testing();
@@ -63,14 +78,13 @@ done_testing();
 __END__
 
 
-    rest_post "/api/politician/$politician_id/greeting",
+    rest_post ,
         name                => "politician greeting",
         code                => 200,
         automatic_load_item => 0,
         stash               => 'g1',
         [
-            on_facebook => 'Olá, sou assistente digital do(a) ${user.office.name} ${user.name} Seja bem-vindo a nossa Rede! Queremos um Brasil melhor e precisamos de sua ajuda.',
-            on_website  => 'Olá, sou assistente digital do(a) ${user.office.name} ${user.name} Seja bem-vindo a nossa Rede! Queremos um Brasil melhor e precisamos de sua ajuda.'
+
         ]
     ;
     my $greeting    = stash "g1";
