@@ -4,64 +4,52 @@ use lib "$Bin/../lib";
 
 use MandatoAberto::Test::Further;
 
-my $schema = MandatoAberto->model("DB");
+my $t = test_instance;
+my $schema = $t->app->schema;
 
 db_transaction {
-    create_politician;
-    my $politician_id = stash "politician.id";
+    my $politician = create_politician;
+    my $politician_id = $politician->{id};
 
-    api_auth_as user_id => 1;
+    subtest 'Greeting | wrong perms' => sub {
+        api_auth_as user_id => 1;
 
-    rest_post "/api/politician/$politician_id/greeting",
-        name    => 'politician greeting as admin',
-        is_fail => 1,
-        code    => 403,
-    ;
+        $t->post_ok("/api/politician/$politician_id/greeting")
+        ->status_is(403);
+    };
 
-    api_auth_as user_id => $politician_id;
+    subtest 'Greeting | get and create' => sub {
 
-    rest_post "/api/politician/$politician_id/greeting",
-        name    => 'politician greeting without greeting_id',
-        is_fail => 1,
-        code    => 400,
-    ;
+        api_auth_as user_id => $politician_id;
 
-    rest_post "/api/politician/$politician_id/greeting",
-        name    => 'politician greeting without on_facebook',
-        is_fail => 1,
-        code    => 400,
-        [ on_website => 'foobar' ]
-    ;
+        $t->post_ok("/api/politician/$politician_id/greeting")
+        ->status_is(400);
 
-    rest_post "/api/politician/$politician_id/greeting",
-        name    => 'politician greeting without on_website',
-        is_fail => 1,
-        code    => 400,
-        [ on_facebook => 'foobar' ]
-    ;
+        $t->post_ok(
+            "/api/politician/$politician_id/greeting",
+            form => { on_website => 'foobar' }
+        )
+        ->status_is(400);
 
-    rest_post "/api/politician/$politician_id/greeting",
-        name                => 'politician greeting',
-        automatic_load_item => 1,
-        stash               => 'g1',
-        code                => 200,
-        [
-            on_facebook => 'foobar',
-            on_website  => 'foobar2'
-        ]
-    ;
+        $t->post_ok(
+            "/api/politician/$politician_id/greeting",
+            form => { on_facebook => 'foobar' }
+        )
+        ->status_is(400);
 
-    rest_get "/api/politician/$politician_id/greeting",
-        name  => "get politician greeting",
-        list  => 1,
-        stash => "get_politician_greeting"
-    ;
+        $t->post_ok(
+            "/api/politician/$politician_id/greeting",
+            form => {
+                on_facebook => 'foobar',
+                on_website  => 'foobar2',
+            }
+        )
+        ->status_is(200);
 
-    stash_test "get_politician_greeting" => sub {
-        my $res = shift;
-
-        is ($res->{on_facebook}, 'foobar',  'greeting on facebook');
-        is ($res->{on_website},  'foobar2', 'greeting on website');
+        $t->get_ok("/api/politician/$politician_id/greeting")
+        ->status_is(200)
+        ->json_is('/on_facebook', 'foobar',  'greeting on facebook');
+        ->json_is('/on_website',  'foobar2', 'greeting on website');
     };
 };
 
