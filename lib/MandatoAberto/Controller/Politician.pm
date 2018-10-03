@@ -40,6 +40,36 @@ sub stuff {
     $c->detach();
 }
 
+sub put {
+    my $c = shift;
+
+    my $params = $c->req->params->to_hash;
+    my $share_url  = $params->{picframe_url}  || $params->{share_url};
+    my $share_text = $params->{picframe_text} || $params->{share_text};
+
+    $params->{share_url}  = $share_url;
+    $params->{share_text} = $share_text;
+
+    if ( (defined $params->{picframe_url} && $params->{picframe_url} eq '') || (defined $params->{share_url} && $params->{share_url} eq '') ) {
+        $params->{share_url} = 'SET_NULL';
+    }
+    if ( (defined $params->{picframe_text} && $params->{picframe_text} eq '') || (defined $params->{share_text} && $params->{share_text} eq '') ) {
+        $params->{share_text} = 'SET_NULL';
+    }
+
+    my $politician = $c->stash('politician')->execute(
+        $c,
+        for => 'update',
+        with => $params,
+    );
+
+    $c->redirect_to('current');
+    $c->render(
+        status => 202,
+        json   => { id => $politician->id },
+    );
+}
+
 sub get {
     my $c = shift;
 

@@ -37,6 +37,7 @@ db_transaction {
     ->status_is(403)
     ->json_has('/error');
 
+    my $contact_id;
     subtest 'Politician | contact' => sub {
 
         api_auth_as user_id => $politician_id;
@@ -57,7 +58,7 @@ db_transaction {
         ->json_is('/twitter'   => '@lucas_ansei')
         ->json_is('/facebook'  => 'https://facebook.com/lucasansei');
 
-        my $contact_id = $t->tx->res->json->{id};
+        ok $contact_id = $t->tx->res->json->{id};
     };
 
     subtest 'Politician | greeting' => sub {
@@ -70,6 +71,65 @@ db_transaction {
             }
         )
         ->status_is(200);
+
+        ok my $greeting    = $t->tx->res->json;
+        ok my $greeting_id = $greeting->{id};
+
+        ok my $movement = $schema->resultset('Movement')->search( { 'me.id' => $movement_id } )->next;
+
+        $t->get_ok("/api/politician/$politician_id")
+        ->status_is(200)
+        ->json_is('/id',                $politician_id,                    'id')
+        ->json_is('/name',              "Lucas Ansei",                     'name')
+        ->json_is('/state/code',        "SP",                              'state code')
+        ->json_is('/state/name',        "São Paulo",                       'state name')
+        ->json_is('/city/name',         "São Paulo",                       'city')
+        ->json_is('/party/id',          $party,                            'party')
+        ->json_is('/office/id',         $office,                           'office')
+        ->json_is('/fb_page_id',        "FOO",                             'fb_page_id')
+        ->json_is('/gender',            $gender,                           'gender')
+        ->json_is('/premium',           0,                                 'politician is not premium')
+        ->json_is('/contact/id',        $contact_id,                       'contact id')
+        ->json_is('/contact/twitter',   '@lucas_ansei',                    'twitter')
+        ->json_is('/contact/facebook',  'https://facebook.com/lucasansei', 'facebook')
+        ->json_is('/contact/email',     'foobar@email.com',                'email')
+        ->json_is('/contact/url',       "https://www.google.com",          'url')
+        ->json_is('/greeting/id',       $greeting_id,                      'greeting entity id')
+        ->json_is('/movement/id',       $movement->id,                     'movement id')
+        ->json_is('/movement/name',     $movement->name,                   'movement name')
+        ->json_is(
+            '/greeting/on_facebook',
+            'Olá, sou assistente digital do(a) ${user.office.name} ${user.name} Seja bem-vindo a nossa Rede! Queremos um Brasil melhor e precisamos de sua ajuda.',
+        );
+
+        # Caso apenas a cidade seja editada, deve bater com o estado corrente
+        $t->put_ok(
+            "/api/politician/$politician_id",
+            form => {
+                address_city_id => 400,
+            },
+        )
+        ->status_is(400)
+        ->json_is('/form_error/address_city_id', 'city does not belong to state id: 26');
+
+        # Caso o estado seja editado, deve ser editada também a cidade
+        $t->put_ok(
+            "/api/politician/$politician_id",
+            form => {
+                address_state_id => 1,
+            },
+        )
+        ->status_is(400);
+
+        $t->put_ok(
+            "/api/politician/$politician_id",
+            form => {
+                name            => "Ansei Lucas",
+                address_city_id => 9552,
+            },
+        )
+        ->status_is(202)
+        ->header_like(Location => qr{/api/politician/[0-9]+$});
     };
 };
 
@@ -77,77 +137,10 @@ done_testing();
 
 __END__
 
-
-    rest_post ,
-        name                => "politician greeting",
-        code                => 200,
-        automatic_load_item => 0,
-        stash               => 'g1',
-        [
-
-        ]
-    ;
-    my $greeting    = stash "g1";
-    my $greeting_id = $greeting->{id};
-
-    rest_get "/api/politician/$politician_id",
-        name  => "get politician",
-        list  => 1,
-        stash => "get_politician"
-    ;
-
-    my $movement = $schema->resultset("Movement")->find($movement_id);
-
-    stash_test "get_politician" => sub {
-        my $res = shift;
-
-        is ($res->{id},                      $politician_id,                    'id');
-        is ($res->{name},                    "Lucas Ansei",                     'name');
-        is ($res->{state}->{code},           "SP",                              'state code');
-        is ($res->{state}->{name},           "São Paulo",                       'state name');
-        is ($res->{city}->{name},            "São Paulo",                       'city');
-        is ($res->{party}->{id},             $party,                            'party');
-        is ($res->{office}->{id},            $office,                           'office');
-        is ($res->{fb_page_id},              "FOO",                             'fb_page_id');
-        is ($res->{gender},                  $gender,                           'gender');
-        is ($res->{premium},                 0,                                 'politician is not premium');
-        is ($res->{contact}->{id},           $contact_id,                       'contact id');
-        is ($res->{contact}->{twitter},      '@lucas_ansei',                    'twitter');
-        is ($res->{contact}->{facebook},     'https://facebook.com/lucasansei', 'facebook');
-        is ($res->{contact}->{email},        'foobar@email.com',                'email');
-        is ($res->{contact}->{url},          "https://www.google.com",          'url');
-        is ($res->{greeting}->{id},          $greeting_id,                      'greeting entity id');
-        is ($res->{movement}->{id},          $movement->id,                     'movement id');
-        is ($res->{movement}->{name},        $movement->name,                   'movement name');
-
-        is (
-            $res->{greeting}->{on_facebook},
-            'Olá, sou assistente digital do(a) ${user.office.name} ${user.name} Seja bem-vindo a nossa Rede! Queremos um Brasil melhor e precisamos de sua ajuda.',
-            'greeting content'
-        );
-    };
-
-    # Caso apenas a cidade seja editada, deve bater com o estado corrente
-    rest_put "/api/politician/$politician_id",
-        name    => "invalid address_city_id",
-        is_fail => 1,
-        code    => 400,
-        [ address_city_id => 400 ]
-    ;
-
-    # Caso o estado seja editado, deve ser editada também a cidade
-    rest_put "/api/politician/$politician_id",
-        name    => "missing address_city_id",
-        is_fail => 1,
-        code    => 400,
-        [ address_state_id => 1 ]
-    ;
-
     rest_put "/api/politician/$politician_id",
         name => "update politician",
         [
-            name            => "Ansei Lucas",
-            address_city_id => 9552
+
         ]
     ;
 
