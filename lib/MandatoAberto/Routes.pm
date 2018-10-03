@@ -28,11 +28,12 @@ sub register {
     $politician_result->put->to('politician#put');
 
     # Politician::Contact.
-    my $politician_contact = $politician_result->route('/contact')->under;
+    my $politician_contact = $politician_result->route('/contact');
+    $politician_contact->get->to('politician-contact#get');
     $politician_contact->post->to('politician-contact#post');
 
     # Politician::Greeting.
-    my $politician_greeting = $politician_result->route('/greeting')->under;
+    my $politician_greeting = $politician_result->route('/greeting');
     $politician_greeting->post->to('politician-greeting#post');
 }
 

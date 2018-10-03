@@ -2,161 +2,112 @@ use common::sense;
 use FindBin qw($Bin);
 use lib "$Bin/../lib";
 
-use MandatoAberto::Test::Further;
+use MandatoAberto::Test;
 
-my $schema = MandatoAberto->model("DB");
+my $t = test_instance;
+my $schema = $t->app->schema;
 
 db_transaction {
-    create_politician;
-    my $politician_id = stash "politician.id";
+    my $politician = create_politician;
+    my $politician_id = $politician->{id};
 
-    api_auth_as user_id => 1;
-    rest_post "/api/politician/$politician_id/contact",
-        name    => "politician contact as admin",
-        is_fail => 1,
-        code    => 403
-    ;
+    subtest 'Politician | contact' => sub {
 
-    api_auth_as user_id => $politician_id;
+        api_auth_as user_id => 1;
+        $t->post_ok("/api/politician/$politician_id/contact")
+        ->status_is(403);
 
-    # Facebook must be an URI
-    rest_post "/api/politician/$politician_id/contact",
-        name    => "politician with invalid Facebook",
-        is_fail => 1,
-        code    => 400,
-        [
-            facebook => 'Foobar',
-        ]
-    ;
+        # Facebook must be an URI
+        api_auth_as user_id => $politician_id;
+        $t->post_ok(
+            "/api/politician/$politician_id/contact",
+            form => {
+                facebook => 'Foobar',
+            }
+        )
+        ->status_is(400);
 
-    rest_post "/api/politician/$politician_id/contact",
-        name    => "politician with invalid email",
-        is_fail => 1,
-        code    => 400,
-        [
-            email => 'Foobar',
-        ]
-    ;
+        $t->post_ok(
+            "/api/politician/$politician_id/contact",
+            form => {
+                email => 'Foobar',
+            }
+        )
+        ->status_is(400);
 
-    # rest_post "/api/politician/$politician_id/contact",
-    #     name    => "politician with invalid cellphone",
-    #     is_fail => 1,
-    #     code    => 400,
-    #     [
-    #         cellphone => 'Foobar',
-    #     ]
-    # ;
+        $t->post_ok(
+            "/api/politician/$politician_id/contact",
+            form => { url => 'foobar' },
+        )
+        ->status_is(400);
 
-    rest_post "/api/politician/$politician_id/contact",
-        name    => "politician with invalid url",
-        is_fail => 1,
-        code    => 400,
-        [
-            url => 1,
-        ]
-    ;
+        my $twitter  = '@lucas_ansei';
+        my $facebook = 'https://facebook.com/lucasansei';
 
-    rest_post "/api/politician/$politician_id/contact",
-        name    => "politician with invalid url",
-        is_fail => 1,
-        code    => 400,
-        [
-            url => 'foobar',
-        ]
-    ;
+        $t->post_ok(
+            "/api/politician/$politician_id/contact",
+            form => {
+                twitter  => '@lucas_ansei',
+                facebook => 'https://facebook.com/lucasansei',
+                email    => 'foobar@email.com',
+                url      => 'https://www.google.com'
+            }
+        )
+        ->status_is(200);
 
-    my $twitter  = '@lucas_ansei';
-    my $facebook = 'https://facebook.com/lucasansei';
+        my $contact = $t->tx->res->json;
 
-    rest_post "/api/politician/$politician_id/contact",
-        name                => "politician contact",
-        automatic_load_item => 0,
-        code                => 200,
-        stash               => 'c1',
-        [
-            twitter  => '@lucas_ansei',
-            facebook => 'https://facebook.com/lucasansei',
-            email    => 'foobar@email.com',
-            url      => 'https://www.google.com'
-        ]
-    ;
-    my $contact = stash "c1";
+        $t->get_ok("/api/politician/$politician_id/contact")
+        ->json_is('/politician_contact/id',        $contact->{id}, 'id')
+        ->json_is('/politician_contact/facebook',  'https://facebook.com/lucasansei', 'facebook')
+        ->json_is('/politician_contact/twitter',   '@lucas_ansei', 'twitter')
+        ->json_is('/politician_contact/email',     'foobar@email.com', 'email')
+        ->json_is('/politician_contact/url',       'https://www.google.com', 'url')
+        ->json_is('/politician_contact/cellphone', undef, 'cellphone');
 
-    rest_get "/api/politician/$politician_id/contact",
-        name  => "get politician contact",
-        list  => 1,
-        stash => "get_politician_contact"
-    ;
+        # Update politician contact.
+        $t->post_ok(
+            "/api/politician/$politician_id/contact",
+            form => {
+                twitter  => '@foobar',
+                facebook => 'https://facebook.com/aaaa',
+                email    => 'foobar@aaaaa.com',
+            }
+        )
+        ->status_is(200);
 
-    stash_test "get_politician_contact" => sub {
-        my $res = shift;
+        $t->get_ok("/api/politician/$politician_id/contact")
+        ->json_is('/politician_contact/id',        $contact->{id}, 'id')
+        ->json_is('/politician_contact/facebook',  'https://facebook.com/aaaa', 'facebook')
+        ->json_is('/politician_contact/twitter',   '@foobar', 'twitter')
+        ->json_is('/politician_contact/email',     'foobar@aaaaa.com', 'email')
+        ->json_is('/politician_contact/cellphone', undef, 'cellphone');
 
-        is ($res->{politician_contact}->{id},        $contact->{id}, 'id');
-        is ($res->{politician_contact}->{facebook},  'https://facebook.com/lucasansei', 'facebook');
-        is ($res->{politician_contact}->{twitter},   '@lucas_ansei', 'twitter');
-        is ($res->{politician_contact}->{email},     'foobar@email.com', 'email');
-        is ($res->{politician_contact}->{url},       'https://www.google.com', 'url');
-        is ($res->{politician_contact}->{cellphone}, undef, 'cellphone');
-    };
+        # Remove contacts.
+        $t->post_ok("/api/politician/$politician_id/contact")
+        ->status_is(200);
 
-    rest_post "/api/politician/$politician_id/contact",
-        name                => "update politician contact",
-        automatic_load_item => 0,
-        code                => 200,
-        stash               => 'c2',
-        [
-            twitter  => '@foobar',
-            facebook => 'https://facebook.com/aaaa',
-            email    => 'foobar@aaaaa.com',
+        $t->get_ok("/api/politician/$politician_id/contact")
+        ->json_is('/politician_contact/id',        $contact->{id}, 'id')
+        ->json_is('/politician_contact/facebook',  undef, 'facebook')
+        ->json_is('/politician_contact/twitter',   undef, 'twitter')
+        ->json_is('/politician_contact/email',     undef, 'email')
+        ->json_is('/politician_contact/cellphone', undef, 'cellphone')
+        ->json_is('/politician_contact/instagram', undef, 'instagram');
 
-        ]
-    ;
+        # Add instagram.
+        $t->post_ok(
+            "/api/politician/$politician_id/contact",
+            form => { instagram => 'https://www.instagram.com/lucasansei/' }
+        );
 
-    rest_reload_list "get_politician_contact";
-    stash_test "get_politician_contact.list" => sub {
-        my $res = shift;
-
-        is ($res->{politician_contact}->{id},        $contact->{id}, 'id');
-        is ($res->{politician_contact}->{facebook},  'https://facebook.com/aaaa', 'facebook');
-        is ($res->{politician_contact}->{twitter},   '@foobar', 'twitter');
-        is ($res->{politician_contact}->{email},     'foobar@aaaaa.com', 'email');
-        is ($res->{politician_contact}->{cellphone}, undef, 'cellphone');
-    };
-
-    rest_post "/api/politician/$politician_id/contact",
-        name  => 'removing contacts',
-        stash => 'c3',
-        code  => 200,
-    ;
-
-    rest_reload_list "get_politician_contact";
-    stash_test "get_politician_contact.list" => sub {
-        my $res = shift;
-
-        is ($res->{politician_contact}->{id},        $contact->{id}, 'id');
-        is ($res->{politician_contact}->{facebook},  undef, 'facebook');
-        is ($res->{politician_contact}->{twitter},   undef, 'twitter');
-        is ($res->{politician_contact}->{email},     undef, 'email');
-        is ($res->{politician_contact}->{cellphone}, undef, 'cellphone');
-        is ($res->{politician_contact}->{instagram}, undef, 'instagram');
-    };
-
-    rest_post "/api/politician/$politician_id/contact",
-        name => 'adding instagram',
-        code => 200,
-        [ instagram => 'https://www.instagram.com/lucasansei/' ]
-    ;
-
-    rest_reload_list "get_politician_contact";
-    stash_test "get_politician_contact.list" => sub {
-        my $res = shift;
-
-        is ($res->{politician_contact}->{id},        $contact->{id}, 'id');
-        is ($res->{politician_contact}->{facebook},  undef, 'facebook');
-        is ($res->{politician_contact}->{twitter},   undef, 'twitter');
-        is ($res->{politician_contact}->{email},     undef, 'email');
-        is ($res->{politician_contact}->{cellphone}, undef, 'cellphone');
-        is ($res->{politician_contact}->{instagram}, 'https://www.instagram.com/lucasansei/', 'instagram');
+        $t->get_ok("/api/politician/$politician_id/contact")
+        ->json_is('/politician_contact/id',        $contact->{id}, 'id')
+        ->json_is('/politician_contact/facebook',  undef, 'facebook')
+        ->json_is('/politician_contact/twitter',   undef, 'twitter')
+        ->json_is('/politician_contact/email',     undef, 'email')
+        ->json_is('/politician_contact/cellphone', undef, 'cellphone')
+        ->json_is('/politician_contact/instagram', 'https://www.instagram.com/lucasansei/', 'instagram');
     };
 };
 

@@ -46,14 +46,14 @@ sub post {
     );
 }
 
-sub list_GET {
-    my ($self, $c) = @_;
+sub get {
+    my $c = shift;
 
-    my $politician = $c->stash->{politician};
+    my $politician = $c->stash('politician');
 
-    return $self->status_ok(
-        $c,
-        entity => {
+    return $c->render(
+        status => 200,
+        json   => {
             politician_contact => {
                 politician_id => $politician->id,
 

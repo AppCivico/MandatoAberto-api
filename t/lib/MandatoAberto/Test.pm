@@ -90,7 +90,7 @@ sub create_politician {
         %opts
     );
 
-    return $t->post_ok(
+    $t->post_ok(
         '/api/register/politician',
         form => {
             name                => 'add politician',
@@ -101,6 +101,8 @@ sub create_politician {
     )
     ->status_is(201)
     ->json_has('/id');
+
+    return $t->tx->res->json;
 }
 
 1;
