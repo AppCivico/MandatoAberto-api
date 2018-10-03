@@ -316,7 +316,7 @@ sub batch_delete_PUT {
 
     $c->stash->{collection}->execute(
         $c,
-        for  => 'batch_ignore',
+        for  => 'batch_delete',
         with => {
             politician_id => $c->stash->{politician}->id,
             ids           => \@ids
