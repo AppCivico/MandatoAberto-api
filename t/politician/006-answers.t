@@ -2,175 +2,153 @@ use common::sense;
 use FindBin qw($Bin);
 use lib "$Bin/../lib";
 
-use MandatoAberto::Test::Further;
+use MandatoAberto::Test;
 
-my $schema = MandatoAberto->model("DB");
+my $t = test_instance;
+my $schema = $t->app->schema;
 
 db_transaction {
-    create_politician;
-    my $politician_id = stash "politician.id";
+    my $politician    = create_politician;
+    my $politician_id = $politician->{id};
 
-    api_auth_as user_id => 1;
+    my $first_question_id;
+    my $second_question_id;
+    my $dialog_id;
+    subtest 'Question | create' => sub {
 
-    create_dialog;
-    my $dialog_id = stash "dialog.id";
+        api_auth_as user_id => 1;
 
-    rest_post "/api/admin/dialog/$dialog_id/question",
-        name                => "question",
-        automatic_load_item => 0,
-        stash               => "q1",
-        [
-            name          => fake_words(1)->(),
-            content       => fake_words(1)->(),
-            citizen_input => fake_words(1)->()
-        ]
-    ;
-    my $first_question_id = stash "q1.id";
+        my $dialog    = create_dialog;
+        $dialog_id = $dialog->{id};
 
-    rest_post "/api/admin/dialog/$dialog_id/question",
-        name                => "second question",
-        automatic_load_item => 0,
-        stash               => "q2",
-        [
-            name          => fake_words(1)->(),
-            content       => fake_words(1)->(),
-            citizen_input => fake_words(1)->()
-        ]
-    ;
-    my $second_question_id = stash "q2.id";
+        $t->post_ok(
+            "/api/admin/dialog/$dialog_id/question",
+            form => {
+                name          => fake_words(1)->(),
+                content       => fake_words(1)->(),
+                citizen_input => fake_words(1)->()
+            }
+        )
+        ->status_is(201);
+        #->header_like(Location => qr{/api/admin/dialog/[0-9]+/question/[0-9]+$});
 
-    rest_post "/api/politician/$politician_id/answers",
-        name    => "POST politician answer as admin",
-        is_fail => 1,
-        code    => 403,
-        [
-            "question[$first_question_id][answer]" => 'foobar'
-        ]
-    ;
+        $first_question_id = $t->tx->res->json->{id};
 
-    api_auth_as user_id => $politician_id;
-
-    my $answer_content = fake_words(1)->();
-    rest_post "/api/politician/$politician_id/answers",
-        name  => "POST politician answer",
-        code  => 200,
-        stash => "a1",
-        [ "question[$first_question_id][answer]" => $answer_content ]
-    ;
-
-    my $answer    = stash "a1";
-    my $answer_id = $answer->{answers}->[0]->{id};
-
-    is ($schema->resultset('Answer')->search( { politician_id => $politician_id } )->count, "1", "1 answer created");
-
-    rest_get "/api/politician/$politician_id/answers",
-        name  => "GET politician answers",
-        list  => 1,
-        stash => "get_politician_answers"
-    ;
-
-    stash_test "get_politician_answers" => sub {
-        my $res = shift;
-
-        is ($res->{answers}->[0]->{id},          $answer_id,         'answer id');
-        is ($res->{answers}->[0]->{content},     $answer_content,    'answer content');
-        is ($res->{answers}->[0]->{dialog_id},   $dialog_id,         'answer dialog_id');
-        is ($res->{answers}->[0]->{question_id}, $first_question_id, 'answer first_question_id');
+        $t->post_ok(
+           "/api/admin/dialog/$dialog_id/question",
+           form => {
+               name          => fake_words(1)->(),
+               content       => fake_words(1)->(),
+               citizen_input => fake_words(1)->()
+           },
+        )
+        ->status_is(201);
+        $second_question_id = $t->tx->res->json->{id};
     };
 
-    rest_post "/api/politician/$politician_id/answers",
-        name    => "POST answer with one alredy existing",
-        is_fail => 1,
-        code    => 400,
-        [ "question[$first_question_id][answer]" => $answer_content ]
-    ;
+    subtest 'Answers | CRUD' => sub {
 
-    my $fake_id = fake_int(1000000, 9000000)->();
-    rest_post "/api/politician/$politician_id/answers",
-        name    => "Invalid answer id",
-        is_fail => 1,
-        code    => 400,
-        [ "question[$first_question_id][answer][$fake_id]" => 'foobar' ]
-    ;
+        $t->post_ok(
+            "/api/politician/$politician_id/answers",
+            form => { "question[$first_question_id][answer]" => 'foobar' }
+        )
+        ->status_is(403);
 
-    rest_post "/api/politician/$politician_id/answers",
-        name    => "Invalid answer id with valid",
-        is_fail => 1,
-        code    => 400,
-        [
-            "question[$first_question_id][answer][$answer_id]" => 'foobar',
-            "question[$first_question_id][answer][$fake_id]"   => 'foobar',
-        ]
-    ;
+        api_auth_as user_id => $politician_id;
 
-    rest_post "/api/politician/$politician_id/answers",
-        name  => "Update politician answer with an empty string",
-        code  => 200,
-        [ "question[$first_question_id][answer][$answer_id]" => '' ]
-    ;
+        my $answer_content = fake_words(1)->();
+        $t->post_ok(
+            "/api/politician/$politician_id/answers",
+            form => { "question[$first_question_id][answer]" => $answer_content },
+        )
+        ->status_is(200);
 
-    rest_reload_list "get_politician_answers";
-    stash_test "get_politician_answers.list" => sub {
-        my $res = shift;
+        ok my $answer_id = $t->tx->res->json->{answers}->[0]->{id};
 
-        is ($res->{answers}->[0]->{id},          $answer_id,         'answer id');
-        is ($res->{answers}->[0]->{content},     $answer_content,    'answer content');
-        is ($res->{answers}->[0]->{dialog_id},   $dialog_id,         'answer dialog_id');
-        is ($res->{answers}->[0]->{question_id}, $first_question_id, 'answer first_question_id');
+        is $schema->resultset('Answer')->search( { 'me.politician_id' => $politician_id } )->count, '1', '1 answer created';
+
+        $t->get_ok("/api/politician/$politician_id/answers")
+        ->json_is('answers/0/id',          $answer_id,         'answer id')
+        ->json_is('answers/0/content',     $answer_content,    'answer content')
+        ->json_is('answers/0/dialog_id',   $dialog_id,         'answer dialog_id')
+        ->json_is('answers/0/question_id', $first_question_id, 'answer first_question_id');
+
+        $t->post_ok(
+            "/api/politician/$politician_id/answers",
+            form => { "question[$first_question_id][answer]" => $answer_content }
+        )
+        ->status_is(400);
+
+        my $fake_id = fake_int(1000000, 9000000)->();
+
+        $t->post_ok(
+            "/api/politician/$politician_id/answers",
+            form => { "question[$first_question_id][answer][$fake_id]" => 'foobar' }
+        )
+        ->status_is(400);
+
+        $t->post_ok(
+            "/api/politician/$politician_id/answers",
+            form => {
+                "question[$first_question_id][answer][$answer_id]" => 'foobar',
+                "question[$first_question_id][answer][$fake_id]"   => 'foobar',
+            }
+        )
+        ->status_is(400);
+
+        $t->post_ok(
+            "/api/politician/$politician_id/answers",
+            form => { "question[$first_question_id][answer][$answer_id]" => '' }
+        )
+        ->status_is(200);
+
+        $t->get_ok("/api/politician/$politician_id/answers")
+        ->json_is('/answers/0/id',          $answer_id,         'answer id')
+        ->json_is('/answers/0/content',     $answer_content,    'answer content')
+        ->json_is('/answers/0/dialog_id',   $dialog_id,         'answer dialog_id')
+        ->json_is('/answers/0/question_id', $first_question_id, 'answer first_question_id');
+
+        $t->post_ok(
+            "/api/politician/$politician_id/answers",
+            form => { "question[$first_question_id][answer][$answer_id]" => 'foobar' }
+        )
+        ->status_is(200);
+
+        $t->get_ok("/api/politician/$politician_id/answers")
+        ->json_is('/answers/0/id',          $answer_id,         'answer id')
+        ->json_is('/answers/0/content',     "foobar",           'updated answer content')
+        ->json_is('/answers/0/dialog_id',   $dialog_id,         'answer dialog_id')
+        ->json_is('/answers/0/question_id', $first_question_id, 'answer first_question_id');
+
+        $t->post_ok(
+            "/api/politician/$politician_id/answers",
+            form => {
+                "question[$first_question_id][answer][$answer_id]" => 'FOOBAR',
+                "question[$second_question_id][answer]"            => 'appcivico'
+            },
+        )
+        ->status_is(200);
+
+        my $response      = $t->tx->res->json;
+        my $second_answer = $response->{answers}->[1];
+
+        $t->get_ok("/api/politician/$politician_id/answers")
+        ->json_is('/answers/0/id',          $answer_id,         'first answer id')
+        ->json_is('/answers/0/content',     "FOOBAR",           'updated first answer content')
+        ->json_is('/answers/0/dialog_id',   $dialog_id,         'first answer dialog_id')
+        ->json_is('/answers/0/question_id', $first_question_id, 'first answer first_question_id')
+        ->json_is('/answers/1/content',     "appcivico",          'second answer content')
+        ->json_is('/answers/1/dialog_id',   $dialog_id,           'second answer dialog_id')
+        ->json_is('/answers/1/question_id', $second_question_id,  'second answer first_question_id');
+
+        create_politician;
+        api_auth_as user_id => $t->tx->res->json->{id};
+        $t->post_ok(
+            "/api/politician/$politician_id/answers",
+            form => { "question[$first_question_id][answer][$answer_id]" => 'foobar' }
+        )
+        ->status_is(403);
     };
-
-    rest_post "/api/politician/$politician_id/answers",
-        name  => "Update politician answer",
-        code  => 200,
-        stash => "u1",
-        [ "question[$first_question_id][answer][$answer_id]" => 'foobar' ]
-    ;
-
-    rest_reload_list "get_politician_answers";
-    stash_test "get_politician_answers.list" => sub {
-        my $res = shift;
-
-        is ($res->{answers}->[0]->{id},          $answer_id,         'answer id');
-        is ($res->{answers}->[0]->{content},     "foobar",           'updated answer content');
-        is ($res->{answers}->[0]->{dialog_id},   $dialog_id,         'answer dialog_id');
-        is ($res->{answers}->[0]->{question_id}, $first_question_id, 'answer first_question_id');
-    };
-
-    rest_post "/api/politician/$politician_id/answers",
-        name  => "Update politician answer and create another",
-        code  => 200,
-        stash => "au1",
-        [
-            "question[$first_question_id][answer][$answer_id]" => 'FOOBAR',
-            "question[$second_question_id][answer]"            => 'appcivico'
-        ]
-    ;
-
-    my $response      = stash "au1";
-    my $second_answer = $response->{answers}->[1];
-
-    rest_reload_list "get_politician_answers";
-    stash_test "get_politician_answers.list" => sub {
-        my $res = shift;
-
-        is ($res->{answers}->[0]->{id},          $answer_id,         'first answer id');
-        is ($res->{answers}->[0]->{content},     "FOOBAR",           'updated first answer content');
-        is ($res->{answers}->[0]->{dialog_id},   $dialog_id,         'first answer dialog_id');
-        is ($res->{answers}->[0]->{question_id}, $first_question_id, 'first answer first_question_id');
-
-        is ($res->{answers}->[1]->{content},     "appcivico",          'second answer content');
-        is ($res->{answers}->[1]->{dialog_id},   $dialog_id,           'second answer dialog_id');
-        is ($res->{answers}->[1]->{question_id}, $second_question_id,  'second answer first_question_id');
-    };
-
-    create_politician;
-    api_auth_as user_id => stash "politician.id";
-    rest_post "/api/politician/$politician_id/answers",
-        name    => "POST another politician answer",
-        is_fail => 1,
-        code    => 403,
-        [ "question[$first_question_id][answer][$answer_id]" => 'foobar' ]
-    ;
 };
 
 done_testing();

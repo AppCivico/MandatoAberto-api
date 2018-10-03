@@ -1,5 +1,5 @@
 package MandatoAberto::Controller::Politician::Contact;
-use Mojo::Base 'Mojolicious::Controller';
+use Mojo::Base 'MandatoAberto::Controller';
 
 sub post {
     my $c = shift;

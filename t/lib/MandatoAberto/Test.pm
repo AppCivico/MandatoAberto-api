@@ -105,5 +105,22 @@ sub create_politician {
     return $t->tx->res->json;
 }
 
+sub create_dialog {
+    my (%opts) = @_;
+
+    $t->post_ok(
+        '/api/admin/dialog',
+        form => {
+            name        => fake_words(1)->(),
+            description => fake_words(1)->(),
+            %opts
+        }
+    )
+    ->status_is(201)
+    ;#->header_like(Location => qr{/api/admin/dialog/[0-9]+$});
+
+    return $t->tx->res->json;
+}
+
 1;
 

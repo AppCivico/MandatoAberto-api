@@ -30,21 +30,30 @@ sub register {
     my $admin_politician = $admin->route('/politician');
     $admin_politician->post('/approve')->to('admin-politician-approve#post');
 
+    # Admin::Dialog.
+    my $admin_dialog = $admin->route('/dialog');
+    $admin_dialog->post()->to('admin-dialog#post');
+    my $admin_dialog_item = $admin_dialog->route('/:dialog_id')->under->to('admin-dialog#stasher');
+
+    # Admin::Dialog::Question.
+    my $admin_dialog_item_question = $admin_dialog_item->route('/question');
+    $admin_dialog_item_question->post()->to('admin-dialog-question#post');
+
     # Politician.
     my $politician_list = $api->route('/politician')->over(has_priv => 'politician');
     my $politician_result = $politician_list->route('/:politician_id')->under->to('politician#stasher');
-    $politician_result->get->to('politician#get');
-    $politician_result->put->to('politician#put');
+    $politician_result->get()->to('politician#get');
+    $politician_result->put()->to('politician#put');
 
     # Politician::Contact.
     my $politician_contact = $politician_result->route('/contact');
-    $politician_contact->get->to('politician-contact#get');
-    $politician_contact->post->to('politician-contact#post');
+    $politician_contact->get()->to('politician-contact#get');
+    $politician_contact->post()->to('politician-contact#post');
 
     # Politician::Greeting.
     my $politician_greeting = $politician_result->route('/greeting');
-    $politician_greeting->get->to('politician-greeting#get');
-    $politician_greeting->post->to('politician-greeting#post');
+    $politician_greeting->get()->to('politician-greeting#get');
+    $politician_greeting->post()->to('politician-greeting#post');
 }
 
 1;

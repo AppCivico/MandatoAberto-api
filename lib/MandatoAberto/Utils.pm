@@ -7,7 +7,7 @@ use Data::Section::Simple qw(get_data_section);
 use vars qw(@ISA @EXPORT);
 
 @ISA    = (qw(Exporter));
-@EXPORT = qw(is_test random_string get_data_section get_mandatoaberto_api_url_for get_mandatoaberto_httpcb_url_for);
+@EXPORT = qw(is_test random_string get_data_section get_mandatoaberto_api_url_for get_mandatoaberto_httpcb_url_for env);
 
 sub is_test {
     if ($ENV{HARNESS_ACTIVE} || $0 =~ m{forkprove}) {
@@ -35,5 +35,7 @@ sub get_mandatoaberto_httpcb_url_for {
 
     return ( ( is_test() ? "http://localhost" : $mandatoaberto_httpcb_url ) . $args );
 }
+
+sub env { $ENV{shift} }
 
 1;
