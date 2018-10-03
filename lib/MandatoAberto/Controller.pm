@@ -1,8 +1,7 @@
 package MandatoAberto::Controller;
 use Mojo::Base 'Mojolicious::Controller';
-
-use Moose::Role;
-use Moose::Util::TypeConstraints;
+use Moo;
+use MooX::Types::MooseLike::Base qw(:all);
 
 sub reply_not_found {
     my $c = shift;
@@ -10,6 +9,15 @@ sub reply_not_found {
     return $c->render(
         json   => { error => 'Page not found' },
         status => 404
+    );
+}
+
+sub reply_forbidden {
+    my $c = shift;
+
+    return $c->render(
+        status => 403,
+        json   => { error => 'Forbidden' },
     );
 }
 
