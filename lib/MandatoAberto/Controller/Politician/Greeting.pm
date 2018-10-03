@@ -1,12 +1,6 @@
 package MandatoAberto::Controller::Politician::Greeting;
 use Mojo::Base 'Mojolicious::Controller';
 
-#__PACKAGE__->config(
-#    result  => "DB::PoliticianGreeting",
-#    no_user => 1,
-#
-#);
-
 sub post {
     my $c = shift;
 
@@ -25,16 +19,13 @@ sub post {
     );
 }
 
-sub list_GET {
-    my ( $self, $c ) = @_;
+sub get {
+    my $c = shift;
 
-    my $politician_id = $c->user->id;
-
-    return $self->status_ok(
-        $c,
-        entity => {
-            on_facebook => $c->stash->{politician}->politicians_greeting->next->on_facebook,
-            on_website  => $c->stash->{politician}->politicians_greeting->next->on_website
+    return $c->render(
+        json   => {
+            on_facebook => $c->stash('politician')->politicians_greeting->next->on_facebook,
+            on_website  => $c->stash('politician')->politicians_greeting->next->on_website
         }
     );
 }

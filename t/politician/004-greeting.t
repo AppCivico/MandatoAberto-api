@@ -2,10 +2,9 @@ use common::sense;
 use FindBin qw($Bin);
 use lib "$Bin/../lib";
 
-use MandatoAberto::Test::Further;
+use MandatoAberto::Test;
 
 my $t = test_instance;
-my $schema = $t->app->schema;
 
 db_transaction {
     my $politician = create_politician;
@@ -48,7 +47,7 @@ db_transaction {
 
         $t->get_ok("/api/politician/$politician_id/greeting")
         ->status_is(200)
-        ->json_is('/on_facebook', 'foobar',  'greeting on facebook');
+        ->json_is('/on_facebook', 'foobar',  'greeting on facebook')
         ->json_is('/on_website',  'foobar2', 'greeting on website');
     };
 };

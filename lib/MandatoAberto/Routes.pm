@@ -34,6 +34,7 @@ sub register {
 
     # Politician::Greeting.
     my $politician_greeting = $politician_result->route('/greeting');
+    $politician_greeting->get->to('politician-greeting#get');
     $politician_greeting->post->to('politician-greeting#post');
 }
 
