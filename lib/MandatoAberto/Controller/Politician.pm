@@ -63,11 +63,13 @@ sub put {
         with => $params,
     );
 
-    $c->redirect_to('current');
-    $c->render(
-        status => 202,
-        json   => { id => $politician->id },
-    );
+    return $c
+      ->redirect_to('current')
+      ->render(
+          status => 202,
+          json   => { id => $politician->id },
+      )
+    ;
 }
 
 sub get {
