@@ -1,57 +1,58 @@
-use common::sense;
+use strict;
+use warnings;
 use FindBin qw($Bin);
 use lib "$Bin/../lib";
 
-use MandatoAberto::Test::Further;
+use MandatoAberto::Test;
 
-my $schema = MandatoAberto->model("DB");
+my $t = test_instance;
 
 db_transaction {
-    my $security_token = $ENV{CHATBOT_SECURITY_TOKEN};
+    ok my $security_token = env('CHATBOT_SECURITY_TOKEN');
 
-    create_politician;
-    my $politician_id = stash "politician.id";
+    p $security_token;
+
+    ok my $politician = create_politician;
+    ok my $politician_id = $politician->{id};
 
     api_auth_as user_id => 1;
 
-    create_dialog(
-        name => 'foobar'
-    );
-    my $dialog_id = stash "dialog.id";
+    ok my $dialog = create_dialog(name => 'foobar');
+    ok my $dialog_id = $dialog->{id};
 
     my $question_name = fake_words(1)->();
-    rest_post "/api/admin/dialog/$dialog_id/question",
-        name                => "question",
-        automatic_load_item => 0,
-        stash               => "q1",
-        [
+
+    $t->post_ok(
+        "/api/admin/dialog/$dialog_id/question",
+        form => {
             name          => $question_name,
             content       => fake_words(1)->(),
             citizen_input => fake_words(1)->()
-        ]
-    ;
-    my $question_id = stash "q1.id";
+        }
+    )
+    ->status_is(201)
+    ->json_has('/id');
+
+    ok my $question_id = $t->tx->res->json->{id};
 
     api_auth_as user_id => $politician_id;
-
     my $answer_content = fake_words(1)->();
-    rest_post "/api/politician/$politician_id/answers",
-        name  => "POST politician answer",
-        code  => 200,
-        stash => "a1",
-        [ "question[$question_id][answer]" => $answer_content ]
-    ;
 
-    rest_get "/api/chatbot/answer",
-        name  => "get politician answers",
-        list  => 1,
-        stash => "get_politician_answers",
-        [
+    $t->post_ok(
+        "/api/politician/$politician_id/answers",
+        form => {"question[$question_id][answer]" => $answer_content }
+    )
+    ->status_is(200);
+
+    $t->get_ok(
+        "/api/chatbot/answer",
+        form => {
             politician_id  => $politician_id,
             question_name  => $question_name,
             security_token => $security_token
-        ]
-    ;
+        }
+    )
+    ->status_is(200);
 };
 
 done_testing();
