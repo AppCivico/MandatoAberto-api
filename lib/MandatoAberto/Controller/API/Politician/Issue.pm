@@ -301,6 +301,36 @@ sub batch_ignore_PUT {
     )
 }
 
+sub batch_delete : Chained('base') : PathPart('batch-delete') : Args(0) : ActionClass('REST') { }
+
+sub batch_delete_PUT {
+    my ($self, $c) = @_;
+
+    $c->stash->{collection} = $c->stash->{collection}->search( { politician_id => $c->stash->{politician}->id } );
+
+    my $ids = $c->req->params->{ids};
+    die \['ids', 'missing'] unless $ids;
+
+    $ids =~ s/(\[|\]|(\s))//g;
+	my @ids = split(',', $ids);
+
+    $c->stash->{collection}->execute(
+        $c,
+        for  => 'batch_ignore',
+        with => {
+            politician_id => $c->stash->{politician}->id,
+            ids           => \@ids
+        }
+    );
+
+    return $self->status_ok(
+        $c,
+        entity => {
+            sucess => 1
+        }
+    )
+}
+
 sub _upload_picture {
     my ( $self, $upload, $page_access_token ) = @_;
 
