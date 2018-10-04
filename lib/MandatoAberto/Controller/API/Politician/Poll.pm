@@ -165,10 +165,23 @@ sub result_GET {
 			questions => [
 				map {
 					my $pq = $_;
-					+{
+
+                    +{
 						id      => $pq->get_column('id'),
 						content => $pq->get_column('content'),
-					  }
+
+						options => [
+							map {
+								my $qo = $_;
+
+								+{
+									id      => $qo->get_column('id'),
+									content => $qo->get_column('content'),
+									count   => $qo->poll_results->search( { origin => 'propagate' } )->count,
+								  }
+							} $pq->poll_question_options->all()
+						]
+					}
 
 				} $c->stash->{collection}->poll_questions->all()
 			]
