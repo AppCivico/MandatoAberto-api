@@ -88,7 +88,9 @@ db_transaction {
                 }
             )
         }
-    ;
+    )
+    ->status_is(201);
+
     ok my $issue_id = $t->tx->res->json->{id};
 
     subtest 'Politician | dashboard' => sub {
@@ -208,22 +210,10 @@ db_transaction {
         ->json_is('/has_greeting', 1, 'politician has greeting')
         ->json_is('/has_contacts', 1, 'politician has contacts')
         ->json_is('/has_dialogs',  1, 'politician has dialogs')
-        ->json_is('/has_facebook_auth', 1, 'politician does have facebook auth');
+        ->json_is('/has_facebook_auth', 1, 'politician does have facebook auth')
+        ->json_is('/first_access',      1, 'politician first access');
 
-        rest_reload_list "get_politician_dashboard";
-
-        stash_test "get_politician_dashboard.list" => sub {
-            my $res = shift;
-
-            is ($res->{recipients}->{count}, 2, 'two citizens');
-            is ($res->{has_greeting}, 1, 'politician has greeting');
-            is ($res->{has_contacts}, 1, 'politician has contacts');
-            is ($res->{has_dialogs}, 1, 'politician has dialogs');
-            is ($res->{has_facebook_auth}, 1, 'politician has facebook auth');
-            is ($res->{first_access}, 1, 'politician first access');
-        };
-
-        $schema->resultset("UserSession")->create({
+        ok $schema->resultset('UserSession')->create({
             user_id     => $politician_id,
             api_key     => fake_digits("##########")->(),
             created_at  => \'NOW()',
@@ -231,7 +221,7 @@ db_transaction {
         });
 
         # Criando grupo
-        $schema->resultset("Group")->create(
+        ok $schema->resultset("Group")->create(
             {
                 politician_id    => $politician_id,
                 name             => 'foobar',
@@ -240,24 +230,20 @@ db_transaction {
             }
         );
 
-        rest_reload_list "get_politician_dashboard";
+        $t->get_ok("/api/politician/$politician_id/dashboard")
+        ->status_is(200)
+        ->json_is('/recipients/count', 2, 'two citizens')
+        ->json_is('/has_greeting', 1, 'politician has greeting')
+        ->json_is('/has_contacts', 1, 'politician has contacts')
+        ->json_is('/has_dialogs', 1, 'politician has dialogs')
+        ->json_is('/has_facebook_auth', 1, 'politician has facebook auth')
+        ->json_is('/first_access', 0, 'politician first access')
+        ->json_is('/groups/count', 1, 'group count')
+        ->json_is('/issues/count_open', 1, 'open issues count')
+        ->json_is('/issues/count_open_last_24_hours', 1, 'open issues count');
 
-        stash_test "get_politician_dashboard.list" => sub {
-            my $res = shift;
-
-            is ($res->{recipients}->{count}, 2, 'two citizens');
-            is ($res->{has_greeting}, 1, 'politician has greeting');
-            is ($res->{has_contacts}, 1, 'politician has contacts');
-            is ($res->{has_dialogs}, 1, 'politician has dialogs');
-            is ($res->{has_facebook_auth}, 1, 'politician has facebook auth');
-            is ($res->{first_access}, 0, 'politician first access');
-            is ($res->{groups}->{count}, 1, 'group count');
-            is ($res->{issues}->{count_open}, 1, 'open issues count');
-            is ($res->{issues}->{count_open_last_24_hours}, 1, 'open issues count');
-        };
-
-        my $issue = $schema->resultset('Issue')->find($issue_id);
-        $issue->update(
+        ok my $issue = $schema->resultset('Issue')->find($issue_id);
+        ok $issue->update(
             {
                 reply => 'foobar',
                 open  => 0,
@@ -265,13 +251,10 @@ db_transaction {
             }
         );
 
-        rest_reload_list "get_politician_dashboard";
-
-        stash_test "get_politician_dashboard.list" => sub {
-            my $res = shift;
-
-            is ( $res->{issues}->{avg_response_time}, '60', '60 minutes avg response time' );
-        };
+        $t->get_ok("/api/politician/$politician_id/dashboard")
+        ->status_is(200)
+        ->json_is('/issues/avg_response_time', 60, 'avg_response_time=60');
+    };
 };
 
 done_testing();
