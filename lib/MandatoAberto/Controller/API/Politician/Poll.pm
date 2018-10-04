@@ -148,6 +148,8 @@ sub result : Chained('object') : PathPart('') : Args(0) : ActionClass('REST') { 
 sub result_GET {
     my ($self, $c) = @_;
 
+    $c->stash->{collection} = $c->stash->{collection}->next;
+
     return $self->status_ok(
         $c,
         entity => {
