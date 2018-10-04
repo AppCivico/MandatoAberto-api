@@ -54,6 +54,13 @@ sub register {
     my $politician_greeting = $politician_result->route('/greeting');
     $politician_greeting->get()->to('politician-greeting#get');
     $politician_greeting->post()->to('politician-greeting#post');
+
+    # Politician::Answers.
+    my $politician_answers = $politician_result->route('/answers');
+    $politician_answers->get()->to('politician-answers#get');
+    $politician_answers->post()->to('politician-answers#post');
+
+    #"/api/politician/$politician_id/answers",
 }
 
 1;

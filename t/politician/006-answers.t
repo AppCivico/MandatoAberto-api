@@ -1,4 +1,5 @@
-use common::sense;
+use strict;
+use warnings;
 use FindBin qw($Bin);
 use lib "$Bin/../lib";
 
@@ -68,10 +69,11 @@ db_transaction {
         is $schema->resultset('Answer')->search( { 'me.politician_id' => $politician_id } )->count, '1', '1 answer created';
 
         $t->get_ok("/api/politician/$politician_id/answers")
-        ->json_is('answers/0/id',          $answer_id,         'answer id')
-        ->json_is('answers/0/content',     $answer_content,    'answer content')
-        ->json_is('answers/0/dialog_id',   $dialog_id,         'answer dialog_id')
-        ->json_is('answers/0/question_id', $first_question_id, 'answer first_question_id');
+        ->status_is(200)
+        ->json_is('/answers/0/id',          $answer_id,         'answer id')
+        ->json_is('/answers/0/content',     $answer_content,    'answer content')
+        ->json_is('/answers/0/dialog_id',   $dialog_id,         'answer dialog_id')
+        ->json_is('/answers/0/question_id', $first_question_id, 'answer first_question_id');
 
         $t->post_ok(
             "/api/politician/$politician_id/answers",
