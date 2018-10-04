@@ -62,7 +62,8 @@ sub register {
 
     # Politician::DirectMessage
     my $direct_message = $politician_result->route('/direct-message');
-    $direct_message->post->to('politician-direct_message#post');
+	$direct_message->post->to('politician-direct_message#post');
+	$direct_message->get->to('politician-direct_message#get');
 
 
     # Chatbot
