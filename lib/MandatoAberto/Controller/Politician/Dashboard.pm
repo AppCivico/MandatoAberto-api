@@ -1,11 +1,8 @@
-package MandatoAberto::Controller::API::Politician::Dashboard;
-use strict;
-use warnings;
-use utf8;
+package MandatoAberto::Controller::Politician::Dashboard;
+use Mojo::Base 'MandatoAberto::Controller';
 
-use Furl;
-use Mojo::JSON qw(encode_json decode_json);
 use DateTime;
+use Mojo::JSON qw(encode_json decode_json);
 
 sub get {
     my $c = shift;
@@ -63,10 +60,10 @@ sub get {
     my $polls        = $politician->polls;
     my $poll_results = $recipients->get_recipients_poll_results;
 
-    my $issue_response_view = $c->model('DB::ViewAvgIssueResponseTime')->search( undef, { bind => [ $politician->user_id ] } )->next;
+    my $issue_response_view = $c->schema->resultset('ViewAvgIssueResponseTime')->search( undef, { bind => [ $politician->user_id ] } )->next;
 
     # Condição para puxar dados dos últimos 7 dias
-    my $last_week_issue_response_view = $c->model('DB::ViewAvgIssueResponseTimeLastWeek')->search( undef, { bind => [ $politician->user_id ] } )->next;
+    my $last_week_issue_response_view = $c->schema->resultset('ViewAvgIssueResponseTimeLastWeek')->search( undef, { bind => [ $politician->user_id ] } )->next;
     my $last_week_cond = { created_at => { '>=' => \"NOW() - interval '7 days'" } };
 
     my $last_week_issues     = $issues->search( $last_week_cond );
@@ -157,8 +154,9 @@ sub get {
 
         }
     );
-
 }
+
+1;
 
 __END__
 

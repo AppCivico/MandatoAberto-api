@@ -142,7 +142,7 @@ db_transaction {
 
         $t->get_ok("/api/politician/$politician_id/dashboard")
         ->status_is(200)
-        ->json_is('/recipients'->{count}, 2, 'two citizens')
+        ->json_is('/recipients/count',    2, 'two citizens')
         ->json_is('/has_greeting',        0, 'politician does not have greeting')
         ->json_is('/has_contacts',        0, 'politician does not have contacts')
         ->json_is('/has_dialogs',         0, 'politician does not have dialogs')
