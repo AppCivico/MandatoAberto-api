@@ -7,17 +7,10 @@ use Scalar::Util qw(looks_like_number);
 BEGIN { extends "CatalystX::Eta::Controller::REST" }
 
 with "CatalystX::Eta::Controller::AutoBase";
-with "CatalystX::Eta::Controller::AutoResultGET";
 
 __PACKAGE__->config(
     # AutoBase.
     result => "DB::Poll",
-
-    # AutoListGET
-    list_key => "poll",
-    build_row  => sub {
-        return { $_[0]->get_columns() };
-    }
 );
 
 sub root : Chained('/api/politician/object') : PathPart('') : CaptureArgs(0) {
