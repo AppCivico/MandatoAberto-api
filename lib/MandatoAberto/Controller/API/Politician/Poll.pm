@@ -152,7 +152,30 @@ sub list_POST {
 
 sub result : Chained('object') : PathPart('') : Args(0) : ActionClass('REST') { }
 
-sub result_GET { }
+sub result_GET {
+    my ($self, $c) = @_;
+
+    return $self->status_ok(
+        $c,
+        entity => {
+			id        => $c->stash->{collection}->id,
+			name      => $c->stash->{collection}->name,
+			status_id => $c->stash->{collection}->status_id,
+
+			questions => [
+				map {
+					my $pq = $_;
+					+{
+						id      => $pq->get_column('id'),
+						content => $pq->get_column('content'),
+					  }
+
+				} $c->stash->{collection}->poll_questions->all()
+			]
+
+        }
+    );
+}
 
 sub propagate_list : Chained('base') : PathPart('propagate') : Args(0) : ActionClass('REST') { }
 
