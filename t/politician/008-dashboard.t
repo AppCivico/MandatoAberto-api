@@ -1,42 +1,42 @@
-use common::sense;
+use strict;
+use warnings;
 use FindBin qw($Bin);
 use lib "$Bin/../lib";
 
-use MandatoAberto::Test::Further;
+use MandatoAberto::Test;
 
-my $schema = MandatoAberto->model("DB");
+my $t = test_instance;
+my $schema = $t->app->schema;
 
 db_transaction {
-    my $security_token = $ENV{CHATBOT_SECURITY_TOKEN};
+    my $security_token = env('CHATBOT_SECURITY_TOKEN');
 
     api_auth_as user_id => 1;
 
-    create_dialog;
-    my $dialog_id = stash "dialog.id";
+    my $dialog = create_dialog;
+    my $dialog_id = $dialog->{id};
 
-    rest_post "/api/admin/dialog/$dialog_id/question",
-        name                => "Creating question",
-        stash               => "q1",
-        automatic_load_item => 0,
-        [
+    $t->post_ok(
+        "/api/admin/dialog/$dialog_id/question",
+        form => {
             name          => 'foobar',
             content       => "Foobar",
             citizen_input => fake_words(1)->()
-        ]
-    ;
-    my $question_id = stash "q1.id";
+        },
+    )
+    ->status_is(201);
 
-    create_politician(
+    ok my $question_id = $t->tx->res->json->{id};
+
+    my $politician = create_politician(
         fb_page_id           => fake_words(1)->(),
         fb_page_access_token => fake_words(1)->()
     );
-    my $politician_id = stash "politician.id";
+    ok my $politician_id = $politician->{id};
 
-    rest_post "/api/chatbot/recipient",
-        name                => "Create recipient",
-        automatic_load_item => 0,
-        stash               => 'r1',
-        [
+    $t->post_ok(
+        "/api/chatbot/recipient",
+        form => {
             name           => fake_name()->(),
             fb_id          => "foobar",
             origin_dialog  => fake_words(1)->(),
@@ -45,17 +45,18 @@ db_transaction {
             email          => fake_email()->(),
             politician_id  => $politician_id,
             security_token => $security_token
-        ]
-    ;
+        }
+    )
+    ->status_is(201);
+
+    ok my $recipient_id = $t->tx->res->json->{id};
 
     # Criando uma issue
-    my $recipient = $schema->resultset("Recipient")->find(stash "r1.id");
+    ok my $recipient = $schema->resultset("Recipient")->find($recipient_id);
 
-    rest_post "/api/chatbot/issue",
-        name                => 'creating issue',
-        automatic_load_item => 0,
-        stash               => 'i1',
-        [
+    $t->post_ok(
+        "/api/chatbot/issue",
+        form => {
             politician_id  => $politician_id,
             fb_id          => 'foobar',
             message        => fake_words(1)->(),
@@ -86,242 +87,191 @@ db_transaction {
                     sessionId => '1938538852857638'
                 }
             )
-        ]
-    ;
-    my $issue_id = stash 'i1.id';
-
-    api_auth_as user_id => 1;
-
-    rest_get "/api/politician/$politician_id/dashboard",
-        name    => "get dashboard as admin",
-        is_fail => 1,
-        code    => 403,
-    ;
-
-    api_auth_as user_id => $politician_id;
-
-    rest_post "/api/register/poll",
-        name                => "Sucessful poll creation",
-        automatic_load_item => 0,
-        stash               => "p1",
-        [
-            name                       => 'foobar',
-            status_id                  => 1,
-            'questions[0]'             => 'Você está bem?',
-            'questions[0][options][0]' => 'Sim',
-            'questions[0][options][1]' => 'Não',
-            'questions[1]'             => 'foobar?',
-            'questions[1][options][0]' => 'foo',
-            'questions[1][options][1]' => 'bar',
-            'questions[1][options][2]' => 'não',
-        ]
-    ;
-    my $poll_id = stash "p1.id";
-
-    # rest_get "/api/politician/$politician_id/dashboard",
-    #     name    => "invalid data range",
-    #     is_fail => 1,
-    #     code    => 400,
-    #     [ range => 5 ]
-    # ;
-
-    # rest_get "/api/politician/$politician_id/dashboard",
-    #     name    => "invalid data range",
-    #     is_fail => 1,
-    #     code    => 400,
-    #     [ range => 'foobar' ]
-    # ;
-
-    # rest_get "/api/politician/$politician_id/dashboard",
-    #     name    => "valid data range",
-    #     [ range => 16 ]
-    # ;
-
-    rest_get "/api/politician/$politician_id/dashboard",
-        name  => "politician dashboard",
-        list  => 1,
-        stash => "get_politician_dashboard"
-    ;
-
-    stash_test "get_politician_dashboard" => sub {
-        my $res = shift;
-
-        is ($res->{recipients}->{count}, 1, 'one citizen');
-    };
-
-    rest_post "/api/chatbot/recipient",
-        name                => "Create recipient",
-        automatic_load_item => 0,
-        [
-            name           => fake_name()->(),
-            fb_id          => "FOOBAR",
-            origin_dialog  => fake_words(1)->(),
-            gender         => fake_pick( qw/M F/ )->(),
-            cellphone      => fake_digits("+551198#######")->(),
-            email          => fake_email()->(),
-            politician_id  => $politician_id,
-            security_token => $security_token
-        ]
-    ;
-
-    rest_reload_list "get_politician_dashboard";
-
-    stash_test "get_politician_dashboard.list" => sub {
-        my $res = shift;
-
-        is ($res->{recipients}->{count}, 2, 'two citizens');
-        is ($res->{has_greeting}, 0, 'politician does not have greeting');
-        is ($res->{has_contacts}, 0, 'politician does not have contacts');
-        is ($res->{has_dialogs}, 0, 'politician does not have dialogs');
-        is ($res->{has_active_poll}, 1, 'politician has active poll');
-        is ($res->{has_facebook_auth}, 1, 'politician does have facebook auth');
-    };
-
-    rest_put "/api/poll/$poll_id",
-        name => 'Deactivating poll',
-        [ status_id => 3 ]
-    ;
-
-    rest_reload_list "get_politician_dashboard";
-
-    stash_test "get_politician_dashboard.list" => sub {
-        my $res = shift;
-
-        is ($res->{recipients}->{count}, 2, 'two citizens');
-        is ($res->{has_greeting}, 0, 'politician does not have greeting');
-        is ($res->{has_contacts}, 0, 'politician does not have contacts');
-        is ($res->{has_dialogs}, 0, 'politician does not have dialogs');
-        is ($res->{has_active_poll}, 0, 'politician does not have active poll');
-        is ($res->{ever_had_poll}, 1, 'politician has at least one poll');
-        is ($res->{has_facebook_auth}, 1, 'politician does  have facebook auth');
-    };
-
-    rest_post "/api/politician/$politician_id/greeting",
-        name                => 'politician greeting',
-        automatic_load_item => 1,
-        code                => 200,
-        [
-            on_facebook => 'Olá, sou assistente digital do(a) ${user.office.name} ${user.name} Seja bem-vindo a nossa Rede! Queremos um Brasil melhor e precisamos de sua ajuda.',
-            on_website  => 'Olá, sou assistente digital do(a) ${user.office.name} ${user.name} Seja bem-vindo a nossa Rede! Queremos um Brasil melhor e precisamos de sua ajuda.'
-        ]
-    ;
-
-    rest_reload_list "get_politician_dashboard";
-
-    stash_test "get_politician_dashboard.list" => sub {
-        my $res = shift;
-
-        is ($res->{recipients}->{count}, 2, 'two citizens');
-        is ($res->{has_greeting}, 1, 'politician has greeting');
-        is ($res->{has_contacts}, 0, 'politician does not have contacts');
-        is ($res->{has_dialogs}, 0, 'politician does not have dialogs');
-        is ($res->{has_facebook_auth}, 1, 'politician does have facebook auth');
-    };
-
-    rest_post "/api/politician/$politician_id/contact",
-        name                => "politician contact",
-        automatic_load_item => 0,
-        code                => 200,
-        [
-            twitter  => '@lucas_ansei',
-            facebook => 'https://facebook.com/lucasansei',
-            email    => 'foobar@email.com',
-
-        ]
-    ;
-
-    rest_reload_list "get_politician_dashboard";
-
-    stash_test "get_politician_dashboard.list" => sub {
-        my $res = shift;
-
-        is ($res->{recipients}->{count}, 2, 'two citizens');
-        is ($res->{has_greeting}, 1, 'politician has greeting');
-        is ($res->{has_contacts}, 1, 'politician has contacts');
-        is ($res->{has_dialogs}, 0, 'politician does not have dialogs');
-        is ($res->{has_facebook_auth}, 1, 'politician does have facebook auth');
-    };
-
-    rest_post "/api/politician/$politician_id/answers",
-        name  => "politician answer",
-        code  => 200,
-        [ "question[$question_id][answer]" => fake_words(1)->() ]
-    ;
-
-    rest_reload_list "get_politician_dashboard";
-
-    stash_test "get_politician_dashboard.list" => sub {
-        my $res = shift;
-
-        is ($res->{recipients}->{count}, 2, 'two citizens');
-        is ($res->{has_greeting}, 1, 'politician has greeting');
-        is ($res->{has_contacts}, 1, 'politician has contacts');
-        is ($res->{has_dialogs}, 1, 'politician has dialogs');
-        is ($res->{has_facebook_auth}, 1, 'politician does have facebook auth');
-    };
-
-    rest_reload_list "get_politician_dashboard";
-
-    stash_test "get_politician_dashboard.list" => sub {
-        my $res = shift;
-
-        is ($res->{recipients}->{count}, 2, 'two citizens');
-        is ($res->{has_greeting}, 1, 'politician has greeting');
-        is ($res->{has_contacts}, 1, 'politician has contacts');
-        is ($res->{has_dialogs}, 1, 'politician has dialogs');
-        is ($res->{has_facebook_auth}, 1, 'politician has facebook auth');
-        is ($res->{first_access}, 1, 'politician first access');
-    };
-
-    $schema->resultset("UserSession")->create({
-        user_id     => $politician_id,
-        api_key     => fake_digits("##########")->(),
-        created_at  => \'NOW()',
-        valid_until => \'NOW()',
-    });
-
-    # Criando grupo
-    $schema->resultset("Group")->create(
-        {
-            politician_id    => $politician_id,
-            name             => 'foobar',
-            filter           => '{}',
-            recipients_count => 1
         }
-    );
+    ;
+    ok my $issue_id = $t->tx->res->json->{id};
 
-    rest_reload_list "get_politician_dashboard";
+    subtest 'Politician | dashboard' => sub {
 
-    stash_test "get_politician_dashboard.list" => sub {
-        my $res = shift;
+        api_auth_as user_id => 1;
+        $t->get_ok("/api/politician/$politician_id/dashboard")
+        ->status_is(403);
 
-        is ($res->{recipients}->{count}, 2, 'two citizens');
-        is ($res->{has_greeting}, 1, 'politician has greeting');
-        is ($res->{has_contacts}, 1, 'politician has contacts');
-        is ($res->{has_dialogs}, 1, 'politician has dialogs');
-        is ($res->{has_facebook_auth}, 1, 'politician has facebook auth');
-        is ($res->{first_access}, 0, 'politician first access');
-        is ($res->{groups}->{count}, 1, 'group count');
-        is ($res->{issues}->{count_open}, 1, 'open issues count');
-        is ($res->{issues}->{count_open_last_24_hours}, 1, 'open issues count');
-    };
+        api_auth_as user_id => $politician_id;
 
-    my $issue = $schema->resultset('Issue')->find($issue_id);
-    $issue->update(
-        {
-            reply => 'foobar',
-            open  => 0,
-            updated_at => \"NOW() + interval '1 hour'"
-        }
-    );
+        $t->post_ok(
+            "/api/register/poll",
+            form => {
+                'name'                     => 'foobar',
+                'status_id'                => 1,
+                'questions[0]'             => 'Você está bem?',
+                'questions[0][options][0]' => 'Sim',
+                'questions[0][options][1]' => 'Não',
+                'questions[1]'             => 'foobar?',
+                'questions[1][options][0]' => 'foo',
+                'questions[1][options][1]' => 'bar',
+                'questions[1][options][2]' => 'não',
+            }
+        )
+        ->status_is(201);
 
-    rest_reload_list "get_politician_dashboard";
+        ok my $poll_id = $t->tx->res->json->{id};
 
-    stash_test "get_politician_dashboard.list" => sub {
-        my $res = shift;
+        $t->get_ok("/api/politician/$politician_id/dashboard")
+        ->status_is(200)
+        ->json_is('/recipients/count', 1, 'recipients_count=1');
 
-        is ( $res->{issues}->{avg_response_time}, '60', '60 minutes avg response time' );
-    };
+        $t->post_ok(
+            "/api/chatbot/recipient",
+            form => {
+                name           => fake_name()->(),
+                fb_id          => "FOOBAR",
+                origin_dialog  => fake_words(1)->(),
+                gender         => fake_pick( qw/M F/ )->(),
+                cellphone      => fake_digits("+551198#######")->(),
+                email          => fake_email()->(),
+                politician_id  => $politician_id,
+                security_token => $security_token
+            }
+        )
+        ->status_is(201);
+
+        $t->get_ok("/api/politician/$politician_id/dashboard")
+        ->status_is(200)
+        ->json_is('/recipients'->{count}, 2, 'two citizens')
+        ->json_is('/has_greeting',        0, 'politician does not have greeting')
+        ->json_is('/has_contacts',        0, 'politician does not have contacts')
+        ->json_is('/has_dialogs',         0, 'politician does not have dialogs')
+        ->json_is('/has_active_poll',     1, 'politician has active poll')
+        ->json_is('/has_facebook_auth',   1, 'politician does have facebook auth');
+
+        $t->put_ok(
+            "/api/poll/$poll_id",
+            form => { status_id => 3 }
+        )
+        ->status_is(202);
+
+        $t->get_ok("/api/politician/$politician_id/dashboard")
+        ->status_is(200)
+        ->json_is('/recipients/count', 2, 'two citizens')
+        ->json_is('/has_greeting', 0, 'politician does not have greeting')
+        ->json_is('/has_contacts', 0, 'politician does not have contacts')
+        ->json_is('/has_dialogs', 0, 'politician does not have dialogs')
+        ->json_is('/has_active_poll', 0, 'politician does not have active poll')
+        ->json_is('/ever_had_poll', 1, 'politician has at least one poll')
+        ->json_is('/has_facebook_auth', 1, 'politician does  have facebook auth');
+
+        $t->post_ok(
+            "/api/politician/$politician_id/greeting",
+            form => {
+                on_facebook => 'Olá, sou assistente digital do(a) ${user.office.name} ${user.name} Seja bem-vindo a nossa Rede! Queremos um Brasil melhor e precisamos de sua ajuda.',
+                on_website  => 'Olá, sou assistente digital do(a) ${user.office.name} ${user.name} Seja bem-vindo a nossa Rede! Queremos um Brasil melhor e precisamos de sua ajuda.'
+            }
+        )
+        ->status_is(201);
+
+        $t->get_ok("/api/politician/$politician_id/dashboard")
+        ->status_is(200)
+        ->json_is('/recipients/count', 2, 'two citizens')
+        ->json_is('/has_greeting', 1, 'politician has greeting')
+        ->json_is('/has_contacts', 0, 'politician does not have contacts')
+        ->json_is('/has_dialogs', 0, 'politician does not have dialogs')
+        ->json_is('/has_facebook_auth', 1, 'politician does have facebook auth');
+
+        $t->post_ok(
+            "/api/politician/$politician_id/contact",
+            form => {
+                twitter  => '@lucas_ansei',
+                facebook => 'https://facebook.com/lucasansei',
+                email    => 'foobar@email.com',
+            }
+        )
+        ->status_is(200);
+
+        $t->get_ok("/api/politician/$politician_id/dashboard")
+        ->status_is(200)
+        ->json_is('/recipients/count', 2, 'two citizens')
+        ->json_is('/has_greeting', 1, 'politician has greeting')
+        ->json_is('/has_contacts', 1, 'politician has contacts')
+        ->json_is('/has_dialogs', 0, 'politician does not have dialogs')
+        ->json_is('/has_facebook_auth', 1, 'politician does have facebook auth');
+
+        $t->post_ok(
+            "/api/politician/$politician_id/answers",
+            form => { "question[$question_id][answer]" => fake_words(1)->() }
+        )
+        ->status_is(200);
+
+        $t->get_ok("/api/politician/$politician_id/dashboard")
+        ->status_is(200)
+        ->json_is('/recipients/count', 2, 'two citizens')
+        ->json_is('/has_greeting', 1, 'politician has greeting')
+        ->json_is('/has_contacts', 1, 'politician has contacts')
+        ->json_is('/has_dialogs',  1, 'politician has dialogs')
+        ->json_is('/has_facebook_auth', 1, 'politician does have facebook auth');
+
+        rest_reload_list "get_politician_dashboard";
+
+        stash_test "get_politician_dashboard.list" => sub {
+            my $res = shift;
+
+            is ($res->{recipients}->{count}, 2, 'two citizens');
+            is ($res->{has_greeting}, 1, 'politician has greeting');
+            is ($res->{has_contacts}, 1, 'politician has contacts');
+            is ($res->{has_dialogs}, 1, 'politician has dialogs');
+            is ($res->{has_facebook_auth}, 1, 'politician has facebook auth');
+            is ($res->{first_access}, 1, 'politician first access');
+        };
+
+        $schema->resultset("UserSession")->create({
+            user_id     => $politician_id,
+            api_key     => fake_digits("##########")->(),
+            created_at  => \'NOW()',
+            valid_until => \'NOW()',
+        });
+
+        # Criando grupo
+        $schema->resultset("Group")->create(
+            {
+                politician_id    => $politician_id,
+                name             => 'foobar',
+                filter           => '{}',
+                recipients_count => 1
+            }
+        );
+
+        rest_reload_list "get_politician_dashboard";
+
+        stash_test "get_politician_dashboard.list" => sub {
+            my $res = shift;
+
+            is ($res->{recipients}->{count}, 2, 'two citizens');
+            is ($res->{has_greeting}, 1, 'politician has greeting');
+            is ($res->{has_contacts}, 1, 'politician has contacts');
+            is ($res->{has_dialogs}, 1, 'politician has dialogs');
+            is ($res->{has_facebook_auth}, 1, 'politician has facebook auth');
+            is ($res->{first_access}, 0, 'politician first access');
+            is ($res->{groups}->{count}, 1, 'group count');
+            is ($res->{issues}->{count_open}, 1, 'open issues count');
+            is ($res->{issues}->{count_open_last_24_hours}, 1, 'open issues count');
+        };
+
+        my $issue = $schema->resultset('Issue')->find($issue_id);
+        $issue->update(
+            {
+                reply => 'foobar',
+                open  => 0,
+                updated_at => \"NOW() + interval '1 hour'"
+            }
+        );
+
+        rest_reload_list "get_politician_dashboard";
+
+        stash_test "get_politician_dashboard.list" => sub {
+            my $res = shift;
+
+            is ( $res->{issues}->{avg_response_time}, '60', '60 minutes avg response time' );
+        };
 };
 
 done_testing();
