@@ -1,9 +1,11 @@
 use strict;
 use warnings;
+use utf8;
 use FindBin qw($Bin);
 use lib "$Bin/../lib";
 
 use MandatoAberto::Test;
+use Mojo::JSON qw(encode_json);
 
 my $t = test_instance;
 my $schema = $t->app->schema;
@@ -51,7 +53,7 @@ db_transaction {
 
     ok my $recipient_id = $t->tx->res->json->{id};
 
-    # Criando uma issue
+    # Criando uma issue.
     ok my $recipient = $schema->resultset("Recipient")->find($recipient_id);
 
     $t->post_ok(

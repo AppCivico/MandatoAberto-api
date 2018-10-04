@@ -65,10 +65,14 @@ sub register {
 	$direct_message->post->to('politician-direct_message#post');
 	$direct_message->get->to('politician-direct_message#get');
 
-
     # Chatbot
     my $chatbot = $api->route('/chatbot')->under->to('chatbot#validade_security_token');
+
+    # Chatbot::Recipient.
     $chatbot->post('/recipient')->to('chatbot-recipient#post');
+
+    # Chatbot::Issue.
+    $chatbot->post('/issue')->to('chatbot-issue#post');
 
     #"/api/politician/$politician_id/answers",
 }
