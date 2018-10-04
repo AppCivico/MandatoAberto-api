@@ -11,6 +11,9 @@ sub register {
     my $register = $api->route('/register');
     $register->post('/politician')->to('register-politician#post');
 
+    # Register::Poll.
+    $register->post('/poll')->to('register-poll#post');
+
     # Login.
     my $login = $api->route('/login');
     $login->post('/')->to('login#post');
