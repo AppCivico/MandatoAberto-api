@@ -1,5 +1,6 @@
 package MandatoAberto::Utils;
-use common::sense;
+use strict;
+use warnings;
 
 use Crypt::PRNG qw(random_string);
 use Data::Section::Simple qw(get_data_section);
@@ -36,6 +37,6 @@ sub get_mandatoaberto_httpcb_url_for {
     return ( ( is_test() ? "http://localhost" : $mandatoaberto_httpcb_url ) . $args );
 }
 
-sub env { $ENV{shift} }
+sub env { return $ENV{${\shift}} }
 
 1;
