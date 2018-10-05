@@ -138,8 +138,15 @@ sub action_specs {
                     die \['intentName', 'missing'] unless $intent;
 
                     $intent = lc $intent;
+                    my $human_name = $politician->politician_entities->find_human_name($intent);
+                    die \['entities', "could not find human_name for $intent"] unless $human_name;
 
-                    my $upsert_entity = $politician->politician_entities->find_or_create( { name => $intent } );
+                    my $upsert_entity = $politician->politician_entities->find_or_create(
+                        {
+                            name       => $intent,
+                            human_name => $human_name
+                        }
+                    );
 
                     $recipient->add_to_politician_entity( $upsert_entity->id );
                     push @entities_id, $upsert_entity->id;
