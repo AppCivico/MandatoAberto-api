@@ -42,6 +42,11 @@ sub register {
     my $admin_dialog_item_question = $admin_dialog_item->route('/question');
     $admin_dialog_item_question->post()->to('admin-dialog-question#post');
 
+    # Poll.
+    my $poll      = $api->route('/poll');
+    my $poll_item = $poll->route('/:poll_id')->under->to('poll#item_stasher');
+    $poll_item->put()->to('poll#item_put');
+
     # Politician.
     my $politician_list = $api->route('/politician')->over(has_priv => 'politician');
     my $politician_result = $politician_list->route('/:politician_id')->under->to('politician#stasher');

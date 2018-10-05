@@ -172,7 +172,7 @@ db_transaction {
                 on_website  => 'Olá, sou assistente digital do(a) ${user.office.name} ${user.name} Seja bem-vindo a nossa Rede! Queremos um Brasil melhor e precisamos de sua ajuda.'
             }
         )
-        ->status_is(201);
+        ->status_is(200);
 
         $t->get_ok("/api/politician/$politician_id/dashboard")
         ->status_is(200)
