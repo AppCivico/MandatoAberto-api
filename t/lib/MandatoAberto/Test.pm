@@ -122,5 +122,26 @@ sub create_dialog {
     return $t->tx->res->json;
 }
 
+sub create_recipient {
+    my (%opts) = @_;
+
+    my $security_token = env('CHATBOT_SECURITY_TOKEN');
+
+    $t->post_ok(
+        '/api/chatbot/recipient',
+        form => {
+            name           => fake_name()->(),
+            fb_id          => fake_words(3)->(),
+            origin_dialog  => fake_words(1)->(),
+            gender         => fake_pick( qw/ M F/ )->(),
+            cellphone      => fake_digits("+551198#######")->(),
+            email          => fake_email()->(),
+            security_token => $security_token,
+            %opts,
+        }
+    );
+    return $t->tx->res->json->{id};
+}
+
 1;
 

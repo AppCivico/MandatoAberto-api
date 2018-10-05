@@ -2,32 +2,33 @@ use common::sense;
 use FindBin qw($Bin);
 use lib "$Bin/../lib";
 
-use MandatoAberto::Test::Further;
+use MandatoAberto::Test;
+use Mojo::JSON qw(encode_json decode_json);
 
-my $schema = MandatoAberto->model("DB");
+my $t = test_instance;
+my $schema = $t->app->schema;
 
 use_ok 'MandatoAberto::Worker::Segmenter';
+
 my $worker = new_ok('MandatoAberto::Worker::Segmenter', [ schema => $schema ]);
 
 db_transaction {
-    my $security_token = $ENV{CHATBOT_SECURITY_TOKEN};
+    my $security_token = env('CHATBOT_SECURITY_TOKEN');
 
-    create_politician(
+    my $politician = create_politician(
         fb_page_id => fake_words(1)->()
     );
-    my $politician_id = stash "politician.id";
+    my $politician_id = $politician->{id};
 
     my @recipient_ids = ();
     subtest 'mocking recipients' => sub {
 
         # Criando três recipients.
         for (my $i = 0; $i <= 3; $i++) {
-            create_recipient(
+            my $recipient_id = create_recipient(
                 politician_id  => $politician_id,
                 security_token => $security_token
             );
-
-            my $recipient_id = stash 'recipient.id';
             push @recipient_ids, $recipient_id;
         }
     };
@@ -177,12 +178,10 @@ db_transaction {
     subtest "filter 'QUESTION_ANSWER_EQUALS" => sub {
 
         # Neste filtro eu quero pegar quem respondeu 'Sim' para frango com catupiry e 'Talvez' para portuguesa.
-        rest_post "/api/politician/$politician_id/group",
-            name    => 'add group',
-            stash   => 'group',
-            automatic_load_item => 0,
-            headers => [ 'Content-Type' => 'application/json' ],
-            data    => encode_json({
+        #rest_post "/api/politician/$politician_id/group",
+        $t->post_ok(
+            "/api/politician/$politician_id/group",
+            json => {
                 name     => 'AppCivico',
                 filter   => {
                     operator => 'OR',
@@ -203,12 +202,13 @@ db_transaction {
                         },
                     ],
                 },
-            }),
-        ;
+            },
+        )
+        ->status_is(201);
+
+        my $group_id = $t->tx->res->json->{id};
 
         ok( $worker->run_once(), 'run once' );
-
-        my $group_id = stash 'group.id';
 
         is_deeply(
             [ sort $recipient_ids[0], $recipient_ids[1] ],
@@ -219,12 +219,9 @@ db_transaction {
     subtest "filter 'QUESTION_ANSWER_NOT_EQUALS" => sub {
 
         # Neste filtro eu quero pegar quem respondeu algo diferente de 'Talvez' e diferente de 'Sim' para 4 quejos.
-        rest_post "/api/politician/$politician_id/group",
-            name    => 'add group',
-            stash   => 'group',
-            automatic_load_item => 0,
-            headers => [ 'Content-Type' => 'application/json' ],
-            data    => encode_json({
+        $t->post_ok(
+            "/api/politician/$politician_id/group",
+            json => {
                 name     => 'AppCivico',
                 filter   => {
                     operator => 'OR',
@@ -245,12 +242,13 @@ db_transaction {
                         },
                     ],
                 },
-            }),
-        ;
+            },
+        )
+        ->status_is(201);
 
         ok( $worker->run_once(), 'run once' );
 
-        my $group_id = stash 'group.id';
+        ok my $group_id = $t->tx->res->json->{id};
 
         is_deeply(
             [ sort $recipient_ids[0], $recipient_ids[1] ],
@@ -261,14 +259,11 @@ db_transaction {
     subtest "filter 'QUESTION_IS_NOT_ANSWERED" => sub {
 
         # Neste filtro eu quero pegar quem respondeu algo diferente de 'Talvez' e diferente de 'Sim' para 4 quejos.
-        rest_post "/api/politician/$politician_id/group",
-            name    => 'add group',
-            stash   => 'group',
-            automatic_load_item => 0,
-            headers => [ 'Content-Type' => 'application/json' ],
-            data    => encode_json({
-                name     => 'AppCivico',
-                filter   => {
+        $t->post_ok(
+            "/api/politician/$politician_id/group",
+            json => {
+                name   => 'AppCivico',
+                filter => {
                     operator => 'AND',
                     rules => [
                         {
@@ -277,12 +272,13 @@ db_transaction {
                         },
                     ],
                 },
-            }),
-        ;
+            },
+        )
+        ->status_is(201);
 
         ok( $worker->run_once(), 'run once' );
 
-        my $group_id = stash 'group.id';
+        ok my $group_id = $t->tx->res->json->{id};
 
         is_deeply(
             [ sort $recipient_ids[2], $recipient_ids[3] ],
@@ -293,12 +289,9 @@ db_transaction {
     subtest "filter 'QUESTION_IS_ANSWERED" => sub {
 
         # Neste filtro eu quero pegar quem respondeu algo diferente de 'Talvez' e diferente de 'Sim' para 4 quejos.
-        rest_post "/api/politician/$politician_id/group",
-            name    => 'add group',
-            stash   => 'group',
-            automatic_load_item => 0,
-            headers => [ 'Content-Type' => 'application/json' ],
-            data    => encode_json({
+        $t->post_ok(
+            "/api/politician/$politician_id/group",
+            json => {
                 name     => 'Question Is Answered',
                 filter   => {
                     operator => 'AND',
@@ -309,12 +302,13 @@ db_transaction {
                         },
                     ],
                 },
-            }),
-        ;
+            },
+        )
+        ->status_is(201);
 
         ok( $worker->run_once(), 'run once' );
 
-        my $group_id = stash 'group.id';
+        ok my $group_id = $t->tx->res->json->{id};
 
         is_deeply(
             [ sort $recipient_ids[0], $recipient_ids[1] ],
@@ -324,12 +318,10 @@ db_transaction {
 
     subtest 'count filter' => sub {
 
-        rest_post "/api/politician/$politician_id/group/count",
-            name    => 'count filter',
-            stash   => 'count_filter',
-            code    => 200,
+        $t->post_ok(
+            "/api/politician/$politician_id/group/count",
             headers => [ 'Content-Type' => 'application/json' ],
-            data    => encode_json({
+            json    => {
                 filter   => {
                     operator => 'AND',
                     rules => [
@@ -339,55 +331,45 @@ db_transaction {
                         },
                     ],
                 },
-            }),
-        ;
-
-        stash_test 'count_filter' => sub {
-            my $res = shift;
-
-            is( $res->{count}, '2', 'count=2' );
-        };
+            }
+        )
+        ->status_is(201)
+        ->json_is('/count', 2, 'count=2');
     };
 };
 
 db_transaction {
     api_auth_as user_id => 1;
 
-    my $security_token = $ENV{CHATBOT_SECURITY_TOKEN};
+    my $security_token = env('CHATBOT_SECURITY_TOKEN');
 
-    create_politician(
+    my $politician = create_politician(
         fb_page_id => fake_words(1)->()
     );
-    my $politician_id = stash "politician.id";
+    my $politician_id = $politician->{id};
 
     api_auth_as user_id => $politician_id;
 
-    create_recipient(
+    my $first_recipient_id = create_recipient(
         politician_id => $politician_id,
         gender        => 'F'
     );
-    my $first_recipient_id = stash "recipient.id";
 
-    create_recipient(
+    my $second_recipient_id = create_recipient(
         politician_id => $politician_id,
         gender        => 'M'
     );
-    my $second_recipient_id = stash "recipient.id";
 
-    create_recipient(
+    my $third_recipient_id = create_recipient(
         politician_id => $politician_id,
         gender        => 'F'
     );
-    my $third_recipient_id = stash "recipient.id";
 
     # Esses filtros selecionam os recipients por gênero
     db_transaction {
-        rest_post "/api/politician/$politician_id/group",
-            name                => 'add group (gender is)',
-            stash               => 'group',
-            automatic_load_item => 0,
-            headers             => [ 'Content-Type' => 'application/json' ],
-            data                => encode_json({
+        $t->post_ok(
+            "/api/politician/$politician_id/group",
+            json => {
                 name     => 'Gender',
                 filter   => {
                     operator => 'AND',
@@ -403,20 +385,15 @@ db_transaction {
 
         ok( $worker->run_once(), 'run once' );
 
-        my $group_id = stash 'group.id';
-
-        ok( my $group = $schema->resultset("Group")->find($group_id), 'get group' );
-
-        is ($group->discard_changes->recipients_count, 2, 'recipient count');
+        ok my $group_id = $t->tx->res->json->{id};
+        ok my $group = $schema->resultset("Group")->find($group_id), 'get group';
+        is $group->discard_changes->recipients_count, 2, 'recipient count';
     };
 
     db_transaction {
-        rest_post "/api/politician/$politician_id/group",
-            name                => 'add group (gender is not)',
-            stash               => 'group',
-            automatic_load_item => 0,
-            headers             => [ 'Content-Type' => 'application/json' ],
-            data                => encode_json({
+        $t->post_ok(
+            "/api/politician/$politician_id/group",
+            json => {
                 name     => 'Gender',
                 filter   => {
                     operator => 'AND',
@@ -432,11 +409,10 @@ db_transaction {
 
         ok( $worker->run_once(), 'run once' );
 
-        my $group_id = stash 'group.id';
+        ok my $group_id = $t->tx->res->json->{id};
+        ok my $group = $schema->resultset("Group")->find($group_id), 'get group';
 
-        ok( my $group = $schema->resultset("Group")->find($group_id), 'get group' );
-
-        is ($group->discard_changes->recipients_count, 1, 'recipient count');
+        is $group->discard_changes->recipients_count, 1, 'recipient count';
     };
 
 };
@@ -444,39 +420,34 @@ db_transaction {
 db_transaction {
     api_auth_as user_id => 1;
 
-    my $security_token = $ENV{CHATBOT_SECURITY_TOKEN};
+    my $security_token = env('CHATBOT_SECURITY_TOKEN');
 
     create_politician(
         fb_page_id => fake_words(1)->()
     );
-    my $politician_id = stash "politician.id";
+    my $politician_id = $t->tx->res->json->{id};
 
     api_auth_as user_id => $politician_id;
 
-    create_recipient(
+    my $first_recipient_id = create_recipient(
         politician_id => $politician_id,
         gender        => 'F'
     );
-    my $first_recipient_id = stash "recipient.id";
     my $first_recipient    = $schema->resultset('Recipient')->find($first_recipient_id);
 
-    create_recipient(
+    my $second_recipient_id = create_recipient(
         politician_id => $politician_id,
         gender        => 'M'
     );
-    my $second_recipient_id = stash "recipient.id";
 
-    create_recipient(
+    my $third_recipient_id = create_recipient(
         politician_id => $politician_id,
         gender        => 'F'
     );
-    my $third_recipient_id = stash "recipient.id";
 
-    rest_post "/api/chatbot/issue",
-        name                => "issue creation",
-        automatic_load_item => 0,
-        stash               => "i1",
-        [
+    $t->post_ok(
+        "/api/chatbot/issue",
+        form => {
             politician_id  => $politician_id,
             fb_id          => $first_recipient->fb_id,
             message        => fake_words(1)->(),
@@ -507,10 +478,11 @@ db_transaction {
                     sessionId => '1938538852857638'
                 }
             )
-        ],
-    ;
+        }
+    )
+    ->status_is(201);
 
-    my $entity = $schema->resultset('PoliticianEntity')->search(
+    ok my $entity = $schema->resultset('PoliticianEntity')->search(
         {
             politician_id => $politician_id,
             name          => 'direitos_animais'
@@ -519,12 +491,9 @@ db_transaction {
 
     # Esses filtros selecionam os recipients por gênero
     db_transaction {
-        rest_post "/api/politician/$politician_id/group",
-            name                => 'add group (intent is)',
-            stash               => 'group',
-            automatic_load_item => 0,
-            headers             => [ 'Content-Type' => 'application/json' ],
-            data                => encode_json({
+        $t->post_ok(
+            "/api/politician/$politician_id/group",
+            json => {
                 name     => 'Gender',
                 filter   => {
                     operator => 'AND',
@@ -535,12 +504,13 @@ db_transaction {
                         },
                     ],
                 },
-            }),
-        ;
+            }
+        )
+        ->status_is(201);
 
         ok( $worker->run_once(), 'run once' );
 
-        my $group_id = stash 'group.id';
+        ok my $group_id = $t->tx->res->json->{id};
 
         ok( my $group = $schema->resultset("Group")->find($group_id), 'get group' );
 
@@ -548,12 +518,9 @@ db_transaction {
     };
 
     db_transaction {
-        rest_post "/api/politician/$politician_id/group",
-            name                => 'add group (intent is not)',
-            stash               => 'group',
-            automatic_load_item => 0,
-            headers             => [ 'Content-Type' => 'application/json' ],
-            data                => encode_json({
+        $t->post_ok(
+            "/api/politician/$politician_id/group",
+            json => {
                 name     => 'Gender',
                 filter   => {
                     operator => 'AND',
@@ -569,7 +536,7 @@ db_transaction {
 
         ok( $worker->run_once(), 'run once' );
 
-        my $group_id = stash 'group.id';
+        ok my $group_id = $t->tx->res->json->{id};
 
         ok( my $group = $schema->resultset("Group")->find($group_id), 'get group' );
 

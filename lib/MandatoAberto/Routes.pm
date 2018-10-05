@@ -77,7 +77,11 @@ sub register {
     my $politician_dashboard = $politician_result->route('/dashboard');
     $politician_dashboard->get()->to('politician-dashboard#get');
 
-    # Chatbot
+    # Politician::Groups.
+    my $politician_groups = $politician_result->route('/group');
+    $politician_groups->post()->to('politician-groups#post');
+
+    # Chatbot.
     my $chatbot = $api->route('/chatbot')->under->to('chatbot#validade_security_token');
 
     # Chatbot::Recipient.
