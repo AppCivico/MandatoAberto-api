@@ -260,6 +260,21 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 logs
+
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::Log>
+
+=cut
+
+__PACKAGE__->has_many(
+  "logs",
+  "MandatoAberto::Schema::Result::Log",
+  { "foreign.recipient_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 politician
 
 Type: belongs_to
@@ -336,8 +351,8 @@ __PACKAGE__->might_have(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-09-24 17:51:23
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:5X6NJP/Ok/XG+dFeacvzCA
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-10-04 10:58:11
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:DvA5xAdl4e/STrYqKVD0Qg
 
 __PACKAGE__->load_components("InflateColumn::Serializer", "Core");
 __PACKAGE__->remove_column('groups');

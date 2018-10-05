@@ -300,6 +300,21 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 logs
+
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::Log>
+
+=cut
+
+__PACKAGE__->has_many(
+  "logs",
+  "MandatoAberto::Schema::Result::Log",
+  { "foreign.politician_id" => "self.user_id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 movement
 
 Type: belongs_to
@@ -546,8 +561,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-10-01 13:35:33
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:rjmKIkvxAhrmmnuaq2LtjQ
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-10-04 16:46:55
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:FFrCkMPFyOXv8QqRoZPgrg
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
