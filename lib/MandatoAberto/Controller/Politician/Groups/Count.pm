@@ -4,12 +4,7 @@ use Mojo::Base 'MandatoAberto::Controller';
 sub post {
     my $c = shift;
 
-    my $filter = $c->req->json;
-    use DDP; p [
-        ref $filter,
-        $filter,
-        $filter->{rules},
-    ];
+    my $filter = $c->req->json->{filter};
 
     return $c->render(
         status => 200,
