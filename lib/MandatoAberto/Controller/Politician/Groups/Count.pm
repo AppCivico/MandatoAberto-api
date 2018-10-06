@@ -5,6 +5,11 @@ sub post {
     my $c = shift;
 
     my $filter = $c->req->json;
+    use DDP; p [
+        ref $filter,
+        $filter,
+        $filter->{rules},
+    ];
 
     return $c->render(
         status => 200,

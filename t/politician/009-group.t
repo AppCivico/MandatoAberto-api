@@ -321,7 +321,7 @@ db_transaction {
         $t->post_ok(
             "/api/politician/$politician_id/group/count",
             json => {
-                filter   => {
+                filter => {
                     operator => 'AND',
                     rules => [
                         {
@@ -329,10 +329,10 @@ db_transaction {
                             data => { field => $poll_questions[2]->id },
                         },
                     ],
-                },
-            }
+                }
+            },
         )
-        ->status_is(201)
+        ->status_is(200)
         ->json_is('/count', 2, 'count=2');
     };
 };
