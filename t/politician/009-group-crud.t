@@ -1,30 +1,29 @@
-use common::sense;
+use strict;
+use warnings;
 use FindBin qw($Bin);
 use lib "$Bin/../lib";
 
-use MandatoAberto::Test::Further;
+use MandatoAberto::Test;
 
-my $schema = MandatoAberto->model("DB");
+my $t = test_instance;
+my $schema = $t->app->schema;
 
 db_transaction {
-    my $security_token = $ENV{CHATBOT_SECURITY_TOKEN};
+    my $security_token = env('CHATBOT_SECURITY_TOKEN');
 
-    create_politician(
-        fb_page_id => 'foo'
-    );
-    my $politician_id = stash "politician.id";
+    my $politician = create_politician(fb_page_id => 'foo');
+    my $politician_id = $politician->{id};
 
     my @recipient_ids = ();
     subtest 'mocking recipients' => sub {
 
         # Criando três recipients.
         for (my $i = 0; $i <= 3; $i++) {
-            create_recipient(
+           ok my $recipient_id = create_recipient(
                 politician_id  => $politician_id,
                 security_token => $security_token
             );
 
-            my $recipient_id = stash 'recipient.id';
             push @recipient_ids, $recipient_id;
         }
     };
