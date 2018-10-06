@@ -1,21 +1,16 @@
-package MandatoAberto::Controller::Politician::Groups;
+package MandatoAberto::Controller::Politician::Groups::Count;
 use Mojo::Base 'MandatoAberto::Controller';
 
 sub post {
     my $c = shift;
 
-    my $params = $c->req->json;
-    $params->{politician_id} = $c->current_user->id;
+    my $filter = $c->req->json;
 
-    my $group = $c->schema->resultset('Group')->execute(
-        $c,
-        for  => 'create',
-        with => $params,
-    );
-
-    $c->render(
-        status => 201,
-        json   => { id => $group->id }
+    return $c->render(
+        status => 200,
+        json   => {
+            count => $c->stash('politician')->recipients->search_by_filter($filter)->count,
+        },
     );
 }
 

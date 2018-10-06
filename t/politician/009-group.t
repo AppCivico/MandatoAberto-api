@@ -320,8 +320,7 @@ db_transaction {
 
         $t->post_ok(
             "/api/politician/$politician_id/group/count",
-            headers => [ 'Content-Type' => 'application/json' ],
-            json    => {
+            json => {
                 filter   => {
                     operator => 'AND',
                     rules => [

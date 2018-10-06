@@ -81,6 +81,9 @@ sub register {
     my $politician_groups = $politician_result->route('/group');
     $politician_groups->post()->to('politician-groups#post');
 
+    # Politician::Groups::Count.
+    $politician_groups->post('/count')->to('politician-groups-count#post');
+
     # Chatbot.
     my $chatbot = $api->route('/chatbot')->under->to('chatbot#validade_security_token');
 
