@@ -92,6 +92,8 @@ sub action_specs {
 
             my $log;
             $self->result_source->schema->txn_do(sub {
+                my $politician_id = $values{politician_id};
+
                 # Tratando timestamp
                 my $ts = DateTime::Format::DateParse->parse_datetime($values{timestamp});
 
@@ -134,7 +136,7 @@ sub action_specs {
                         die \['field_id', 'invalid'] unless $field;
                     }
 					elsif ( $action->name eq 'ASKED_ABOUT_ENTITY' ) {
-						$rs = $self->resultset('PoliticianEntity');
+						$rs = $self->resultset('PoliticianEntity')->search( { politician_id => $politician_id } );
 
 						my @required = qw( field_id );
 						defined $values{$_} or die \["$_", 'missing'] for @required;
