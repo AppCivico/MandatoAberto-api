@@ -73,12 +73,6 @@ db_transaction {
 
 			ok( defined $res->{logs}->[0]->{created_at},  'created_at is defined' );
 			ok( defined $res->{logs}->[0]->{description}, 'description is defined' );
-
-			my $first_log  = $res->{logs}->[0];
-			my $second_log = $res->{logs}->[1];
-
-			is( $first_log->{description},  "foo acessou o fluxo 'Voltar ao início'.", 'expected description' );
-			is( $second_log->{description}, "foo acessou o fluxo 'Saiba mais'.",       'expected description' );
         };
 
         my $second_recipient;
