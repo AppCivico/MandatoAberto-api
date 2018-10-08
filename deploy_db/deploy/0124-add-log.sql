@@ -3,7 +3,7 @@
 
 BEGIN;
 
-CREATE EXTENSION IF NOT EXISTS timescaledb CASCADE;
+CREATE EXTENSION IF NOT EXISTS timescaledb;
 CREATE TABLE log_action (
     id        INTEGER PRIMARY KEY,
     name      TEXT    NOT NULL,
