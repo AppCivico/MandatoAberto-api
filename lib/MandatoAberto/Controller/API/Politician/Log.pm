@@ -4,6 +4,8 @@ use namespace::autoclean;
 
 BEGIN { extends "CatalystX::Eta::Controller::REST" }
 
+with "CatalystX::Eta::Controller::TypesValidation";
+
 sub root : Chained('/api/politician/object') : PathPart('') : CaptureArgs(0) {
 	my ($self, $c) = @_;
 
@@ -22,16 +24,44 @@ sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }
 sub list_GET {
 	my ($self, $c) = @_;
 
+	$self->validate_request_params(
+		$c,
+		recipient_id => {
+			required   => 0,
+			type       => 'Int'
+		},
+		date_range => {
+			required => 0,
+			type     => 'Int',
+		},
+        action_id => {
+            required => 0,
+            type     => 'Int'
+        }
+	);
+
 	my $rs = $c->stash->{politician}->logs;
 
+    # Paginação
     my $page    = $c->req->params->{page}    || 1;
     my $results = $c->req->params->{results} || 20;
 
-    my $cond;
+    # Tratando filtros por recipient, data e ação
+    my %cond;
 
     my $recipient_id = $c->req->params->{recipient_id};
     if ( $recipient_id ) {
-        $cond = { 'me.recipient_id' => $recipient_id }
+        $cond{'me.recipient_id'} = $recipient_id;
+    }
+
+	my $date_range = $c->req->params->{date_range};
+    if ( $date_range ) {
+        $cond{'me.timestamp'} = { '>=' => \"NOW() - interval '$date_range days'" };
+    }
+
+    my $action_id = $c->req->params->{action_id};
+    if ( $action_id ) {
+        $cond{'me.action_id'} = $action_id
     }
 
     return $self->status_ok(
@@ -51,7 +81,7 @@ sub list_GET {
                         }
                     }
                 } $rs->search(
-                    $cond,
+                    \%cond,
                     {
                         page     => $page,
                         rows     => $results,

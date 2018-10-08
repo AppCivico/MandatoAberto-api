@@ -81,12 +81,13 @@ db_transaction {
 			is( $second_log->{description}, "foo acessou o fluxo 'Saiba mais'.",       'expected description' );
         };
 
+        my $second_recipient;
         subtest 'list logs with recipient_id' => sub {
 			create_recipient(
 				name          => 'bar',
 				politician_id => $politician_id
 			);
-			my $second_recipient = $schema->resultset('Recipient')->find(stash 'recipient.id');
+			$second_recipient = $schema->resultset('Recipient')->find(stash 'recipient.id');
 
             rest_post '/api/chatbot/log',
                 name   => 'Create log (WENT_TO_FLOW)',
@@ -118,6 +119,55 @@ db_transaction {
 
                 is( $log->{description}, "bar acessou o fluxo 'Voltar ao início'.", 'expected description' );
             };
+        };
+
+        subtest 'list logs with action_id' => sub {
+            rest_get "/api/politician/$politician_id/logs",
+                name  => 'get logs',
+                stash => 'get_logs_filtered',
+                list  => 1,
+                [ action_id => 1 ]
+            ;
+
+			stash_test 'get_logs_filtered' => sub {
+				my $res = shift;
+
+				is( scalar @{ $res->{logs} }, 3, '3 log entries' );
+			};
+        };
+
+        subtest 'list logs with action_id and recipient_id' => sub {
+            rest_get "/api/politician/$politician_id/logs",
+                name  => 'get logs',
+                stash => 'get_logs_filtered',
+                list  => 1,
+                [
+                    action_id    => 1,
+                    recipient_id => $second_recipient->id
+                ]
+            ;
+
+			stash_test 'get_logs_filtered' => sub {
+				my $res = shift;
+
+				is( scalar @{ $res->{logs} }, 1, '1 log entry' );
+			};
+
+            rest_get "/api/politician/$politician_id/logs",
+                name  => 'get logs',
+                stash => 'get_logs_filtered',
+                list  => 1,
+                [
+                    action_id    => 1,
+                    recipient_id => $recipient->id
+                ]
+            ;
+
+			stash_test 'get_logs_filtered' => sub {
+				my $res = shift;
+
+				is( scalar @{ $res->{logs} }, 2, '2 log entries' );
+			};
         };
 	};
 };
