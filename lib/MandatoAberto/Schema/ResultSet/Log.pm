@@ -127,7 +127,10 @@ sub action_specs {
                         $values{field_id} = $field->id;
                     }
                     elsif ( $action->name eq 'ANSWERED_POLL' ) {
-                        $rs = $self->resultset('PollQuestionOption');
+                        $rs = $self->resultset('PollQuestionOption')->search(
+                            { 'poll.politician_id' => $politician_id },
+                            { prefetch => { 'poll_question' => 'poll' } }
+                        );
 
 						my @required = qw( field_id );
 						defined $values{$_} or die \["$_", 'missing'] for @required;
