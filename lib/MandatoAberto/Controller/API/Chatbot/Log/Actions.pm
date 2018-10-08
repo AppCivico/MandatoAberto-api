@@ -22,8 +22,9 @@ sub list_GET {
             actions => [
                 map {
                     +{
-                        id   => $_->id,
-                        name => $_->name,
+                        id        => $_->id,
+                        name      => $_->name,
+                        has_field => $_->has_field
                     }
                 } $rs->all()
             ]
