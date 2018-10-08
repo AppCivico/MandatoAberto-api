@@ -131,7 +131,7 @@ sub list_GET {
     }
 
     my $page    = $c->req->params->{page}    || 1;
-    my $results = $c->req->params->{results} || 1000;
+    my $results = $c->req->params->{results} || 20;
 
     return $self->status_ok(
         $c,
