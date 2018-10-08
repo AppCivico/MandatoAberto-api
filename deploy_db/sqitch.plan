@@ -126,3 +126,5 @@
 0122-add-use_dialogflow [0121-add-active-bool] 2018-10-01T16:26:58Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the 'use_dialogflow' on the 'politician' table
 0123-add-human_name [0122-add-use_dialogflow] 2018-10-02T19:43:27Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding 'human_name' on the 'politician_entities'
 0124-add-log [0123-add-human_name] 2018-10-08T15:05:32Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding log related data
+0125-add-log_action [0124-add-log] 2018-10-08T18:06:15Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding one row on the 'log_action' table
+0126-add-active-bool-on-flows [0125-add-log_action] 2018-10-08T21:50:34Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the 'active' boolean on the: 'politician_contact', 'answer' and 'politician' table

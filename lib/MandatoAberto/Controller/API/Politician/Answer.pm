@@ -33,6 +33,18 @@ sub root : Chained('/api/politician/object') : PathPart('') : CaptureArgs(0) {
 
 sub base : Chained('root') : PathPart('answers') : CaptureArgs(0) { }
 
+sub object : Chained('base') : PathPart('') : CaptureArgs(1) {
+    my ($self, $c, $answer_id) = @_;
+
+    $c->stash->{collection} = $c->stash->{collection}->search( { 'me.id' => $answer_id } );
+
+    my $answer = $c->stash->{collection}->find($answer_id);
+    $c->detach("/error_404") unless ref $answer;
+
+	$c->stash->{is_me}  = int($c->user->id == $answer->politician_id);
+	$c->stash->{answer} = $answer;
+}
+
 sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }
 
 sub list_GET {
@@ -116,6 +128,23 @@ sub list_POST {
             answers => \@$created_answers
         }
     );
+}
+
+sub result : Chained('object') : PathPart('') : Args(0) : ActionClass('REST') { }
+
+sub result_PUT {
+    my ($self, $c) = @_;
+
+    my $answer = $c->stash->{answer}->execute(
+        $c,
+        for  => 'update',
+        with => $c->req->params
+    );
+
+    return $self->status_ok(
+        $c,
+        entity => { id => $answer->id }
+    )
 }
 
 __PACKAGE__->meta->make_immutable;

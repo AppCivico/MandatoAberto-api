@@ -35,23 +35,55 @@ db_transaction {
     api_auth_as user_id => $politician_id;
 
     my $answer_content = fake_words(1)->();
-    rest_post "/api/politician/$politician_id/answers",
-        name  => "POST politician answer",
-        code  => 200,
-        stash => "a1",
-        [ "question[$question_id][answer]" => $answer_content ]
-    ;
+    subtest 'Politician | Create answer' => sub {
 
-    rest_get "/api/chatbot/answer",
-        name  => "get politician answers",
-        list  => 1,
-        stash => "get_politician_answers",
-        [
-            politician_id  => $politician_id,
-            question_name  => $question_name,
-            security_token => $security_token
-        ]
-    ;
+        rest_post "/api/politician/$politician_id/answers",
+            name  => "POST politician answer",
+            code  => 200,
+            stash => "a1",
+            [ "question[$question_id][answer]" => $answer_content ]
+        ;
+    };
+
+    subtest 'Chatbot | Get answer' => sub {
+
+        rest_get "/api/chatbot/answer",
+            name  => "get politician answers",
+            list  => 1,
+            stash => "get_politician_answers",
+            [
+                politician_id  => $politician_id,
+                question_name  => $question_name,
+                security_token => $security_token
+            ]
+        ;
+
+        stash_test 'get_politician_answers' => sub {
+            my $res = shift;
+
+			ok( exists $res->{content}, 'content exists' );
+			is( ref $res->{content},    '', 'content is a string' );
+			is( $res->{content},        $answer_content, 'content is ok' );
+        };
+
+        my $answer_id = $schema->resultset('Answer')->next->id;
+        subtest 'Politician | Deactivate answer' => sub {
+            rest_put "/api/politician/$politician_id/answers/$answer_id",
+                name                => 'Edit answer',
+                automatic_load_item => 0,
+                code                => 200,
+                [ active => 0 ]
+            ;
+
+            rest_reload_list 'get_politician_answers';
+			stash_test 'get_politician_answers.list' => sub {
+				my $res = shift;
+
+				is( $res->{content}, undef, 'content is undef' );
+			};
+        };
+    }
+
 };
 
 done_testing();

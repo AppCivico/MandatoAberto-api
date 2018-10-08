@@ -62,6 +62,7 @@ sub list_GET {
                     picframe_url   => $p->get_column('share_url'),
                     picframe_text  => $p->get_column('share_text'),
                     use_dialogflow => $p->get_column('use_dialogflow'),
+                    issue_active   => $p->get_column('issue_active'),
 
                     share => {
                         url  => $p->get_column('share_url'),
@@ -116,7 +117,7 @@ sub list_GET {
                             facebook  => $c->get_column('facebook'),
                             url       => $c->get_column('url'),
                             twitter   => $c->get_column('twitter'),
-                        } $p->politician_contacts->all()
+                        } $p->politician_contacts->search( { 'me.active' => 1 } )->all()
                     },
                     greeting => $politician_greeting ? $politician_greeting->on_facebook : undef
                 }

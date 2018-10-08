@@ -37,7 +37,8 @@ sub list_GET {
             } $c->stash->{collection}->search(
                 {
                     politician_id   => $politician_id,
-                    'question.name' => $question_name
+                    'question.name' => $question_name,
+                    'me.active'     => 1
                 },
                 { prefetch => 'question' }
             )->all

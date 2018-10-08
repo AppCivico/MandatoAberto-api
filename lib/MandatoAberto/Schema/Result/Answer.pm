@@ -66,6 +66,12 @@ __PACKAGE__->table("answer");
   is_foreign_key: 1
   is_nullable: 0
 
+=head2 active
+
+  data_type: 'boolean'
+  default_value: true
+  is_nullable: 0
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -82,6 +88,8 @@ __PACKAGE__->add_columns(
   { data_type => "text", is_nullable => 0 },
   "politician_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
+  "active",
+  { data_type => "boolean", default_value => \"true", is_nullable => 0 },
 );
 
 =head1 PRIMARY KEY
@@ -129,10 +137,50 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-01-15 15:12:32
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:mOH8ccUNYyC7sv4RYjhX8w
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-10-08 18:55:54
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:R54HDAAyqUa8Haq51Q+3mA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
+
+with 'MandatoAberto::Role::Verification';
+with 'MandatoAberto::Role::Verification::TransactionalActions::DBIC';
+
+sub verifiers_specs {
+    my $self = shift;
+
+    return {
+        update => Data::Verifier->new(
+            filters => [ qw(trim) ],
+            profile => {
+                answer => {
+                    required   => 0,
+                    type       => 'Str',
+                    max_lenght => 1000
+                },
+                active => {
+                    required => 0,
+                    type     => 'Bool'
+                }
+            },
+        )
+    };
+}
+
+sub action_specs {
+    my ($self) = @_;
+
+    return {
+        update => sub {
+            my $r = shift;
+
+            my %values = $r->valid_values;
+            not defined $values{$_} and delete $values{$_} for keys %values;
+
+            return $self->update(\%values);
+        }
+    };
+}
+
 __PACKAGE__->meta->make_immutable;
 1;
