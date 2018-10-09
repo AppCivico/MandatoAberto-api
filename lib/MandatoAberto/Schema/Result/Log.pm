@@ -170,6 +170,12 @@ sub description {
     elsif ( $action_name eq 'DEACTIVATED_NOTIFICATIONS' ) {
         $ret = "$recipient_name desativou as notificações.";
     }
+    elsif ( $action_name eq 'INFORMED_CELLPHONE' ) {
+        $ret = "$recipient_name informou o telefone celular.";
+    }
+    elsif ( $action_name eq 'INFORMED_EMAIL' ) {
+        $ret = "$recipient_name informou o e-mail.";
+    }
 
     return $ret;
 }

@@ -128,3 +128,4 @@
 0124-add-log [0123-add-human_name] 2018-10-08T15:05:32Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding log related data
 0125-add-log_action [0124-add-log] 2018-10-08T18:06:15Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding one row on the 'log_action' table
 0126-add-active-bool-on-flows [0125-add-log_action] 2018-10-08T21:50:34Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the 'active' boolean on the: 'politician_contact', 'answer' and 'politician' table
+0127-add-log_action [0126-add-active-bool-on-flows] 2018-10-09T18:11:56Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding two rows to the 'log_action' table
