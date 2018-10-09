@@ -77,6 +77,8 @@ sub exec_item {
         content      => $item->poll->build_content_object( $recipient )
     );
 
+    use DDP; p \%opts;
+
     if ( $self->facebook->send_message(%opts) ) {
         $item->delete();
         $self->logger->info("Enviado com sucesso") if $self->logger;

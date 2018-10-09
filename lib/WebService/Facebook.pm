@@ -91,7 +91,8 @@ sub send_message {
         };
         die $@ if $@;
 
-        return decode_json( $res->decoded_content );
+        # return decode_json( $res->decoded_content );
+        return 1;
     }
 }
 
