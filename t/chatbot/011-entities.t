@@ -7,17 +7,17 @@ use MandatoAberto::Test::Further;
 my $schema = MandatoAberto->model("DB");
 
 db_transaction {
-	my $security_token = $ENV{CHATBOT_SECURITY_TOKEN};
+    my $security_token = $ENV{CHATBOT_SECURITY_TOKEN};
 
-	create_politician(
-		fb_page_id           => fake_words(1)->(),
-		fb_page_access_token => fake_words(1)->()
-	);
-	my $politician    = $schema->resultset('Politician')->find(stash 'politician.id');
-	my $politician_id = $politician->id;
+    create_politician(
+        fb_page_id           => fake_words(1)->(),
+        fb_page_access_token => fake_words(1)->()
+    );
+    my $politician    = $schema->resultset('Politician')->find(stash 'politician.id');
+    my $politician_id = $politician->id;
 
-	create_recipient( politician_id => $politician_id );
-	my $recipient = $schema->resultset('Recipient')->find(stash 'recipient.id');
+    create_recipient( politician_id => $politician_id );
+    my $recipient = $schema->resultset('Recipient')->find(stash 'recipient.id');
 
     # Criando issue para criar um tema
     create_issue(
@@ -55,9 +55,9 @@ db_transaction {
 
     rest_reload_list 'get_available_intents';
     stash_test 'get_available_intents.list' => sub {
-		my $res = shift;
+        my $res = shift;
 
-		is( scalar @{ $res->{intents} }, 1, '1 available intent' );
+        is( scalar @{ $res->{intents} }, 1, '1 available intent' );
     };
 };
 

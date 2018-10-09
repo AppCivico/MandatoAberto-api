@@ -13,9 +13,9 @@ with 'MandatoAberto::Role::Verification::TransactionalActions::DBIC';
 use Data::Verifier;
 
 sub resultset {
-	my $self = shift;
+    my $self = shift;
 
-	return $self->result_source->schema->resultset(@_);
+    return $self->result_source->schema->resultset(@_);
 }
 
 sub verifiers_specs {
@@ -97,7 +97,7 @@ sub action_specs {
                 # Tratando timestamp
                 my $ts = DateTime::Format::DateParse->parse_datetime($values{timestamp});
 
-				die \['timestamp', 'invalid'] unless $ts;
+                die \['timestamp', 'invalid'] unless $ts;
 
                 $values{timestamp} = $ts;
 
@@ -132,21 +132,21 @@ sub action_specs {
                             { prefetch => { 'poll_question' => 'poll' } }
                         );
 
-						my @required = qw( field_id );
-						defined $values{$_} or die \["$_", 'missing'] for @required;
+                        my @required = qw( field_id );
+                        defined $values{$_} or die \["$_", 'missing'] for @required;
 
                         my $field = $rs->find($field_id);
                         die \['field_id', 'invalid'] unless $field;
                     }
-					elsif ( $action->name eq 'ASKED_ABOUT_ENTITY' ) {
-						$rs = $self->resultset('PoliticianEntity')->search( { politician_id => $politician_id } );
+                    elsif ( $action->name eq 'ASKED_ABOUT_ENTITY' ) {
+                        $rs = $self->resultset('PoliticianEntity')->search( { politician_id => $politician_id } );
 
-						my @required = qw( field_id );
-						defined $values{$_} or die \["$_", 'missing'] for @required;
+                        my @required = qw( field_id );
+                        defined $values{$_} or die \["$_", 'missing'] for @required;
 
-						my $field = $rs->find($field_id);
-						die \['field_id', 'invalid'] unless $field;
-					}
+                        my $field = $rs->find($field_id);
+                        die \['field_id', 'invalid'] unless $field;
+                    }
                     else {
                         die \['action_id', 'invalid'];
                     }

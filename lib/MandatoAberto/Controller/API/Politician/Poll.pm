@@ -153,33 +153,33 @@ sub result_GET {
     return $self->status_ok(
         $c,
         entity => {
-			id        => $c->stash->{collection}->id,
-			name      => $c->stash->{collection}->name,
-			status_id => $c->stash->{collection}->status_id,
+            id        => $c->stash->{collection}->id,
+            name      => $c->stash->{collection}->name,
+            status_id => $c->stash->{collection}->status_id,
 
-			questions => [
-				map {
-					my $pq = $_;
+            questions => [
+                map {
+                    my $pq = $_;
 
                     +{
-						id      => $pq->get_column('id'),
-						content => $pq->get_column('content'),
+                        id      => $pq->get_column('id'),
+                        content => $pq->get_column('content'),
 
-						options => [
-							map {
-								my $qo = $_;
+                        options => [
+                            map {
+                                my $qo = $_;
 
-								+{
-									id      => $qo->get_column('id'),
-									content => $qo->get_column('content'),
-									count   => $qo->poll_results->search( { origin => 'propagate' } )->count,
-								  }
-							} $pq->poll_question_options->all()
-						]
-					}
+                                +{
+                                    id      => $qo->get_column('id'),
+                                    content => $qo->get_column('content'),
+                                    count   => $qo->poll_results->search( { origin => 'propagate' } )->count,
+                                  }
+                            } $pq->poll_question_options->all()
+                        ]
+                    }
 
-				} $c->stash->{collection}->poll_questions->all()
-			]
+                } $c->stash->{collection}->poll_questions->all()
+            ]
 
         }
     );

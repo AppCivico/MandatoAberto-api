@@ -61,9 +61,9 @@ db_transaction {
         stash_test 'get_politician_answers' => sub {
             my $res = shift;
 
-			ok( exists $res->{content}, 'content exists' );
-			is( ref $res->{content},    '', 'content is a string' );
-			is( $res->{content},        $answer_content, 'content is ok' );
+            ok( exists $res->{content}, 'content exists' );
+            is( ref $res->{content},    '', 'content is a string' );
+            is( $res->{content},        $answer_content, 'content is ok' );
         };
 
         my $answer_id = $schema->resultset('Answer')->next->id;
@@ -76,11 +76,11 @@ db_transaction {
             ;
 
             rest_reload_list 'get_politician_answers';
-			stash_test 'get_politician_answers.list' => sub {
-				my $res = shift;
+            stash_test 'get_politician_answers.list' => sub {
+                my $res = shift;
 
-				is( $res->{content}, undef, 'content is undef' );
-			};
+                is( $res->{content}, undef, 'content is undef' );
+            };
         };
     }
 

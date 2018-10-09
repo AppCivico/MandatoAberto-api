@@ -13,10 +13,10 @@ db_transaction {
 
     # Sincronizando intents com uma que deverá ser pulada
     db_transaction{
-		setup_dialogflow_intents_response_with_skip();
+        setup_dialogflow_intents_response_with_skip();
 
-		ok( $politician_entity_rs->sync_dialogflow, 'sync ok' );
-		is( $politician_entity_rs->count, 2, '2 entities created' );
+        ok( $politician_entity_rs->sync_dialogflow, 'sync ok' );
+        is( $politician_entity_rs->count, 2, '2 entities created' );
     };
 
     setup_dialogflow_intents_response();

@@ -156,20 +156,20 @@ sub description {
         my $poll_question_option = $self->result_source->schema->resultset('PollQuestionOption')->find( $self->field_id );
         my $content              = $poll_question_option->content;
 
-		$ret = "$recipient_name respondeu: '$content' para a enquete.";
+        $ret = "$recipient_name respondeu: '$content' para a enquete.";
     }
-	elsif ( $action_name eq 'ASKED_ABOUT_ENTITY' ) {
-		my $entity     = $self->result_source->schema->resultset('PoliticianEntity')->find( $self->field_id );
-		my $human_name = $entity->human_name;
+    elsif ( $action_name eq 'ASKED_ABOUT_ENTITY' ) {
+        my $entity     = $self->result_source->schema->resultset('PoliticianEntity')->find( $self->field_id );
+        my $human_name = $entity->human_name;
 
-		$ret = "$recipient_name perguntou sobre o tema: '$human_name'.";
-	}
-	elsif ( $action_name eq 'ACTIVATED_NOTIFICATIONS' ) {
-		$ret = "$recipient_name ativou as notificações.";
-	}
-	elsif ( $action_name eq 'DEACTIVATED_NOTIFICATIONS' ) {
-		$ret = "$recipient_name desativou as notificações.";
-	}
+        $ret = "$recipient_name perguntou sobre o tema: '$human_name'.";
+    }
+    elsif ( $action_name eq 'ACTIVATED_NOTIFICATIONS' ) {
+        $ret = "$recipient_name ativou as notificações.";
+    }
+    elsif ( $action_name eq 'DEACTIVATED_NOTIFICATIONS' ) {
+        $ret = "$recipient_name desativou as notificações.";
+    }
 
     return $ret;
 }

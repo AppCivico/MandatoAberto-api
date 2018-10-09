@@ -9,17 +9,17 @@ use DateTime;
 my $schema = MandatoAberto->model("DB");
 
 db_transaction {
-	my $security_token = $ENV{CHATBOT_SECURITY_TOKEN};
+    my $security_token = $ENV{CHATBOT_SECURITY_TOKEN};
 
-	create_politician(
-		fb_page_id           => fake_words(1)->(),
-		fb_page_access_token => fake_words(1)->()
-	);
-	my $politician    = $schema->resultset('Politician')->find(stash 'politician.id');
-	my $politician_id = $politician->id;
+    create_politician(
+        fb_page_id           => fake_words(1)->(),
+        fb_page_access_token => fake_words(1)->()
+    );
+    my $politician    = $schema->resultset('Politician')->find(stash 'politician.id');
+    my $politician_id = $politician->id;
 
-	create_recipient( politician_id => $politician_id );
-	my $recipient = $schema->resultset('Recipient')->find(stash 'recipient.id');
+    create_recipient( politician_id => $politician_id );
+    my $recipient = $schema->resultset('Recipient')->find(stash 'recipient.id');
 
     subtest 'Chatbot | get actions' => sub {
         rest_get '/api/chatbot/log/actions',
@@ -33,8 +33,8 @@ db_transaction {
             my $res = shift;
 
             is( ref $res->{actions},                  'ARRAY', 'actions is an array' );
-			ok( defined $res->{actions}->[0]->{id},   'id is defined' );
-			ok( defined $res->{actions}->[0]->{name}, 'name is defined' );
+            ok( defined $res->{actions}->[0]->{id},   'id is defined' );
+            ok( defined $res->{actions}->[0]->{name}, 'name is defined' );
         };
     };
 
@@ -63,7 +63,7 @@ db_transaction {
                 recipient_fb_id => $recipient->fb_id,
                 politician_id   => $politician_id,
                 action_id       => 1,
-				payload         => 'greetings',
+                payload         => 'greetings',
             ]
         ;
 
@@ -76,7 +76,7 @@ db_transaction {
                 timestamp       => DateTime->now->stringify,
                 recipient_fb_id => $recipient->fb_id,
                 politician_id   => $politician_id,
-				payload         => 'greetings',
+                payload         => 'greetings',
                 human_name      => 'Voltar ao início'
             ]
         ;
@@ -90,7 +90,7 @@ db_transaction {
                 recipient_fb_id => $recipient->fb_id,
                 politician_id   => $politician_id,
                 action_id       => 1,
-				payload         => 'greetings',
+                payload         => 'greetings',
                 human_name      => 'Voltar ao início'
             ]
         ;
@@ -100,11 +100,11 @@ db_transaction {
             is_fail => 1,
             code    => 400,
             [
-				timestamp       => DateTime->now->stringify,
+                timestamp       => DateTime->now->stringify,
                 security_token  => $security_token,
                 politician_id   => $politician_id,
                 action_id       => 1,
-				payload         => 'greetings',
+                payload         => 'greetings',
                 human_name      => 'Voltar ao início'
             ]
         ;
@@ -164,36 +164,36 @@ db_transaction {
 
     subtest 'Chatbot | Create log answered poll' => sub {
         # Mocking poll
-		ok(
-			my $poll = $schema->resultset('Poll')->create(
-				{
-					name          => 'foobar',
-					politician_id => $politician_id,
-					status_id     => 1,
-				},
-			),
-			'add poll',
-		);
+        ok(
+            my $poll = $schema->resultset('Poll')->create(
+                {
+                    name          => 'foobar',
+                    politician_id => $politician_id,
+                    status_id     => 1,
+                },
+            ),
+            'add poll',
+        );
 
-		ok(
-			my $poll_question = $schema->resultset('PollQuestion')->create(
-				{
-					poll_id => $poll->id,
-					content => 'foo',
-				},
-			),
-			'add poll question',
-		);
+        ok(
+            my $poll_question = $schema->resultset('PollQuestion')->create(
+                {
+                    poll_id => $poll->id,
+                    content => 'foo',
+                },
+            ),
+            'add poll question',
+        );
 
-		ok(
-			my $poll_question_option = $schema->resultset('PollQuestionOption')->create(
-				{
-					poll_question_id => $poll_question->id,
-					content          => 'bar',
-				},
-			),
-			'add question option',
-		);
+        ok(
+            my $poll_question_option = $schema->resultset('PollQuestionOption')->create(
+                {
+                    poll_question_id => $poll_question->id,
+                    content          => 'bar',
+                },
+            ),
+            'add question option',
+        );
 
         rest_post '/api/chatbot/log',
             name    => 'Create log without field_id',

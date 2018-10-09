@@ -74,40 +74,40 @@ sub verifiers_specs {
                 }
             }
         ),
-		batch_delete => Data::Verifier->new(
-			filters => [qw(trim)],
-			profile => {
-				politician_id => {
-					required => 1,
-					type       => "Int",
-					post_check => sub {
-						my $politician_id = $_[0]->get_value('politician_id');
+        batch_delete => Data::Verifier->new(
+            filters => [qw(trim)],
+            profile => {
+                politician_id => {
+                    required => 1,
+                    type       => "Int",
+                    post_check => sub {
+                        my $politician_id = $_[0]->get_value('politician_id');
 
-						$self->result_source->schema->resultset("Politician")->search({ user_id => $politician_id })->count;
-					}
-				},
-				ids => {
-					required   => 1,
-					type       => 'ArrayRef[Int]',
-					post_check => sub {
-						my $ids = $_[0]->get_value('ids');
+                        $self->result_source->schema->resultset("Politician")->search({ user_id => $politician_id })->count;
+                    }
+                },
+                ids => {
+                    required   => 1,
+                    type       => 'ArrayRef[Int]',
+                    post_check => sub {
+                        my $ids = $_[0]->get_value('ids');
 
-						for my $id ( @{$ids} ) {
-							my $issue = $self->search(
-								{
-									id            => $id,
-									politician_id => $_[0]->get_value('politician_id'),
-								}
-							)->next;
+                        for my $id ( @{$ids} ) {
+                            my $issue = $self->search(
+                                {
+                                    id            => $id,
+                                    politician_id => $_[0]->get_value('politician_id'),
+                                }
+                            )->next;
 
-							die \["issue_id: $id", 'no such issue'] unless $issue;
-						}
+                            die \["issue_id: $id", 'no such issue'] unless $issue;
+                        }
 
-						return 1;
-					}
-				}
-			}
-		  ),
+                        return 1;
+                    }
+                }
+            }
+          ),
     };
 }
 

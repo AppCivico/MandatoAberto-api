@@ -226,16 +226,16 @@ db_transaction {
         ]
     ;
 
-	rest_reload_list "get_politician";
+    rest_reload_list "get_politician";
 
-	stash_test "get_politician.list" => sub {
-		my $res = shift;
+    stash_test "get_politician.list" => sub {
+        my $res = shift;
 
-		is($res->{picframe_url},  undef, 'picframe_url');
-		is($res->{picframe_text}, undef,'share_text');
-		is($res->{share_url},     undef, 'picframe_url');
-		is($res->{share_text},    undef,                'share_text');
-	};
+        is($res->{picframe_url},  undef, 'picframe_url');
+        is($res->{picframe_text}, undef,'share_text');
+        is($res->{share_url},     undef, 'picframe_url');
+        is($res->{share_text},    undef,                'share_text');
+    };
 
     rest_put "/api/politician/$politician_id",
         name => "Adding picframe URL",

@@ -41,8 +41,8 @@ sub object : Chained('base') : PathPart('') : CaptureArgs(1) {
     my $answer = $c->stash->{collection}->find($answer_id);
     $c->detach("/error_404") unless ref $answer;
 
-	$c->stash->{is_me}  = int($c->user->id == $answer->politician_id);
-	$c->stash->{answer} = $answer;
+    $c->stash->{is_me}  = int($c->user->id == $answer->politician_id);
+    $c->stash->{answer} = $answer;
 }
 
 sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }

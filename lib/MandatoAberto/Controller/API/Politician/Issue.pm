@@ -282,7 +282,7 @@ sub batch_ignore_PUT {
     die \['ids', 'missing'] unless $ids;
 
     $ids =~ s/(\[|\]|(\s))//g;
-	my @ids = split(',', $ids);
+    my @ids = split(',', $ids);
 
     $c->stash->{collection}->execute(
         $c,
@@ -312,7 +312,7 @@ sub batch_delete_PUT {
     die \['ids', 'missing'] unless $ids;
 
     $ids =~ s/(\[|\]|(\s))//g;
-	my @ids = split(',', $ids);
+    my @ids = split(',', $ids);
 
     $c->stash->{collection}->execute(
         $c,

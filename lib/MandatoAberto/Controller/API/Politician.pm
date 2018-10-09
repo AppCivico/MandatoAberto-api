@@ -27,9 +27,9 @@ __PACKAGE__->config(
         if ( (defined $c->req->params->{picframe_url} && $c->req->params->{picframe_url} eq '') || (defined $c->req->params->{share_url} && $c->req->params->{share_url} eq '') ) {
             $params->{share_url} = 'SET_NULL';
         }
-		if ( (defined $c->req->params->{picframe_text} && $c->req->params->{picframe_text} eq '') || (defined $c->req->params->{share_text} && $c->req->params->{share_text} eq '') ) {
+        if ( (defined $c->req->params->{picframe_text} && $c->req->params->{picframe_text} eq '') || (defined $c->req->params->{share_text} && $c->req->params->{share_text} eq '') ) {
             $params->{share_text} = 'SET_NULL';
-		}
+        }
 
         return $params;
     },
@@ -73,7 +73,7 @@ sub result_GET {
         $facebook_active_page = $c->stash->{politician}->get_current_facebook_page();
     }
 
-    my $votolegal_integration = $c->stash->{politician}->get_votolegal_integration if $c->stash->{politician}->has_votolegal_integration;
+    my $votolegal_integration = $c->stash->{politician}->has_votolegal_integration ? $c->stash->{politician}->get_votolegal_integration : undef ;
 
     my $has_movement = $c->stash->{politician}->movement ? 1 : 0;
 
