@@ -68,16 +68,15 @@ sub run_once {
 sub exec_item {
     my ($self, $item) = @_;
 
-    my $recipient = $item->recipient;
+    my $recipient    = $item->recipient;
+    my $recipient_id = $recipient->id;
 
-    $self->logger->info("Enviando enquete para recipient") if $self->logger;
+    $self->logger->info("Enviando enquete para recipient com id: $recipient_id") if $self->logger;
 
     my %opts = (
         access_token => $item->poll->politician->fb_page_access_token,
         content      => $item->poll->build_content_object( $recipient )
     );
-
-    print STDERR "\n" . $opts{content} . "\n";
 
     if ( $self->facebook->send_message(%opts) ) {
         $item->delete();

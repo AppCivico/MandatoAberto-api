@@ -93,7 +93,7 @@ sub action_specs {
 
             if ( $politician->poll_self_propagation_active ) {
                 my $poll_self_propagation_rs = $self->result_source->schema->resultset('PollSelfPropagationQueue');
-                my @ids = $politician->recipients->search( { page_id => $politician->fb_page_id } )->get_column('id')->all;
+                my @ids = $politician->recipients->search( { page_id => $politician->fb_page_id } )->only_opt_in->get_column('id')->all;
 
                 my @queue;
                 for my $id (@ids) {
