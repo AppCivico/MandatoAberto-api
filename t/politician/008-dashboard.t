@@ -33,7 +33,7 @@ db_transaction {
     my $politician_id = $politician->{id};
     $politician       = $schema->resultset('Politician')->find($politician_id);
 
-	$politician->user->update( { approved => 1 } );
+    $politician->user->update( { approved => 1 } );
 
     rest_post "/api/chatbot/recipient",
         name                => "Create recipient",

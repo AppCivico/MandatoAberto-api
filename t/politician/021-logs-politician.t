@@ -26,7 +26,7 @@ db_transaction {
     my $politician_id = $politician->{id};
     $politician       = $schema->resultset('Politician')->find($politician_id);
 
-	$politician->user->update( { approved => 1 } );
+    $politician->user->update( { approved => 1 } );
 
     my $recipient = create_recipient(
         name          => 'foo',
@@ -132,17 +132,17 @@ db_transaction {
         };
 
         subtest 'Create/update answers' => sub {
-        	answer_question(
+            answer_question(
                 politician_id => $politician_id,
                 question_id   => $question->id
             );
 
-        	is( $log_rs->count, 4, 'four log entries' );
-        	ok( my $profile_log = $log_rs->search( { action_id => 12 } )->next, 'answer update/create log' );
+            is( $log_rs->count, 4, 'four log entries' );
+            ok( my $profile_log = $log_rs->search( { action_id => 12 } )->next, 'answer update/create log' );
 
-        	ok( defined $profile_log->field_id, 'answer log field_id' );
-        	is( $profile_log->recipient_id,  undef,          'answer log does not have recipient_id' );
-        	is( $profile_log->politician_id, $politician_id, 'answer log politician_id' );
+            ok( defined $profile_log->field_id, 'answer log field_id' );
+            is( $profile_log->recipient_id,  undef,          'answer log does not have recipient_id' );
+            is( $profile_log->politician_id, $politician_id, 'answer log politician_id' );
 
             rest_reload_list 'get_admin_logs';
             stash_test 'get_admin_logs.list' => sub {
@@ -172,18 +172,18 @@ db_transaction {
                 $entity_name = $entity->human_name;
             };
 
-        	my $knowledge_base = create_knowledge_base(
+            my $knowledge_base = create_knowledge_base(
                 politician_id => $politician_id,
                 entity_id     => $entity->id
             );
             $knowledge_base = $schema->resultset('PoliticianKnowledgeBase')->find( $knowledge_base->{id} );
 
-        	is( $log_rs->count, 5, 'five log entries' );
-        	ok( my $profile_log = $log_rs->search( { action_id => 13 } )->next, 'knowledge base update/create log' );
+            is( $log_rs->count, 5, 'five log entries' );
+            ok( my $profile_log = $log_rs->search( { action_id => 13 } )->next, 'knowledge base update/create log' );
 
-        	ok( defined $profile_log->field_id, 'answer log field_id' );
-        	is( $profile_log->recipient_id,  undef,          'answer log does not have recipient_id' );
-        	is( $profile_log->politician_id, $politician_id, 'answer log politician_id' );
+            ok( defined $profile_log->field_id, 'answer log field_id' );
+            is( $profile_log->recipient_id,  undef,          'answer log does not have recipient_id' );
+            is( $profile_log->politician_id, $politician_id, 'answer log politician_id' );
 
             rest_reload_list 'get_admin_logs';
             stash_test 'get_admin_logs.list' => sub {
@@ -201,7 +201,7 @@ db_transaction {
                 name                => "Sucessful poll creation",
                 automatic_load_item => 0,
                 [
-                    name                       => $poll_name,
+                    name                       => 'foobar',
                     status_id                  => 1,
                     'questions[0]'             => 'Você está bem?',
                     'questions[0][options][0]' => 'Sim',
@@ -209,18 +209,18 @@ db_transaction {
                 ]
             ;
 
-        	my $knowledge_base = create_knowledge_base(
+            my $knowledge_base = create_knowledge_base(
                 politician_id => $politician_id,
                 entity_id     => $entity->id
             );
             $knowledge_base = $schema->resultset('PoliticianKnowledgeBase')->find( $knowledge_base->{id} );
 
-        	is( $log_rs->count, 5, 'five log entries' );
-        	ok( my $profile_log = $log_rs->search( { action_id => 13 } )->next, 'knowledge base update/create log' );
+            is( $log_rs->count, 5, 'five log entries' );
+            ok( my $profile_log = $log_rs->search( { action_id => 13 } )->next, 'knowledge base update/create log' );
 
-        	ok( defined $profile_log->field_id, 'answer log field_id' );
-        	is( $profile_log->recipient_id,  undef,          'answer log does not have recipient_id' );
-        	is( $profile_log->politician_id, $politician_id, 'answer log politician_id' );
+            ok( defined $profile_log->field_id, 'answer log field_id' );
+            is( $profile_log->recipient_id,  undef,          'answer log does not have recipient_id' );
+            is( $profile_log->politician_id, $politician_id, 'answer log politician_id' );
 
             rest_reload_list 'get_admin_logs';
             stash_test 'get_admin_logs.list' => sub {

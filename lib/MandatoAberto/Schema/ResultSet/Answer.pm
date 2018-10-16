@@ -75,12 +75,12 @@ sub action_specs {
 
                         push @answers, $new_answer;
 
-						my $log = {
+                        my $log = {
                             timestamp => \'NOW()',
-							action_id => 12,
-							field_id  => $new_answer->id
-						};
-						push @logs, $log;
+                            action_id => 12,
+                            field_id  => $new_answer->id
+                        };
+                        push @logs, $log;
                     }
                 }
 

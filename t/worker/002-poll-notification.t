@@ -19,7 +19,7 @@ db_transaction {
     my $politician_id = $politician->{id};
     $politician       = $schema->resultset('Politician')->find($politician_id);
 
-	$politician->user->update( { approved => 1 } );
+    $politician->user->update( { approved => 1 } );
 
     $politician->poll_self_propagation_config->update( { active => 1 } );
 

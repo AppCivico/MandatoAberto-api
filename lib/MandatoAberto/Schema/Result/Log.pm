@@ -251,24 +251,24 @@ sub description {
 
         $ret = "$politician_name enviou uma campanha do tipo '$campaign_type'.";
     }
-	elsif ( $action_name eq 'CREATED_GROUP' ) {
-		my $group      = $self->result_source->schema->resultset('Group')->find( $self->field_id );
-		my $group_name = $group->name;
+    elsif ( $action_name eq 'CREATED_GROUP' ) {
+        my $group      = $self->result_source->schema->resultset('Group')->find( $self->field_id );
+        my $group_name = $group->name;
 
         $ret = "$politician_name criou o grupo: '$group_name'.";
-	}
-	elsif ( $action_name eq 'UPDATED_GROUP' ) {
-		my $group      = $self->result_source->schema->resultset('Group')->find( $self->field_id );
-		my $group_name = $group->name;
+    }
+    elsif ( $action_name eq 'UPDATED_GROUP' ) {
+        my $group      = $self->result_source->schema->resultset('Group')->find( $self->field_id );
+        my $group_name = $group->name;
 
-		$ret = "$politician_name atualizou o grupo: '$group_name'.";
-	}
-	elsif ( $action_name eq 'DELETED_GROUP' ) {
-		my $group      = $self->result_source->schema->resultset('Group')->find( $self->field_id );
-		my $group_name = $group->name;
+        $ret = "$politician_name atualizou o grupo: '$group_name'.";
+    }
+    elsif ( $action_name eq 'DELETED_GROUP' ) {
+        my $group      = $self->result_source->schema->resultset('Group')->find( $self->field_id );
+        my $group_name = $group->name;
 
-		$ret = "$politician_name deletou o grupo: '$group_name'.";
-	}
+        $ret = "$politician_name deletou o grupo: '$group_name'.";
+    }
 
     return $ret;
 }

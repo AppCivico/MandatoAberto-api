@@ -13,7 +13,7 @@ db_transaction {
     my $politician_id = $politician->{id};
     $politician       = $schema->resultset('Politician')->find($politician_id);
 
-	$politician->user->update( { approved => 1 } );
+    $politician->user->update( { approved => 1 } );
 
     # Adicionando um recipient.
     create_recipient( politician_id => $politician_id, fb_id => 'recipient_foobar', security_token => $security_token );

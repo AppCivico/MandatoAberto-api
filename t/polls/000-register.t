@@ -14,11 +14,11 @@ db_transaction {
         code    => 403
     ;
 
-	my $politician    = create_politician();
-	my $politician_id = $politician->{id};
-	$politician       = $schema->resultset('Politician')->find($politician_id);
+    my $politician    = create_politician();
+    my $politician_id = $politician->{id};
+    $politician       = $schema->resultset('Politician')->find($politician_id);
 
-	$politician->user->update( { approved => 1 } );
+    $politician->user->update( { approved => 1 } );
 
     api_auth_as user_id => stash "politician.id";
 
