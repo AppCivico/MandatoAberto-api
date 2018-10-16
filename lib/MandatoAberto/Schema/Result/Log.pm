@@ -57,7 +57,7 @@ __PACKAGE__->table("logs");
 
   data_type: 'integer'
   is_foreign_key: 1
-  is_nullable: 0
+  is_nullable: 1
 
 =head2 action_id
 
@@ -78,7 +78,7 @@ __PACKAGE__->add_columns(
   "politician_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "recipient_id",
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
   "action_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "field_id",
@@ -129,12 +129,17 @@ __PACKAGE__->belongs_to(
   "recipient",
   "MandatoAberto::Schema::Result::Recipient",
   { id => "recipient_id" },
-  { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
+  {
+    is_deferrable => 0,
+    join_type     => "LEFT",
+    on_delete     => "NO ACTION",
+    on_update     => "NO ACTION",
+  },
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-10-04 16:46:55
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:3XC2JhCKZXFZQHnWhC0guA
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-10-09 15:33:58
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:6epwA0AgvWTTEMixQ5CNbA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
@@ -142,8 +147,16 @@ __PACKAGE__->belongs_to(
 sub description {
     my ($self) = @_;
 
-    my $action_name    = $self->action->name;
-    my $recipient_name = $self->recipient->name;
+    my $action_name = $self->action->name;
+
+    # Tratando diferença entre logs de recipient e de admin
+    my ($politician_name, $recipient_name);
+    if ( $self->action->is_recipient ) {
+        $recipient_name = $self->recipient->name;
+    }
+    else {
+        $politician_name = $self->politician->name;
+    }
 
     my $ret;
     if ( $action_name eq 'WENT_TO_FLOW' ) {
@@ -176,6 +189,86 @@ sub description {
     elsif ( $action_name eq 'INFORMED_EMAIL' ) {
         $ret = "$recipient_name informou o e-mail.";
     }
+    elsif ( $action_name eq 'UPDATED_POLITICIAN_PROFILE' ) {
+        $ret = "$politician_name atualizou o perfil.";
+    }
+    elsif ( $action_name eq 'UPDATED_GREETINGS' ) {
+        $ret = "$politician_name atualizou as boas-vindas.";
+    }
+    elsif ( $action_name eq 'UPDATED_CONTACTS' ) {
+        $ret = "$politician_name atualizou os contatos.";
+    }
+    elsif ( $action_name eq 'UPDATED_ANSWER' ) {
+        my $answer      = $self->result_source->schema->resultset('Answer')->find( $self->field_id );
+        my $dialog_name = $answer->question->dialog->name;
+
+        $ret = "$politician_name atualizou o diálogo: '$dialog_name'.";
+    }
+    elsif ( $action_name eq 'UPDATED_KNOWLEDGE_BASE' ) {
+        my $knowledge_base      = $self->result_source->schema->resultset('PoliticianKnowledgeBase')->find( $self->field_id );
+        my $knowledge_base_type = $knowledge_base->type;
+
+        my $entity         = $knowledge_base->entity_rs->next;
+        my $entity_name    = $entity->human_name;
+
+        $ret = "$politician_name atualizou a resposta do tipo '$entity_name' para o tema: '$entity_name'.";
+    }
+    elsif ( $action_name eq 'CREATED_POLL' ) {
+        my $poll          = $self->result_source->schema->resultset('Poll')->find( $self->field_id );
+        my $poll_question = $poll->poll_questions->next;
+        my $question_name = $poll_question->content;
+
+        $ret = "$politician_name criou a pergunta: '$question_name'.";
+    }
+    elsif ( $action_name eq 'ACTIVATED_POLL' ) {
+        my $poll          = $self->result_source->schema->resultset('Poll')->find( $self->field_id );
+        my $poll_question = $poll->poll_questions->next;
+        my $question_name = $poll_question->content;
+
+        $ret = "$politician_name ativou a pergunta: '$question_name'.";
+    }
+    elsif ( $action_name eq 'ANSWERED_ISSUE' ) {
+        my $issue          = $self->result_source->schema->resultset('Issue')->find( $self->field_id );
+        my $recipient_name = $issue->recipient->name;
+
+        $ret = "$politician_name respondeu a mensagem da(o) seguidora(o): '$recipient_name'.";
+    }
+    elsif ( $action_name eq 'IGNORED_ISSUE' ) {
+        my $issue          = $self->result_source->schema->resultset('Issue')->find( $self->field_id );
+        my $recipient_name = $issue->recipient->name;
+
+        $ret = "$politician_name ignorou a mensagem da(o) seguidora(o): '$recipient_name'.";
+    }
+    elsif ( $action_name eq 'DELETED_ISSUE' ) {
+        my $issue          = $self->result_source->schema->resultset('Issue')->find( $self->field_id );
+        my $recipient_name = $issue->recipient->name;
+
+        $ret = "$politician_name deletou a mensagem da(o) seguidora(o): '$recipient_name'.";
+    }
+    elsif ( $action_name eq 'SENT_CAMPAIGN' ) {
+        my $campaign      = $self->result_source->schema->resultset('Campaign')->find( $self->field_id );
+        my $campaign_type = $campaign->type->human_name;
+
+        $ret = "$politician_name enviou uma campanha do tipo '$campaign_type'.";
+    }
+	elsif ( $action_name eq 'CREATED_GROUP' ) {
+		my $group      = $self->result_source->schema->resultset('Group')->find( $self->field_id );
+		my $group_name = $group->name;
+
+        $ret = "$politician_name criou o grupo: '$group_name'.";
+	}
+	elsif ( $action_name eq 'UPDATED_GROUP' ) {
+		my $group      = $self->result_source->schema->resultset('Group')->find( $self->field_id );
+		my $group_name = $group->name;
+
+		$ret = "$politician_name atualizou o grupo: '$group_name'.";
+	}
+	elsif ( $action_name eq 'DELETED_GROUP' ) {
+		my $group      = $self->result_source->schema->resultset('Group')->find( $self->field_id );
+		my $group_name = $group->name;
+
+		$ret = "$politician_name deletou o grupo: '$group_name'.";
+	}
 
     return $ret;
 }

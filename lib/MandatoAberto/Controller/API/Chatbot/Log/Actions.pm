@@ -26,7 +26,7 @@ sub list_GET {
                         name      => $_->name,
                         has_field => $_->has_field
                     }
-                } $rs->all()
+                } $rs->search( { is_recipient => 1 } )->all()
             ]
         }
     );

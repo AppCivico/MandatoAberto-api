@@ -93,6 +93,70 @@ sub list_GET {
     )
 }
 
+sub admin : Chained('base') : PathPart('admin') : Args(0) : ActionClass('REST') { }
+
+sub admin_GET {
+    my ($self, $c) = @_;
+
+    $self->validate_request_params(
+        $c,
+        date_range => {
+            required => 0,
+            type     => 'Int',
+        },
+        action_id => {
+            required => 0,
+            type     => 'Int'
+        }
+    );
+
+    my $rs = $c->stash->{politician}->logs;
+
+    # Paginação
+    my $page    = $c->req->params->{page}    || 1;
+    my $results = $c->req->params->{results} || 20;
+
+    # Tratando filtros por recipient, data e ação
+    my %cond;
+
+    # Essa action retornará apenas logs de admin
+    $cond{'action.is_recipient'} = 0;
+
+    my $date_range = $c->req->params->{date_range};
+    if ( $date_range ) {
+        $cond{'me.timestamp'} = { '>=' => \"NOW() - interval '$date_range days'" };
+    }
+
+    my $action_id = $c->req->params->{action_id};
+    if ( $action_id ) {
+        $cond{'me.action_id'} = $action_id
+    }
+
+    return $self->status_ok(
+        $c,
+        entity => {
+            logs => [
+                map {
+                    my $l = $_;
+
+                    +{
+                        created_at  => $l->timestamp,
+                        description => $l->description,
+                    }
+                } $rs->search(
+                    \%cond,
+                    {
+                        page     => $page,
+                        rows     => $results,
+                        order_by => { -desc => 'timestamp' },
+                        prefetch => 'action'
+                    }
+                  )
+            ]
+        }
+    )
+}
+
 __PACKAGE__->meta->make_immutable;
 
 1;

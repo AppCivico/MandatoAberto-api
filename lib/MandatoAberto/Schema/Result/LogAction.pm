@@ -57,6 +57,11 @@ __PACKAGE__->table("log_action");
   data_type: 'boolean'
   is_nullable: 0
 
+=head2 is_recipient
+
+  data_type: 'boolean'
+  is_nullable: 0
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -65,6 +70,8 @@ __PACKAGE__->add_columns(
   "name",
   { data_type => "text", is_nullable => 0 },
   "has_field",
+  { data_type => "boolean", is_nullable => 0 },
+  "is_recipient",
   { data_type => "boolean", is_nullable => 0 },
 );
 
@@ -98,8 +105,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-10-04 13:01:51
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:LPxkVU5iIatGra42uowOaw
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-10-09 15:50:11
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:BRmnRz315S4yzetvPKKj8Q
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
