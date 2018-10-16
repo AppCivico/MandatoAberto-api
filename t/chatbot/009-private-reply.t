@@ -17,6 +17,8 @@ db_transaction {
     my $politician_id = stash "politician.id";
     my $politician    = $schema->resultset("Politician")->find($politician_id);
 
+	$politician->user->update( { approved => 1 } );
+
     my $item       = 'comment';
     my $post_id    = fake_words(1)->();
     my $comment_id = fake_words(1)->();

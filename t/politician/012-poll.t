@@ -7,15 +7,13 @@ use MandatoAberto::Test::Further;
 my $schema = MandatoAberto->model("DB");
 
 db_transaction {
-    create_politician(
-        fb_page_id => 'foobar'
-    );
-    my $politician_id = stash "politician.id";
-    my $politician    = $schema->resultset('Politician')->find($politician_id);
+    my $politician    = create_politician( fb_page_id => 'foobar' );
+    my $politician_id = $politician->{id};
+    $politician       = $schema->resultset('Politician')->find($politician_id);
 
-    create_recipient(
-        politician_id => $politician_id
-    );
+	$politician->user->update( { approved => 1 } );
+
+    create_recipient( politician_id => $politician_id );
 
     api_auth_as user_id => $politician_id;
 

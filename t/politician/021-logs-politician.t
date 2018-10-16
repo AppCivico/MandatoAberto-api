@@ -19,12 +19,14 @@ db_transaction {
     my $question = create_question( dialog_id => $dialog->id );
     $question    = $schema->resultset('Question')->find( $question->{id} );
 
-    create_politician(
+    my $politician = create_politician(
         fb_page_id           => fake_words(1)->(),
         fb_page_access_token => fake_words(1)->()
     );
-    my $politician    = $schema->resultset('Politician')->find(stash 'politician.id');
-    my $politician_id = $politician->id;
+    my $politician_id = $politician->{id};
+    $politician       = $schema->resultset('Politician')->find($politician_id);
+
+	$politician->user->update( { approved => 1 } );
 
     my $recipient = create_recipient(
         name          => 'foo',
