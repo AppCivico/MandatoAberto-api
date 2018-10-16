@@ -114,6 +114,7 @@ MandatoAberto::Schema::Result::PoliticianEntity	./lib/MandatoAberto/Schema/Resul
 MandatoAberto::Schema::Result::PoliticianGreeting	./lib/MandatoAberto/Schema/Result/PoliticianGreeting.pm	/^package MandatoAberto::Schema::Result::PoliticianGreeting;$/;"	p
 MandatoAberto::Schema::Result::PoliticianKnowledgeBase	./lib/MandatoAberto/Schema/Result/PoliticianKnowledgeBase.pm	/^package MandatoAberto::Schema::Result::PoliticianKnowledgeBase;$/;"	p
 MandatoAberto::Schema::Result::PoliticianPrivateReplyConfig	./lib/MandatoAberto/Schema/Result/PoliticianPrivateReplyConfig.pm	/^package MandatoAberto::Schema::Result::PoliticianPrivateReplyConfig;$/;"	p
+MandatoAberto::Schema::Result::PoliticianSummary	./lib/MandatoAberto/Schema/Result/PoliticianSummary.pm	/^package MandatoAberto::Schema::Result::PoliticianSummary;$/;"	p
 MandatoAberto::Schema::Result::PoliticianVotolegalIntegration	./lib/MandatoAberto/Schema/Result/PoliticianVotolegalIntegration.pm	/^package MandatoAberto::Schema::Result::PoliticianVotolegalIntegration;$/;"	p
 MandatoAberto::Schema::Result::Poll	./lib/MandatoAberto/Schema/Result/Poll.pm	/^package MandatoAberto::Schema::Result::Poll;$/;"	p
 MandatoAberto::Schema::Result::PollNotification	./lib/MandatoAberto/Schema/Result/PollNotification.pm	/^package MandatoAberto::Schema::Result::PollNotification;$/;"	p
@@ -260,6 +261,8 @@ add	./lib/WebService/HttpCallback.pm	/^sub add {$/;"	s
 add	./lib/WebService/HttpCallback/Async.pm	/^sub add {$/;"	s
 add_to_group	./lib/MandatoAberto/Schema/Result/Recipient.pm	/^sub add_to_group {$/;"	s
 add_to_politician_entity	./lib/MandatoAberto/Schema/Result/Recipient.pm	/^sub add_to_politician_entity {$/;"	s
+admin	./lib/MandatoAberto/Controller/API/Politician/Log.pm	/^sub admin : Chained('base') : PathPart('admin') : Args(0) : ActionClass('REST') { }$/;"	s
+admin_GET	./lib/MandatoAberto/Controller/API/Politician/Log.pm	/^sub admin_GET {$/;"	s
 apply	./lib/MandatoAberto/Data/Manager.pm	/^sub apply {$/;"	s
 approve	./lib/MandatoAberto/Schema/Result/User.pm	/^sub approve {$/;"	s
 base	./lib/MandatoAberto/Controller/API/Admin.pm	/^sub base : Chained('root') : PathPart('admin') : CaptureArgs(0) { }$/;"	s
