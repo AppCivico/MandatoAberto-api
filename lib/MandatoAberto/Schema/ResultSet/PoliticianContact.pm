@@ -61,19 +61,27 @@ sub action_specs {
 
             my %values = $r->valid_values;
 
-            my $existent_politician_contact = $self->search(
-                { politician_id => $values{politician_id} }
-            )->next;
+            my $contact;
+            $self->result_source->schema->txn_do(sub {
+                my $politician = $self->result_source->schema->resultset('Politician')->find( $values{politician_id} );
 
-            if (!defined $existent_politician_contact) {
-                my $politician_contact = $self->create(\%values);
+                my $existent_politician_contact = $self->search( { politician_id => $politician->id } )->next;
 
-                return $politician_contact;
-            } else {
-                my $updated_politician_contact = $existent_politician_contact->update(\%values);
+                if (!defined $existent_politician_contact) {
+                    $contact = $self->create(\%values);
+                } else {
+                    $contact = $existent_politician_contact->update(\%values);
+                }
 
-                return $updated_politician_contact;
-            }
+                $politician->logs->create(
+                    {
+                        timestamp => \'NOW()',
+                        action_id => 11
+                    }
+                );
+            });
+
+            return $contact;
         }
     };
 }

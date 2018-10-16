@@ -14,7 +14,12 @@ db_transaction {
         code    => 403
     ;
 
-    create_politician;
+    my $politician    = create_politician();
+    my $politician_id = $politician->{id};
+    $politician       = $schema->resultset('Politician')->find($politician_id);
+
+    $politician->user->update( { approved => 1 } );
+
     api_auth_as user_id => stash "politician.id";
 
     rest_post "/api/register/poll",

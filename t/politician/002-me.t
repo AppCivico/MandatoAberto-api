@@ -32,6 +32,9 @@ db_transaction {
 
     $schema->resultset("User")->find($politician_id)->update({ approved => 1 });
 
+    is($schema->resultset('PoliticianPrivateReplyConfig')->count, 1, 'one private_reply config created');
+    is($schema->resultset('PollSelfPropagationConfig')->count,    1, 'one poll_self_propagation config created');
+
     rest_get "/api/politician/$politician_id",
         name    => "get when logged off --fail",
         is_fail => 1,

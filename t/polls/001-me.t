@@ -7,7 +7,12 @@ use MandatoAberto::Test::Further;
 my $schema = MandatoAberto->model("DB");
 
 db_transaction {
-    create_politician;
+    my $politician    = create_politician();
+    my $politician_id = $politician->{id};
+    $politician       = $schema->resultset('Politician')->find($politician_id);
+
+    $politician->user->update( { approved => 1 } );
+
     api_auth_as user_id => stash "politician.id";
 
     my $poll_name = fake_words(1)->();

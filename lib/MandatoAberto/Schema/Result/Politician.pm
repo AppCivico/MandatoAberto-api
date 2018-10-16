@@ -448,6 +448,21 @@ __PACKAGE__->might_have(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 politician_summary
+
+Type: might_have
+
+Related object: L<MandatoAberto::Schema::Result::PoliticianSummary>
+
+=cut
+
+__PACKAGE__->might_have(
+  "politician_summary",
+  "MandatoAberto::Schema::Result::PoliticianSummary",
+  { "foreign.politician_id" => "self.user_id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 politician_votolegal_integrations
 
 Type: has_many
@@ -569,8 +584,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-10-08 18:55:54
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:GUhRoJrfq4zvr3D5mOy+2g
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-10-16 14:00:22
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:lrvjmKBqcOe7pdrT6bMTCA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
@@ -753,59 +768,72 @@ sub action_specs {
                 $values{share_url}  = undef;
             }
 
-            if ($values{address_city_id} && !$values{address_state_id}) {
-                my $address_state = $self->address_state_id;
+            my $politician;
+            $self->result_source->schema->txn_do(sub {
+                if ($values{address_city_id} && !$values{address_state_id}) {
+                    my $address_state = $self->address_state_id;
 
-                my $new_address_city_id = $self->result_source->schema->resultset("City")->search(
+                    my $new_address_city_id = $self->result_source->schema->resultset("City")->search(
+                        {
+                            'me.id'    => $values{address_city_id},
+                            'state.id' => $address_state
+                        },
+                        { prefetch => 'state' }
+                    )->count;
+
+                    die \["address_city_id", "city does not belong to state id: $address_state"] unless $new_address_city_id;
+                }
+
+                if ( ( $values{address_state_id} && !$values{address_city_id} ) ) {
+                    die \["address_city_id", 'missing'];
+                }
+
+                if ($values{new_password} && length $values{new_password} < 6) {
+                    die \["new_password", "must have at least 6 characters"];
+                }
+
+                if ($values{fb_page_access_token}) {
+                    # O access token gerado pela primeira vez é o de vida curta
+                    # portanto devo pegar o mesmo e gerar um novo token de vida longa
+                    # API do Facebook: https://developers.facebook.com/docs/facebook-login/access-tokens/expiration-and-extension
+                    my $short_lived_token = $values{fb_page_access_token};
+                    $values{fb_page_access_token} = $self->get_long_lived_access_token($short_lived_token);
+
+                    # Setando o botão get started
+                    $self->set_get_started_button_and_persistent_menu($values{fb_page_access_token});
+                }
+
+                if ( exists $values{private_reply_activated} ) {
+                    my $private_reply_activated = delete $values{private_reply_activated};
+
+                    $self->politician_private_reply_config->update( { active => $private_reply_activated } );
+                }
+
+                # Caso ocorra mudança no fb_page_id e o político possuir integração do voto legal
+                # devo avisar o novo page_id ao voto legal
+                # if ( $self->fb_page_id && ( $values{fb_page_id} && $self->has_votolegal_integration() ) ) {
+                #     $self->politician_votolegal_integrations->next->update_votolegal_integration();
+                # }
+
+                if ( $values{deactivate_chatbot} ) {
+                    $self->deactivate_chatbot();
+                }
+                delete $values{deactivate_chatbot};
+
+                $self->user->update( { password => $values{new_password} } ) and delete $values{new_password} if $values{new_password};
+
+                $politician = $self->update(\%values);
+
+                # Criando entrada no log
+                my $log = $self->logs->create(
                     {
-                        'me.id'    => $values{address_city_id},
-                        'state.id' => $address_state
-                    },
-                    { prefetch => 'state' }
-                )->count;
+                        timestamp => \'NOW()',
+                        action_id => 9
+                    }
+                );
+            });
 
-                die \["address_city_id", "city does not belong to state id: $address_state"] unless $new_address_city_id;
-            }
-
-            if ( ( $values{address_state_id} && !$values{address_city_id} ) ) {
-                die \["address_city_id", 'missing'];
-            }
-
-            if ($values{new_password} && length $values{new_password} < 6) {
-                die \["new_password", "must have at least 6 characters"];
-            }
-
-            if ($values{fb_page_access_token}) {
-                # O access token gerado pela primeira vez é o de vida curta
-                # portanto devo pegar o mesmo e gerar um novo token de vida longa
-                # API do Facebook: https://developers.facebook.com/docs/facebook-login/access-tokens/expiration-and-extension
-                my $short_lived_token = $values{fb_page_access_token};
-                $values{fb_page_access_token} = $self->get_long_lived_access_token($short_lived_token);
-
-                # Setando o botão get started
-                $self->set_get_started_button_and_persistent_menu($values{fb_page_access_token});
-            }
-
-            if ( exists $values{private_reply_activated} ) {
-                my $private_reply_activated = delete $values{private_reply_activated};
-
-                $self->politician_private_reply_config->update( { active => $private_reply_activated } );
-            }
-
-            # Caso ocorra mudança no fb_page_id e o político possuir integração do voto legal
-            # devo avisar o novo page_id ao voto legal
-            # if ( $self->fb_page_id && ( $values{fb_page_id} && $self->has_votolegal_integration() ) ) {
-            #     $self->politician_votolegal_integrations->next->update_votolegal_integration();
-            # }
-
-            if ( $values{deactivate_chatbot} ) {
-                $self->deactivate_chatbot();
-            }
-            delete $values{deactivate_chatbot};
-
-            $self->user->update( { password => $values{new_password} } ) and delete $values{new_password} if $values{new_password};
-
-            $self->update(\%values);
+            return $politician;
         }
     };
 }

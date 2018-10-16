@@ -162,10 +162,6 @@ sub action_specs {
                     }
                 );
 
-                # TODO passar essas duas configurações para triggers no banco
-                $self->result_source->schema->resultset("PoliticianPrivateReplyConfig")->create( { politician_id => $politician->id } );
-                $self->result_source->schema->resultset("PollSelfPropagationConfig")->create( { politician_id => $politician->id } );
-
                 $politician->send_greetings_email();
                 $politician->send_new_register_email();
                 $user->send_email_confirmation();

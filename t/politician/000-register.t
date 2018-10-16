@@ -29,7 +29,6 @@ db_transaction {
 
     is($schema->resultset('PoliticianEntity')->count, "3", "3 entities created");
     is($schema->resultset('EmailQueue')->count, "2", "greetings and new register emails");
-    is($schema->resultset('PoliticianPrivateReplyConfig')->count, "1", "one config created");
 
     is (
         $schema->resultset("Politician")->find(stash "d1.id")->user->email,

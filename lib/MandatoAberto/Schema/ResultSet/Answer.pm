@@ -37,33 +37,57 @@ sub action_specs {
             not defined $values{$_} and delete $values{$_} for keys %values;
 
             my @answers;
+            $self->result_source->schema->txn_do(sub {
+                my $politician_id;
+                my @logs;
 
-            for (my $i = 0; $i < scalar @{ $values{answers} } ; $i++) {
-                my $answer = $values{answers}->[$i];
+                for (my $i = 0; $i < scalar @{ $values{answers} } ; $i++) {
+                    my $answer = $values{answers}->[$i];
 
-                if ($answer->{id}) {
-                    my $answer_id      = $answer->{id};
-                    my $located_answer = $self->find($answer_id);
+                    $politician_id = $answer->{politician_id} unless $politician_id;
 
-                    next if $answer->{content} eq "";
+                    if ($answer->{id}) {
+                        my $answer_id      = $answer->{id};
+                        my $located_answer = $self->find($answer_id);
 
-                    die \["question[$i][answer][$answer_id]", 'could not find answer'] unless $located_answer;
+                        next if $answer->{content} eq "";
 
-                    my $updated_answer = $located_answer->update($answer);
-                    push @answers, $updated_answer;
-                } else {
-                    $self->search(
-                        {
-                            politician_id => $answer->{politician_id},
-                            question_id   => $answer->{question_id}
-                        }
-                    )->count and die \["question_id", "politician alredy has an answer for that question"];
+                        die \["question[$i][answer][$answer_id]", 'could not find answer'] unless $located_answer;
 
-                    my $new_answer = $self->create($answer);
+                        my $updated_answer = $located_answer->update($answer);
+                        push @answers, $updated_answer;
 
-                    push @answers, $new_answer;
+                        my $log = {
+                            timestamp => \'NOW()',
+                            action_id => 12,
+                            field_id  => $answer_id
+                        };
+                        push @logs, $log;
+                    } else {
+                        $self->search(
+                            {
+                                politician_id => $answer->{politician_id},
+                                question_id   => $answer->{question_id}
+                            }
+                        )->count and die \["question_id", "politician alredy has an answer for that question"];
+
+                        my $new_answer = $self->create($answer);
+
+                        push @answers, $new_answer;
+
+                        my $log = {
+                            timestamp => \'NOW()',
+                            action_id => 12,
+                            field_id  => $new_answer->id
+                        };
+                        push @logs, $log;
+                    }
                 }
-            }
+
+                my $politician = $self->result_source->schema->resultset('Politician')->find($politician_id);
+
+                $politician->logs->populate(\@logs)
+            });
 
             return \@answers;
         },
