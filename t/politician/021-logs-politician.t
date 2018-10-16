@@ -194,56 +194,6 @@ db_transaction {
                 ok( $log->{description} eq "foobar atualizou a resposta do tipo '$entity_name' para o tema: '$entity_name'.", 'description ok' );
             }
         };
-
-        subtest 'Create/update/deactivate poll' => sub {
-
-            rest_post "/api/register/poll",
-                name                => "Sucessful poll creation",
-                automatic_load_item => 0,
-                [
-                    name                       => 'foobar',
-                    status_id                  => 1,
-                    'questions[0]'             => 'Você está bem?',
-                    'questions[0][options][0]' => 'Sim',
-                    'questions[0][options][1]' => 'Não',
-                ]
-            ;
-
-            my $knowledge_base = create_knowledge_base(
-                politician_id => $politician_id,
-                entity_id     => $entity->id
-            );
-            $knowledge_base = $schema->resultset('PoliticianKnowledgeBase')->find( $knowledge_base->{id} );
-
-            is( $log_rs->count, 5, 'five log entries' );
-            ok( my $profile_log = $log_rs->search( { action_id => 13 } )->next, 'knowledge base update/create log' );
-
-            ok( defined $profile_log->field_id, 'answer log field_id' );
-            is( $profile_log->recipient_id,  undef,          'answer log does not have recipient_id' );
-            is( $profile_log->politician_id, $politician_id, 'answer log politician_id' );
-
-            rest_reload_list 'get_admin_logs';
-            stash_test 'get_admin_logs.list' => sub {
-                my $res = shift;
-
-                ok( my $log = $res->{logs}->[4], 'log' );
-
-                ok( $log->{description} eq "foobar atualizou a resposta do tipo '$entity_name' para o tema: '$entity_name'.", 'description ok' );
-            }
-        };
-    };
-
-    # subtest 'Politician | list logs' => sub {
-    #     api_auth_as user_id => $politician_id;
-
-    #     rest_get "/api/politician/$politician_id/logs",
-    #         name  => 'get logs',
-    #         stash => 'get_logs',
-    #         list  => 1
-    #     ;
-
-
-    # };
 };
 
 done_testing();
