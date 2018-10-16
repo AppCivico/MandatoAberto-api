@@ -448,6 +448,21 @@ __PACKAGE__->might_have(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 politician_summary
+
+Type: might_have
+
+Related object: L<MandatoAberto::Schema::Result::PoliticianSummary>
+
+=cut
+
+__PACKAGE__->might_have(
+  "politician_summary",
+  "MandatoAberto::Schema::Result::PoliticianSummary",
+  { "foreign.politician_id" => "self.user_id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 politician_votolegal_integrations
 
 Type: has_many
@@ -569,8 +584,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-10-08 18:55:54
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:GUhRoJrfq4zvr3D5mOy+2g
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-10-16 14:00:22
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:lrvjmKBqcOe7pdrT6bMTCA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

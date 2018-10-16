@@ -65,7 +65,7 @@ sub action_specs {
             not defined $values{$_} and delete $values{$_} for keys %values;
 
             my $poll;
-            $self->result_source->txn_do(sub{
+            $self->result_source->schema->txn_do(sub{
 
                 # Caso tenha uma enquete ativa, essa deverá ser desativada
                 # E a nova criada deverá ser já ativada
