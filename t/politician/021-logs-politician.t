@@ -194,6 +194,7 @@ db_transaction {
                 ok( $log->{description} eq "foobar atualizou a resposta do tipo '$entity_name' para o tema: '$entity_name'.", 'description ok' );
             }
         };
+    };
 };
 
 done_testing();
