@@ -185,7 +185,7 @@ sub send {
     my $politician           = $self->politician;
     my $private_reply_config = $politician->politician_private_reply_config;
 
-    if ( $private_reply_config->active ) {
+    if ( $private_reply_config->active && $politician->fb_page_access_token ) {
 
         my $private_reply_rs        = $self->result_source->schema->resultset("PrivateReply");
         my $last_sent_private_reply = $private_reply_rs->get_last_sent_private_reply( $self->politician_id, $self->fb_user_id );
