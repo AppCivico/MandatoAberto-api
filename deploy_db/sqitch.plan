@@ -132,3 +132,4 @@
 0128-add-adaptive-chunking [0127-add-log_action] 2018-10-09T18:32:30Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Setting the adaptive chunking on the 'logs' table
 0129-updating-logs [0128-add-adaptive-chunking] 2018-10-16T17:14:34Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Updating the logs table and related as well
 0130-add-summary-and-triggers [0129-updating-logs] 2018-10-16T17:15:34Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Creating the 'politician_summary' table and creating triggers
+0131-improving-config-trigger [0130-add-summary-and-triggers] 2018-10-17T13:54:21Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Improving the 'config' table trigger
