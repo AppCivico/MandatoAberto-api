@@ -825,12 +825,12 @@ sub action_specs {
                 $politician = $self->update(\%values);
 
                 # Criando entrada no log
-                my $log = $self->logs->create(
-                    {
-                        timestamp => \'NOW()',
-                        action_id => 9
-                    }
-                );
+                # my $log = $self->logs->create(
+                #     {
+                #         timestamp => \'NOW()',
+                #         action_id => 9
+                #     }
+                # );
             });
 
             return $politician;
