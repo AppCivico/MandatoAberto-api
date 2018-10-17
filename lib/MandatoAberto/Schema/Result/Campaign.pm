@@ -68,6 +68,18 @@ __PACKAGE__->table("campaign");
   is_foreign_key: 1
   is_nullable: 0
 
+=head2 status_id
+
+  data_type: 'integer'
+  default_value: 1
+  is_foreign_key: 1
+  is_nullable: 0
+
+=head2 count
+
+  data_type: 'integer'
+  is_nullable: 0
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -89,6 +101,15 @@ __PACKAGE__->add_columns(
   },
   "politician_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
+  "status_id",
+  {
+    data_type      => "integer",
+    default_value  => 1,
+    is_foreign_key => 1,
+    is_nullable    => 0,
+  },
+  "count",
+  { data_type => "integer", is_nullable => 0 },
 );
 
 =head1 PRIMARY KEY
@@ -150,6 +171,21 @@ __PACKAGE__->might_have(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 status
+
+Type: belongs_to
+
+Related object: L<MandatoAberto::Schema::Result::CampaignStatus>
+
+=cut
+
+__PACKAGE__->belongs_to(
+  "status",
+  "MandatoAberto::Schema::Result::CampaignStatus",
+  { id => "status_id" },
+  { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
+);
+
 =head2 type
 
 Type: belongs_to
@@ -166,8 +202,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-10-16 14:00:22
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:+CEcy15HTgORYP9hOEU14Q
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-10-17 16:04:37
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:ARwPBOPfg6gSAHcwkZWV2g
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

@@ -3,6 +3,7 @@ use FindBin qw($Bin);
 use lib "$Bin/../lib";
 
 use MandatoAberto::Test::Further;
+plan skip_all => 'deprecated feature';
 
 my $schema = MandatoAberto->model("DB");
 
