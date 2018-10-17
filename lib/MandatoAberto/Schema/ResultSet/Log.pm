@@ -156,7 +156,7 @@ sub action_specs {
                     die \['field_id', 'invalid'] if $values{field_id};
                 }
 
-                # $log = $self->create(\%values);
+                $log = $self->create(\%values);
             });
 
             return $log;

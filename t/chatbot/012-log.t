@@ -7,7 +7,6 @@ use MandatoAberto::Test::Further;
 use DateTime;
 
 my $schema = MandatoAberto->model("DB");
-plan skip_all => "skip for now";
 
 db_transaction {
     my $security_token = $ENV{CHATBOT_SECURITY_TOKEN};
