@@ -75,18 +75,18 @@ sub action_specs {
 
                         push @answers, $new_answer;
 
-                        my $log = {
-                            timestamp => \'NOW()',
-                            action_id => 12,
-                            field_id  => $new_answer->id
-                        };
-                        push @logs, $log;
+                        # my $log = {
+                        #     timestamp => \'NOW()',
+                        #     action_id => 12,
+                        #     field_id  => $new_answer->id
+                        # };
+                        # push @logs, $log;
                     }
                 }
 
                 my $politician = $self->result_source->schema->resultset('Politician')->find($politician_id);
 
-                $politician->logs->populate(\@logs)
+                # $politician->logs->populate(\@logs)
             });
 
             return \@answers;

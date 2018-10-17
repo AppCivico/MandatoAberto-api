@@ -58,12 +58,12 @@ sub action_specs {
                     $greeting = $existent_politician_greeting->update(\%values);
                 }
 
-                $politician->logs->create(
-                    {
-                        timestamp => \'NOW()',
-                        action_id => 10
-                    }
-                );
+                # $politician->logs->create(
+                #     {
+                #         timestamp => \'NOW()',
+                #         action_id => 10
+                #     }
+                # );
 
             });
 

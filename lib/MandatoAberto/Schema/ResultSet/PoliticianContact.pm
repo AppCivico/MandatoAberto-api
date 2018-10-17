@@ -73,12 +73,12 @@ sub action_specs {
                     $contact = $existent_politician_contact->update(\%values);
                 }
 
-                $politician->logs->create(
-                    {
-                        timestamp => \'NOW()',
-                        action_id => 11
-                    }
-                );
+                # $politician->logs->create(
+                #     {
+                #         timestamp => \'NOW()',
+                #         action_id => 11
+                #     }
+                # );
             });
 
             return $contact;

@@ -6,8 +6,6 @@ use MandatoAberto::Test::Further;
 
 my $schema = MandatoAberto->model("DB");
 
-plan skip_all => "skip for cherry pick";
-
 db_transaction {
     my $issue_rs      = $schema->resultset('Issue');
     my $recipient_rs  = $schema->resultset('Recipient');

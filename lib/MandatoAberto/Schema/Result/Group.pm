@@ -212,7 +212,7 @@ sub verifiers_specs {
                         my %allowed_rules     = map { $_ => 1 }
                             qw/
                             QUESTION_ANSWER_EQUALS QUESTION_ANSWER_NOT_EQUALS QUESTION_IS_NOT_ANSWERED
-                            QUESTION_IS_ANSWERED GENDER_IS
+                            QUESTION_IS_ANSWERED GENDER_IS GENDER_IS_NOT INTENT_IS INTENT_IS_NOT
                             /
                         ;
 
@@ -254,6 +254,17 @@ sub action_specs {
 
             if ($self->get_column('status') eq 'processing') {
                 die { error_code => 400, message => 'already processing.', msg => '' };
+            }
+
+            if (!keys %{$values{filter}}) {
+                $values{filter} = {
+                    operator => 'AND',
+                    rules    => [
+                        {
+                            name => 'EMPTY'
+                        }
+                    ]
+                }
             }
 
             $self->update(
