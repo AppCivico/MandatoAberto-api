@@ -111,13 +111,13 @@ sub action_specs {
                         }
                     );
 
-                    $politician->logs->create(
-                        {
-                            timestamp => \'NOW()',
-                            action_id => 13,
-                            field_id  => $politician_knowledge_base->id
-                        }
-                    )
+                    # $politician->logs->create(
+                    #     {
+                    #         timestamp => \'NOW()',
+                    #         action_id => 13,
+                    #         field_id  => $politician_knowledge_base->id
+                    #     }
+                    # )
                 }
                 else {
                     $politician_knowledge_base = $self->create(
@@ -127,13 +127,13 @@ sub action_specs {
                         }
                     );
 
-                    $politician->logs->create(
-                        {
-                            timestamp => \'NOW()',
-                            action_id => 13,
-                            field_id  => $politician_knowledge_base->id
-                        }
-                    )
+                    # $politician->logs->create(
+                    #     {
+                    #         timestamp => \'NOW()',
+                    #         action_id => 13,
+                    #         field_id  => $politician_knowledge_base->id
+                    #     }
+                    # )
                 }
             });
 
