@@ -80,6 +80,8 @@ sub list_GET {
     my $page    = $c->req->params->{page}    || 1;
     my $results = $c->req->params->{results} || 20;
 
+    my $has_active_page = $politician->fb_page_id ? 1 : 0;
+
     $c->stash->{collection} = $c->stash->{collection}->search(
         {
             politician_id => $politician->user_id,
