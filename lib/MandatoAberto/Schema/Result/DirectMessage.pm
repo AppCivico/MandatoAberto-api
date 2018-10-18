@@ -52,11 +52,6 @@ __PACKAGE__->table("direct_message");
   data_type: 'text'
   is_nullable: 1
 
-=head2 groups
-
-  data_type: 'integer[]'
-  is_nullable: 1
-
 =head2 campaign_id
 
   data_type: 'integer'
@@ -101,8 +96,6 @@ __PACKAGE__->add_columns(
   { data_type => "text", is_nullable => 1 },
   "name",
   { data_type => "text", is_nullable => 1 },
-  "groups",
-  { data_type => "integer[]", is_nullable => 1 },
   "campaign_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "type",
@@ -149,8 +142,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-10-17 16:04:37
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:ygxhrznFi+bkex0+UNUX/Q
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-10-18 11:56:57
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:byBr+0CiAxewXVft/VHmnw
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
@@ -159,7 +152,7 @@ sub groups_rs {
     my ($self, $c) = @_;
 
     return $self->campaign->politician->groups->search(
-        { 'me.id' => { 'in' => $self->groups || [] } }
+        { 'me.id' => { 'in' => $self->campaign->groups || [] } }
     );
 }
 

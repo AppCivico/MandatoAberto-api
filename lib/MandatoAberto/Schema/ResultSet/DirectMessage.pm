@@ -156,7 +156,6 @@ sub action_specs {
 
             my $direct_message;
             $self->result_source->schema->txn_do(sub{
-                my $count = 0;
                 my $politician_id = delete $values{politician_id};
                 my $politician    = $self->result_source->schema->resultset("Politician")->find($politician_id);
 
@@ -166,52 +165,17 @@ sub action_specs {
                 my $campaign = $politician->campaigns->create(
                     {
                         type_id => 1,
-                        count   => 0
+                        count   => 0,
+                        groups  => delete $values{groups}
                     }
                 );
                 $values{campaign_id} = $campaign->id;
 
                 $direct_message = $self->create(\%values);
 
-                # Depois de criada a messagem direta, devo adicionar uma entrada
-                # na fila para cada recipient atrelado ao rep. público
-                # levando em consideração os grupos, se adicionados
-                my @group_ids = @{ $values{groups} || [] };
-                my $recipient_rs = $politician->recipients
-                    ->only_opt_in
-                    ->search_by_group_ids(@group_ids)
-                    ->search(
-                        {},
-                        {
-                            '+select' => [ \"COUNT(1) OVER(PARTITION BY 1)" ],
-                            '+as'     => [ 'total' ],
-                        }
-                    )
-                ;
-
-                # Montando o objeto a ser enviado no 'message'
-                my $message_object = $direct_message->build_message_object;
-
-                while (my $recipient = $recipient_rs->next()) {
-                    # Mando para o httpcallback
-                    $self->_httpcb->add(
-                        url     => $ENV{FB_API_URL} . '/me/messages?access_token=' . $access_token,
-                        method  => "post",
-                        headers => 'Content-Type: application/json',
-                        body    => encode_json {
-                            messaging_type => "UPDATE",
-                            recipient => {
-                                id => $recipient->fb_id
-                            },
-                            message => $message_object
-                        }
-                    );
-
-                    $count++;
-                }
-                $self->_httpcb->wait_for_all_responses();
-
-                $campaign->update( { count => $count } );
+                # Este método no result que é responsável por verificar
+                # que tipo de campanha que é e disparar
+                $campaign->send();
             });
 
             return $direct_message;

@@ -80,6 +80,11 @@ __PACKAGE__->table("campaign");
   data_type: 'integer'
   is_nullable: 0
 
+=head2 groups
+
+  data_type: 'integer[]'
+  is_nullable: 1
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -110,6 +115,8 @@ __PACKAGE__->add_columns(
   },
   "count",
   { data_type => "integer", is_nullable => 0 },
+  "groups",
+  { data_type => "integer[]", is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -202,10 +209,79 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-10-17 16:04:37
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:ARwPBOPfg6gSAHcwkZWV2g
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-10-18 11:56:57
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:xLYwssX24otFBmAOu83jcw
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
+
+use WebService::HttpCallback::Async;
+
+use JSON::MaybeXS;
+
+has _httpcb => (
+	is         => "ro",
+	isa        => "WebService::HttpCallback::Async",
+	lazy_build => 1,
+);
+
+sub send {
+    my ($self) = @_;
+
+    my @group_ids = @{ $self->groups || [] };
+
+    my $recipient_rs = $self->politician->recipients->only_opt_in->search_by_group_ids(@group_ids)->search(
+    	{},
+    	{
+    		'+select' => [ \"COUNT(1) OVER(PARTITION BY 1)" ],
+    		'+as'     => ['total'],
+    	}
+    );
+
+    my $type_id = $self->type_id;
+
+    # Campanha de mensagem no Facebook
+    if ( $type_id == 1 ) {
+        $self->send_dm_facebook($recipient_rs);
+    }
+    else {
+        die 'fail while sending campaign';
+    }
+}
+
+sub send_dm_facebook {
+    my ($self, $recipient_rs) = @_;
+
+    my $req = $self->direct_message->build_message_object();
+
+    my $count = 0;
+    while (my $recipient = $recipient_rs->next()) {
+        # Mando para o httpcallback
+        $self->_httpcb->add(
+            url     => $ENV{FB_API_URL} . '/me/messages?access_token=' . $self->politician->fb_page_access_token,
+            method  => "post",
+            headers => 'Content-Type: application/json',
+            body    => encode_json {
+                messaging_type => "UPDATE",
+                recipient => {
+                    id => $recipient->fb_id
+                },
+                message => $req
+            }
+        );
+
+        $count++;
+    }
+    $self->_httpcb->wait_for_all_responses();
+
+    $self->update( { count => $count } );
+}
+
+sub send_email {
+    # TODO
+}
+
+sub _build__httpcb { WebService::HttpCallback::Async->instance }
+
 __PACKAGE__->meta->make_immutable;
 1;
