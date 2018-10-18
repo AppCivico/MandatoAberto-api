@@ -9,6 +9,11 @@ my $schema = MandatoAberto->model("DB");
 db_transaction {
     my $security_token = $ENV{CHATBOT_SECURITY_TOKEN};
 
+	use_ok 'MandatoAberto::Worker::Campaign';
+
+	my $worker = new_ok('MandatoAberto::Worker::Campaign', [ schema => $schema ]);
+	ok( $worker->does('MandatoAberto::Worker'), 'worker does MandatoAberto::Worker' );
+
     create_politician(
         fb_page_id => 'foo'
     );
@@ -141,6 +146,8 @@ db_transaction {
         ]
     ;
 
+    ok( $worker->run_once(), 'run once' );
+
     rest_get "/api/politician/$politician_id/direct-message",
         name  => "get direct messages",
         list  => 1,
@@ -168,6 +175,8 @@ db_transaction {
         ]
     ;
 
+    ok( $worker->run_once(), 'run once' );
+
     rest_reload_list "get_direct_messages";
     stash_test "get_direct_messages.list" => sub {
         my $res = shift;
@@ -187,6 +196,8 @@ db_transaction {
             content => 'foobar',
         ]
     ;
+
+    ok( $worker->run_once(), 'run once' );
 
     rest_reload_list "get_direct_messages";
     stash_test "get_direct_messages.list" => sub {
