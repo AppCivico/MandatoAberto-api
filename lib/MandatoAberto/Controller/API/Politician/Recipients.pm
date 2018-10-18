@@ -6,6 +6,7 @@ use namespace::autoclean;
 BEGIN { extends 'CatalystX::Eta::Controller::REST' }
 
 with 'CatalystX::Eta::Controller::AutoObject';
+with "CatalystX::Eta::Controller::TypesValidation";
 with 'CatalystX::Eta::Controller::AutoResultGET';
 
 use Data::Printer;
