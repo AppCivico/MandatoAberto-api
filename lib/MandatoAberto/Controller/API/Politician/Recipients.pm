@@ -65,10 +65,20 @@ sub list_GET {
 
     my $politician = $c->stash->{politician};
 
+	$self->validate_request_params(
+		$c,
+		page => {
+			required   => 0,
+			type       => 'Int'
+		},
+		results => {
+			required => 0,
+			type     => 'Int',
+		},
+	);
+
     my $page    = $c->req->params->{page}    || 1;
     my $results = $c->req->params->{results} || 20;
-
-    my $has_active_page = $politician->fb_page_id ? 1 : 0;
 
     $c->stash->{collection} = $c->stash->{collection}->search(
         {
