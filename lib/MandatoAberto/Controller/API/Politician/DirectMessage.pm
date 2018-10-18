@@ -108,8 +108,6 @@ sub list_POST {
 
     my $politician_name = $c->stash->{politician}->name;
 
-    $c->slack_notify("O usuário ${\($politician_name)} disparou uma campanha para ${\($direct_message->count)} recipiente(s)") unless is_test();
-
     return $self->status_created(
         $c,
         location => $c->uri_for($c->controller("API::Politician::DirectMessage")->action_for('result'), [ $direct_message->id ]),
