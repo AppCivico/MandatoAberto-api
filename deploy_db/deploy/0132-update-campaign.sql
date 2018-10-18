@@ -16,7 +16,7 @@ ALTER TABLE campaign ADD COLUMN updated_at TIMESTAMP WITHOUT TIME ZONE;
 ALTER TABLE campaign ADD COLUMN count INTEGER;
 ALTER TABLE campaign ADD COLUMN groups INTEGER[];
 UPDATE campaign AS c SET count = dm.count FROM direct_message AS dm WHERE c.id = dm.campaign_id;
-UPDATE campaign AS c SET count = pp.count FROM poll_propagate AS pp WHERE c.id = dm.campaign_id;
+UPDATE campaign AS c SET count = pp.count FROM poll_propagate AS pp WHERE c.id = pp.campaign_id;
 UPDATE campaign AS c SET groups = dm.groups FROM direct_message AS dm WHERE c.id = dm.campaign_id;
 UPDATE campaign AS c SET groups = pp.groups FROM poll_propagate AS pp WHERE c.id = pp.campaign_id;
 ALTER TABLE campaign ALTER COLUMN count SET NOT NULL;
