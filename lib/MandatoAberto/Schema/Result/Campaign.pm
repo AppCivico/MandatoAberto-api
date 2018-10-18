@@ -225,7 +225,7 @@ has _httpcb => (
 	lazy_build => 1,
 );
 
-sub send {
+sub process_and_send {
     my ($self) = @_;
 
     my @group_ids = @{ $self->groups || [] };

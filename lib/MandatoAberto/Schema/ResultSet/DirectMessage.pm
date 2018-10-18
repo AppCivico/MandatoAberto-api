@@ -175,7 +175,7 @@ sub action_specs {
 
                 # Este método no result que é responsável por verificar
                 # que tipo de campanha que é e disparar
-                $campaign->send();
+                $campaign->process_and_send();
             });
 
             return $direct_message;
