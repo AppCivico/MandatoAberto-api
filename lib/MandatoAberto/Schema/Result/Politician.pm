@@ -263,21 +263,6 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 direct_messages
-
-Type: has_many
-
-Related object: L<MandatoAberto::Schema::Result::DirectMessage>
-
-=cut
-
-__PACKAGE__->has_many(
-  "direct_messages",
-  "MandatoAberto::Schema::Result::DirectMessage",
-  { "foreign.politician_id" => "self.user_id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
-
 =head2 groups
 
 Type: has_many
@@ -584,8 +569,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-10-16 14:00:22
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:lrvjmKBqcOe7pdrT6bMTCA
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-10-17 14:54:51
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:obzFV1VYTg83PlFO4c0G1w
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

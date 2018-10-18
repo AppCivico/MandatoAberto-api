@@ -68,6 +68,28 @@ __PACKAGE__->table("campaign");
   is_foreign_key: 1
   is_nullable: 0
 
+=head2 status_id
+
+  data_type: 'integer'
+  default_value: 1
+  is_foreign_key: 1
+  is_nullable: 0
+
+=head2 updated_at
+
+  data_type: 'timestamp'
+  is_nullable: 1
+
+=head2 count
+
+  data_type: 'integer'
+  is_nullable: 0
+
+=head2 groups
+
+  data_type: 'integer[]'
+  is_nullable: 1
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -89,6 +111,19 @@ __PACKAGE__->add_columns(
   },
   "politician_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
+  "status_id",
+  {
+    data_type      => "integer",
+    default_value  => 1,
+    is_foreign_key => 1,
+    is_nullable    => 0,
+  },
+  "updated_at",
+  { data_type => "timestamp", is_nullable => 1 },
+  "count",
+  { data_type => "integer", is_nullable => 0 },
+  "groups",
+  { data_type => "integer[]", is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -150,6 +185,21 @@ __PACKAGE__->might_have(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 status
+
+Type: belongs_to
+
+Related object: L<MandatoAberto::Schema::Result::CampaignStatus>
+
+=cut
+
+__PACKAGE__->belongs_to(
+  "status",
+  "MandatoAberto::Schema::Result::CampaignStatus",
+  { id => "status_id" },
+  { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
+);
+
 =head2 type
 
 Type: belongs_to
@@ -166,10 +216,79 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-10-16 14:00:22
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:+CEcy15HTgORYP9hOEU14Q
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-10-18 15:36:37
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:vYuJgZ/hxEtMw9XiEMgXjA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
+
+use WebService::HttpCallback::Async;
+
+use JSON::MaybeXS;
+
+has _httpcb => (
+	is         => "ro",
+	isa        => "WebService::HttpCallback::Async",
+	lazy_build => 1,
+);
+
+sub process_and_send {
+    my ($self) = @_;
+
+    my @group_ids = @{ $self->groups || [] };
+
+    my $recipient_rs = $self->politician->recipients->only_opt_in->search_by_group_ids(@group_ids)->search(
+    	{},
+    	{
+    		'+select' => [ \"COUNT(1) OVER(PARTITION BY 1)" ],
+    		'+as'     => ['total'],
+    	}
+    );
+
+    my $type_id = $self->type_id;
+
+    # Campanha de mensagem no Facebook
+    if ( $type_id == 1 ) {
+        $self->send_dm_facebook($recipient_rs);
+    }
+    else {
+        die 'fail while sending campaign';
+    }
+}
+
+sub send_dm_facebook {
+    my ($self, $recipient_rs) = @_;
+
+    my $req = $self->direct_message->build_message_object();
+
+    my $count = 0;
+    while (my $recipient = $recipient_rs->next()) {
+        # Mando para o httpcallback
+        $self->_httpcb->add(
+            url     => $ENV{FB_API_URL} . '/me/messages?access_token=' . $self->politician->fb_page_access_token,
+            method  => "post",
+            headers => 'Content-Type: application/json',
+            body    => encode_json {
+                messaging_type => "UPDATE",
+                recipient => {
+                    id => $recipient->fb_id
+                },
+                message => $req
+            }
+        );
+
+        $count++;
+    }
+    $self->_httpcb->wait_for_all_responses();
+
+    $self->update( { count => $count } );
+}
+
+sub send_email {
+    # TODO
+}
+
+sub _build__httpcb { WebService::HttpCallback::Async->instance }
+
 __PACKAGE__->meta->make_immutable;
 1;

@@ -45,7 +45,14 @@ sub root : Chained('/api/politician/object') : PathPart('') : CaptureArgs(0) {
     }
 }
 
-sub base : Chained('root') : PathPart('direct-message') : CaptureArgs(0) { }
+sub base : Chained('root') : PathPart('direct-message') : CaptureArgs(0) {
+    my ($self, $c) = @_;
+
+    $c->stash->{collection} = $c->model('DB::DirectMessage')->search(
+        { 'campaign.politician_id' => $c->stash->{politician}->id },
+        { prefetch => 'campaign' }
+    );
+}
 
 sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }
 
@@ -128,10 +135,11 @@ sub list_GET {
                     +{
                         campaign_id         => $dm->get_column('campaign_id'),
                         content             => $dm->get_column('content') ? $dm->get_column('content') : '(Campanha realizada com mídia de imagem ou áudio)',
-                        created_at          => $dm->get_column('created_at'),
+                        created_at          => $dm->campaign->get_column('created_at'),
                         name                => $dm->get_column('name'),
                         saved_attachment_id => $dm->get_column('saved_attachment_id'),
-                        count               => $dm->get_column('count'),
+                        count               => $dm->campaign->get_column('count'),
+                        status              => $dm->campaign->status->get_column('name'),
                         groups      => [
                             map {
                                 my $g = $_;
@@ -144,11 +152,12 @@ sub list_GET {
                         ]
                     }
                 } $c->stash->{collection}->search(
-                    { politician_id => $politician_id },
+                    { 'campaign.politician_id' => $c->stash->{politician}->id },
                     {
+                        prefetch => { 'campaign' => 'status' },
                         page     => $page,
                         rows     => $results,
-                        order_by => { -desc => 'created_at' }
+                        order_by => { -desc => 'campaign.created_at' }
                     }
                 )->all()
             ]
