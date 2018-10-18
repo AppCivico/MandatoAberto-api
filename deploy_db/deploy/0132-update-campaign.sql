@@ -12,6 +12,7 @@ CREATE TABLE campaign_status (
 INSERT INTO campaign_status (id, name) VALUES (1, 'processing'), (2, 'sent'), (3, 'error');
 
 ALTER TABLE campaign ADD COLUMN status_id INTEGER REFERENCES campaign_status(id) NOT NULL DEFAULT 1;
+ALTER TABLE campaign ADD COLUMN updated_at TIMESTAMP WITHOUT TIME ZONE;
 ALTER TABLE campaign ADD COLUMN count INTEGER;
 ALTER TABLE campaign ADD COLUMN groups INTEGER[];
 UPDATE campaign AS c SET count = dm.count FROM direct_message AS dm WHERE c.id = dm.campaign_id;

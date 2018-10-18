@@ -160,7 +160,7 @@ sub action_specs {
                 my $politician    = $self->result_source->schema->resultset("Politician")->find($politician_id);
 
                 my $access_token = $politician->fb_page_access_token;
-                die \['politician_id', 'politician does not have active Facebook page access_token'] if $access_token eq 'undef';
+                die \['politician_id', 'politician does not have active Facebook page access_token'] unless $access_token;
 
                 my $campaign = $politician->campaigns->create(
                     {
@@ -172,10 +172,6 @@ sub action_specs {
                 $values{campaign_id} = $campaign->id;
 
                 $direct_message = $self->create(\%values);
-
-                # Este método no result que é responsável por verificar
-                # que tipo de campanha que é e disparar
-                $campaign->process_and_send();
             });
 
             return $direct_message;

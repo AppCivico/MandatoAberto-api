@@ -75,6 +75,11 @@ __PACKAGE__->table("campaign");
   is_foreign_key: 1
   is_nullable: 0
 
+=head2 updated_at
+
+  data_type: 'timestamp'
+  is_nullable: 1
+
 =head2 count
 
   data_type: 'integer'
@@ -113,6 +118,8 @@ __PACKAGE__->add_columns(
     is_foreign_key => 1,
     is_nullable    => 0,
   },
+  "updated_at",
+  { data_type => "timestamp", is_nullable => 1 },
   "count",
   { data_type => "integer", is_nullable => 0 },
   "groups",
@@ -209,8 +216,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-10-18 11:56:57
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:xLYwssX24otFBmAOu83jcw
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-10-18 15:36:37
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:vYuJgZ/hxEtMw9XiEMgXjA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
