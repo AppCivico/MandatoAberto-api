@@ -290,6 +290,21 @@ __PACKAGE__->belongs_to(
   { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
 );
 
+=head2 politician_entity_stats
+
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::PoliticianEntityStat>
+
+=cut
+
+__PACKAGE__->has_many(
+  "politician_entity_stats",
+  "MandatoAberto::Schema::Result::PoliticianEntityStat",
+  { "foreign.recipient_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 poll_notification
 
 Type: might_have
@@ -351,8 +366,8 @@ __PACKAGE__->might_have(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-10-04 10:58:11
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:DvA5xAdl4e/STrYqKVD0Qg
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-10-19 15:05:15
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:gu4E3XwDgVdbsP1WZSQfZg
 
 __PACKAGE__->load_components("InflateColumn::Serializer", "Core");
 __PACKAGE__->remove_column('groups');

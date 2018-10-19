@@ -134,3 +134,4 @@
 0130-add-summary-and-triggers [0129-updating-logs] 2018-10-16T17:15:34Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Creating the 'politician_summary' table and creating triggers
 0131-improving-config-trigger [0130-add-summary-and-triggers] 2018-10-17T13:54:21Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Improving the 'config' table trigger
 0132-update-campaign [0131-improving-config-trigger] 2018-10-18T14:55:46Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Updating the 'campaign' table structure
+0133-add-politician_entity_stats [0132-update-campaign] 2018-10-19T18:05:30Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Creating the 'politician_entity_stats' table

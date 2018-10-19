@@ -9,11 +9,11 @@ my $schema = MandatoAberto->model("DB");
 db_transaction {
     my $security_token = $ENV{CHATBOT_SECURITY_TOKEN};
 
-    create_politician(
+    my $politician = create_politician(
         fb_page_id           => fake_words(1)->(),
         fb_page_access_token => fake_words(1)->()
     );
-    my $politician    = $schema->resultset('Politician')->find(stash 'politician.id');
+    $politician       = $schema->resultset('Politician')->find( $politician->{id} );
     my $politician_id = $politician->id;
 
     create_recipient( politician_id => $politician_id );
@@ -58,6 +58,24 @@ db_transaction {
         my $res = shift;
 
         is( scalar @{ $res->{intents} }, 1, '1 available intent' );
+    };
+
+    subtest 'Chatbot | GET available intents (new model)' => sub {
+        rest_get "/api/chatbot/politician/$politician_id/intents/available",
+            name  => 'get available intents',
+            stash => 'get_available_intents_new_model',
+            list  => 1,
+            [
+                security_token => $security_token,
+                fb_page_id     => $politician->fb_page_id
+            ]
+        ;
+
+        stash_test 'get_available_intents_new_model' => sub {
+            my $res = shift;
+
+            is( scalar @{ $res->{intents} }, 1, '1 available intent' );
+        };
     };
 };
 
