@@ -5,16 +5,13 @@ use namespace::autoclean;
 
 BEGIN { extends 'CatalystX::Eta::Controller::REST' }
 
-with "CatalystX::Eta::Controller::AutoBase";
-
-__PACKAGE__->config(
-    # AutoBase.
-    result => "DB::PoliticianChatbot",
-);
-
 sub root : Chained('/api/chatbot/base') : PathPart('') : CaptureArgs(0) { }
 
-sub base : Chained('root') : PathPart('politician') : CaptureArgs(0) {  }
+sub base : Chained('root') : PathPart('politician') : CaptureArgs(0) {
+    my ($self, $c) = @_;
+
+    $c->stash->{collection} = $c->model('DB::Politician');
+}
 
 sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }
 
@@ -122,7 +119,7 @@ sub list_GET {
                     greeting => $politician_greeting ? $politician_greeting->on_facebook : undef
                 }
 
-            } $c->model("DB::Politician")->search(
+            } $c->stash->{collection}->search(
                 { "$cond" => $page_id },
                 { prefetch => [ qw/politician_contacts party office /, { 'politicians_greeting' => 'greeting' } ] }
             )
