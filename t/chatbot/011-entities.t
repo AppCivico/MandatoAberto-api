@@ -76,6 +76,16 @@ db_transaction {
 
             is( scalar @{ $res->{intents} }, 1, '1 available intent' );
         };
+
+        rest_get "/api/chatbot/politician/$politician_id/intents",
+            name  => 'get available intents',
+            stash => 'get_available_intents_new_model',
+            list  => 1,
+            [
+                security_token => $security_token,
+                fb_page_id     => $politician->fb_page_id
+            ]
+        ;
     };
 };
 
