@@ -46,7 +46,7 @@ db_transaction {
             [
                 entity_is_correct => 1,
                 security_token    => $security_token,
-                recipient_id      => $recipient_id
+                recipient_fb_id   => $recipient->fb_id
             ]
         ;
 
