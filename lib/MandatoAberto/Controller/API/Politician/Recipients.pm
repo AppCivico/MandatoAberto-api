@@ -134,6 +134,7 @@ sub list_GET {
                     }
                 } $c->stash->{collection}->all()
             ],
+            itens_count => $c->stash->{collection}->count
         },
     );
 }

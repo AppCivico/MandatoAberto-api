@@ -133,6 +133,8 @@ sub list_GET {
     my $page    = $c->req->params->{page}    || 1;
     my $results = $c->req->params->{results} || 20;
 
+    $c->stash->{collection} = $c->stash->{collection}->search($cond);
+
     return $self->status_ok(
         $c,
         entity => {
@@ -192,7 +194,7 @@ sub list_GET {
                         ]
                     }
                 } $c->stash->{collection}->search(
-                    $cond,
+                    undef,
                     {
                         prefetch => 'recipient',
                         page     => $page,
@@ -200,7 +202,8 @@ sub list_GET {
                         order_by => { '-desc' => 'me.created_at' }
                     }
                   )->all()
-            ]
+            ],
+			itens_count => $c->stash->{collection}->count
         }
     );
 }

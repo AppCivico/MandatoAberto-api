@@ -96,6 +96,8 @@ db_transaction {
     stash_test "get_issues" => sub {
         my $res = shift;
 
+        ok( defined $res->{itens_count}, 'itens_count is defined' );
+
         is ($res->{issues}->[0]->{message}, $message, 'issue message');
         is ($res->{issues}->[0]->{open},  1, 'issue status');
         is ($res->{issues}->[0]->{reply}, undef, 'issue reply');
