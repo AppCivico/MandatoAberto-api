@@ -71,8 +71,9 @@ db_transaction {
             is( ref $res->{logs}->[0]->{description},     '',      'description is a string' );
             is( ref $res->{logs}->[0]->{recipient},       'HASH',  'recipient is a hash' );
 
+			ok( defined $res->{itens_count},              'itens_count is defined' );
             ok( defined $res->{logs}->[0]->{created_at},  'created_at is defined' );
-            ok( defined $res->{logs}->[0]->{description}, 'description is defined' );
+			ok( defined $res->{logs}->[0]->{description}, 'description is defined' );
         };
 
         my $second_recipient;

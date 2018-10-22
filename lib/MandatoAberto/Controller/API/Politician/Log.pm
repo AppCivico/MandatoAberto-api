@@ -40,8 +40,6 @@ sub list_GET {
         }
     );
 
-    my $rs = $c->stash->{politician}->logs;
-
     # Paginação
     my $page    = $c->req->params->{page}    || 1;
     my $results = $c->req->params->{results} || 20;
@@ -64,6 +62,8 @@ sub list_GET {
         $cond{'me.action_id'} = $action_id
     }
 
+    my $rs = $c->stash->{politician}->logs->search(\%cond);
+
     return $self->status_ok(
         $c,
         entity => {
@@ -81,14 +81,15 @@ sub list_GET {
                         }
                     }
                 } $rs->search(
-                    \%cond,
+                    undef,
                     {
                         page     => $page,
                         rows     => $results,
                         order_by => { -desc => 'timestamp' }
                     }
                   )
-            ]
+            ],
+            itens_count => $rs->count
         }
     )
 }
