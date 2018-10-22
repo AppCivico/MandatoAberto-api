@@ -150,7 +150,7 @@ sub list_GET {
                         ]
                     }
                 } $c->stash->{collection}->search(
-                    { 'campaign.politician_id' => $c->stash->{politician}->id },
+                    undef,
                     {
                         prefetch => { 'campaign' => 'status' },
                         page     => $page,
@@ -158,7 +158,8 @@ sub list_GET {
                         order_by => { -desc => 'campaign.created_at' }
                     }
                 )->all()
-            ]
+            ],
+            itens_count => $c->stash->{collection}->count
         }
     );
 }
