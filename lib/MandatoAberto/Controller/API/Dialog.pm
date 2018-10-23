@@ -78,7 +78,8 @@ sub list_GET {
 
                                             +{
                                                 id      => $a->get_column('id'),
-                                                content => $a->get_column('content')
+                                                content => $a->get_column('content'),
+                                                active  => $a->get_column('active')
                                             }
                                         } $c->model("DB::Answer")->search(
                                             {
