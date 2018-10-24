@@ -140,21 +140,53 @@ __PACKAGE__->belongs_to(
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
 
+use JSON::MaybeXS;
+
 sub groups_rs {
-    my ($self, $c) = @_;
+    my ($self) = @_;
 
     return $self->campaign->politician->groups->search(
         { 'me.id' => { 'in' => $self->campaign->groups || [] } }
     );
 }
 
-sub build_message_object {
+sub message_type {
     my ($self) = @_;
 
     my $ret;
+    if ( $self->content && !$self->saved_attachment_id && !$self->attachment_url ) {
+        # Mensagem apenas de texto
+        $ret = 'text';
+    }
+    elsif ( $self->saved_attachment_id && $self->attachment_type && !$self->content ) {
+        # Mensagem apenas de mídia (midia no FB)
+        $ret = 'attachment_on_fb';
+    }
+    elsif ( $self->attachment_url && $self->attachment_type && !$self->content ) {
+        # Mensagem apenas de mídia (midia via URL)
+        $ret = 'attachment_on_web';
+    }
+    elsif ( $self->content && ( $self->saved_attachment_id || $self->attachment_url ) ) {
+        # Mensagem de texto e midia
+        $ret = 'text_and_attachment';
+    }
+    else {
+        die 'failed to identify message type';
+    }
 
-    if ( $self->type eq 'text' ) {
+    return $ret;
+}
 
+sub build_message_object {
+    my ($self) = @_;
+
+    my $message_type = $self->message_type;
+
+    my $ret;
+    if ( $message_type eq 'text' || $message_type eq 'text_and_attachment' ) {
+        # Esse if verifica por tanto text quanto por text_and_attachment
+        # pois o text_and_attachment uma requisição será enviada apenas com a mensagem de texto
+        # e depois uma requisição será enviada apenas com a mídia (thanks facebook).
         $ret = {
             text => $self->content,
             quick_replies => [
@@ -166,9 +198,12 @@ sub build_message_object {
             ]
         };
 
-    }else {
+    }
+    elsif ( $message_type eq 'attachment_on_fb' ) {
 
         # É attachment logo pode ser video, imagem ou template
+        # Obs: quando há o saved_attachment_id significa que recebemos o arquivo
+        # e o enviamos para o Facebook hospedar.
         if ( $self->attachment_type ne 'template' ) {
             $ret = {
                 attachment => {
@@ -184,8 +219,9 @@ sub build_message_object {
                         payload      => 'greetings'
                     }
                 ]
-              };
-        }else {
+            };
+        }
+        else {
 
             # É um template
             $ret = {
@@ -201,6 +237,56 @@ sub build_message_object {
             };
         }
 
+    }
+    elsif ( $message_type eq 'attachment_on_web' ) {
+        # TODO
+    }
+    else {
+        die 'invalid direct_message, check manually';
+    }
+
+    return $ret;
+}
+
+sub build_headers {
+    my ($self, $recipient) = @_;
+
+	my $message_type = $self->message_type;
+
+    my $ret;
+    if ( $message_type eq 'text_and_attachment' ) {
+
+        my $attachment_req = encode_json {
+            url     => $ENV{FB_API_URL} . '/me/messages?access_token=' . $self->campaign->politician->fb_page_access_token,
+            method  => "post",
+            headers => 'Content-Type: application/json',
+            body    => encode_json {
+                messaging_type => "UPDATE",
+                recipient => {
+                    id => $recipient->fb_id
+                },
+                message => {
+                    attachment => {
+                        type    => $self->attachment_type,
+                        payload => {
+                            attachment_id => $self->saved_attachment_id
+                        }
+                    },
+                    quick_replies   => [
+                        {
+                            content_type => 'text',
+                            title        => "Voltar para o início",
+                            payload      => 'greetings'
+                        }
+                    ]
+                }
+            }
+        };
+
+        $ret = [ 'Content-Type: application/json', "next-req: $attachment_req" ];
+    }
+    else {
+        $ret = [ 'Content-Type: application/json' ]
     }
 
     return $ret;

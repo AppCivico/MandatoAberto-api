@@ -42,14 +42,6 @@ sub verifiers_specs {
                     required   => 0,
                     type       => "Str",
                     max_length => 1000,
-                    post_check => sub {
-                        my $content = $_[0]->get_value('content');
-                        my $type    = $_[0]->get_value('type');
-
-                        die \['content', 'must not send content if direct message type is attachment'] if $type eq 'attachment';
-
-                        return 1;
-                    }
                 },
                 name => {
                     required  => 0,
@@ -79,35 +71,9 @@ sub verifiers_specs {
                         return 1;
                     }
                 },
-                type => {
-                    required   => 1,
-                    type       => 'Str',
-                    post_check => sub {
-                        my $type    = $_[0]->get_value('type');
-                        my $content = $_[0]->get_value('content');
-
-                        die \['type', 'invalid'] unless $type =~ m/^(text|attachment)$/;
-
-                        if ( $type eq 'text' && !$content ) {
-                            die \['content', 'missing']
-                        }
-
-                        return 1;
-                    }
-                },
                 attachment_type => {
                     required   => 0,
-                    type       => 'Str',
-                    post_check => sub {
-                        my $direct_message_type = $_[0]->get_value('type');
-                        my $attachment_type     = $_[0]->get_value('attachment_type');
-
-                        die \['attachment_type', 'not allowed when direct message type is text'] if $direct_message_type eq 'text';
-
-                        die \['attachment_type', 'invalid'] unless $attachment_type =~ m/^(image|audio|file|video|template)$/;
-
-                        return 1;
-                    }
+                    type       => 'Str'
                 },
                 attachment_template => {
                     required   => 0,
@@ -156,8 +122,13 @@ sub action_specs {
 
             my $direct_message;
             $self->result_source->schema->txn_do(sub{
+                # Ao menos um deve estar preenchido
+                if ( !$values{content} && !$values{saved_attachment_id} && !$values{attachment_url} ) {
+                    die \['content', 'must have at least one param.'];
+                }
+
                 my $politician_id = delete $values{politician_id};
-                my $politician    = $self->result_source->schema->resultset("Politician")->find($politician_id);
+                my $politician    = $self->result_source->schema->resultset('Politician')->find($politician_id);
 
                 my $access_token = $politician->fb_page_access_token;
                 die \['politician_id', 'politician does not have active Facebook page access_token'] unless $access_token;

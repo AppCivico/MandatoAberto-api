@@ -266,21 +266,23 @@ sub process_and_send {
 sub send_dm_facebook {
     my ($self, $recipient_rs) = @_;
 
-    my $req = $self->direct_message->build_message_object();
+    my $message = $self->direct_message->build_message_object();
 
     my $count = 0;
     while (my $recipient = $recipient_rs->next()) {
+        my $headers = $self->direct_message->build_headers( $recipient );
+
         # Mando para o httpcallback
         $self->_httpcb->add(
             url     => $ENV{FB_API_URL} . '/me/messages?access_token=' . $self->politician->fb_page_access_token,
             method  => "post",
-            headers => 'Content-Type: application/json',
+            headers => $headers,
             body    => encode_json {
                 messaging_type => "UPDATE",
                 recipient => {
                     id => $recipient->fb_id
                 },
-                message => $req
+                message => $message
             }
         );
 
