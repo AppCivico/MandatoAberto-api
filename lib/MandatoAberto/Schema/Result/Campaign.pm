@@ -90,6 +90,11 @@ __PACKAGE__->table("campaign");
   data_type: 'integer[]'
   is_nullable: 1
 
+=head2 err_reason
+
+  data_type: 'text'
+  is_nullable: 1
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -124,6 +129,8 @@ __PACKAGE__->add_columns(
   { data_type => "integer", is_nullable => 0 },
   "groups",
   { data_type => "integer[]", is_nullable => 1 },
+  "err_reason",
+  { data_type => "text", is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -216,8 +223,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-10-18 15:36:37
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:vYuJgZ/hxEtMw9XiEMgXjA
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-10-24 15:51:22
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:UjK6zBi5/+M+gZxAQRQOnw
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
