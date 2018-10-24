@@ -58,12 +58,6 @@ __PACKAGE__->table("direct_message");
   is_foreign_key: 1
   is_nullable: 0
 
-=head2 type
-
-  data_type: 'text'
-  default_value: 'text'
-  is_nullable: 0
-
 =head2 quick_replies
 
   data_type: 'json'
@@ -98,8 +92,6 @@ __PACKAGE__->add_columns(
   { data_type => "text", is_nullable => 1 },
   "campaign_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
-  "type",
-  { data_type => "text", default_value => "text", is_nullable => 0 },
   "quick_replies",
   { data_type => "json", is_nullable => 1 },
   "attachment_type",
@@ -142,8 +134,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-10-18 11:56:57
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:byBr+0CiAxewXVft/VHmnw
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-10-24 10:54:23
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:SsbopSvFw+r9hZ/WKZMWkg
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
