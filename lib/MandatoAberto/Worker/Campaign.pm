@@ -79,6 +79,7 @@ sub exec_item {
                     updated_at => \'NOW()',
                 },
             );
+
             return 0;
         }
 

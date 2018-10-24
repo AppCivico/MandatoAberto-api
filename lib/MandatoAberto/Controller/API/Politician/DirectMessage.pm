@@ -76,16 +76,14 @@ sub list_POST {
     my $type = $c->req->params->{type} || 'text';
 
     my $file;
-    if ( $type eq 'attachment' ) {
+    if ( my $upload = $c->req->upload("file") ) {
         die \['attachment_type', 'missing'] unless $c->req->params->{attachment_type};
 
         my $page_access_token = $c->stash->{politician}->fb_page_access_token;
 
-        if ( my $upload = $c->req->upload("file") ) {
-            $file = $self->_upload_picture($upload, $page_access_token);
-            $c->req->params->{saved_attachment_id} = $file->{attachment_id};
-            $c->req->params->{attachment_type}     = $file->{attachment_type};
-        }
+        $file = $self->_upload_picture($upload, $page_access_token);
+        $c->req->params->{saved_attachment_id} = $file->{attachment_id};
+        $c->req->params->{attachment_type}     = $file->{attachment_type};
 
         $c->req->params->{attachment_type} ne 'template' ? () :
           die \['attachment_template', 'missing'] unless $c->req->params->{attachment_template};
@@ -99,7 +97,6 @@ sub list_POST {
             groups              => $groups,
             content             => $c->req->params->{content},
             name                => $c->req->params->{name},
-            type                => $type,
             attachment_type     => $c->req->params->{attachment_type},
             attachment_template => $c->req->params->{attachment_template},
             saved_attachment_id => $c->req->params->{saved_attachment_id},

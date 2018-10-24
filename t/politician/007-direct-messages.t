@@ -234,40 +234,6 @@ db_transaction {
     subtest 'direct message with attachment type' => sub {
 
         rest_post "/api/politician/$politician_id/direct-message",
-            name    => "Must not send 'content' if type is attachment",
-            is_fail => 1,
-            code    => 400,
-            [
-                name    => 'wrong',
-                content => 'foobar',
-                type    => 'attachment'
-            ]
-        ;
-
-        rest_post "/api/politician/$politician_id/direct-message",
-            name    => 'POST without attachment_type',
-            is_fail => 1,
-            code    => 400,
-            [
-                name    => 'foobar',
-                content => 'foobar',
-                type    => 'attachment'
-            ]
-        ;
-
-        rest_post "/api/politician/$politician_id/direct-message",
-            name    => 'POST without attachment url',
-            is_fail => 1,
-            code    => 400,
-            [
-                name            => 'foobar',
-                content         => 'foobar',
-                type            => 'attachment',
-                attachment_type => 'image'
-            ]
-        ;
-
-        rest_post "/api/politician/$politician_id/direct-message",
             name    => 'POST without attachment url',
             params => [
                 name            => 'foobar',
@@ -277,8 +243,9 @@ db_transaction {
             files => { file => "$Bin/picture.jpg" }
         ;
 
-    };
-    rest_post "/api/politician/$politician_id/direct-message",
+		ok( $worker->run_once(), 'run once' );
+
+        rest_post "/api/politician/$politician_id/direct-message",
             name    => 'POST without attachment url',
             params => [
                 name            => 'foobar',
@@ -287,6 +254,35 @@ db_transaction {
             ],
             files => { file => "$Bin/picture.jpg", },
         ;
+
+		ok( $worker->run_once(), 'run once' );
+    };
+
+    subtest 'direct message without any required param' => sub {
+
+        rest_post "/api/politician/$politician_id/direct-message",
+            name    => 'POST without content or attachment',
+            is_fail => 1,
+            code    => 400,
+            params => [ name => 'foobar' ],
+        ;
+    };
+
+    subtest 'direct message with both content and attachment' => sub {
+
+        rest_post "/api/politician/$politician_id/direct-message",
+            name                => 'POST with content and attachment',
+            automatic_load_item => 0,
+            params              => [
+                name            => 'foobar',
+                content         => 'test',
+                attachment_type => 'image',
+            ],
+            files => { file => "$Bin/picture.jpg", },
+        ;
+
+        ok( $worker->run_once(), 'run once' );
+    };
 };
 
 done_testing();
