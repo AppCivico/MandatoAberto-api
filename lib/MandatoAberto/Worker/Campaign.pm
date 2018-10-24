@@ -63,11 +63,11 @@ sub run_once {
 sub exec_item {
     my ($self, $campaign) = @_;
 
-    $self->logger->info(sprintf("Contabilizando o grupo id '%d'.", $campaign->id)) if $self->logger;
+    $self->logger->info(sprintf("Iniciando o envio da campanha id: '%d'.", $campaign->id)) if $self->logger;
 
     $self->schema->txn_do(sub {
         eval {
-            $campaign->process_and_send();
+            $campaign->process_and_send( $self->logger );
         };
         if ($@) {
             $self->logger->logdie(sprintf("Erro ao enviar campanha id '%d'!", $campaign->id)) if $self->logger;

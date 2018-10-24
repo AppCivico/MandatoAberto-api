@@ -240,7 +240,7 @@ has _httpcb => (
 );
 
 sub process_and_send {
-    my ($self) = @_;
+    my ($self, $logger) = @_;
 
     my @group_ids = @{ $self->groups || [] };
 
@@ -251,6 +251,8 @@ sub process_and_send {
     		'+as'     => ['total'],
     	}
     );
+
+    $logger->info(sprintf("Número de contatos que receberão a campanha: '%d'.", $recipient_rs->count)) if $logger;
 
     my $type_id = $self->type_id;
 
