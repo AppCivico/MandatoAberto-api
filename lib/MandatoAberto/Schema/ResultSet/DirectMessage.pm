@@ -157,7 +157,7 @@ sub action_specs {
             my $direct_message;
             $self->result_source->schema->txn_do(sub{
                 my $politician_id = delete $values{politician_id};
-                my $politician    = $self->result_source->schema->resultset("Politician")->find($politician_id);
+                my $politician    = $self->result_source->schema->resultset('Politician')->find($politician_id);
 
                 my $access_token = $politician->fb_page_access_token;
                 die \['politician_id', 'politician does not have active Facebook page access_token'] unless $access_token;
