@@ -76,6 +76,7 @@ sub exec_item {
             $campaign->update(
                 {
                     status_id  => 3,
+                    err_reason => $@,
                     updated_at => \'NOW()',
                 },
             );
