@@ -38,8 +38,9 @@ sub add {
         ),
     );
 
+    use DDP;
     print STDERR "httpcb_res: $res";
-
+    p "httpcb_res: $res";
     return $res;
 }
 
