@@ -40,7 +40,8 @@ sub add {
 
     use DDP;
     print STDERR "httpcb_res: $res";
-    p "httpcb_res: $res";
+    my $v = "httpcb_res: $res";
+    p $v;
     return $res;
 }
 
