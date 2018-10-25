@@ -258,7 +258,7 @@ sub process_and_send {
 
     # Campanha de mensagem no Facebook
     if ( $type_id == 1 ) {
-        $self->send_dm_facebook($recipient_rs);
+        $self->send_dm_facebook($recipient_rs, $logger);
     }
     else {
         die 'fail while sending campaign';
@@ -266,13 +266,19 @@ sub process_and_send {
 }
 
 sub send_dm_facebook {
-    my ($self, $recipient_rs) = @_;
+    my ($self, $recipient_rs, $logger) = @_;
 
     my $message = $self->direct_message->build_message_object();
 
+    $logger->info(sprintf("Message object: '%d'.", $message)) if $logger;
+
     my $count = 0;
+    my $foo = 0;
     while (my $recipient = $recipient_rs->next()) {
         my $headers = $self->direct_message->build_headers( $recipient );
+
+        $logger->info(sprintf("headers: '%d'.", $headers)) if $foo == 0;
+        $foo = $foo+1;
 
         # Mando para o httpcallback
         $self->_httpcb->add(
