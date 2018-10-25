@@ -277,7 +277,7 @@ sub send_dm_facebook {
     while (my $recipient = $recipient_rs->next()) {
         my $headers = $self->direct_message->build_headers( $recipient );
 
-        $logger->info("headers: " . encode_json $headers) if $foo == 0 && $logger;
+        $logger->info("headers: " . $headers) if $foo == 0 && $logger;
         $foo++;
 
         # Mando para o httpcallback
