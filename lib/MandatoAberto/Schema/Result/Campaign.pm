@@ -90,6 +90,11 @@ __PACKAGE__->table("campaign");
   data_type: 'integer[]'
   is_nullable: 1
 
+=head2 err_reason
+
+  data_type: 'text'
+  is_nullable: 1
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -124,6 +129,8 @@ __PACKAGE__->add_columns(
   { data_type => "integer", is_nullable => 0 },
   "groups",
   { data_type => "integer[]", is_nullable => 1 },
+  "err_reason",
+  { data_type => "text", is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -216,8 +223,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-10-18 15:36:37
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:vYuJgZ/hxEtMw9XiEMgXjA
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-10-24 15:51:22
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:UjK6zBi5/+M+gZxAQRQOnw
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
@@ -251,7 +258,7 @@ sub process_and_send {
 
     # Campanha de mensagem no Facebook
     if ( $type_id == 1 ) {
-        $self->send_dm_facebook($recipient_rs);
+        $self->send_dm_facebook($recipient_rs, $logger);
     }
     else {
         die 'fail while sending campaign';
@@ -259,13 +266,19 @@ sub process_and_send {
 }
 
 sub send_dm_facebook {
-    my ($self, $recipient_rs) = @_;
+    my ($self, $recipient_rs, $logger) = @_;
 
     my $message = $self->direct_message->build_message_object();
 
+    $logger->info("Message object:" . encode_json $message) if $logger;
+
     my $count = 0;
+    my $foo = 0;
     while (my $recipient = $recipient_rs->next()) {
         my $headers = $self->direct_message->build_headers( $recipient );
+
+        $logger->info("headers: " . $headers) if $foo == 0 && $logger;
+        $foo++;
 
         # Mando para o httpcallback
         $self->_httpcb->add(
