@@ -283,7 +283,7 @@ sub build_headers {
             }
         };
 
-        $ret = [ 'Content-Type: application/json', "next-req: $attachment_req" ];
+        $ret = "Content-Type: application/json; next-req: $attachment_req" ];
     }
     else {
         $ret = [ 'Content-Type: application/json' ]
