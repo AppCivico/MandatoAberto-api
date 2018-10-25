@@ -70,8 +70,8 @@ sub exec_item {
             $campaign->process_and_send( $self->logger );
         };
         if ($@) {
-            $self->logger->logdie(sprintf("Erro ao enviar campanha id '%d'!", $campaign->id)) if $self->logger;
-            $self->logger->logdie("err_reason: " . $@) if $self->logger;
+            $self->logger->info(sprintf("Erro ao enviar campanha id '%d'!", $campaign->id)) if $self->logger;
+            $self->logger->info("err_reason: " . $@) if $self->logger;
 
             # status_id 3 é 'error'
             $campaign->update(
