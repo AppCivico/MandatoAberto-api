@@ -260,7 +260,7 @@ sub build_headers {
             url     => $ENV{FB_API_URL} . '/me/messages?access_token=' . $self->campaign->politician->fb_page_access_token,
             method  => "post",
             headers => 'Content-Type: application/json',
-            body    => encode_json {
+            body    => {
                 messaging_type => "UPDATE",
                 recipient => {
                     id => $recipient->fb_id
