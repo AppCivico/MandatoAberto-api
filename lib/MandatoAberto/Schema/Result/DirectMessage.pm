@@ -282,8 +282,8 @@ sub build_headers {
                 }
             }
         };
-        use DDP; p $attachment_req;
-        $ret = "Content-Type: application/json; next_req: $attachment_req";
+
+        $ret = "Content-Type: application/json\nnext_req: $attachment_req";
     }
     else {
         $ret = 'Content-Type: application/json'
