@@ -15,6 +15,7 @@ sub generate_access_token {
     my ($self) = @_;
 
     my $access_token = `gcloud auth application-default print-access-token`;
+    print STDERR $access_token;
     die 'fail generating access token for dialogflow' unless $access_token;
 
     $access_token =~ s/\s+$//;
