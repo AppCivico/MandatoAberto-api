@@ -64,7 +64,7 @@ sub verifiers_specs {
                     },
                 },
                 party_id => {
-                    required   => 1,
+                    required   => 0,
                     type       => "Int",
                     post_check => sub {
                         my $party_id = $_[0]->get_value('party_id');
@@ -72,7 +72,7 @@ sub verifiers_specs {
                     }
                 },
                 office_id => {
-                    required   => 1,
+                    required   => 0,
                     type       => "Int",
                     post_check => sub {
                         my $office_id = $_[0]->get_value('office_id');
@@ -190,8 +190,8 @@ sub get_politicians {
                 gender             => $p->gender,
                 address_state      => $p->address_state->name,
                 address_city       => $p->address_city->name,
-                office             => $p->office->name,
-                party              => $p->party->name,
+                office             => $p->office ? $p->office->name : undef,
+                party              => $p->party  ? $p->party->name  : undef,
                 approved           => $p->user->approved,
                 approved_at        => $p->user->approved_at,
                 approved_by        => $p->user->approved_by_admin_id ? $p->user->approved_by_admin->email : undef,

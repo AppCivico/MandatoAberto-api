@@ -57,13 +57,13 @@ __PACKAGE__->table("politician");
 
   data_type: 'integer'
   is_foreign_key: 1
-  is_nullable: 0
+  is_nullable: 1
 
 =head2 office_id
 
   data_type: 'integer'
   is_foreign_key: 1
-  is_nullable: 0
+  is_nullable: 1
 
 =head2 fb_page_id
 
@@ -154,9 +154,9 @@ __PACKAGE__->add_columns(
   "name",
   { data_type => "text", is_nullable => 0 },
   "party_id",
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
   "office_id",
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
   "fb_page_id",
   { data_type => "text", is_nullable => 1 },
   "fb_page_access_token",
@@ -340,7 +340,12 @@ __PACKAGE__->belongs_to(
   "office",
   "MandatoAberto::Schema::Result::Office",
   { id => "office_id" },
-  { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
+  {
+    is_deferrable => 0,
+    join_type     => "LEFT",
+    on_delete     => "NO ACTION",
+    on_update     => "NO ACTION",
+  },
 );
 
 =head2 party
@@ -355,7 +360,12 @@ __PACKAGE__->belongs_to(
   "party",
   "MandatoAberto::Schema::Result::Party",
   { id => "party_id" },
-  { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
+  {
+    is_deferrable => 0,
+    join_type     => "LEFT",
+    on_delete     => "NO ACTION",
+    on_update     => "NO ACTION",
+  },
 );
 
 =head2 politician_chatbot_conversations
@@ -569,8 +579,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-10-17 14:54:51
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:obzFV1VYTg83PlFO4c0G1w
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-10-31 16:23:53
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:SaJQjnnOojLCBrX5pERxBQ
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

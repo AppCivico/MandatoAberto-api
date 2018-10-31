@@ -122,34 +122,6 @@ db_transaction {
         ]
     ;
 
-    rest_post "/api/register/politician",
-        name    => "politician without party",
-        is_fail => 1,
-        [
-            email            => fake_email()->(),
-            password         => '1234567',
-            name             => 'Lucas Ansei',
-            address_state_id => 26,
-            address_city_id  => 9508,
-            office_id        => fake_int(1, 8)->(),
-            gender           => fake_pick(qw/F M/)->(),
-        ]
-    ;
-
-    rest_post "/api/register/politician",
-        name    => "politician without office",
-        is_fail => 1,
-        [
-            email            => fake_email()->(),
-            password         => '1234567',
-            name             => 'Lucas Ansei',
-            address_state_id => 26,
-            address_city_id  => 9508,
-            party_id         => fake_int(1, 35)->(),
-            gender           => fake_pick(qw/F M/)->(),
-        ]
-    ;
-
     # Partido e cargo devem ser integers
     rest_post "/api/register/politician",
         name    => "politician with invalid party",
