@@ -316,6 +316,21 @@ db_transaction {
         is ($res->{twitter_id}, '707977922439733248', 'twitter id');
     };
 
+    rest_put "/api/politician/$politician_id",
+        name => "Removing party and office",
+        [
+            office_id => 0,
+            party_id  => 0
+        ]
+    ;
+
+    rest_reload_list "get_politician";
+
+    stash_test "get_politician.list" => sub {
+        my $res = shift;
+
+        # is ($res->{party}->id, '707977922439733248', 'twitter id');
+    };
 
     create_politician;
     rest_get [ "api", "politician", stash "politician.id" ], name => "can't get other politician", is_fail => 1, code => 403;

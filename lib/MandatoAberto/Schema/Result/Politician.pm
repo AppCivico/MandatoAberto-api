@@ -632,6 +632,9 @@ sub verifiers_specs {
                     type       => "Int",
                     post_check => sub {
                         my $party_id = $_[0]->get_value('party_id');
+
+                        return 1 if $party_id == 0;
+
                         $self->result_source->schema->resultset("Party")->search({ id => $party_id })->count;
                     }
                 },
@@ -640,6 +643,9 @@ sub verifiers_specs {
                     type       => "Int",
                     post_check => sub {
                         my $office_id = $_[0]->get_value('office_id');
+
+                        return 1 if $office_id == 0;
+
                         $self->result_source->schema->resultset("Office")->search({ id => $office_id })->count;
                     }
                 },
@@ -803,6 +809,10 @@ sub action_specs {
 
                     $self->politician_private_reply_config->update( { active => $private_reply_activated } );
                 }
+
+                # Tratando possibilidade de retirar partido e cargo
+				$values{party_id}  = undef if defined $values{party_id}  && $values{party_id} == 0;
+				$values{office_id} = undef if defined $values{office_id} && $values{office_id} == 0;
 
                 # Caso ocorra mudança no fb_page_id e o político possuir integração do voto legal
                 # devo avisar o novo page_id ao voto legal

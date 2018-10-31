@@ -96,9 +96,9 @@ sub result_GET {
 
             ( city => {map { $_ => $c->stash->{politician}->address_city->$_ } qw/name id/}  ),
 
-            ( party => { map { $_ => $c->stash->{politician}->party->$_ } qw/acronym name id/ } ),
+            ( $c->stash->{politician}->party ? ( party => { map { $_ => $c->stash->{politician}->party->$_ } qw/acronym name id/ } ) : ( ) ),
 
-            ( office => { map { $_ => $c->stash->{politician}->office->$_ } qw/id name/ } ),
+            ( $c->stash->{politician}->office ? ( office => { map { $_ => $c->stash->{politician}->office->$_ } qw/id name/ } ) : ( ) ),
 
             (
                 contact => {
