@@ -167,7 +167,7 @@ sub action_specs {
                 $user->send_email_confirmation();
 
                 my $entity_rs = $self->result_source->schema->resultset('PoliticianEntity');
-                $entity_rs->sync_dialogflow_one_politician($politician->id);
+                # $entity_rs->sync_dialogflow_one_politician($politician->id);
             });
 
             return $politician

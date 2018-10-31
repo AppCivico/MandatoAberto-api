@@ -27,7 +27,7 @@ db_transaction {
         ]
     ;
 
-    is($schema->resultset('PoliticianEntity')->count, "3", "3 entities created");
+    # is($schema->resultset('PoliticianEntity')->count, "3", "3 entities created");
     is($schema->resultset('EmailQueue')->count, "2", "greetings and new register emails");
 
     is (
