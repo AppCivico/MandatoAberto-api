@@ -273,12 +273,8 @@ sub send_dm_facebook {
     $logger->info("Message object:" . encode_json $message) if $logger;
 
     my $count = 0;
-    my $foo = 0;
     while (my $recipient = $recipient_rs->next()) {
         my $headers = $self->direct_message->build_headers( $recipient );
-
-        $logger->info("headers: " . $headers) if $foo == 0 && $logger;
-        $foo++;
 
         # Mando para o httpcallback
         $self->_httpcb->add(
