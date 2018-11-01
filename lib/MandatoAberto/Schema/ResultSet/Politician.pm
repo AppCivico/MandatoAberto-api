@@ -166,7 +166,7 @@ sub action_specs {
                 $politician->send_new_register_email();
                 $user->send_email_confirmation();
 
-                my $entity_rs = $self->result_source->schema->resultset('PoliticianEntity');
+                # my $entity_rs = $self->result_source->schema->resultset('PoliticianEntity');
                 # $entity_rs->sync_dialogflow_one_politician($politician->id);
             });
 
