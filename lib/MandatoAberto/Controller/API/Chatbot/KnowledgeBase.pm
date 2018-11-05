@@ -8,16 +8,13 @@ use Encode;
 
 BEGIN { extends 'CatalystX::Eta::Controller::REST' }
 
-with "CatalystX::Eta::Controller::AutoBase";
-
-__PACKAGE__->config(
-    # AutoBase.
-    result => "DB::PoliticianKnowledgeBase",
-);
-
 sub root : Chained('/api/chatbot/base') : PathPart('') : CaptureArgs(0) { }
 
-sub base : Chained('root') : PathPart('knowledge-base') : CaptureArgs(0) {  }
+sub base : Chained('root') : PathPart('knowledge-base') : CaptureArgs(0) {
+    my ($self, $c) = @_;
+
+    $c->stash->{collection} = $c->model('DB::PoliticianKnowledgeBase');
+}
 
 sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }
 
@@ -46,6 +43,7 @@ sub list_GET {
     if ($@) {
 
         if ( $politician->politician_entities->entity_exists($entities) ) {
+            $entities = lc $entities;
             push @entities_names, $entities;
         }
     }
@@ -58,7 +56,10 @@ sub list_GET {
         }
 
         # TODO melhorar esse bloco
-        push @entities_names, $entities->{result}->{metadata}->{intentName};
+        my $entity_name = $entities->{result}->{metadata}->{intentName};
+        $entity_name    = lc $entity_name;
+
+        push @entities_names, $entity_name;
     }
 
     $c->stash->{collection} = $c->stash->{collection}->get_knowledge_base_by_entity_name(@entities_names);

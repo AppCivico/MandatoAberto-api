@@ -7,17 +7,10 @@ use Scalar::Util qw(looks_like_number);
 BEGIN { extends "CatalystX::Eta::Controller::REST" }
 
 with "CatalystX::Eta::Controller::AutoBase";
-with "CatalystX::Eta::Controller::AutoResultGET";
 
 __PACKAGE__->config(
     # AutoBase.
     result => "DB::Poll",
-
-    # AutoListGET
-    list_key => "poll",
-    build_row  => sub {
-        return { $_[0]->get_columns() };
-    }
 );
 
 sub root : Chained('/api/politician/object') : PathPart('') : CaptureArgs(0) {
@@ -152,7 +145,45 @@ sub list_POST {
 
 sub result : Chained('object') : PathPart('') : Args(0) : ActionClass('REST') { }
 
-sub result_GET { }
+sub result_GET {
+    my ($self, $c) = @_;
+
+    $c->stash->{collection} = $c->stash->{collection}->next;
+
+    return $self->status_ok(
+        $c,
+        entity => {
+            id        => $c->stash->{collection}->id,
+            name      => $c->stash->{collection}->name,
+            status_id => $c->stash->{collection}->status_id,
+
+            questions => [
+                map {
+                    my $pq = $_;
+
+                    +{
+                        id      => $pq->get_column('id'),
+                        content => $pq->get_column('content'),
+
+                        options => [
+                            map {
+                                my $qo = $_;
+
+                                +{
+                                    id      => $qo->get_column('id'),
+                                    content => $qo->get_column('content'),
+                                    count   => $qo->poll_results->search( { origin => 'propagate' } )->count,
+                                  }
+                            } $pq->poll_question_options->all()
+                        ]
+                    }
+
+                } $c->stash->{collection}->poll_questions->all()
+            ]
+
+        }
+    );
+}
 
 sub propagate_list : Chained('base') : PathPart('propagate') : Args(0) : ActionClass('REST') { }
 

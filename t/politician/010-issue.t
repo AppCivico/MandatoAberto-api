@@ -96,6 +96,8 @@ db_transaction {
     stash_test "get_issues" => sub {
         my $res = shift;
 
+        ok( defined $res->{itens_count}, 'itens_count is defined' );
+
         is ($res->{issues}->[0]->{message}, $message, 'issue message');
         is ($res->{issues}->[0]->{open},  1, 'issue status');
         is ($res->{issues}->[0]->{reply}, undef, 'issue reply');
@@ -241,6 +243,37 @@ db_transaction {
 
             is( scalar @{ $res->{issues} }, 2, '2 ignored issues' );
         }
+    };
+
+    # Testando batch delete de issues
+    db_transaction{
+        $first_issue->update( { reply => undef, open => 1 } );
+        $second_issue->update( { reply => undef, open => 1 } );
+
+        $first_issue  = $first_issue->discard_changes;
+        $second_issue = $second_issue->discard_changes;
+
+        rest_put "/api/politician/$politician_id/issue/batch-delete",
+          name    => 'batch delete without ids',
+          is_fail => 1,
+          code    => 400;
+
+        rest_put "/api/politician/$politician_id/issue/batch-delete",
+          name => 'batch delete',
+          code => 200,
+          [ ids => "$first_issue_id, $second_issue_id" ];
+
+        rest_get "/api/politician/$politician_id/issue",
+          name  => 'get deleted issues',
+          stash => 'get_deleted_issues',
+          list  => 1,
+          [ filter => 'open' ];
+
+        stash_test 'get_deleted_issues' => sub {
+            my $res = shift;
+
+            is( scalar @{ $res->{issues} }, 0, '0 issues' );
+          }
     };
 
     # Criando um grupo para adicionar o recipiente

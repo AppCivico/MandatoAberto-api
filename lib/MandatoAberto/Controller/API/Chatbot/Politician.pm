@@ -5,16 +5,24 @@ use namespace::autoclean;
 
 BEGIN { extends 'CatalystX::Eta::Controller::REST' }
 
-with "CatalystX::Eta::Controller::AutoBase";
-
-__PACKAGE__->config(
-    # AutoBase.
-    result => "DB::PoliticianChatbot",
-);
-
 sub root : Chained('/api/chatbot/base') : PathPart('') : CaptureArgs(0) { }
 
-sub base : Chained('root') : PathPart('politician') : CaptureArgs(0) {  }
+sub base : Chained('root') : PathPart('politician') : CaptureArgs(0) {
+    my ($self, $c) = @_;
+
+    $c->stash->{collection} = $c->model('DB::Politician');
+}
+
+sub object : Chained('base') : PathPart('') : CaptureArgs(1) {
+    my ($self, $c, $politician_id) = @_;
+
+    $c->stash->{collection} = $c->stash->{collection}->search( { user_id => $politician_id } );
+
+	my $politician = $c->stash->{collection}->find($politician_id);
+	$c->detach("/error_404") unless ref $politician;
+
+	$c->stash->{politician} = $politician;
+}
 
 sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }
 
@@ -55,6 +63,7 @@ sub list_GET {
 
                 +{
                     user_id        => $p->get_column('user_id'),
+                    id             => $p->get_column('user_id'),
                     name           => $p->get_column('name'),
                     gender         => $p->get_column('gender'),
                     address_city   => $p->get_column('address_city_id'),
@@ -62,6 +71,7 @@ sub list_GET {
                     picframe_url   => $p->get_column('share_url'),
                     picframe_text  => $p->get_column('share_text'),
                     use_dialogflow => $p->get_column('use_dialogflow'),
+                    issue_active   => $p->get_column('issue_active'),
 
                     share => {
                         url  => $p->get_column('share_url'),
@@ -116,12 +126,12 @@ sub list_GET {
                             facebook  => $c->get_column('facebook'),
                             url       => $c->get_column('url'),
                             twitter   => $c->get_column('twitter'),
-                        } $p->politician_contacts->all()
+                        } $p->politician_contacts->search( { 'me.active' => 1 } )->all()
                     },
                     greeting => $politician_greeting ? $politician_greeting->on_facebook : undef
                 }
 
-            } $c->model("DB::Politician")->search(
+            } $c->stash->{collection}->search(
                 { "$cond" => $page_id },
                 { prefetch => [ qw/politician_contacts party office /, { 'politicians_greeting' => 'greeting' } ] }
             )

@@ -88,6 +88,8 @@ sub action_specs {
             $self->result_source->schema->txn_do(sub{
                 my @entities = @{ $values{entities} };
 
+                my $politician = $self->result_source->schema->resultset('Politician')->find($values{politician_id});
+
                 if ( $values{saved_attachment_id} ) {
                     die \['saved_attachment_type', 'missing'] unless $values{saved_attachment_type};
                 }
@@ -108,6 +110,14 @@ sub action_specs {
                             entities   => \@entities,
                         }
                     );
+
+                    # $politician->logs->create(
+                    #     {
+                    #         timestamp => \'NOW()',
+                    #         action_id => 13,
+                    #         field_id  => $politician_knowledge_base->id
+                    #     }
+                    # )
                 }
                 else {
                     $politician_knowledge_base = $self->create(
@@ -116,6 +126,14 @@ sub action_specs {
                             entities => \@entities,
                         }
                     );
+
+                    # $politician->logs->create(
+                    #     {
+                    #         timestamp => \'NOW()',
+                    #         action_id => 13,
+                    #         field_id  => $politician_knowledge_base->id
+                    #     }
+                    # )
                 }
             });
 

@@ -52,8 +52,7 @@ sub list_POST {
         with => {
             %{ $c->req->params },
             politician_id => $c->user->id,
-          }
-
+        }
     );
 
     return $self->status_ok(

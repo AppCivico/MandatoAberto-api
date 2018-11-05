@@ -64,49 +64,53 @@ sub action_specs {
             my %values = $r->valid_values;
             not defined $values{$_} and delete $values{$_} for keys %values;
 
-            # Caso tenha uma enquete ativa, essa deverá ser desativada
-            # E a nova criada deverá ser já ativada
-            if ($values{status_id} == 1) {
-                my $active_poll = $self->result_source->schema->resultset("Poll")->search(
-                    {
-                        politician_id => $values{politician_id},
-                        status_id     => 1
-                    }
-                );
+            my $poll;
+            $self->result_source->schema->txn_do(sub{
 
-                $active_poll->update(
-                    {
-                        status_id  => 3,
-                        updated_at => \'NOW()',
-                    }
-                ) if $active_poll;
-            }
+                # Caso tenha uma enquete ativa, essa deverá ser desativada
+                # E a nova criada deverá ser já ativada
+                if ($values{status_id} == 1) {
+                    my $active_poll = $self->result_source->schema->resultset("Poll")->search(
+                        {
+                            politician_id => $values{politician_id},
+                            status_id     => 1
+                        }
+                    );
 
-            # Não deve ser permitido criar uma enquete desativada
-            # apenas inativa, pois uma vez desativada
-            # uma enquete não pode ser ativada novamente
-            die \['status_id', 'cannot created deactivated poll'] if $values{status_id} == 3;
-
-            my $poll = $self->create(\%values);
-
-            my $politician = $self->result_source->schema->resultset('Politician')->find($values{politician_id});
-
-            if ( $politician->poll_self_propagation_active ) {
-                my $poll_self_propagation_rs = $self->result_source->schema->resultset('PollSelfPropagationQueue');
-                my @ids = $politician->recipients->search( { page_id => $politician->fb_page_id } )->get_column('id')->all;
-
-                my @queue;
-                for my $id (@ids) {
-                    my $queue = {
-                        recipient_id => $id,
-                        poll_id      => $poll->id
-                    };
-
-                    push @queue, $queue;
+                    $active_poll->update(
+                        {
+                            status_id  => 3,
+                            updated_at => \'NOW()',
+                        }
+                    ) if $active_poll;
                 }
 
-                $poll_self_propagation_rs->populate(\@queue);
-            }
+                # Não deve ser permitido criar uma enquete desativada
+                # apenas inativa, pois uma vez desativada
+                # uma enquete não pode ser ativada novamente
+                die \['status_id', 'cannot created deactivated poll'] if $values{status_id} == 3;
+
+                $poll = $self->create(\%values);
+
+                my $politician = $self->result_source->schema->resultset('Politician')->find($values{politician_id});
+
+                if ( $politician->poll_self_propagation_active ) {
+                    my $poll_self_propagation_rs = $self->result_source->schema->resultset('PollSelfPropagationQueue');
+                    my @ids = $politician->recipients->search( { page_id => $politician->fb_page_id } )->only_opt_in->get_column('id')->all;
+
+                    my @queue;
+                    for my $id (@ids) {
+                        my $queue = {
+                            recipient_id => $id,
+                            poll_id      => $poll->id
+                        };
+
+                        push @queue, $queue;
+                    }
+
+                    $poll_self_propagation_rs->populate(\@queue);
+                }
+            });
 
             return $poll;
         }

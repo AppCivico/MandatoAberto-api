@@ -125,3 +125,16 @@
 0121-add-active-bool [0120-add-deleted-boolean] 2018-09-26T13:44:13Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the 'active' boolean on the 'politician_votolegal_integration'
 0122-add-use_dialogflow [0121-add-active-bool] 2018-10-01T16:26:58Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the 'use_dialogflow' on the 'politician' table
 0123-add-human_name [0122-add-use_dialogflow] 2018-10-02T19:43:27Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding 'human_name' on the 'politician_entities'
+0124-add-log [0123-add-human_name] 2018-10-08T15:05:32Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding log related data
+0125-add-log_action [0124-add-log] 2018-10-08T18:06:15Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding one row on the 'log_action' table
+0126-add-active-bool-on-flows [0125-add-log_action] 2018-10-08T21:50:34Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the 'active' boolean on the: 'politician_contact', 'answer' and 'politician' table
+0127-add-log_action [0126-add-active-bool-on-flows] 2018-10-09T18:11:56Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding two rows to the 'log_action' table
+0128-add-adaptive-chunking [0127-add-log_action] 2018-10-09T18:32:30Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Setting the adaptive chunking on the 'logs' table
+0129-updating-logs [0128-add-adaptive-chunking] 2018-10-16T17:14:34Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Updating the logs table and related as well
+0130-add-summary-and-triggers [0129-updating-logs] 2018-10-16T17:15:34Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Creating the 'politician_summary' table and creating triggers
+0131-improving-config-trigger [0130-add-summary-and-triggers] 2018-10-17T13:54:21Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Improving the 'config' table trigger
+0132-update-campaign [0131-improving-config-trigger] 2018-10-18T14:55:46Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Updating the 'campaign' table structure
+0133-add-politician_entity_stats [0132-update-campaign] 2018-10-19T18:05:30Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Creating the 'politician_entity_stats' table
+0134-remove-type [0133-add-politician_entity_stats] 2018-10-24T13:55:06Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Removing the 'type' column from the 'direct_message' table
+0135-add-err_reason [0134-remove-type] 2018-10-24T18:49:57Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the 'err_reason' on the 'campaign' table
+0136-allow-null-party-and-office [0135-add-err_reason] 2018-10-31T19:37:10Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Allowing null party_id and office_id on politician

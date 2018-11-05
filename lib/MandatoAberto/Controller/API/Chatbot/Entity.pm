@@ -21,11 +21,11 @@ sub list_available : Chained('base') : PathPart('available') : Args(0) : ActionC
 sub list_available_GET {
     my ($self, $c) = @_;
 
-	my $page_id = $c->req->params->{fb_page_id};
-	die \["fb_page_id", "missing"] unless $page_id;
+    my $page_id = $c->req->params->{fb_page_id};
+    die \["fb_page_id", "missing"] unless $page_id;
 
-	my $politician = $c->model("DB::Politician")->search( { fb_page_id => $page_id } )->next;
-	die \['fb_page_id', 'could not find politician with that fb_page_id'] unless $politician;
+    my $politician = $c->model("DB::Politician")->search( { fb_page_id => $page_id } )->next;
+    die \['fb_page_id', 'could not find politician with that fb_page_id'] unless $politician;
 
     my $page    = $c->req->params->{page} || 1;
     my $results = 10;

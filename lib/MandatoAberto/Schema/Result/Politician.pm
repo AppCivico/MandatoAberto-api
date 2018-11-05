@@ -57,13 +57,13 @@ __PACKAGE__->table("politician");
 
   data_type: 'integer'
   is_foreign_key: 1
-  is_nullable: 0
+  is_nullable: 1
 
 =head2 office_id
 
   data_type: 'integer'
   is_foreign_key: 1
-  is_nullable: 0
+  is_nullable: 1
 
 =head2 fb_page_id
 
@@ -140,6 +140,12 @@ __PACKAGE__->table("politician");
   default_value: false
   is_nullable: 0
 
+=head2 issue_active
+
+  data_type: 'boolean'
+  default_value: true
+  is_nullable: 0
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -148,9 +154,9 @@ __PACKAGE__->add_columns(
   "name",
   { data_type => "text", is_nullable => 0 },
   "party_id",
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
   "office_id",
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
   "fb_page_id",
   { data_type => "text", is_nullable => 1 },
   "fb_page_access_token",
@@ -179,6 +185,8 @@ __PACKAGE__->add_columns(
   { data_type => "text", is_nullable => 1 },
   "use_dialogflow",
   { data_type => "boolean", default_value => \"false", is_nullable => 0 },
+  "issue_active",
+  { data_type => "boolean", default_value => \"true", is_nullable => 0 },
 );
 
 =head1 PRIMARY KEY
@@ -255,21 +263,6 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 direct_messages
-
-Type: has_many
-
-Related object: L<MandatoAberto::Schema::Result::DirectMessage>
-
-=cut
-
-__PACKAGE__->has_many(
-  "direct_messages",
-  "MandatoAberto::Schema::Result::DirectMessage",
-  { "foreign.politician_id" => "self.user_id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
-
 =head2 groups
 
 Type: has_many
@@ -296,6 +289,21 @@ Related object: L<MandatoAberto::Schema::Result::Issue>
 __PACKAGE__->has_many(
   "issues",
   "MandatoAberto::Schema::Result::Issue",
+  { "foreign.politician_id" => "self.user_id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+=head2 logs
+
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::Log>
+
+=cut
+
+__PACKAGE__->has_many(
+  "logs",
+  "MandatoAberto::Schema::Result::Log",
   { "foreign.politician_id" => "self.user_id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
@@ -332,7 +340,12 @@ __PACKAGE__->belongs_to(
   "office",
   "MandatoAberto::Schema::Result::Office",
   { id => "office_id" },
-  { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
+  {
+    is_deferrable => 0,
+    join_type     => "LEFT",
+    on_delete     => "NO ACTION",
+    on_update     => "NO ACTION",
+  },
 );
 
 =head2 party
@@ -347,7 +360,12 @@ __PACKAGE__->belongs_to(
   "party",
   "MandatoAberto::Schema::Result::Party",
   { id => "party_id" },
-  { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
+  {
+    is_deferrable => 0,
+    join_type     => "LEFT",
+    on_delete     => "NO ACTION",
+    on_update     => "NO ACTION",
+  },
 );
 
 =head2 politician_chatbot_conversations
@@ -421,6 +439,21 @@ Related object: L<MandatoAberto::Schema::Result::PoliticianPrivateReplyConfig>
 __PACKAGE__->might_have(
   "politician_private_reply_config",
   "MandatoAberto::Schema::Result::PoliticianPrivateReplyConfig",
+  { "foreign.politician_id" => "self.user_id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+=head2 politician_summary
+
+Type: might_have
+
+Related object: L<MandatoAberto::Schema::Result::PoliticianSummary>
+
+=cut
+
+__PACKAGE__->might_have(
+  "politician_summary",
+  "MandatoAberto::Schema::Result::PoliticianSummary",
   { "foreign.politician_id" => "self.user_id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
@@ -546,8 +579,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-10-01 13:35:33
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:rjmKIkvxAhrmmnuaq2LtjQ
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-10-31 16:23:53
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:SaJQjnnOojLCBrX5pERxBQ
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
@@ -599,6 +632,9 @@ sub verifiers_specs {
                     type       => "Int",
                     post_check => sub {
                         my $party_id = $_[0]->get_value('party_id');
+
+                        return 1 if $party_id == 0;
+
                         $self->result_source->schema->resultset("Party")->search({ id => $party_id })->count;
                     }
                 },
@@ -607,6 +643,9 @@ sub verifiers_specs {
                     type       => "Int",
                     post_check => sub {
                         my $office_id = $_[0]->get_value('office_id');
+
+                        return 1 if $office_id == 0;
+
                         $self->result_source->schema->resultset("Office")->search({ id => $office_id })->count;
                     }
                 },
@@ -730,59 +769,76 @@ sub action_specs {
                 $values{share_url}  = undef;
             }
 
-            if ($values{address_city_id} && !$values{address_state_id}) {
-                my $address_state = $self->address_state_id;
+            my $politician;
+            $self->result_source->schema->txn_do(sub {
+                if ($values{address_city_id} && !$values{address_state_id}) {
+                    my $address_state = $self->address_state_id;
 
-                my $new_address_city_id = $self->result_source->schema->resultset("City")->search(
-                    {
-                        'me.id'    => $values{address_city_id},
-                        'state.id' => $address_state
-                    },
-                    { prefetch => 'state' }
-                )->count;
+                    my $new_address_city_id = $self->result_source->schema->resultset("City")->search(
+                        {
+                            'me.id'    => $values{address_city_id},
+                            'state.id' => $address_state
+                        },
+                        { prefetch => 'state' }
+                    )->count;
 
-                die \["address_city_id", "city does not belong to state id: $address_state"] unless $new_address_city_id;
-            }
+                    die \["address_city_id", "city does not belong to state id: $address_state"] unless $new_address_city_id;
+                }
 
-            if ( ( $values{address_state_id} && !$values{address_city_id} ) ) {
-                die \["address_city_id", 'missing'];
-            }
+                if ( ( $values{address_state_id} && !$values{address_city_id} ) ) {
+                    die \["address_city_id", 'missing'];
+                }
 
-            if ($values{new_password} && length $values{new_password} < 6) {
-                die \["new_password", "must have at least 6 characters"];
-            }
+                if ($values{new_password} && length $values{new_password} < 6) {
+                    die \["new_password", "must have at least 6 characters"];
+                }
 
-            if ($values{fb_page_access_token}) {
-                # O access token gerado pela primeira vez é o de vida curta
-                # portanto devo pegar o mesmo e gerar um novo token de vida longa
-                # API do Facebook: https://developers.facebook.com/docs/facebook-login/access-tokens/expiration-and-extension
-                my $short_lived_token = $values{fb_page_access_token};
-                $values{fb_page_access_token} = $self->get_long_lived_access_token($short_lived_token);
+                if ($values{fb_page_access_token}) {
+                    # O access token gerado pela primeira vez é o de vida curta
+                    # portanto devo pegar o mesmo e gerar um novo token de vida longa
+                    # API do Facebook: https://developers.facebook.com/docs/facebook-login/access-tokens/expiration-and-extension
+                    my $short_lived_token = $values{fb_page_access_token};
+                    $values{fb_page_access_token} = $self->get_long_lived_access_token($short_lived_token);
 
-                # Setando o botão get started
-                $self->set_get_started_button_and_persistent_menu($values{fb_page_access_token});
-            }
+                    # Setando o botão get started
+                    $self->set_get_started_button_and_persistent_menu($values{fb_page_access_token});
+                }
 
-            if ( exists $values{private_reply_activated} ) {
-                my $private_reply_activated = delete $values{private_reply_activated};
+                if ( exists $values{private_reply_activated} ) {
+                    my $private_reply_activated = delete $values{private_reply_activated};
 
-                $self->politician_private_reply_config->update( { active => $private_reply_activated } );
-            }
+                    $self->politician_private_reply_config->update( { active => $private_reply_activated } );
+                }
 
-            # Caso ocorra mudança no fb_page_id e o político possuir integração do voto legal
-            # devo avisar o novo page_id ao voto legal
-            # if ( $self->fb_page_id && ( $values{fb_page_id} && $self->has_votolegal_integration() ) ) {
-            #     $self->politician_votolegal_integrations->next->update_votolegal_integration();
-            # }
+                # Tratando possibilidade de retirar partido e cargo
+				$values{party_id}  = undef if defined $values{party_id}  && $values{party_id} == 0;
+				$values{office_id} = undef if defined $values{office_id} && $values{office_id} == 0;
 
-            if ( $values{deactivate_chatbot} ) {
-                $self->deactivate_chatbot();
-            }
-            delete $values{deactivate_chatbot};
+                # Caso ocorra mudança no fb_page_id e o político possuir integração do voto legal
+                # devo avisar o novo page_id ao voto legal
+                # if ( $self->fb_page_id && ( $values{fb_page_id} && $self->has_votolegal_integration() ) ) {
+                #     $self->politician_votolegal_integrations->next->update_votolegal_integration();
+                # }
 
-            $self->user->update( { password => $values{new_password} } ) and delete $values{new_password} if $values{new_password};
+                if ( $values{deactivate_chatbot} ) {
+                    $self->deactivate_chatbot();
+                }
+                delete $values{deactivate_chatbot};
 
-            $self->update(\%values);
+                $self->user->update( { password => $values{new_password} } ) and delete $values{new_password} if $values{new_password};
+
+                $politician = $self->update(\%values);
+
+                # Criando entrada no log
+                # my $log = $self->logs->create(
+                #     {
+                #         timestamp => \'NOW()',
+                #         action_id => 9
+                #     }
+                # );
+            });
+
+            return $politician;
         }
     };
 }

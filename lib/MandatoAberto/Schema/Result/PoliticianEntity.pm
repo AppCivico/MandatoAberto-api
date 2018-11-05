@@ -141,9 +141,24 @@ __PACKAGE__->belongs_to(
   { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
 );
 
+=head2 politician_entity_stats
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-10-02 16:44:31
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:9l5C61R9fA7hEdp9OnlHVw
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::PoliticianEntityStat>
+
+=cut
+
+__PACKAGE__->has_many(
+  "politician_entity_stats",
+  "MandatoAberto::Schema::Result::PoliticianEntityStat",
+  { "foreign.politician_entity_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-10-19 15:05:15
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:SLMiLHfnDfY+lTtVW6xeig
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

@@ -27,7 +27,7 @@ sub add {
     my $uri = URI->new(get_mandatoaberto_httpcb_url_for('/schedule'));
     my @old = %opts;
     while (my ($k, $v) = splice(@old, 0, 2)) {
-        $v = encode_utf8($v);
+        # $v = encode_utf8($v);
 
         $uri->query_param_append($k, $v);
     }
@@ -38,8 +38,10 @@ sub add {
         ),
     );
 
+    use DDP;
     print STDERR "httpcb_res: $res";
-
+    my $v = "httpcb_res: $res";
+    p $v;
     return $res;
 }
 

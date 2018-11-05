@@ -54,8 +54,8 @@ sub result_GET {
     my $recipients_rs = $group->politician->recipients->search(
         {},
         {
-            # page => $page,
-            # rows => $results,
+            page => $page,
+            rows => $results,
         },
     );
 
@@ -223,18 +223,18 @@ sub structure_GET {
                         },
                     ],
 
-					intent => [
-						{
-							name      => 'INTENT_IS',
+                    intent => [
+                        {
+                            name      => 'INTENT_IS',
                             has_field => 0,
-							has_value => 1
-						},
-						{
-							name      => 'INTENT_IS_NOT',
+                            has_value => 1
+                        },
+                        {
+                            name      => 'INTENT_IS_NOT',
                             has_field => 0,
-							has_value => 1
-						},
-					]
+                            has_value => 1
+                        },
+                    ]
                 }
 
         },

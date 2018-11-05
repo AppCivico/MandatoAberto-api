@@ -19,8 +19,11 @@ MandatoAberto::Controller::API::Chatbot	./lib/MandatoAberto/Controller/API/Chatb
 MandatoAberto::Controller::API::Chatbot::Answer	./lib/MandatoAberto/Controller/API/Chatbot/Answer.pm	/^package MandatoAberto::Controller::API::Chatbot::Answer;$/;"	p
 MandatoAberto::Controller::API::Chatbot::BlacklistFacebookMessenger	./lib/MandatoAberto/Controller/API/Chatbot/BlacklistFacebookMessenger.pm	/^package MandatoAberto::Controller::API::Chatbot::BlacklistFacebookMessenger;$/;"	p
 MandatoAberto::Controller::API::Chatbot::Dialog	./lib/MandatoAberto/Controller/API/Chatbot/Dialog.pm	/^package MandatoAberto::Controller::API::Chatbot::Dialog;$/;"	p
+MandatoAberto::Controller::API::Chatbot::Entity	./lib/MandatoAberto/Controller/API/Chatbot/Entity.pm	/^package MandatoAberto::Controller::API::Chatbot::Entity;$/;"	p
 MandatoAberto::Controller::API::Chatbot::Issue	./lib/MandatoAberto/Controller/API/Chatbot/Issue.pm	/^package MandatoAberto::Controller::API::Chatbot::Issue;$/;"	p
 MandatoAberto::Controller::API::Chatbot::KnowledgeBase	./lib/MandatoAberto/Controller/API/Chatbot/KnowledgeBase.pm	/^package MandatoAberto::Controller::API::Chatbot::KnowledgeBase;$/;"	p
+MandatoAberto::Controller::API::Chatbot::Log	./lib/MandatoAberto/Controller/API/Chatbot/Log.pm	/^package MandatoAberto::Controller::API::Chatbot::Log;$/;"	p
+MandatoAberto::Controller::API::Chatbot::Log::Actions	./lib/MandatoAberto/Controller/API/Chatbot/Log/Actions.pm	/^package MandatoAberto::Controller::API::Chatbot::Log::Actions;$/;"	p
 MandatoAberto::Controller::API::Chatbot::Politician	./lib/MandatoAberto/Controller/API/Chatbot/Politician.pm	/^package MandatoAberto::Controller::API::Chatbot::Politician;$/;"	p
 MandatoAberto::Controller::API::Chatbot::Poll	./lib/MandatoAberto/Controller/API/Chatbot/Poll.pm	/^package MandatoAberto::Controller::API::Chatbot::Poll;$/;"	p
 MandatoAberto::Controller::API::Chatbot::PollResult	./lib/MandatoAberto/Controller/API/Chatbot/PollResult.pm	/^package MandatoAberto::Controller::API::Chatbot::PollResult;$/;"	p
@@ -48,6 +51,7 @@ MandatoAberto::Controller::API::Politician::Greeting	./lib/MandatoAberto/Control
 MandatoAberto::Controller::API::Politician::Group	./lib/MandatoAberto/Controller/API/Politician/Group.pm	/^package MandatoAberto::Controller::API::Politician::Group;$/;"	p
 MandatoAberto::Controller::API::Politician::Issue	./lib/MandatoAberto/Controller/API/Politician/Issue.pm	/^package MandatoAberto::Controller::API::Politician::Issue;$/;"	p
 MandatoAberto::Controller::API::Politician::KnowledgeBase	./lib/MandatoAberto/Controller/API/Politician/KnowledgeBase.pm	/^package MandatoAberto::Controller::API::Politician::KnowledgeBase;$/;"	p
+MandatoAberto::Controller::API::Politician::Log	./lib/MandatoAberto/Controller/API/Politician/Log.pm	/^package MandatoAberto::Controller::API::Politician::Log;$/;"	p
 MandatoAberto::Controller::API::Politician::Poll	./lib/MandatoAberto/Controller/API/Politician/Poll.pm	/^package MandatoAberto::Controller::API::Politician::Poll;$/;"	p
 MandatoAberto::Controller::API::Politician::Poll::PollQuestion	./lib/MandatoAberto/Controller/API/Politician/Poll/PollQuestion.pm	/^package MandatoAberto::Controller::API::Politician::Poll::PollQuestion;$/;"	p
 MandatoAberto::Controller::API::Politician::Poll::Propagate	./lib/MandatoAberto/Controller/API/Politician/Poll/Propagate.pm	/^package MandatoAberto::Controller::API::Politician::Poll::Propagate;$/;"	p
@@ -85,6 +89,7 @@ MandatoAberto::Schema::Result::BlacklistFacebookMessenger	./lib/MandatoAberto/Sc
 MandatoAberto::Schema::Result::Campaign	./lib/MandatoAberto/Schema/Result/Campaign.pm	/^package MandatoAberto::Schema::Result::Campaign;$/;"	p
 MandatoAberto::Schema::Result::CampaignType	./lib/MandatoAberto/Schema/Result/CampaignType.pm	/^package MandatoAberto::Schema::Result::CampaignType;$/;"	p
 MandatoAberto::Schema::Result::ChatbotAvailableDialog	./lib/MandatoAberto/Schema/Result/ChatbotAvailableDialog.pm	/^package MandatoAberto::Schema::Result::ChatbotAvailableDialog;$/;"	p
+MandatoAberto::Schema::Result::ChatbotStep	./lib/MandatoAberto/Schema/Result/ChatbotStep.pm	/^package MandatoAberto::Schema::Result::ChatbotStep;$/;"	p
 MandatoAberto::Schema::Result::City	./lib/MandatoAberto/Schema/Result/City.pm	/^package MandatoAberto::Schema::Result::City;$/;"	p
 MandatoAberto::Schema::Result::Dialog	./lib/MandatoAberto/Schema/Result/Dialog.pm	/^package MandatoAberto::Schema::Result::Dialog;$/;"	p
 MandatoAberto::Schema::Result::DirectMessage	./lib/MandatoAberto/Schema/Result/DirectMessage.pm	/^package MandatoAberto::Schema::Result::DirectMessage;$/;"	p
@@ -96,6 +101,8 @@ MandatoAberto::Schema::Result::FacebookSavedAsset	./lib/MandatoAberto/Schema/Res
 MandatoAberto::Schema::Result::Greeting	./lib/MandatoAberto/Schema/Result/Greeting.pm	/^package MandatoAberto::Schema::Result::Greeting;$/;"	p
 MandatoAberto::Schema::Result::Group	./lib/MandatoAberto/Schema/Result/Group.pm	/^package MandatoAberto::Schema::Result::Group;$/;"	p
 MandatoAberto::Schema::Result::Issue	./lib/MandatoAberto/Schema/Result/Issue.pm	/^package MandatoAberto::Schema::Result::Issue;$/;"	p
+MandatoAberto::Schema::Result::Log	./lib/MandatoAberto/Schema/Result/Log.pm	/^package MandatoAberto::Schema::Result::Log;$/;"	p
+MandatoAberto::Schema::Result::LogAction	./lib/MandatoAberto/Schema/Result/LogAction.pm	/^package MandatoAberto::Schema::Result::LogAction;$/;"	p
 MandatoAberto::Schema::Result::Movement	./lib/MandatoAberto/Schema/Result/Movement.pm	/^package MandatoAberto::Schema::Result::Movement;$/;"	p
 MandatoAberto::Schema::Result::MovementDiscount	./lib/MandatoAberto/Schema/Result/MovementDiscount.pm	/^package MandatoAberto::Schema::Result::MovementDiscount;$/;"	p
 MandatoAberto::Schema::Result::Office	./lib/MandatoAberto/Schema/Result/Office.pm	/^package MandatoAberto::Schema::Result::Office;$/;"	p
@@ -107,6 +114,7 @@ MandatoAberto::Schema::Result::PoliticianEntity	./lib/MandatoAberto/Schema/Resul
 MandatoAberto::Schema::Result::PoliticianGreeting	./lib/MandatoAberto/Schema/Result/PoliticianGreeting.pm	/^package MandatoAberto::Schema::Result::PoliticianGreeting;$/;"	p
 MandatoAberto::Schema::Result::PoliticianKnowledgeBase	./lib/MandatoAberto/Schema/Result/PoliticianKnowledgeBase.pm	/^package MandatoAberto::Schema::Result::PoliticianKnowledgeBase;$/;"	p
 MandatoAberto::Schema::Result::PoliticianPrivateReplyConfig	./lib/MandatoAberto/Schema/Result/PoliticianPrivateReplyConfig.pm	/^package MandatoAberto::Schema::Result::PoliticianPrivateReplyConfig;$/;"	p
+MandatoAberto::Schema::Result::PoliticianSummary	./lib/MandatoAberto/Schema/Result/PoliticianSummary.pm	/^package MandatoAberto::Schema::Result::PoliticianSummary;$/;"	p
 MandatoAberto::Schema::Result::PoliticianVotolegalIntegration	./lib/MandatoAberto/Schema/Result/PoliticianVotolegalIntegration.pm	/^package MandatoAberto::Schema::Result::PoliticianVotolegalIntegration;$/;"	p
 MandatoAberto::Schema::Result::Poll	./lib/MandatoAberto/Schema/Result/Poll.pm	/^package MandatoAberto::Schema::Result::Poll;$/;"	p
 MandatoAberto::Schema::Result::PollNotification	./lib/MandatoAberto/Schema/Result/PollNotification.pm	/^package MandatoAberto::Schema::Result::PollNotification;$/;"	p
@@ -129,16 +137,19 @@ MandatoAberto::Schema::Result::UserConfirmation	./lib/MandatoAberto/Schema/Resul
 MandatoAberto::Schema::Result::UserForgotPassword	./lib/MandatoAberto/Schema/Result/UserForgotPassword.pm	/^package MandatoAberto::Schema::Result::UserForgotPassword;$/;"	p
 MandatoAberto::Schema::Result::UserRole	./lib/MandatoAberto/Schema/Result/UserRole.pm	/^package MandatoAberto::Schema::Result::UserRole;$/;"	p
 MandatoAberto::Schema::Result::UserSession	./lib/MandatoAberto/Schema/Result/UserSession.pm	/^package MandatoAberto::Schema::Result::UserSession;$/;"	p
+MandatoAberto::Schema::Result::ViewAvailableEntities	./lib/MandatoAberto/Schema/Result/ViewAvailableEntities.pm	/^package MandatoAberto::Schema::Result::ViewAvailableEntities;$/;"	p
 MandatoAberto::Schema::Result::ViewAvgIssueResponseTime	./lib/MandatoAberto/Schema/Result/ViewAvgIssueResponseTime.pm	/^package MandatoAberto::Schema::Result::ViewAvgIssueResponseTime;$/;"	p
 MandatoAberto::Schema::Result::ViewAvgIssueResponseTimeLastWeek	./lib/MandatoAberto/Schema/Result/ViewAvgIssueResponseTimeLastWeek.pm	/^package MandatoAberto::Schema::Result::ViewAvgIssueResponseTimeLastWeek;$/;"	p
 MandatoAberto::Schema::ResultSet::Answer	./lib/MandatoAberto/Schema/ResultSet/Answer.pm	/^package MandatoAberto::Schema::ResultSet::Answer;$/;"	p
 MandatoAberto::Schema::ResultSet::BlacklistFacebookMessenger	./lib/MandatoAberto/Schema/ResultSet/BlacklistFacebookMessenger.pm	/^package MandatoAberto::Schema::ResultSet::BlacklistFacebookMessenger;$/;"	p
 MandatoAberto::Schema::ResultSet::Campaign	./lib/MandatoAberto/Schema/ResultSet/Campaign.pm	/^package MandatoAberto::Schema::ResultSet::Campaign;$/;"	p
+MandatoAberto::Schema::ResultSet::ChatbotStep	./lib/MandatoAberto/Schema/ResultSet/ChatbotStep.pm	/^package MandatoAberto::Schema::ResultSet::ChatbotStep;$/;"	p
 MandatoAberto::Schema::ResultSet::Dialog	./lib/MandatoAberto/Schema/ResultSet/Dialog.pm	/^package MandatoAberto::Schema::ResultSet::Dialog;$/;"	p
 MandatoAberto::Schema::ResultSet::DirectMessage	./lib/MandatoAberto/Schema/ResultSet/DirectMessage.pm	/^package MandatoAberto::Schema::ResultSet::DirectMessage;$/;"	p
 MandatoAberto::Schema::ResultSet::Entity	./lib/MandatoAberto/Schema/ResultSet/Entity.pm	/^package MandatoAberto::Schema::ResultSet::Entity;$/;"	p
 MandatoAberto::Schema::ResultSet::Group	./lib/MandatoAberto/Schema/ResultSet/Group.pm	/^package MandatoAberto::Schema::ResultSet::Group;$/;"	p
 MandatoAberto::Schema::ResultSet::Issue	./lib/MandatoAberto/Schema/ResultSet/Issue.pm	/^package MandatoAberto::Schema::ResultSet::Issue;$/;"	p
+MandatoAberto::Schema::ResultSet::Log	./lib/MandatoAberto/Schema/ResultSet/Log.pm	/^package MandatoAberto::Schema::ResultSet::Log;$/;"	p
 MandatoAberto::Schema::ResultSet::Movement	./lib/MandatoAberto/Schema/ResultSet/Movement.pm	/^package MandatoAberto::Schema::ResultSet::Movement;$/;"	p
 MandatoAberto::Schema::ResultSet::MovementDiscount	./lib/MandatoAberto/Schema/ResultSet/MovementDiscount.pm	/^package MandatoAberto::Schema::ResultSet::MovementDiscount;$/;"	p
 MandatoAberto::Schema::ResultSet::Politician	./lib/MandatoAberto/Schema/ResultSet/Politician.pm	/^package MandatoAberto::Schema::ResultSet::Politician;$/;"	p
@@ -206,6 +217,7 @@ _upload_picture	./lib/MandatoAberto/Controller/API/Politician/DirectMessage.pm	/
 _upload_picture	./lib/MandatoAberto/Controller/API/Politician/Issue.pm	/^sub _upload_picture {$/;"	s
 _upload_picture	./lib/MandatoAberto/Controller/API/Politician/KnowledgeBase.pm	/^sub _upload_picture {$/;"	s
 _wrap_in_transaction	./lib/MandatoAberto/Role/Verification/TransactionalActions/DBIC.pm	/^sub _wrap_in_transaction {$/;"	s
+action_specs	./lib/MandatoAberto/Schema/Result/Answer.pm	/^sub action_specs {$/;"	s
 action_specs	./lib/MandatoAberto/Schema/Result/Dialog.pm	/^sub action_specs {$/;"	s
 action_specs	./lib/MandatoAberto/Schema/Result/Group.pm	/^sub action_specs {$/;"	s
 action_specs	./lib/MandatoAberto/Schema/Result/Issue.pm	/^sub action_specs {$/;"	s
@@ -225,6 +237,7 @@ action_specs	./lib/MandatoAberto/Schema/ResultSet/Dialog.pm	/^sub action_specs {
 action_specs	./lib/MandatoAberto/Schema/ResultSet/DirectMessage.pm	/^sub action_specs {$/;"	s
 action_specs	./lib/MandatoAberto/Schema/ResultSet/Group.pm	/^sub action_specs {$/;"	s
 action_specs	./lib/MandatoAberto/Schema/ResultSet/Issue.pm	/^sub action_specs {$/;"	s
+action_specs	./lib/MandatoAberto/Schema/ResultSet/Log.pm	/^sub action_specs {$/;"	s
 action_specs	./lib/MandatoAberto/Schema/ResultSet/Movement.pm	/^sub action_specs {$/;"	s
 action_specs	./lib/MandatoAberto/Schema/ResultSet/MovementDiscount.pm	/^sub action_specs {$/;"	s
 action_specs	./lib/MandatoAberto/Schema/ResultSet/Politician.pm	/^sub action_specs {$/;"	s
@@ -248,6 +261,8 @@ add	./lib/WebService/HttpCallback.pm	/^sub add {$/;"	s
 add	./lib/WebService/HttpCallback/Async.pm	/^sub add {$/;"	s
 add_to_group	./lib/MandatoAberto/Schema/Result/Recipient.pm	/^sub add_to_group {$/;"	s
 add_to_politician_entity	./lib/MandatoAberto/Schema/Result/Recipient.pm	/^sub add_to_politician_entity {$/;"	s
+admin	./lib/MandatoAberto/Controller/API/Politician/Log.pm	/^sub admin : Chained('base') : PathPart('admin') : Args(0) : ActionClass('REST') { }$/;"	s
+admin_GET	./lib/MandatoAberto/Controller/API/Politician/Log.pm	/^sub admin_GET {$/;"	s
 apply	./lib/MandatoAberto/Data/Manager.pm	/^sub apply {$/;"	s
 approve	./lib/MandatoAberto/Schema/Result/User.pm	/^sub approve {$/;"	s
 base	./lib/MandatoAberto/Controller/API/Admin.pm	/^sub base : Chained('root') : PathPart('admin') : CaptureArgs(0) { }$/;"	s
@@ -262,8 +277,11 @@ base	./lib/MandatoAberto/Controller/API/Chatbot.pm	/^sub base : Chained('root') 
 base	./lib/MandatoAberto/Controller/API/Chatbot/Answer.pm	/^sub base : Chained('root') : PathPart('answer') : CaptureArgs(0) {  }$/;"	s
 base	./lib/MandatoAberto/Controller/API/Chatbot/BlacklistFacebookMessenger.pm	/^sub base : Chained('root') : PathPart('blacklist') : CaptureArgs(0) { }$/;"	s
 base	./lib/MandatoAberto/Controller/API/Chatbot/Dialog.pm	/^sub base : Chained('root') : PathPart('dialog') : CaptureArgs(0) {  }$/;"	s
+base	./lib/MandatoAberto/Controller/API/Chatbot/Entity.pm	/^sub base : Chained('root') : PathPart('intents') : CaptureArgs(0) { }$/;"	s
 base	./lib/MandatoAberto/Controller/API/Chatbot/Issue.pm	/^sub base : Chained('root') : PathPart('issue') : CaptureArgs(0) {  }$/;"	s
 base	./lib/MandatoAberto/Controller/API/Chatbot/KnowledgeBase.pm	/^sub base : Chained('root') : PathPart('knowledge-base') : CaptureArgs(0) {  }$/;"	s
+base	./lib/MandatoAberto/Controller/API/Chatbot/Log.pm	/^sub base : Chained('root') : PathPart('log') : CaptureArgs(0) { }$/;"	s
+base	./lib/MandatoAberto/Controller/API/Chatbot/Log/Actions.pm	/^sub base : Chained('root') : PathPart('actions') : CaptureArgs(0) { }$/;"	s
 base	./lib/MandatoAberto/Controller/API/Chatbot/Politician.pm	/^sub base : Chained('root') : PathPart('politician') : CaptureArgs(0) {  }$/;"	s
 base	./lib/MandatoAberto/Controller/API/Chatbot/Poll.pm	/^sub base : Chained('root') : PathPart('poll') : CaptureArgs(0) {  }$/;"	s
 base	./lib/MandatoAberto/Controller/API/Chatbot/PollResult.pm	/^sub base : Chained('root') : PathPart('poll-result') : CaptureArgs(0) {  }$/;"	s
@@ -291,6 +309,7 @@ base	./lib/MandatoAberto/Controller/API/Politician/Greeting.pm	/^sub base : Chai
 base	./lib/MandatoAberto/Controller/API/Politician/Group.pm	/^sub base : Chained('root') : PathPart('group') : CaptureArgs(0) {$/;"	s
 base	./lib/MandatoAberto/Controller/API/Politician/Issue.pm	/^sub base : Chained('root') : PathPart('issue') : CaptureArgs(0) { }$/;"	s
 base	./lib/MandatoAberto/Controller/API/Politician/KnowledgeBase.pm	/^sub base : Chained('root') : PathPart('knowledge-base') : CaptureArgs(0) { }$/;"	s
+base	./lib/MandatoAberto/Controller/API/Politician/Log.pm	/^sub base : Chained('root') : PathPart('logs') : CaptureArgs(0) { }$/;"	s
 base	./lib/MandatoAberto/Controller/API/Politician/Poll.pm	/^sub base : Chained('root') : PathPart('poll') : CaptureArgs(0) { }$/;"	s
 base	./lib/MandatoAberto/Controller/API/Politician/Poll/PollQuestion.pm	/^sub base : Chained('root') : PathPart('questions') : CaptureArgs(0) { }$/;"	s
 base	./lib/MandatoAberto/Controller/API/Politician/Poll/Propagate.pm	/^sub base : Chained('root') : PathPart('propagate') : CaptureArgs(0) { }$/;"	s
@@ -306,6 +325,8 @@ base	./lib/MandatoAberto/Controller/API/Register/Dialog.pm	/^sub base : Chained(
 base	./lib/MandatoAberto/Controller/API/Register/Politician.pm	/^sub base : Chained('root') : PathPart('politician') : CaptureArgs(0) { }$/;"	s
 base	./lib/MandatoAberto/Controller/API/Register/Poll.pm	/^sub base : Chained('root') : PathPart('poll') : CaptureArgs(0) {$/;"	s
 base	./lib/MandatoAberto/Controller/API/State.pm	/^sub base : Chained('root') : PathPart('state') : CaptureArgs(0) { }$/;"	s
+batch_delete	./lib/MandatoAberto/Controller/API/Politician/Issue.pm	/^sub batch_delete : Chained('base') : PathPart('batch-delete') : Args(0) : ActionClass('REST') { }$/;"	s
+batch_delete_PUT	./lib/MandatoAberto/Controller/API/Politician/Issue.pm	/^sub batch_delete_PUT {$/;"	s
 batch_ignore	./lib/MandatoAberto/Controller/API/Politician/Issue.pm	/^sub batch_ignore : Chained('base') : PathPart('batch-ignore') : Args(0) : ActionClass('REST') { }$/;"	s
 batch_ignore_PUT	./lib/MandatoAberto/Controller/API/Politician/Issue.pm	/^sub batch_ignore_PUT {$/;"	s
 build_content_object	./lib/MandatoAberto/Schema/Result/Poll.pm	/^sub build_content_object {$/;"	s
@@ -329,7 +350,10 @@ create_intent	./lib/WebService/Dialogflow.pm	/^sub create_intent {$/;"	s
 deactivate_chatbot	./lib/MandatoAberto/Schema/Result/Politician.pm	/^sub deactivate_chatbot {$/;"	s
 deactivate_premium	./lib/MandatoAberto/Schema/Result/Politician.pm	/^sub deactivate_premium {$/;"	s
 default	./lib/MandatoAberto/Controller/Root.pm	/^sub default :Path {$/;"	s
+description	./lib/MandatoAberto/Schema/Result/Log.pm	/^sub description {$/;"	s
 disapprove	./lib/MandatoAberto/Schema/Result/User.pm	/^sub disapprove {$/;"	s
+entities_with_available_knowledge_bases	./lib/MandatoAberto/Schema/ResultSet/PoliticianEntity.pm	/^sub entities_with_available_knowledge_bases {$/;"	s
+entity_exists	./lib/MandatoAberto/Schema/ResultSet/PoliticianEntity.pm	/^sub entity_exists {$/;"	s
 entity_rs	./lib/MandatoAberto/Schema/Result/Issue.pm	/^sub entity_rs {$/;"	s
 entity_rs	./lib/MandatoAberto/Schema/Result/PoliticianKnowledgeBase.pm	/^sub entity_rs {$/;"	s
 entity_rs	./lib/MandatoAberto/Schema/Result/Recipient.pm	/^sub entity_rs {$/;"	s
@@ -341,6 +365,7 @@ exec_item	./lib/MandatoAberto/Worker/Email.pm	/^sub exec_item {$/;"	s
 exec_item	./lib/MandatoAberto/Worker/PollNotification.pm	/^sub exec_item {$/;"	s
 exec_item	./lib/MandatoAberto/Worker/Segmenter.pm	/^sub exec_item {$/;"	s
 execute	./lib/MandatoAberto/Role/Verification.pm	/^sub execute {$/;"	s
+find_human_name	./lib/MandatoAberto/Schema/ResultSet/PoliticianEntity.pm	/^sub find_human_name {$/;"	s
 forbidden	./lib/MandatoAberto/Controller/API.pm	/^sub forbidden : Private {$/;"	s
 forgot_password	./lib/MandatoAberto/Controller/API/Login/ForgotPassword.pm	/^sub forgot_password : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }$/;"	s
 forgot_password_POST	./lib/MandatoAberto/Controller/API/Login/ForgotPassword.pm	/^sub forgot_password_POST {$/;"	s
@@ -352,6 +377,7 @@ gd_run	./script/daemon/DirectMessagesd	/^sub gd_run {$/;"	s
 gd_run	./script/daemon/Emailsd	/^sub gd_run {$/;"	s
 gd_run	./script/daemon/PollNotificationd	/^sub gd_run {$/;"	s
 gd_run	./script/daemon/Segmenterd	/^sub gd_run {$/;"	s
+generate_access_token	./lib/WebService/Dialogflow.pm	/^sub generate_access_token {$/;"	s
 get_activated_poll	./lib/MandatoAberto/Schema/Result/Politician.pm	/^sub get_activated_poll {$/;"	s
 get_active_politician_poll_with_data	./lib/MandatoAberto/Schema/ResultSet/Poll.pm	/^sub get_active_politician_poll_with_data {$/;"	s
 get_answered_dialogs	./lib/MandatoAberto/Schema/ResultSet/Answer.pm	/^sub get_answered_dialogs {$/;"	s
@@ -387,7 +413,7 @@ groups_rs	./lib/MandatoAberto/Schema/Result/PollPropagate.pm	/^sub groups_rs {$/
 groups_rs	./lib/MandatoAberto/Schema/Result/Recipient.pm	/^sub groups_rs {$/;"	s
 has_active_knowledge_base	./lib/MandatoAberto/Schema/Result/PoliticianEntity.pm	/^sub has_active_knowledge_base {$/;"	s
 has_votolegal_integration	./lib/MandatoAberto/Schema/Result/Politician.pm	/^sub has_votolegal_integration {$/;"	s
-human_name	./lib/MandatoAberto/Schema/Result/PoliticianEntity.pm	/^sub human_name {$/;"	s
+human_name_r	./lib/MandatoAberto/Schema/Result/PoliticianEntity.pm	/^sub human_name_r {$/;"	s
 is_test	./lib/MandatoAberto/Utils.pm	/^sub is_test {$/;"	s
 issue_rs	./lib/MandatoAberto/Schema/Result/PoliticianKnowledgeBase.pm	/^sub issue_rs {$/;"	s
 knowledge_base_rs	./lib/MandatoAberto/Schema/Result/PoliticianEntity.pm	/^sub knowledge_base_rs {$/;"	s
@@ -404,6 +430,8 @@ list	./lib/MandatoAberto/Controller/API/Chatbot/BlacklistFacebookMessenger.pm	/^
 list	./lib/MandatoAberto/Controller/API/Chatbot/Dialog.pm	/^sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }$/;"	s
 list	./lib/MandatoAberto/Controller/API/Chatbot/Issue.pm	/^sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }$/;"	s
 list	./lib/MandatoAberto/Controller/API/Chatbot/KnowledgeBase.pm	/^sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }$/;"	s
+list	./lib/MandatoAberto/Controller/API/Chatbot/Log.pm	/^sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }$/;"	s
+list	./lib/MandatoAberto/Controller/API/Chatbot/Log/Actions.pm	/^sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }$/;"	s
 list	./lib/MandatoAberto/Controller/API/Chatbot/Politician.pm	/^sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }$/;"	s
 list	./lib/MandatoAberto/Controller/API/Chatbot/Poll.pm	/^sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }$/;"	s
 list	./lib/MandatoAberto/Controller/API/Chatbot/PollResult.pm	/^sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }$/;"	s
@@ -426,6 +454,7 @@ list	./lib/MandatoAberto/Controller/API/Politician/Greeting.pm	/^sub list : Chai
 list	./lib/MandatoAberto/Controller/API/Politician/Group.pm	/^sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }$/;"	s
 list	./lib/MandatoAberto/Controller/API/Politician/Issue.pm	/^sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }$/;"	s
 list	./lib/MandatoAberto/Controller/API/Politician/KnowledgeBase.pm	/^sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }$/;"	s
+list	./lib/MandatoAberto/Controller/API/Politician/Log.pm	/^sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }$/;"	s
 list	./lib/MandatoAberto/Controller/API/Politician/Poll.pm	/^sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }$/;"	s
 list	./lib/MandatoAberto/Controller/API/Politician/Poll/Propagate.pm	/^sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }$/;"	s
 list	./lib/MandatoAberto/Controller/API/Politician/Recipients.pm	/^sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }$/;"	s
@@ -444,6 +473,7 @@ list_GET	./lib/MandatoAberto/Controller/API/Chatbot/Answer.pm	/^sub list_GET {$/
 list_GET	./lib/MandatoAberto/Controller/API/Chatbot/BlacklistFacebookMessenger.pm	/^sub list_GET {$/;"	s
 list_GET	./lib/MandatoAberto/Controller/API/Chatbot/Dialog.pm	/^sub list_GET {$/;"	s
 list_GET	./lib/MandatoAberto/Controller/API/Chatbot/KnowledgeBase.pm	/^sub list_GET {$/;"	s
+list_GET	./lib/MandatoAberto/Controller/API/Chatbot/Log/Actions.pm	/^sub list_GET {$/;"	s
 list_GET	./lib/MandatoAberto/Controller/API/Chatbot/Politician.pm	/^sub list_GET {$/;"	s
 list_GET	./lib/MandatoAberto/Controller/API/Chatbot/Poll.pm	/^sub list_GET {$/;"	s
 list_GET	./lib/MandatoAberto/Controller/API/Chatbot/PollResult.pm	/^sub list_GET {$/;"	s
@@ -465,6 +495,7 @@ list_GET	./lib/MandatoAberto/Controller/API/Politician/Greeting.pm	/^sub list_GE
 list_GET	./lib/MandatoAberto/Controller/API/Politician/Group.pm	/^sub list_GET {$/;"	s
 list_GET	./lib/MandatoAberto/Controller/API/Politician/Issue.pm	/^sub list_GET {$/;"	s
 list_GET	./lib/MandatoAberto/Controller/API/Politician/KnowledgeBase.pm	/^sub list_GET {$/;"	s
+list_GET	./lib/MandatoAberto/Controller/API/Politician/Log.pm	/^sub list_GET {$/;"	s
 list_GET	./lib/MandatoAberto/Controller/API/Politician/Poll.pm	/^sub list_GET {$/;"	s
 list_GET	./lib/MandatoAberto/Controller/API/Politician/Recipients.pm	/^sub list_GET {$/;"	s
 list_GET	./lib/MandatoAberto/Controller/API/Poll.pm	/^sub list_GET {$/;"	s
@@ -478,6 +509,7 @@ list_POST	./lib/MandatoAberto/Controller/API/Admin/Politician/Approve.pm	/^sub l
 list_POST	./lib/MandatoAberto/Controller/API/Admin/Politician/Premium.pm	/^sub list_POST {$/;"	s
 list_POST	./lib/MandatoAberto/Controller/API/Chatbot/BlacklistFacebookMessenger.pm	/^sub list_POST {$/;"	s
 list_POST	./lib/MandatoAberto/Controller/API/Chatbot/Issue.pm	/^sub list_POST { }$/;"	s
+list_POST	./lib/MandatoAberto/Controller/API/Chatbot/Log.pm	/^sub list_POST {$/;"	s
 list_POST	./lib/MandatoAberto/Controller/API/Chatbot/PollResult.pm	/^sub list_POST { }$/;"	s
 list_POST	./lib/MandatoAberto/Controller/API/Chatbot/PrivateReply.pm	/^sub list_POST { }$/;"	s
 list_POST	./lib/MandatoAberto/Controller/API/Chatbot/Recipient.pm	/^sub list_POST { }$/;"	s
@@ -494,6 +526,8 @@ list_POST	./lib/MandatoAberto/Controller/API/Politician/Recipients/Group.pm	/^su
 list_POST	./lib/MandatoAberto/Controller/API/Politician/VotoLegalIntegration.pm	/^sub list_POST { }$/;"	s
 list_POST	./lib/MandatoAberto/Controller/API/Poll/Question.pm	/^sub list_POST { }$/;"	s
 list_POST	./lib/MandatoAberto/Controller/API/Poll/Question/Option.pm	/^sub list_POST { }$/;"	s
+list_available	./lib/MandatoAberto/Controller/API/Chatbot/Entity.pm	/^sub list_available : Chained('base') : PathPart('available') : Args(0) : ActionClass('REST') { }$/;"	s
+list_available_GET	./lib/MandatoAberto/Controller/API/Chatbot/Entity.pm	/^sub list_available_GET {$/;"	s
 listen_queue	./lib/MandatoAberto/Worker/DirectMessage.pm	/^sub listen_queue {$/;"	s
 listen_queue	./lib/MandatoAberto/Worker/Email.pm	/^sub listen_queue {$/;"	s
 listen_queue	./lib/MandatoAberto/Worker/PollNotification.pm	/^sub listen_queue {$/;"	s
@@ -509,6 +543,7 @@ object	./lib/MandatoAberto/Controller/API/Admin/Movement.pm	/^sub object : Chain
 object	./lib/MandatoAberto/Controller/API/Chatbot/BlacklistFacebookMessenger.pm	/^sub object : Chained('base') : PathPart('') : CaptureArgs(1) {$/;"	s
 object	./lib/MandatoAberto/Controller/API/Dialog.pm	/^sub object : Chained('base') : PathPart('') : CaptureArgs(1) {$/;"	s
 object	./lib/MandatoAberto/Controller/API/Politician.pm	/^sub object : Chained('base') : PathPart('') : CaptureArgs(1) {$/;"	s
+object	./lib/MandatoAberto/Controller/API/Politician/Answer.pm	/^sub object : Chained('base') : PathPart('') : CaptureArgs(1) {$/;"	s
 object	./lib/MandatoAberto/Controller/API/Politician/Entity.pm	/^sub object : Chained('base') : PathPart('') : CaptureArgs(1) { }$/;"	s
 object	./lib/MandatoAberto/Controller/API/Politician/Group.pm	/^sub object : Chained('base') : PathPart('') : CaptureArgs(1) { }$/;"	s
 object	./lib/MandatoAberto/Controller/API/Politician/Issue.pm	/^sub object : Chained('base') : PathPart('') : CaptureArgs(1) {$/;"	s
@@ -537,6 +572,7 @@ result	./lib/MandatoAberto/Controller/API/Admin/Movement.pm	/^sub result : Chain
 result	./lib/MandatoAberto/Controller/API/Chatbot/BlacklistFacebookMessenger.pm	/^sub result : Chained('object') : PathPart('') : Args(0) : ActionClass('REST') { }$/;"	s
 result	./lib/MandatoAberto/Controller/API/Dialog.pm	/^sub result : Chained('object') : PathPart('') :Args(0) : ActionClass('REST') { }$/;"	s
 result	./lib/MandatoAberto/Controller/API/Politician.pm	/^sub result : Chained('object') : PathPart('') : Args(0) : ActionClass('REST') {$/;"	s
+result	./lib/MandatoAberto/Controller/API/Politician/Answer.pm	/^sub result : Chained('object') : PathPart('') : Args(0) : ActionClass('REST') { }$/;"	s
 result	./lib/MandatoAberto/Controller/API/Politician/Entity.pm	/^sub result : Chained('object') : PathPart('') : Args(0) : ActionClass('REST') { }$/;"	s
 result	./lib/MandatoAberto/Controller/API/Politician/Group.pm	/^sub result : Chained('object') : PathPart('') : Args(0) : ActionClass('REST') { }$/;"	s
 result	./lib/MandatoAberto/Controller/API/Politician/Issue.pm	/^sub result : Chained('object') : PathPart('') : Args(0) : ActionClass('REST') { }$/;"	s
@@ -558,7 +594,7 @@ result_GET	./lib/MandatoAberto/Controller/API/Politician/Entity.pm	/^sub result_
 result_GET	./lib/MandatoAberto/Controller/API/Politician/Group.pm	/^sub result_GET {$/;"	s
 result_GET	./lib/MandatoAberto/Controller/API/Politician/Issue.pm	/^sub result_GET {$/;"	s
 result_GET	./lib/MandatoAberto/Controller/API/Politician/KnowledgeBase.pm	/^sub result_GET { }$/;"	s
-result_GET	./lib/MandatoAberto/Controller/API/Politician/Poll.pm	/^sub result_GET { }$/;"	s
+result_GET	./lib/MandatoAberto/Controller/API/Politician/Poll.pm	/^sub result_GET {$/;"	s
 result_GET	./lib/MandatoAberto/Controller/API/Politician/Poll/PollQuestion.pm	/^sub result_GET {$/;"	s
 result_GET	./lib/MandatoAberto/Controller/API/Politician/Recipients.pm	/^sub result_GET { }$/;"	s
 result_GET	./lib/MandatoAberto/Controller/API/Poll/Question.pm	/^sub result_GET { }$/;"	s
@@ -568,6 +604,7 @@ result_PUT	./lib/MandatoAberto/Controller/API/Admin/Dialog/Question.pm	/^sub res
 result_PUT	./lib/MandatoAberto/Controller/API/Admin/Movement.pm	/^sub result_PUT { }$/;"	s
 result_PUT	./lib/MandatoAberto/Controller/API/Dialog.pm	/^sub result_PUT { }$/;"	s
 result_PUT	./lib/MandatoAberto/Controller/API/Politician.pm	/^sub result_PUT { }$/;"	s
+result_PUT	./lib/MandatoAberto/Controller/API/Politician/Answer.pm	/^sub result_PUT {$/;"	s
 result_PUT	./lib/MandatoAberto/Controller/API/Politician/Group.pm	/^sub result_PUT { }$/;"	s
 result_PUT	./lib/MandatoAberto/Controller/API/Politician/Issue.pm	/^sub result_PUT { }$/;"	s
 result_PUT	./lib/MandatoAberto/Controller/API/Politician/KnowledgeBase.pm	/^sub result_PUT { }$/;"	s
@@ -575,6 +612,8 @@ result_PUT	./lib/MandatoAberto/Controller/API/Poll.pm	/^sub result_PUT { }$/;"	s
 result_PUT	./lib/MandatoAberto/Controller/API/Poll/Question.pm	/^sub result_PUT { }$/;"	s
 result_PUT	./lib/MandatoAberto/Controller/API/Poll/Question/Option.pm	/^sub result_PUT { }$/;"	s
 result_PUT	./lib/MandatoAberto/Controller/API/Question.pm	/^sub result_PUT { }$/;"	s
+resultset	./lib/MandatoAberto/Schema/ResultSet/ChatbotStep.pm	/^sub resultset {$/;"	s
+resultset	./lib/MandatoAberto/Schema/ResultSet/Log.pm	/^sub resultset {$/;"	s
 root	./lib/MandatoAberto/Controller/API.pm	/^sub root : Chained('\/') : PathPart('api') : CaptureArgs(0) {$/;"	s
 root	./lib/MandatoAberto/Controller/API/Admin.pm	/^sub root : Chained('\/api\/logged') : PathPart('') : CaptureArgs(0) {$/;"	s
 root	./lib/MandatoAberto/Controller/API/Admin/Dialog.pm	/^sub root : Chained('\/api\/admin\/base') : PathPart('') : CaptureArgs(0) { }$/;"	s
@@ -588,8 +627,11 @@ root	./lib/MandatoAberto/Controller/API/Chatbot.pm	/^sub root : Chained('\/api\/
 root	./lib/MandatoAberto/Controller/API/Chatbot/Answer.pm	/^sub root : Chained('\/api\/chatbot\/base') : PathPart('') : CaptureArgs(0) { }$/;"	s
 root	./lib/MandatoAberto/Controller/API/Chatbot/BlacklistFacebookMessenger.pm	/^sub root : Chained('\/api\/chatbot\/base') : PathPart('') : CaptureArgs(0) { }$/;"	s
 root	./lib/MandatoAberto/Controller/API/Chatbot/Dialog.pm	/^sub root : Chained('\/api\/chatbot\/base') : PathPart('') : CaptureArgs(0) { }$/;"	s
+root	./lib/MandatoAberto/Controller/API/Chatbot/Entity.pm	/^sub root : Chained('\/api\/chatbot\/base') : PathPart('') : CaptureArgs(0) { }$/;"	s
 root	./lib/MandatoAberto/Controller/API/Chatbot/Issue.pm	/^sub root : Chained('\/api\/chatbot\/base') : PathPart('') : CaptureArgs(0) { }$/;"	s
 root	./lib/MandatoAberto/Controller/API/Chatbot/KnowledgeBase.pm	/^sub root : Chained('\/api\/chatbot\/base') : PathPart('') : CaptureArgs(0) { }$/;"	s
+root	./lib/MandatoAberto/Controller/API/Chatbot/Log.pm	/^sub root : Chained('\/api\/chatbot\/base') : PathPart('') : CaptureArgs(0) { }$/;"	s
+root	./lib/MandatoAberto/Controller/API/Chatbot/Log/Actions.pm	/^sub root : Chained('\/api\/chatbot\/log\/base') : PathPart('') : CaptureArgs(0) { }$/;"	s
 root	./lib/MandatoAberto/Controller/API/Chatbot/Politician.pm	/^sub root : Chained('\/api\/chatbot\/base') : PathPart('') : CaptureArgs(0) { }$/;"	s
 root	./lib/MandatoAberto/Controller/API/Chatbot/Poll.pm	/^sub root : Chained('\/api\/chatbot\/base') : PathPart('') : CaptureArgs(0) { }$/;"	s
 root	./lib/MandatoAberto/Controller/API/Chatbot/PollResult.pm	/^sub root : Chained('\/api\/chatbot\/base') : PathPart('') : CaptureArgs(0) { }$/;"	s
@@ -617,6 +659,7 @@ root	./lib/MandatoAberto/Controller/API/Politician/Greeting.pm	/^sub root : Chai
 root	./lib/MandatoAberto/Controller/API/Politician/Group.pm	/^sub root : Chained('\/api\/politician\/object') : PathPart('') : CaptureArgs(0) { }$/;"	s
 root	./lib/MandatoAberto/Controller/API/Politician/Issue.pm	/^sub root : Chained('\/api\/politician\/object') : PathPart('') : CaptureArgs(0) {$/;"	s
 root	./lib/MandatoAberto/Controller/API/Politician/KnowledgeBase.pm	/^sub root : Chained('\/api\/politician\/object') : PathPart('') : CaptureArgs(0) {$/;"	s
+root	./lib/MandatoAberto/Controller/API/Politician/Log.pm	/^sub root : Chained('\/api\/politician\/object') : PathPart('') : CaptureArgs(0) {$/;"	s
 root	./lib/MandatoAberto/Controller/API/Politician/Poll.pm	/^sub root : Chained('\/api\/politician\/object') : PathPart('') : CaptureArgs(0) {$/;"	s
 root	./lib/MandatoAberto/Controller/API/Politician/Poll/PollQuestion.pm	/^sub root : Chained('\/api\/politician\/poll\/object') : PathPart('') : CaptureArgs(0) { }$/;"	s
 root	./lib/MandatoAberto/Controller/API/Politician/Poll/Propagate.pm	/^sub root : Chained('\/api\/politician\/poll\/object') : PathPart('') : CaptureArgs(0) { }$/;"	s
@@ -651,13 +694,17 @@ send_new_register_email	./lib/MandatoAberto/Schema/Result/Politician.pm	/^sub se
 send_premium_activated_email	./lib/MandatoAberto/Schema/Result/Politician.pm	/^sub send_premium_activated_email {$/;"	s
 send_premium_deactivated_email	./lib/MandatoAberto/Schema/Result/Politician.pm	/^sub send_premium_deactivated_email {$/;"	s
 set_get_started_button_and_persistent_menu	./lib/MandatoAberto/Schema/Result/Politician.pm	/^sub set_get_started_button_and_persistent_menu {$/;"	s
+skip_intent	./lib/MandatoAberto/Schema/ResultSet/PoliticianEntity.pm	/^sub skip_intent {$/;"	s
 structure	./lib/MandatoAberto/Controller/API/Politician/Group.pm	/^sub structure : Chained('base') : PathPart('structure') : Args(0) : ActionClass('REST') { }$/;"	s
 structure_GET	./lib/MandatoAberto/Controller/API/Politician/Group.pm	/^sub structure_GET {$/;"	s
 sync_dialogflow	./lib/MandatoAberto/Schema/ResultSet/PoliticianEntity.pm	/^sub sync_dialogflow {$/;"	s
+sync_dialogflow_one_politician	./lib/MandatoAberto/Schema/ResultSet/PoliticianEntity.pm	/^sub sync_dialogflow_one_politician {$/;"	s
 sync_with_dialogflow	./lib/MandatoAberto/Schema/ResultSet/Entity.pm	/^sub sync_with_dialogflow {$/;"	s
 update_recipients	./lib/MandatoAberto/Schema/Result/Group.pm	/^sub update_recipients {$/;"	s
 update_votolegal_integration	./lib/MandatoAberto/Schema/Result/PoliticianVotolegalIntegration.pm	/^sub update_votolegal_integration {$/;"	s
 upload	./lib/MandatoAberto/Uploader.pm	/^sub upload {$/;"	s
+upsert_step	./lib/MandatoAberto/Schema/ResultSet/ChatbotStep.pm	/^sub upsert_step {$/;"	s
+verifiers_specs	./lib/MandatoAberto/Schema/Result/Answer.pm	/^sub verifiers_specs {$/;"	s
 verifiers_specs	./lib/MandatoAberto/Schema/Result/Dialog.pm	/^sub verifiers_specs {$/;"	s
 verifiers_specs	./lib/MandatoAberto/Schema/Result/Group.pm	/^sub verifiers_specs {$/;"	s
 verifiers_specs	./lib/MandatoAberto/Schema/Result/Issue.pm	/^sub verifiers_specs {$/;"	s
@@ -677,6 +724,7 @@ verifiers_specs	./lib/MandatoAberto/Schema/ResultSet/Dialog.pm	/^sub verifiers_s
 verifiers_specs	./lib/MandatoAberto/Schema/ResultSet/DirectMessage.pm	/^sub verifiers_specs {$/;"	s
 verifiers_specs	./lib/MandatoAberto/Schema/ResultSet/Group.pm	/^sub verifiers_specs {$/;"	s
 verifiers_specs	./lib/MandatoAberto/Schema/ResultSet/Issue.pm	/^sub verifiers_specs {$/;"	s
+verifiers_specs	./lib/MandatoAberto/Schema/ResultSet/Log.pm	/^sub verifiers_specs {$/;"	s
 verifiers_specs	./lib/MandatoAberto/Schema/ResultSet/Movement.pm	/^sub verifiers_specs {$/;"	s
 verifiers_specs	./lib/MandatoAberto/Schema/ResultSet/MovementDiscount.pm	/^sub verifiers_specs {$/;"	s
 verifiers_specs	./lib/MandatoAberto/Schema/ResultSet/Politician.pm	/^sub verifiers_specs {$/;"	s

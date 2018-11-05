@@ -131,7 +131,9 @@ sub list_GET {
     }
 
     my $page    = $c->req->params->{page}    || 1;
-    my $results = $c->req->params->{results} || 1000;
+    my $results = $c->req->params->{results} || 20;
+
+    $c->stash->{collection} = $c->stash->{collection}->search($cond);
 
     return $self->status_ok(
         $c,
@@ -192,7 +194,7 @@ sub list_GET {
                         ]
                     }
                 } $c->stash->{collection}->search(
-                    $cond,
+                    undef,
                     {
                         prefetch => 'recipient',
                         page     => $page,
@@ -200,7 +202,8 @@ sub list_GET {
                         order_by => { '-desc' => 'me.created_at' }
                     }
                   )->all()
-            ]
+            ],
+			itens_count => $c->stash->{collection}->count
         }
     );
 }
@@ -282,11 +285,41 @@ sub batch_ignore_PUT {
     die \['ids', 'missing'] unless $ids;
 
     $ids =~ s/(\[|\]|(\s))//g;
-	my @ids = split(',', $ids);
+    my @ids = split(',', $ids);
 
     $c->stash->{collection}->execute(
         $c,
         for  => 'batch_ignore',
+        with => {
+            politician_id => $c->stash->{politician}->id,
+            ids           => \@ids
+        }
+    );
+
+    return $self->status_ok(
+        $c,
+        entity => {
+            sucess => 1
+        }
+    )
+}
+
+sub batch_delete : Chained('base') : PathPart('batch-delete') : Args(0) : ActionClass('REST') { }
+
+sub batch_delete_PUT {
+    my ($self, $c) = @_;
+
+    $c->stash->{collection} = $c->stash->{collection}->search( { politician_id => $c->stash->{politician}->id } );
+
+    my $ids = $c->req->params->{ids};
+    die \['ids', 'missing'] unless $ids;
+
+    $ids =~ s/(\[|\]|(\s))//g;
+    my @ids = split(',', $ids);
+
+    $c->stash->{collection}->execute(
+        $c,
+        for  => 'batch_delete',
         with => {
             politician_id => $c->stash->{politician}->id,
             ids           => \@ids

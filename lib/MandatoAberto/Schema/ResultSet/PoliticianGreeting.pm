@@ -44,22 +44,30 @@ sub action_specs {
             my $r = shift;
 
             my %values = $r->valid_values;
-
             not defined $values{$_} and delete $values{$_} for keys %values;
 
-            my $existent_politician_greeting = $self->search(
-                { politician_id => $values{politician_id} }
-            )->next;
+            my $greeting;
+            $self->result_source->schema->txn_do(sub {
+                my $politician = $self->result_source->schema->resultset('Politician')->find( $values{politician_id} );
 
-            if (!defined $existent_politician_greeting) {
-                my $politician_greeting = $self->create(\%values);
+                my $existent_politician_greeting = $self->search( { politician_id => $politician->id } )->next;
 
-                return $politician_greeting;
-            } else {
-                my $updated_politician_greeting = $existent_politician_greeting->update(\%values);
+                if (!defined $existent_politician_greeting) {
+                    $greeting = $self->create(\%values);
+                } else {
+                    $greeting = $existent_politician_greeting->update(\%values);
+                }
 
-                return $updated_politician_greeting;
-            }
+                # $politician->logs->create(
+                #     {
+                #         timestamp => \'NOW()',
+                #         action_id => 10
+                #     }
+                # );
+
+            });
+
+            return $greeting;
         },
     };
 }

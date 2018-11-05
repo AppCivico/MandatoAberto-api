@@ -9,11 +9,11 @@ my $schema = MandatoAberto->model("DB");
 db_transaction {
     my $security_token = $ENV{CHATBOT_SECURITY_TOKEN};
 
-    create_politician(
+    my $politician = create_politician(
         fb_page_id           => fake_words(1)->(),
         fb_page_access_token => fake_words(1)->()
     );
-    my $politician    = $schema->resultset('Politician')->find(stash 'politician.id');
+    $politician       = $schema->resultset('Politician')->find( $politician->{id} );
     my $politician_id = $politician->id;
 
     create_recipient( politician_id => $politician_id );
@@ -105,8 +105,8 @@ db_transaction {
 
     my $politician_entity_rs = $schema->resultset('PoliticianEntity');
 
-    my $first_entity  = $politician_entity_rs->search( { name => 'Saude' } )->next;
-    my $second_entity = $politician_entity_rs->search( { name => 'Aborto' } )->next;
+    my $first_entity  = $politician_entity_rs->search( { name => 'saude' } )->next;
+    my $second_entity = $politician_entity_rs->search( { name => 'aborto' } )->next;
 
     rest_post "/api/politician/$politician_id/knowledge-base",
         name                => 'creating knowledge base entry (Saude - posicionamento)',
@@ -247,6 +247,25 @@ db_transaction {
         my $res = shift;
 
         is ( scalar @{ $res->{knowledge_base} }, 2, '2 rows' )
+    };
+
+    subtest 'Chatbot | Get knowledge base (new model)' => sub {
+        rest_get "/api/chatbot/politician/$politician_id/knowledge-base",
+            name  => 'get knowledge base new model',
+            stash => 'get_knowledge_base_new_model',
+            list  => 1,
+            [
+                security_token => $security_token,
+                politician_id  => $politician_id,
+                entities       => 'Saude'
+            ]
+        ;
+
+        stash_test 'get_knowledge_base_new_model' => sub {
+            my $res = shift;
+
+            is ( scalar @{ $res->{knowledge_base} }, 2, '2 rows' )
+        };
     };
 };
 

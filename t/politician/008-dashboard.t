@@ -26,11 +26,14 @@ db_transaction {
     ;
     my $question_id = stash "q1.id";
 
-    create_politician(
+    my $politician = create_politician(
         fb_page_id           => fake_words(1)->(),
         fb_page_access_token => fake_words(1)->()
     );
-    my $politician_id = stash "politician.id";
+    my $politician_id = $politician->{id};
+    $politician       = $schema->resultset('Politician')->find($politician_id);
+
+    $politician->user->update( { approved => 1 } );
 
     rest_post "/api/chatbot/recipient",
         name                => "Create recipient",

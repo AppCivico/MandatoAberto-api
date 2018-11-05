@@ -144,11 +144,11 @@ db_transaction {
     ;
 
     rest_reload_list 'get_politician_data';
-	stash_test "get_politician_data.list" => sub {
-		my $res = shift;
+    stash_test "get_politician_data.list" => sub {
+        my $res = shift;
 
-		is( $res->{votolegal_integration}, undef, 'votolegal integration does not exists' );
-	};
+        is( $res->{votolegal_integration}, undef, 'votolegal integration does not exists' );
+    };
 
 };
 

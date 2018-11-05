@@ -27,9 +27,9 @@ __PACKAGE__->config(
         if ( (defined $c->req->params->{picframe_url} && $c->req->params->{picframe_url} eq '') || (defined $c->req->params->{share_url} && $c->req->params->{share_url} eq '') ) {
             $params->{share_url} = 'SET_NULL';
         }
-		if ( (defined $c->req->params->{picframe_text} && $c->req->params->{picframe_text} eq '') || (defined $c->req->params->{share_text} && $c->req->params->{share_text} eq '') ) {
+        if ( (defined $c->req->params->{picframe_text} && $c->req->params->{picframe_text} eq '') || (defined $c->req->params->{share_text} && $c->req->params->{share_text} eq '') ) {
             $params->{share_text} = 'SET_NULL';
-		}
+        }
 
         return $params;
     },
@@ -73,7 +73,7 @@ sub result_GET {
         $facebook_active_page = $c->stash->{politician}->get_current_facebook_page();
     }
 
-    my $votolegal_integration = $c->stash->{politician}->get_votolegal_integration if $c->stash->{politician}->has_votolegal_integration;
+    my $votolegal_integration = $c->stash->{politician}->has_votolegal_integration ? $c->stash->{politician}->get_votolegal_integration : undef ;
 
     my $has_movement = $c->stash->{politician}->movement ? 1 : 0;
 
@@ -96,9 +96,9 @@ sub result_GET {
 
             ( city => {map { $_ => $c->stash->{politician}->address_city->$_ } qw/name id/}  ),
 
-            ( party => { map { $_ => $c->stash->{politician}->party->$_ } qw/acronym name id/ } ),
+            ( $c->stash->{politician}->party ? ( party => { map { $_ => $c->stash->{politician}->party->$_ } qw/acronym name id/ } ) : ( ) ),
 
-            ( office => { map { $_ => $c->stash->{politician}->office->$_ } qw/id name/ } ),
+            ( $c->stash->{politician}->office ? ( office => { map { $_ => $c->stash->{politician}->office->$_ } qw/id name/ } ) : ( ) ),
 
             (
                 contact => {

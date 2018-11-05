@@ -77,7 +77,7 @@ db_transaction {
     my $politician_entity_id = $schema->resultset('PoliticianEntity')->search(
         {
             politician_id => $politician_id,
-            name          => 'Saude'
+            name          => 'saude'
         }
     )->next->id;
 
