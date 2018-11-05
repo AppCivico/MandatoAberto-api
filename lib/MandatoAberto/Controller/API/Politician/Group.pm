@@ -150,8 +150,9 @@ sub list_GET {
     return $self->status_ok(
         $c,
         entity => {
-            total  => $total,
-            groups => \@rows,
+            itens_count => $total,
+            total       => $total,
+            groups      => \@rows,
         }
     );
 }
