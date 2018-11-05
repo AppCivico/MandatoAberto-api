@@ -43,6 +43,10 @@ sub verifiers_specs {
                 custom_url => {
                     required => 0,
                     type     => 'Str'
+                },
+                active => {
+                    required => 1,
+                    type     => 'Bool'
                 }
             }
         ),
@@ -57,7 +61,6 @@ sub action_specs {
             my $r = shift;
 
             my %values = $r->valid_values;
-
             not defined $values{$_} and delete $values{$_} for keys %values;
 
             my $username         = $values{username};

@@ -35,7 +35,7 @@ __PACKAGE__->config(
         my $ignore_flag = $c->req->params->{ignore} || 0;
         $params->{ignore} = $ignore_flag;
 
-		$params->{open} = 0;
+        $params->{open} = 0;
 
         if ($c->req->params->{groups}) {
             $c->req->params->{groups} =~ s/(\[|\]|(\s))//g;
@@ -131,7 +131,9 @@ sub list_GET {
     }
 
     my $page    = $c->req->params->{page}    || 1;
-    my $results = $c->req->params->{results} || 1000;
+    my $results = $c->req->params->{results} || 20;
+
+    $c->stash->{collection} = $c->stash->{collection}->search($cond);
 
     return $self->status_ok(
         $c,
@@ -192,7 +194,7 @@ sub list_GET {
                         ]
                     }
                 } $c->stash->{collection}->search(
-                    $cond,
+                    undef,
                     {
                         prefetch => 'recipient',
                         page     => $page,
@@ -200,7 +202,8 @@ sub list_GET {
                         order_by => { '-desc' => 'me.created_at' }
                     }
                   )->all()
-            ]
+            ],
+			itens_count => $c->stash->{collection}->count
         }
     );
 }
@@ -282,7 +285,7 @@ sub batch_ignore_PUT {
     die \['ids', 'missing'] unless $ids;
 
     $ids =~ s/(\[|\]|(\s))//g;
-	my @ids = split(',', $ids);
+    my @ids = split(',', $ids);
 
     $c->stash->{collection}->execute(
         $c,
@@ -312,7 +315,7 @@ sub batch_delete_PUT {
     die \['ids', 'missing'] unless $ids;
 
     $ids =~ s/(\[|\]|(\s))//g;
-	my @ids = split(',', $ids);
+    my @ids = split(',', $ids);
 
     $c->stash->{collection}->execute(
         $c,

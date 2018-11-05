@@ -93,6 +93,12 @@ __PACKAGE__->table("politician_knowledge_base");
   data_type: 'text'
   is_nullable: 1
 
+=head2 type
+
+  data_type: 'text'
+  default_value: 'posicionamento'
+  is_nullable: 0
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -124,6 +130,12 @@ __PACKAGE__->add_columns(
   { data_type => "text", is_nullable => 1 },
   "saved_attachment_type",
   { data_type => "text", is_nullable => 1 },
+  "type",
+  {
+    data_type     => "text",
+    default_value => "posicionamento",
+    is_nullable   => 0,
+  },
 );
 
 =head1 PRIMARY KEY
@@ -156,8 +168,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-09-14 11:24:48
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:mLemE036rquaQxAAlD84Bw
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-09-17 16:49:57
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:ivV9l3bZRs6123fjgebJmQ
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
@@ -189,6 +201,18 @@ sub verifiers_specs {
                     required => 0,
                     type     => 'Str'
                 },
+                type => {
+                    required   => 0,
+                    type       => 'Str',
+                    post_check => sub {
+                        my $type = $_[0]->get_value('type');
+
+                        my $available_type = $self->result_source->schema->resultset('AvailableType')->search( { name => $type } )->next;
+                        die \['type', 'invalid'] unless $available_type;
+
+                        return 1;
+                    }
+                }
             },
         )
     };
@@ -210,10 +234,11 @@ sub action_specs {
                     politician_id => $self->politician->id,
                     entities      => "{@entities}",
                     active        => 1,
+                    type          => $values{type}
                 }
             )->next;
 
-            if ( $values{active} == 1 && $active_knowledge_base_entry && $active_knowledge_base_entry->id != $self->id ) {
+            if ( $values{active} && $values{active} == 1 && $active_knowledge_base_entry && $active_knowledge_base_entry->id != $self->id ) {
                 $active_knowledge_base_entry->update( { active => 0 } );
             }
 

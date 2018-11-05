@@ -380,33 +380,201 @@ db_transaction {
     );
     my $third_recipient_id = stash "recipient.id";
 
-    # Esse filtro seleciona os recipients por gênero
-    rest_post "/api/politician/$politician_id/group",
-        name                => 'add group',
-        stash               => 'group',
+    # Esses filtros selecionam os recipients por gênero
+    db_transaction {
+        rest_post "/api/politician/$politician_id/group",
+            name                => 'add group (gender is)',
+            stash               => 'group',
+            automatic_load_item => 0,
+            headers             => [ 'Content-Type' => 'application/json' ],
+            data                => encode_json({
+                name     => 'Gender',
+                filter   => {
+                    operator => 'AND',
+                    rules => [
+                        {
+                            name => 'GENDER_IS',
+                            data => { value => 'F' },
+                        },
+                    ],
+                },
+            }),
+        ;
+
+        ok( $worker->run_once(), 'run once' );
+
+        my $group_id = stash 'group.id';
+
+        ok( my $group = $schema->resultset("Group")->find($group_id), 'get group' );
+
+        is ($group->discard_changes->recipients_count, 2, 'recipient count');
+    };
+
+    db_transaction {
+        rest_post "/api/politician/$politician_id/group",
+            name                => 'add group (gender is not)',
+            stash               => 'group',
+            automatic_load_item => 0,
+            headers             => [ 'Content-Type' => 'application/json' ],
+            data                => encode_json({
+                name     => 'Gender',
+                filter   => {
+                    operator => 'AND',
+                    rules => [
+                        {
+                            name => 'GENDER_IS_NOT',
+                            data => { value => 'F' },
+                        },
+                    ],
+                },
+            }),
+        ;
+
+        ok( $worker->run_once(), 'run once' );
+
+        my $group_id = stash 'group.id';
+
+        ok( my $group = $schema->resultset("Group")->find($group_id), 'get group' );
+
+        is ($group->discard_changes->recipients_count, 1, 'recipient count');
+    };
+
+};
+
+db_transaction {
+    api_auth_as user_id => 1;
+
+    my $security_token = $ENV{CHATBOT_SECURITY_TOKEN};
+
+    create_politician(
+        fb_page_id => fake_words(1)->()
+    );
+    my $politician_id = stash "politician.id";
+
+    api_auth_as user_id => $politician_id;
+
+    create_recipient(
+        politician_id => $politician_id,
+        gender        => 'F'
+    );
+    my $first_recipient_id = stash "recipient.id";
+    my $first_recipient    = $schema->resultset('Recipient')->find($first_recipient_id);
+
+    create_recipient(
+        politician_id => $politician_id,
+        gender        => 'M'
+    );
+    my $second_recipient_id = stash "recipient.id";
+
+    create_recipient(
+        politician_id => $politician_id,
+        gender        => 'F'
+    );
+    my $third_recipient_id = stash "recipient.id";
+
+    rest_post "/api/chatbot/issue",
+        name                => "issue creation",
         automatic_load_item => 0,
-        headers             => [ 'Content-Type' => 'application/json' ],
-        data                => encode_json({
-            name     => 'Gender',
-            filter   => {
-                operator => 'AND',
-                rules => [
-                    {
-                        name => 'GENDER_IS',
-                        data => { value => 'F' },
+        stash               => "i1",
+        [
+            politician_id  => $politician_id,
+            fb_id          => $first_recipient->fb_id,
+            message        => fake_words(1)->(),
+            security_token => $security_token,
+            entities       => encode_json(
+                {
+                    id        => 'a8736300-e5b3-4ab8-a29e-c379ef7f61de',
+                    timestamp => '2018-09-19T21 => 39 => 43.452Z',
+                    lang      => 'pt-br',
+                    result    => {
+                        source           => 'agent',
+                        resolvedQuery    => 'O que você acha do aborto?',
+                        action           => '',
+                        actionIncomplete => 0,
+                        parameters       => {},
+                        contexts         => [],
+                        metadata         => {
+                            intentId                  => '4c3f7241-6990-4c92-8332-cfb8d437e3d1',
+                            webhookUsed               => 0,
+                            webhookForSlotFillingUsed => 0,
+                            isFallbackIntent          => 0,
+                            intentName                => 'direitos_animais'
+                        },
+                        fulfillment => { speech =>  '', messages =>  [] },
+                        score       => 1
                     },
-                ],
-            },
-        }),
+                    status    => { code =>  200, errorType =>  'success' },
+                    sessionId => '1938538852857638'
+                }
+            )
+        ],
     ;
 
-    ok( $worker->run_once(), 'run once' );
+    my $entity = $schema->resultset('PoliticianEntity')->search(
+        {
+            politician_id => $politician_id,
+            name          => 'direitos_animais'
+        }
+    )->next;
 
-    my $group_id = stash 'group.id';
+    # Esses filtros selecionam os recipients por gênero
+    db_transaction {
+        rest_post "/api/politician/$politician_id/group",
+            name                => 'add group (intent is)',
+            stash               => 'group',
+            automatic_load_item => 0,
+            headers             => [ 'Content-Type' => 'application/json' ],
+            data                => encode_json({
+                name     => 'Gender',
+                filter   => {
+                    operator => 'AND',
+                    rules => [
+                        {
+                            name => 'INTENT_IS',
+                            data => { value => $entity->id },
+                        },
+                    ],
+                },
+            }),
+        ;
 
-    ok( my $group = $schema->resultset("Group")->find($group_id), 'get group' );
+        ok( $worker->run_once(), 'run once' );
 
-    is ($group->discard_changes->recipients_count, 2, 'recipient count');
+        my $group_id = stash 'group.id';
+
+        ok( my $group = $schema->resultset("Group")->find($group_id), 'get group' );
+
+        is ($group->discard_changes->recipients_count, 1, 'recipient count');
+    };
+
+    db_transaction {
+        rest_post "/api/politician/$politician_id/group",
+            name                => 'add group (intent is not)',
+            stash               => 'group',
+            automatic_load_item => 0,
+            headers             => [ 'Content-Type' => 'application/json' ],
+            data                => encode_json({
+                name     => 'Gender',
+                filter   => {
+                    operator => 'AND',
+                    rules => [
+                        {
+                            name => 'INTENT_IS_NOT',
+                            data => { value => $entity->id },
+                        },
+                    ],
+                },
+            }),
+        ;
+
+        ok( $worker->run_once(), 'run once' );
+
+        my $group_id = stash 'group.id';
+
+        ok( my $group = $schema->resultset("Group")->find($group_id), 'get group' );
+
+        is ($group->discard_changes->recipients_count, 2, 'recipient count');
+    };
 
 };
 

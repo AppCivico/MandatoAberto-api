@@ -92,6 +92,12 @@ __PACKAGE__->table("politician_votolegal_integration");
   data_type: 'text'
   is_nullable: 1
 
+=head2 active
+
+  data_type: 'boolean'
+  default_value: true
+  is_nullable: 0
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -123,6 +129,8 @@ __PACKAGE__->add_columns(
   { data_type => "text", is_nullable => 1 },
   "custom_url",
   { data_type => "text", is_nullable => 1 },
+  "active",
+  { data_type => "boolean", default_value => \"true", is_nullable => 0 },
 );
 
 =head1 PRIMARY KEY
@@ -155,8 +163,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-09-20 17:35:22
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:XsSQ4jc+82ac1QGoD4Ossw
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-09-26 10:44:48
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:AePOHmbZS7fjf1zYc5wNgw
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

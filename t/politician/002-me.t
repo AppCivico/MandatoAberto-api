@@ -32,6 +32,9 @@ db_transaction {
 
     $schema->resultset("User")->find($politician_id)->update({ approved => 1 });
 
+    is($schema->resultset('PoliticianPrivateReplyConfig')->count, 1, 'one private_reply config created');
+    is($schema->resultset('PollSelfPropagationConfig')->count,    1, 'one poll_self_propagation config created');
+
     rest_get "/api/politician/$politician_id",
         name    => "get when logged off --fail",
         is_fail => 1,
@@ -181,13 +184,6 @@ db_transaction {
     ;
 
     rest_put "/api/politician/$politician_id",
-        name    => "Adding picframe URL with invalid url",
-        is_fail => 1,
-        code    => 400,
-        [ picframe_url => 'foobar' ]
-    ;
-
-    rest_put "/api/politician/$politician_id",
         name => "Adding picframe URL and text",
         [
             picframe_url  => 'https://foobar.com.br',
@@ -223,6 +219,25 @@ db_transaction {
         is($res->{picframe_text}, 'barbaz',                'share_text');
         is($res->{share_url},     'https://google.com.br', 'picframe_url');
         is($res->{share_text},    'barbaz',                'share_text');
+    };
+
+    rest_put "/api/politician/$politician_id",
+        name => "Removing share data",
+        [
+            share_url  => '',
+            share_text => ''
+        ]
+    ;
+
+    rest_reload_list "get_politician";
+
+    stash_test "get_politician.list" => sub {
+        my $res = shift;
+
+        is($res->{picframe_url},  undef, 'picframe_url');
+        is($res->{picframe_text}, undef,'share_text');
+        is($res->{share_url},     undef, 'picframe_url');
+        is($res->{share_text},    undef,                'share_text');
     };
 
     rest_put "/api/politician/$politician_id",
@@ -301,6 +316,21 @@ db_transaction {
         is ($res->{twitter_id}, '707977922439733248', 'twitter id');
     };
 
+    rest_put "/api/politician/$politician_id",
+        name => "Removing party and office",
+        [
+            office_id => 0,
+            party_id  => 0
+        ]
+    ;
+
+    rest_reload_list "get_politician";
+
+    stash_test "get_politician.list" => sub {
+        my $res = shift;
+
+        # is ($res->{party}->id, '707977922439733248', 'twitter id');
+    };
 
     create_politician;
     rest_get [ "api", "politician", stash "politician.id" ], name => "can't get other politician", is_fail => 1, code => 403;

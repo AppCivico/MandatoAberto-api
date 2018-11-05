@@ -9,8 +9,11 @@ my $schema = MandatoAberto->model("DB");
 db_transaction {
     my $security_token = $ENV{CHATBOT_SECURITY_TOKEN};
 
-    create_politician( fb_page_id => 'politician_foobar' );
-    my $politician_id = stash 'politician.id';
+    my $politician    = create_politician( fb_page_id => 'politician_foobar' );
+    my $politician_id = $politician->{id};
+    $politician       = $schema->resultset('Politician')->find($politician_id);
+
+    $politician->user->update( { approved => 1 } );
 
     # Adicionando um recipient.
     create_recipient( politician_id => $politician_id, fb_id => 'recipient_foobar', security_token => $security_token );

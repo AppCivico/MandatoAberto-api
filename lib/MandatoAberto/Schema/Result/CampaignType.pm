@@ -54,6 +54,11 @@ __PACKAGE__->table("campaign_type");
   data_type: 'text'
   is_nullable: 0
 
+=head2 human_name
+
+  data_type: 'text'
+  is_nullable: 0
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -65,6 +70,8 @@ __PACKAGE__->add_columns(
     sequence          => "campaign_type_id_seq",
   },
   "name",
+  { data_type => "text", is_nullable => 0 },
+  "human_name",
   { data_type => "text", is_nullable => 0 },
 );
 
@@ -98,8 +105,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-02-21 18:02:29
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:v1S8koBXSQQLtD5/ORkIGg
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-10-16 14:07:09
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:VFqFFR/cCNb7Ll94Lk9hXw
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

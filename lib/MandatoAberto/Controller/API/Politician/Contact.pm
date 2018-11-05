@@ -7,7 +7,6 @@ BEGIN { extends 'CatalystX::Eta::Controller::REST' }
 
 with "CatalystX::Eta::Controller::AutoBase";
 with "CatalystX::Eta::Controller::AutoListGET";
-with "CatalystX::Eta::Controller::AutoListPOST";
 
 __PACKAGE__->config(
     # AutoBase.
@@ -18,13 +17,6 @@ __PACKAGE__->config(
         return { $_[0]->get_columns() };
     },
 
-    prepare_params_for_create => sub {
-        my ($self, $c, $params) = @_;
-
-        $params->{politician_id} = $c->user->id;
-
-        return $params;
-    },
 );
 
 sub root : Chained('/api/politician/object') : PathPart('') : CaptureArgs(0) {
@@ -53,8 +45,6 @@ sub list_POST {
             politician_id => $c->user->id
         },
     );
-
-    $politician_contact->id;
 
     return $self->status_ok(
         $c,

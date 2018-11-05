@@ -45,7 +45,14 @@ sub root : Chained('/api/politician/object') : PathPart('') : CaptureArgs(0) {
     }
 }
 
-sub base : Chained('root') : PathPart('direct-message') : CaptureArgs(0) { }
+sub base : Chained('root') : PathPart('direct-message') : CaptureArgs(0) {
+    my ($self, $c) = @_;
+
+    $c->stash->{collection} = $c->model('DB::DirectMessage')->search(
+        { 'campaign.politician_id' => $c->stash->{politician}->id },
+        { prefetch => 'campaign' }
+    );
+}
 
 sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }
 
@@ -69,16 +76,14 @@ sub list_POST {
     my $type = $c->req->params->{type} || 'text';
 
     my $file;
-    if ( $type eq 'attachment' ) {
+    if ( my $upload = $c->req->upload("file") ) {
         die \['attachment_type', 'missing'] unless $c->req->params->{attachment_type};
 
         my $page_access_token = $c->stash->{politician}->fb_page_access_token;
 
-        if ( my $upload = $c->req->upload("file") ) {
-            $file = $self->_upload_picture($upload, $page_access_token);
-            $c->req->params->{saved_attachment_id} = $file->{attachment_id};
-            $c->req->params->{attachment_type}     = $file->{attachment_type};
-        }
+        $file = $self->_upload_picture($upload, $page_access_token);
+        $c->req->params->{saved_attachment_id} = $file->{attachment_id};
+        $c->req->params->{attachment_type}     = $file->{attachment_type};
 
         $c->req->params->{attachment_type} ne 'template' ? () :
           die \['attachment_template', 'missing'] unless $c->req->params->{attachment_template};
@@ -92,7 +97,6 @@ sub list_POST {
             groups              => $groups,
             content             => $c->req->params->{content},
             name                => $c->req->params->{name},
-            type                => $type,
             attachment_type     => $c->req->params->{attachment_type},
             attachment_template => $c->req->params->{attachment_template},
             saved_attachment_id => $c->req->params->{saved_attachment_id},
@@ -100,8 +104,6 @@ sub list_POST {
     );
 
     my $politician_name = $c->stash->{politician}->name;
-
-    $c->slack_notify("O usuário ${\($politician_name)} disparou uma campanha para ${\($direct_message->count)} recipiente(s)") unless is_test();
 
     return $self->status_created(
         $c,
@@ -116,7 +118,7 @@ sub list_GET {
     my $politician_id = $c->stash->{politician}->id;
 
     my $page    = $c->req->params->{page}    || 1;
-    my $results = $c->req->params->{results} || 5000;
+    my $results = $c->req->params->{results} || 20;
 
     return $self->status_ok(
         $c,
@@ -128,10 +130,11 @@ sub list_GET {
                     +{
                         campaign_id         => $dm->get_column('campaign_id'),
                         content             => $dm->get_column('content') ? $dm->get_column('content') : '(Campanha realizada com mídia de imagem ou áudio)',
-                        created_at          => $dm->get_column('created_at'),
+                        created_at          => $dm->campaign->get_column('created_at'),
                         name                => $dm->get_column('name'),
                         saved_attachment_id => $dm->get_column('saved_attachment_id'),
-                        count               => $dm->get_column('count'),
+                        count               => $dm->campaign->get_column('count'),
+                        status              => $dm->campaign->status->get_column('name'),
                         groups      => [
                             map {
                                 my $g = $_;
@@ -144,13 +147,16 @@ sub list_GET {
                         ]
                     }
                 } $c->stash->{collection}->search(
-                    { politician_id => $politician_id },
+                    undef,
                     {
-                        page => $page,
-                        rows => $results
+                        prefetch => { 'campaign' => 'status' },
+                        page     => $page,
+                        rows     => $results,
+                        order_by => { -desc => 'campaign.created_at' }
                     }
                 )->all()
-            ]
+            ],
+            itens_count => $c->stash->{collection}->count
         }
     );
 }

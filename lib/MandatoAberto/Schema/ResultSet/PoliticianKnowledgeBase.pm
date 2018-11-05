@@ -25,7 +25,7 @@ sub verifiers_specs {
                 answer => {
                     required   => 0,
                     type       => 'Str',
-                    max_lenght => 300
+                    max_lenght => 2000
                 },
                 saved_attachment_type => {
                     required => 0,
@@ -56,6 +56,18 @@ sub verifiers_specs {
                         return 1;
                     }
                 },
+                type => {
+                    required   => 1,
+                    type       => 'Str',
+                    post_check => sub {
+                        my $type = $_[0]->get_value('type');
+
+                        my $available_type = $self->result_source->schema->resultset('AvailableType')->search( { name => $type } )->next;
+                        die \['type', 'invalid'] unless $available_type;
+
+                        return 1;
+                    }
+                }
             }
         ),
     };
@@ -76,6 +88,8 @@ sub action_specs {
             $self->result_source->schema->txn_do(sub{
                 my @entities = @{ $values{entities} };
 
+                my $politician = $self->result_source->schema->resultset('Politician')->find($values{politician_id});
+
                 if ( $values{saved_attachment_id} ) {
                     die \['saved_attachment_type', 'missing'] unless $values{saved_attachment_type};
                 }
@@ -84,19 +98,43 @@ sub action_specs {
                     {
                         politician_id => $values{politician_id},
                         entities      => "{@entities}",
+                        type          => $values{type}
                     }
                 )->next;
 
                 if ( $active_knowledge_base_entry ) {
-                    die \['politician_id', 'politician alredy has knowledge base for that entity']
-                }
+                    $politician_knowledge_base = $active_knowledge_base_entry->update(
+                        {
+                            %values,
+                            updated_at => \'NOW()',
+                            entities   => \@entities,
+                        }
+                    );
 
-                $politician_knowledge_base = $self->create(
-                    {
-                        %values,
-                        entities => "{@entities}"
-                    }
-                );
+                    # $politician->logs->create(
+                    #     {
+                    #         timestamp => \'NOW()',
+                    #         action_id => 13,
+                    #         field_id  => $politician_knowledge_base->id
+                    #     }
+                    # )
+                }
+                else {
+                    $politician_knowledge_base = $self->create(
+                        {
+                            %values,
+                            entities => \@entities,
+                        }
+                    );
+
+                    # $politician->logs->create(
+                    #     {
+                    #         timestamp => \'NOW()',
+                    #         action_id => 13,
+                    #         field_id  => $politician_knowledge_base->id
+                    #     }
+                    # )
+                }
             });
 
             return $politician_knowledge_base;
@@ -109,19 +147,27 @@ sub get_knowledge_base_by_entity_name {
 
     my $politician_entity_rs = $self->result_source->schema->resultset('PoliticianEntity');
 
+    my $ret;
     my @ids = map { $_->id } $politician_entity_rs->search( { name => { -in => \@entity_names } } )->all;
 
-    return $self->search(
-        {
-            '-or' => [
-                map {
-                    my $entity_id = $_;
-                    \[ "? = ANY(entities)", $entity_id ] ## no critic
-                } @ids
-            ],
-        },
-        { prefetch => { 'politician' => 'politician_entities' } }
-    );
+    if ( scalar @ids == 0 ) {
+        $ret = $self->search( { 'me.id' => \'IN (0)' } );
+    }
+    else {
+        $ret = $self->search(
+            {
+                '-or' => [
+                    map {
+                        my $entity_id = $_;
+                        \[ "? = ANY(entities)", $entity_id ] ## no critic
+                    } @ids
+                ],
+            },
+            { prefetch => { 'politician' => 'politician_entities' } }
+        );
+    }
+
+    return $ret
 }
 
 1;

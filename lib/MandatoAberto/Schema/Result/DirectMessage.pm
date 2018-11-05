@@ -42,49 +42,20 @@ __PACKAGE__->table("direct_message");
 
 =head1 ACCESSORS
 
-=head2 politician_id
-
-  data_type: 'integer'
-  is_foreign_key: 1
-  is_nullable: 0
-
 =head2 content
 
   data_type: 'text'
   is_nullable: 1
-
-=head2 created_at
-
-  data_type: 'timestamp'
-  default_value: current_timestamp
-  is_nullable: 0
-  original: {default_value => \"now()"}
 
 =head2 name
 
   data_type: 'text'
   is_nullable: 1
 
-=head2 groups
-
-  data_type: 'integer[]'
-  is_nullable: 1
-
-=head2 count
-
-  data_type: 'integer'
-  is_nullable: 1
-
 =head2 campaign_id
 
   data_type: 'integer'
   is_foreign_key: 1
-  is_nullable: 0
-
-=head2 type
-
-  data_type: 'text'
-  default_value: 'text'
   is_nullable: 0
 
 =head2 quick_replies
@@ -115,27 +86,12 @@ __PACKAGE__->table("direct_message");
 =cut
 
 __PACKAGE__->add_columns(
-  "politician_id",
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "content",
   { data_type => "text", is_nullable => 1 },
-  "created_at",
-  {
-    data_type     => "timestamp",
-    default_value => \"current_timestamp",
-    is_nullable   => 0,
-    original      => { default_value => \"now()" },
-  },
   "name",
   { data_type => "text", is_nullable => 1 },
-  "groups",
-  { data_type => "integer[]", is_nullable => 1 },
-  "count",
-  { data_type => "integer", is_nullable => 1 },
   "campaign_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
-  "type",
-  { data_type => "text", default_value => "text", is_nullable => 0 },
   "quick_replies",
   { data_type => "json", is_nullable => 1 },
   "attachment_type",
@@ -177,43 +133,60 @@ __PACKAGE__->belongs_to(
   { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
 );
 
-=head2 politician
 
-Type: belongs_to
-
-Related object: L<MandatoAberto::Schema::Result::Politician>
-
-=cut
-
-__PACKAGE__->belongs_to(
-  "politician",
-  "MandatoAberto::Schema::Result::Politician",
-  { user_id => "politician_id" },
-  { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
-);
-
-
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-08-24 17:28:13
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:FRVSlCqjPtzRYD/EvSZeRg
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-10-24 10:54:23
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:SsbopSvFw+r9hZ/WKZMWkg
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
 
-sub groups_rs {
-    my ($self, $c) = @_;
+use JSON::MaybeXS;
 
-    return $self->politician->groups->search(
-        { 'me.id' => { 'in' => $self->groups || [] } }
+sub groups_rs {
+    my ($self) = @_;
+
+    return $self->campaign->politician->groups->search(
+        { 'me.id' => { 'in' => $self->campaign->groups || [] } }
     );
+}
+
+sub message_type {
+    my ($self) = @_;
+
+    my $ret;
+    if ( $self->content && !$self->saved_attachment_id && !$self->attachment_url ) {
+        # Mensagem apenas de texto
+        $ret = 'text';
+    }
+    elsif ( $self->saved_attachment_id && $self->attachment_type && !$self->content ) {
+        # Mensagem apenas de mídia (midia no FB)
+        $ret = 'attachment_on_fb';
+    }
+    elsif ( $self->attachment_url && $self->attachment_type && !$self->content ) {
+        # Mensagem apenas de mídia (midia via URL)
+        $ret = 'attachment_on_web';
+    }
+    elsif ( $self->content && ( $self->saved_attachment_id || $self->attachment_url ) ) {
+        # Mensagem de texto e midia
+        $ret = 'text_and_attachment';
+    }
+    else {
+        die 'failed to identify message type';
+    }
+
+    return $ret;
 }
 
 sub build_message_object {
     my ($self) = @_;
 
+    my $message_type = $self->message_type;
+
     my $ret;
-
-    if ( $self->type eq 'text' ) {
-
+    if ( $message_type eq 'text' || $message_type eq 'text_and_attachment' ) {
+        # Esse if verifica por tanto text quanto por text_and_attachment
+        # pois o text_and_attachment uma requisição será enviada apenas com a mensagem de texto
+        # e depois uma requisição será enviada apenas com a mídia (thanks facebook).
         $ret = {
             text => $self->content,
             quick_replies => [
@@ -225,9 +198,12 @@ sub build_message_object {
             ]
         };
 
-    }else {
+    }
+    elsif ( $message_type eq 'attachment_on_fb' ) {
 
         # É attachment logo pode ser video, imagem ou template
+        # Obs: quando há o saved_attachment_id significa que recebemos o arquivo
+        # e o enviamos para o Facebook hospedar.
         if ( $self->attachment_type ne 'template' ) {
             $ret = {
                 attachment => {
@@ -243,8 +219,9 @@ sub build_message_object {
                         payload      => 'greetings'
                     }
                 ]
-              };
-        }else {
+            };
+        }
+        else {
 
             # É um template
             $ret = {
@@ -260,6 +237,56 @@ sub build_message_object {
             };
         }
 
+    }
+    elsif ( $message_type eq 'attachment_on_web' ) {
+        # TODO
+    }
+    else {
+        die 'invalid direct_message, check manually';
+    }
+
+    return $ret;
+}
+
+sub build_headers {
+    my ($self, $recipient) = @_;
+
+	my $message_type = $self->message_type;
+
+    my $ret;
+    if ( $message_type eq 'text_and_attachment' ) {
+
+        my $attachment_req = encode_json {
+            url     => $ENV{FB_API_URL} . '/me/messages?access_token=' . $self->campaign->politician->fb_page_access_token,
+            method  => "post",
+            headers => 'Content-Type: application/json',
+            body    => {
+                messaging_type => "UPDATE",
+                recipient => {
+                    id => $recipient->fb_id
+                },
+                message => {
+                    attachment => {
+                        type    => $self->attachment_type,
+                        payload => {
+                            attachment_id => $self->saved_attachment_id
+                        }
+                    },
+                    quick_replies   => [
+                        {
+                            content_type => 'text',
+                            title        => "Voltar para o início",
+                            payload      => 'greetings'
+                        }
+                    ]
+                }
+            }
+        };
+
+        $ret = "Content-Type: application/json\nnext_req: $attachment_req";
+    }
+    else {
+        $ret = 'Content-Type: application/json'
     }
 
     return $ret;

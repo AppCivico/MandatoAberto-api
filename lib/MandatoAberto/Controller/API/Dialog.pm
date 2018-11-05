@@ -69,7 +69,7 @@ sub list_GET {
                                 +{
                                     id            => $q->get_column('id'),
                                     name          => $q->get_column('name'),
-                                    content       => $q->get_column('content'),
+                                    content       => $q->get_column('content') . ' - ' . $q->get_column('name'),
                                     citizen_input => $q->get_column('citizen_input'),
 
                                     answer =>
@@ -78,7 +78,8 @@ sub list_GET {
 
                                             +{
                                                 id      => $a->get_column('id'),
-                                                content => $a->get_column('content')
+                                                content => $a->get_column('content'),
+                                                active  => $a->get_column('active')
                                             }
                                         } $c->model("DB::Answer")->search(
                                             {

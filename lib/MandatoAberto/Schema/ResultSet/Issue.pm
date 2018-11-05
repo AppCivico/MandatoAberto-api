@@ -74,40 +74,40 @@ sub verifiers_specs {
                 }
             }
         ),
-		batch_delete => Data::Verifier->new(
-			filters => [qw(trim)],
-			profile => {
-				politician_id => {
-					required => 1,
-					type       => "Int",
-					post_check => sub {
-						my $politician_id = $_[0]->get_value('politician_id');
+        batch_delete => Data::Verifier->new(
+            filters => [qw(trim)],
+            profile => {
+                politician_id => {
+                    required => 1,
+                    type       => "Int",
+                    post_check => sub {
+                        my $politician_id = $_[0]->get_value('politician_id');
 
-						$self->result_source->schema->resultset("Politician")->search({ user_id => $politician_id })->count;
-					}
-				},
-				ids => {
-					required   => 1,
-					type       => 'ArrayRef[Int]',
-					post_check => sub {
-						my $ids = $_[0]->get_value('ids');
+                        $self->result_source->schema->resultset("Politician")->search({ user_id => $politician_id })->count;
+                    }
+                },
+                ids => {
+                    required   => 1,
+                    type       => 'ArrayRef[Int]',
+                    post_check => sub {
+                        my $ids = $_[0]->get_value('ids');
 
-						for my $id ( @{$ids} ) {
-							my $issue = $self->search(
-								{
-									id            => $id,
-									politician_id => $_[0]->get_value('politician_id'),
-								}
-							)->next;
+                        for my $id ( @{$ids} ) {
+                            my $issue = $self->search(
+                                {
+                                    id            => $id,
+                                    politician_id => $_[0]->get_value('politician_id'),
+                                }
+                            )->next;
 
-							die \["issue_id: $id", 'no such issue'] unless $issue;
-						}
+                            die \["issue_id: $id", 'no such issue'] unless $issue;
+                        }
 
-						return 1;
-					}
-				}
-			}
-		  ),
+                        return 1;
+                    }
+                }
+            }
+          ),
     };
 }
 
@@ -134,18 +134,22 @@ sub action_specs {
                 if ( $values{entities} ) {
                     my $entity_val = $values{entities};
 
-                    my @entities = keys %{$entity_val};
-                    for my $entity (@entities) {
+                    my $intent = $entity_val->{result}->{metadata}->{intentName};
+                    die \['intentName', 'missing'] unless $intent;
 
-                        if ( scalar @{ $entity_val->{$entity} } > 0 ) {
+                    $intent = lc $intent;
+                    my $human_name = $politician->politician_entities->find_human_name($intent);
+                    die \['entities', "could not find human_name for $intent"] unless $human_name;
 
-                            my $upsert_entity = $politician->politician_entities->find_or_create( { name => $entity } );
-
-                            $recipient->add_to_politician_entity( $upsert_entity->id );
-                            push @entities_id, $upsert_entity->id;
-
+                    my $upsert_entity = $politician->politician_entities->find_or_create(
+                        {
+                            name       => $intent,
+                            human_name => $human_name
                         }
-                    }
+                    );
+
+                    $recipient->add_to_politician_entity( $upsert_entity->id );
+                    push @entities_id, $upsert_entity->id;
                 }
 
                 $issue = $self->create(
@@ -160,10 +164,10 @@ sub action_specs {
             return $issue;
         },
         batch_ignore => sub {
-			my $r = shift;
+            my $r = shift;
 
-			my %values = $r->valid_values;
-			not defined $values{$_} and delete $values{$_} for keys %values;
+            my %values = $r->valid_values;
+            not defined $values{$_} and delete $values{$_} for keys %values;
 
             $self->result_source->schema->txn_do(sub {
                 for my $id ( @{ $values{ids} } ) {

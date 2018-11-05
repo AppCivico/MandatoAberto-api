@@ -14,7 +14,7 @@ sub get_politician_campaign_reach_count {
     while ( my $campaign = $rs->next ) {
         my $type = $campaign->type_id == 1 ? 'direct_message' : 'poll_propagate';
 
-        $sum += $campaign->$type->count if $campaign->$type;
+        $sum += $campaign->count if $campaign->$type;
     }
 
     return $sum;
@@ -28,7 +28,7 @@ sub get_politician_campaign_reach_dm_count {
     my $sum = 0;
     while ( my $campaign = $rs->next() ) {
 
-        $sum += $campaign->direct_message->count if $campaign->direct_message;
+        $sum += $campaign->count if $campaign->direct_message;
     }
 
     return $sum;

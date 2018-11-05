@@ -149,7 +149,8 @@ __PACKAGE__->table("recipient");
 =head2 entities
 
   data_type: 'integer[]'
-  is_nullable: 1
+  default_value: '{}'::integer[]
+  is_nullable: 0
 
 =cut
 
@@ -208,7 +209,11 @@ __PACKAGE__->add_columns(
   "platform",
   { data_type => "text", is_nullable => 0 },
   "entities",
-  { data_type => "integer[]", is_nullable => 1 },
+  {
+    data_type     => "integer[]",
+    default_value => \"'{}'::integer[]",
+    is_nullable   => 0,
+  },
 );
 
 =head1 PRIMARY KEY
@@ -255,6 +260,21 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 logs
+
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::Log>
+
+=cut
+
+__PACKAGE__->has_many(
+  "logs",
+  "MandatoAberto::Schema::Result::Log",
+  { "foreign.recipient_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 politician
 
 Type: belongs_to
@@ -268,6 +288,21 @@ __PACKAGE__->belongs_to(
   "MandatoAberto::Schema::Result::Politician",
   { user_id => "politician_id" },
   { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
+);
+
+=head2 politician_entity_stats
+
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::PoliticianEntityStat>
+
+=cut
+
+__PACKAGE__->has_many(
+  "politician_entity_stats",
+  "MandatoAberto::Schema::Result::PoliticianEntityStat",
+  { "foreign.recipient_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
 );
 
 =head2 poll_notification
@@ -331,8 +366,8 @@ __PACKAGE__->might_have(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-09-10 13:31:45
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:nQgvFtM9v4jvBjsVsVR07w
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-10-19 15:05:15
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:gu4E3XwDgVdbsP1WZSQfZg
 
 __PACKAGE__->load_components("InflateColumn::Serializer", "Core");
 __PACKAGE__->remove_column('groups');

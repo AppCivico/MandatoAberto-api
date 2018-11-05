@@ -39,6 +39,9 @@ db_transaction {
             is( ref($res->{recipients}), 'ARRAY', 'recipients=arrayref' );
             is( scalar(@{ $res->{recipients} }), '4', 'count=4' );
 
+			ok( defined $res->{itens_count}, 'itens_count is defined' );
+			is( $res->{itens_count},         4,'4 itens' );
+
             is_deeply(
                 [ sort keys %{ $res->{recipients}->[0] } ],
                 [ sort qw/ id name cellphone email origin_dialog created_at gender platform groups intents/ ],

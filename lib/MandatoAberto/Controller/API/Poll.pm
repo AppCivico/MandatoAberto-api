@@ -2,6 +2,8 @@ package MandatoAberto::Controller::API::Poll;
 use Moose;
 use namespace::autoclean;
 
+use DateTime;
+
 BEGIN { extends "CatalystX::Eta::Controller::REST" }
 
 with "CatalystX::Eta::Controller::AutoBase";
@@ -55,16 +57,22 @@ sub list_GET {
 
     my $politician_id = $c->user->id;
 
+    my $now = DateTime->now;
+
     return $self->status_ok(
         $c,
         entity => {
             polls => [
                 map {
                     my $p = $_;
+
                     +{
-                        id        => $p->get_column('id'),
-                        name      => $p->get_column('name'),
-                        status_id => $p->get_column('status_id'),
+                        id          => $p->get_column('id'),
+                        name        => $p->get_column('name'),
+                        status_id   => $p->get_column('status_id'),
+                        created_at  => $p->created_at,
+
+                        ( $p->status_id == 1 ? ( active_time => $now->subtract_datetime( $p->created_at )->in_units('days') ) : ( ) ),
 
                         questions => [
                             map {

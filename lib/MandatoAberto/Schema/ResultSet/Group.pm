@@ -38,7 +38,7 @@ sub verifiers_specs {
                         my %allowed_rules     = map { $_ => 1 }
                             qw/
                             QUESTION_ANSWER_EQUALS QUESTION_ANSWER_NOT_EQUALS QUESTION_IS_NOT_ANSWERED
-                            QUESTION_IS_ANSWERED GENDER_IS
+                            QUESTION_IS_ANSWERED GENDER_IS GENDER_IS_NOT INTENT_IS INTENT_IS_NOT
                             /
                         ;
 
