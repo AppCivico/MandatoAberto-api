@@ -376,7 +376,7 @@ sub new_session {
 
     if ( !defined($session) ) {
         $session = $self->user_sessions->create({
-            api_key      => random_string(128),
+            api_key      => random_string(20),
             valid_until  => \"(NOW() + '20 minutes'::interval)",
         });
     }
