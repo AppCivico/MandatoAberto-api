@@ -9,11 +9,9 @@ my $schema = MandatoAberto->model("DB");
 db_transaction {
     my $security_token = $ENV{CHATBOT_SECURITY_TOKEN};
 
-    create_politician(
-        fb_page_id => 'foo',
-    );
-    my $politician_id = stash "politician.id";
-    my $politician    = $schema->resultset('Politician')->find($politician_id);
+    my $politician    = create_politician( fb_page_id => 'foo', );
+    my $politician_id = $politician->{id};
+    $politician       = $schema->resultset('Politician')->find($politician_id);
 
     rest_post "/api/chatbot/recipient",
         name    => "create recipient without fb_id",
@@ -209,6 +207,25 @@ db_transaction {
             security_token    => $security_token
         ]
     ;
+
+    subtest 'Politician | Create recipient (new model)' => sub {
+
+        rest_post "/api/chatbot/politician/$politician_id/recipient",
+            name                => 'create recipient',
+            automatic_load_item => 0,
+            stash               => 'c10',
+            [
+                origin_dialog => fake_words(1)->(),
+                politician_id => $politician_id,
+                name          => fake_name()->(),
+                fb_id         => $fb_id,
+                email         => $email,
+                cellphone     => $cellphone,
+                gender        => $gender,
+                security_token => $security_token
+            ]
+        ;
+    }
 };
 
 done_testing();

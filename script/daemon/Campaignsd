@@ -1,5 +1,5 @@
 #!/usr/bin/env perl
-package MandatoAberto::Daemon::Emailsd;
+package MandatoAberto::Daemon::Campaignsd;
 use common::sense;
 use FindBin qw($RealBin $Script);
 use lib "$RealBin/../../lib";
@@ -10,7 +10,7 @@ use Daemon::Generic;
 use Log::Log4perl qw(:easy);
 
 use MandatoAberto::SchemaConnected;
-use MandatoAberto::Worker::DirectMessage;
+use MandatoAberto::Worker::Campaign;
 
 our $verbose = 0;
 #our %config  = undef;
@@ -29,7 +29,7 @@ sub gd_preconfig {
     #my $config = new Config::General("$RealBin/../../libre.conf");
     #%config    = $config->getall;
 
-    $0 = "MandatoAberto::Daemon::DirectMessaged";
+    $0 = "MandatoAberto::Daemon::Campaign";
     $|++;
 
     # Logger.
@@ -60,7 +60,7 @@ sub gd_run {
 
     my $cv = AnyEvent->condvar;
 
-    my $worker = MandatoAberto::Worker::DirectMessage->new(
+    my $worker = MandatoAberto::Worker::Campaign->new(
         schema => get_schema(),
         logger => get_logger(),
         #config => \%config,

@@ -78,6 +78,11 @@ __PACKAGE__->table("politician_entity");
   data_type: 'text'
   is_nullable: 0
 
+=head2 human_name
+
+  data_type: 'text'
+  is_nullable: 1
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -103,6 +108,8 @@ __PACKAGE__->add_columns(
   },
   "name",
   { data_type => "text", is_nullable => 0 },
+  "human_name",
+  { data_type => "text", is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -134,9 +141,24 @@ __PACKAGE__->belongs_to(
   { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
 );
 
+=head2 politician_entity_stats
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-08-23 10:07:33
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:fLqIsKjnOl5idRdMfAv+/A
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::PoliticianEntityStat>
+
+=cut
+
+__PACKAGE__->has_many(
+  "politician_entity_stats",
+  "MandatoAberto::Schema::Result::PoliticianEntityStat",
+  { "foreign.politician_entity_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-10-19 15:05:15
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:SLMiLHfnDfY+lTtVW6xeig
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
@@ -153,102 +175,152 @@ SQL_QUERY
     return $self->result_source->schema->resultset('Recipient')->search( { entities => $cond } );
 }
 
+sub knowledge_base_rs {
+    my ($self) = @_;
+
+    my $cond = \[ <<'SQL_QUERY', $self->id ];
+ @> ARRAY[?]::integer[]
+SQL_QUERY
+
+    return $self->politician->politician_knowledge_bases->search( { entities => $cond } );
+}
+
 sub has_active_knowledge_base {
     my ($self) = @_;
 
     my $id = $self->id;
 
-    my $knowledge_base_rs = $self->result_source->schema->resultset('PoliticianKnowledgeBase');
-    $knowledge_base_rs    = $knowledge_base_rs->search( { politician_id => $self->politician->id } );
+    my $knowledge_base_rs = $self->knowledge_base_rs->search( { active => 1 } );
 
-    my $cond = \[ <<'SQL_QUERY', $id ];
- @> ARRAY[?]::integer[]
-SQL_QUERY
-
-    return $knowledge_base_rs->search(
-        {
-            entities      => $cond,
-        }
-    )->count;
+    return $knowledge_base_rs->count > 0 ? 1 : 0;
 }
 
-sub human_name {
+sub pending_knowledge_base_types {
+    my ($self) = @_;
+
+    my @available_types = $self->result_source->schema->resultset('AvailableType')->get_column('name')->all();
+
+    my $knowledge_base_rs = $self->knowledge_base_rs;
+
+    my @pending_types;
+    for ( my $i = 0; $i < scalar @available_types; $i++ ) {
+        my $type = $available_types[$i];
+
+        my $count = $knowledge_base_rs->search(
+            {
+                active => 1,
+                type   => $type
+            }
+        )->count;
+
+        push @pending_types, $type if $count == 0;
+    }
+
+    return @pending_types;
+}
+
+sub get_knowledge_bases_by_types {
+    my ($self) = @_;
+
+    my @available_types = $self->result_source->schema->resultset('AvailableType')->get_column('name')->all();
+
+    my $knowledge_base_rs = $self->knowledge_base_rs;
+
+    return [
+        map {
+            my $kb = $knowledge_base_rs->search( { type => $_ } )->next;
+
+            +{
+                id                    => $kb ? $kb->id                    : undef,
+                active                => $kb ? $kb->active                : undef,
+                type                  => $kb ? $kb->type                  : $_,
+                answer                => $kb ? $kb->answer                : undef,
+                updated_at            => $kb ? $kb->updated_at            : undef,
+                created_at            => $kb ? $kb->created_at            : undef,
+                saved_attachment_id   => $kb ? $kb->saved_attachment_id   : undef,
+                saved_attachment_type => $kb ? $kb->saved_attachment_type : undef,
+            }
+        } @available_types
+    ]
+}
+
+sub human_name_r {
     my ($self) = @_;
 
     # TODO passar isso para uma coluna no banco
 
     my $name;
-    if ( $self->name eq 'Aborto' ) {
-        $name = 'Aborto';
+    if ( $self->name eq 'aborto' ) {
+        $name = 'aborto';
     }
-    elsif ( $self->name eq 'Bolsa_Familia' ) {
-        $name = 'Bolsa Família';
+    elsif ( $self->name eq 'bolsa_familia' ) {
+        $name = 'bolsa família';
     }
-    elsif ( $self->name eq 'Combate_a_corrupcao' ) {
-        $name = 'Combate a Corrupção';
+    elsif ( $self->name eq 'combate_a_corrupcao' ) {
+        $name = 'combate a corrupção';
     }
-    elsif ( $self->name eq 'Desemprego' ) {
-        $name = 'Desemprego';
+    elsif ( $self->name eq 'desemprego' ) {
+        $name = 'desemprego';
     }
-    elsif ( $self->name eq 'Direita_ou_Esquerda' ) {
-        $name = 'Direita ou Esquerda';
+    elsif ( $self->name eq 'direita_ou_esquerda' ) {
+        $name = 'direita ou esquerda';
     }
-    elsif ( $self->name eq 'Economia' ){
-        $name = 'Economia';
+    elsif ( $self->name eq 'economia' ){
+        $name = 'economia';
     }
-    elsif ( $self->name eq 'Educacao' ){
-        $name = 'Educação';
+    elsif ( $self->name eq 'educacao' ){
+        $name = 'educação';
     }
-    elsif ( $self->name eq 'Emprego' ){
-        $name = 'Emprego';
+    elsif ( $self->name eq 'emprego' ){
+        $name = 'emprego';
     }
-    elsif ( $self->name eq 'Gastos_Publicos' ){
-        $name = 'Gastos Públicos';
+    elsif ( $self->name eq 'gastos_publicos' ){
+        $name = 'gastos públicos';
     }
-    elsif ( $self->name eq 'Impostos' ){
-        $name = 'Impostos';
+    elsif ( $self->name eq 'impostos' ){
+        $name = 'impostos';
     }
-    elsif ( $self->name eq 'Infraestrutura' ){
-        $name = 'Infraestrutura';
+    elsif ( $self->name eq 'infraestrutura' ){
+        $name = 'infraestrutura';
     }
-    elsif ( $self->name eq 'Lava_Jato' ){
-        $name = 'Lava Jato';
+    elsif ( $self->name eq 'lava_jato' ){
+        $name = 'lava jato';
     }
-    elsif ( $self->name eq 'Partido' ){
-        $name = 'Partido';
+    elsif ( $self->name eq 'partido' ){
+        $name = 'partido';
     }
-    elsif ( $self->name eq 'Politica' ){
-        $name = 'Política';
+    elsif ( $self->name eq 'politica' ){
+        $name = 'política';
     }
-    elsif ( $self->name eq 'Politica_Externa' ){
-        $name = 'Política Externa';
+    elsif ( $self->name eq 'politica_externa' ){
+        $name = 'política externa';
     }
-    elsif ( $self->name eq 'Presidente' ){
-        $name = 'Presidente';
+    elsif ( $self->name eq 'presidente' ){
+        $name = 'presidente';
     }
-    elsif ( $self->name eq 'Previdencia_Social' ){
-        $name = 'Previdência Social';
+    elsif ( $self->name eq 'previdencia_social' ){
+        $name = 'previdência social';
     }
-    elsif ( $self->name eq 'Privatizacao' ){
-        $name = 'Privatização';
+    elsif ( $self->name eq 'privatizacao' ){
+        $name = 'privatização';
     }
-    elsif ( $self->name eq 'Programas_Sociais' ){
-        $name = 'Programas Sociais';
+    elsif ( $self->name eq 'programas_sociais' ){
+        $name = 'programas sociais';
     }
-    elsif ( $self->name eq 'Reforma_Trabalhista' ){
-        $name = 'Reforma Trabalhista';
+    elsif ( $self->name eq 'reforma_trabalhista' ){
+        $name = 'reforma trabalhista';
     }
-    elsif ( $self->name eq 'Saude' ){
-        $name = 'Saúde';
+    elsif ( $self->name eq 'saude' ){
+        $name = 'saúde';
     }
-    elsif ( $self->name eq 'Seguranca' ){
-        $name = 'Segurança';
+    elsif ( $self->name eq 'seguranca' ){
+        $name = 'segurança';
     }
-    elsif ( $self->name eq 'Direitos_Humanos' ){
-        $name = 'Direitos Humanos';
+    elsif ( $self->name eq 'direitos_humanos' ){
+        $name = 'direitos humanos';
     }
-    elsif ( $self->name eq 'Proposta' ) {
-        $name = 'Proposta';
+    elsif ( $self->name eq 'proposta' ) {
+        $name = 'proposta';
     }
     elsif ( $self->name eq 'direitos_animais' ) {
         $name = 'direitos dos animais';
@@ -296,7 +368,7 @@ sub human_name {
         $name = 'sistema financeiro';
     }
     elsif ( $self->name eq 'etica_politica' ) {
-        $name = 'Ética na política';
+        $name = 'ética na política';
     }
     elsif ( $self->name eq 'etica_politica' ) {
         $name = 'combate de privilégios';
@@ -311,7 +383,7 @@ sub human_name {
         $name = 'privilégios do judiciário';
     }
     elsif ( $self->name eq 'conducao_economia' ) {
-        $name = 'Condução da economia';
+        $name = 'condução da economia';
     }
     elsif ( $self->name eq 'refis' ) {
         $name = 'refis';
@@ -350,7 +422,7 @@ sub human_name {
         $name = 'concessões e licitações';
     }
     elsif ( $self->name eq 'tamanho_estado' ) {
-        $name = 'tamanho do Estado';
+        $name = 'tamanho do estado';
     }
     elsif ( $self->name eq 'abertura_economia' ) {
         $name = 'abertura da economia';
@@ -364,8 +436,8 @@ sub human_name {
     elsif ( $self->name eq 'idosos' ) {
         $name = 'políticas para idosos';
     }
-    elsif ( $self->name eq 'propostas_LGBT' ) {
-        $name = 'propostas para LGBTs';
+    elsif ( $self->name eq 'propostas_lgbt' ) {
+        $name = 'propostas para lgbts';
     }
     elsif ( $self->name eq 'proposta_mulheres' ) {
         $name = 'propostas para mulheres ';
@@ -424,8 +496,8 @@ sub human_name {
     elsif ( $self->name eq 'relacoes_exteriores' ) {
         $name = 'relações exteriores';
     }
-    elsif ( $self->name eq 'Brasil_mundo' ) {
-        $name = 'papel do Brasil no mundo';
+    elsif ( $self->name eq 'brasil_mundo' ) {
+        $name = 'papel do brasil no mundo';
     }
     elsif ( $self->name eq 'carga_tributaria' ) {
         $name = 'economia de baixo carbono';
@@ -437,13 +509,13 @@ sub human_name {
         $name = 'transparência no governo';
     }
     elsif ( $self->name eq 'reforma' ) {
-        $name = ' previdência	reforma da previdência';
+        $name = ' previdência reforma da previdência';
     }
     elsif ( $self->name eq 'reforma_tributaria' ) {
         $name = 'reforma tributária';
     }
     elsif ( $self->name eq 'reforma' ) {
-        $name = 'lítica	reforma política';
+        $name = 'lítica reforma política';
     }
     elsif ( $self->name eq 'gestao_municipios' ) {
         $name = 'gestão dos municípios';
@@ -503,12 +575,12 @@ sub human_name {
         $name = 'esporte';
     }
     elsif ( $self->name eq 'propostas_saúde' ) {
-        $name = 'SUS e propostas para a saúde';
+        $name = 'sus e propostas para a saúde';
     }
     elsif ( $self->name eq 'atencao_basica' ) {
-        $name = 'atenção básica e Saúde da Família';
+        $name = 'atenção básica e saúde da família';
     }
-    elsif ( $self->name eq 'Saude_Familia' ) {
+    elsif ( $self->name eq 'saude_familia' ) {
         $name = 'saúde da fam';
     }
     elsif ( $self->name eq 'melhoria_saude' ) {
@@ -517,14 +589,14 @@ sub human_name {
     elsif ( $self->name eq 'saude_mental' ) {
         $name = 'saúde mental';
     }
-    elsif ( $self->name eq 'saude_LGBTI' ) {
-        $name = 'saúde para LGBTI';
+    elsif ( $self->name eq 'saude_lgbti' ) {
+        $name = 'saúde para lgbti';
     }
     elsif ( $self->name eq 'saude_mulheres' ) {
         $name = 'saúde para mulheres';
     }
-    elsif ( $self->name eq 'Qualidade_vida_idosos' ) {
-        $name = 'Qualidade de vida para idosos';
+    elsif ( $self->name eq 'qualidade_vida_idosos' ) {
+        $name = 'qualidade de vida para idosos';
     }
     elsif ( $self->name eq 'qualidade_vida' ) {
         $name = 'qualidade de vida';
@@ -532,14 +604,14 @@ sub human_name {
     elsif ( $self->name eq 'sistema_prisional' ) {
         $name = 'sistema prisional';
     }
-    elsif ( $self->name eq 'Seguranca_publica' ) {
-        $name = 'Segurança pública';
+    elsif ( $self->name eq 'seguranca_publica' ) {
+        $name = 'segurança pública';
     }
     elsif ( $self->name eq 'desenvolvimento_sustentavel' ) {
         $name = 'desenvolvimento sustentável';
     }
-    elsif ( $self->name eq 'Petrobras' ) {
-        $name = 'Petrobras';
+    elsif ( $self->name eq 'petrobras' ) {
+        $name = 'petrobras';
     }
     elsif ( $self->name eq 'politica_cidades' ) {
         $name = 'política para cidades';
@@ -571,14 +643,32 @@ sub human_name {
     elsif ( $self->name eq 'propostas_criancas' ) {
         $name = 'propostas para crianças';
     }
-    elsif ( $self->name eq 'Infraestrutura' ) {
-        $name = 'Infraestrutura'
+    elsif ( $self->name eq 'infraestrutura' ) {
+        $name = 'infraestrutura'
     }
     elsif ( $self->name eq 'propostas_saude' ) {
-        $name = 'Propostas para a saúde';
+        $name = 'propostas para a saúde';
     }
     elsif ( $self->name eq 'relacao_congresso' ) {
-        $name = 'Relação com o congresso';
+        $name = 'relação com o congresso';
+    }
+    elsif ( $self->name eq 'geracao_empregos' ) {
+        $name = 'geração de empregos';
+    }
+    elsif ( $self->name eq 'educacao' ) {
+        $name = 'educação';
+    }
+    elsif ( $self->name eq 'saude' ) {
+        $name = 'saúde';
+    }
+    elsif ( $self->name eq 'meio_ambiente' ) {
+        $name = 'meio ambiente';
+    }
+    elsif ( $self->name eq 'direitos_humanos' ) {
+        $name = 'direitos humanos';
+    }
+    elsif ( $self->name eq 'direitos_sociais' ) {
+        $name = 'direitos sociais';
     }
 
     return $name;

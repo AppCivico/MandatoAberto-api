@@ -222,32 +222,32 @@ sub create_issue {
 
     my $security_token = $ENV{CHATBOT_SECURITY_TOKEN};
 
-	my $fake_entity = encode_json(
-		{
-			id        => 'a8736300-e5b3-4ab8-a29e-c379ef7f61de',
-			timestamp => '2018-09-19T21 => 39 => 43.452Z',
-			lang      => 'pt-br',
-			result    => {
-				source           => 'agent',
-				resolvedQuery    => 'O que você já fez pelos direitos animais??',
-				action           => '',
-				actionIncomplete => 0,
-				parameters       => {},
-				contexts         => [],
-				metadata         => {
-					intentId                  => '4c3f7241-6990-4c92-8332-cfb8d437e3d1',
-					webhookUsed               => 0,
-					webhookForSlotFillingUsed => 0,
-					isFallbackIntent          => 0,
-					intentName                => 'direitos_animais'
-				},
-				fulfillment => { speech =>  '', messages =>  [] },
-				score       => 1
-			},
-			status    => { code =>  200, errorType =>  'success' },
-			sessionId => '1938538852857638'
-		}
-	);
+    my $fake_entity = encode_json(
+        {
+            id        => 'a8736300-e5b3-4ab8-a29e-c379ef7f61de',
+            timestamp => '2018-09-19T21 => 39 => 43.452Z',
+            lang      => 'pt-br',
+            result    => {
+                source           => 'agent',
+                resolvedQuery    => 'O que você já fez pelos direitos animais??',
+                action           => '',
+                actionIncomplete => 0,
+                parameters       => {},
+                contexts         => [],
+                metadata         => {
+                    intentId                  => '4c3f7241-6990-4c92-8332-cfb8d437e3d1',
+                    webhookUsed               => 0,
+                    webhookForSlotFillingUsed => 0,
+                    isFallbackIntent          => 0,
+                    intentName                => 'direitos_animais'
+                },
+                fulfillment => { speech =>  '', messages =>  [] },
+                score       => 1
+            },
+            status    => { code =>  200, errorType =>  'success' },
+            sessionId => '1938538852857638'
+        }
+    );
 
     return $obj->rest_post(
         '/api/chatbot/issue',
@@ -263,6 +263,24 @@ sub create_issue {
     );
 }
 
+sub create_knowledge_base {
+    my (%opts) = @_;
+
+    my $politician_id = $opts{politician_id};
+
+    return $obj->rest_post(
+        "/api/politician/$politician_id/knowledge-base",
+        name                => 'create issue',
+        stash               => 'issue',
+        automatic_load_item => 0,
+        params              => {
+            answer => fake_words(3)->(),
+            type   => fake_pick( qw( posicionamento histórico proposta ) )->(),
+            %opts,
+        }
+    );
+}
+
 sub setup_votolegal_integration_success {
     $votolegal_response = {
         id       => fake_int(1, 100)->(),
@@ -271,11 +289,11 @@ sub setup_votolegal_integration_success {
 }
 
 sub setup_votolegal_integration_success_with_custom_url {
-	$votolegal_response = {
-		id         => fake_int(1, 100)->(),
-		username   => 'fake_username',
+    $votolegal_response = {
+        id         => fake_int(1, 100)->(),
+        username   => 'fake_username',
         custom_url => 'https://www.foobar.com.br'
-	};
+    };
 }
 
 sub setup_votolegal_integration_fail {
@@ -360,6 +378,57 @@ sub setup_dialogflow_entities_response {
         ]
     }
 }
+
+sub setup_dialogflow_intents_response {
+    $dialogflow_response = {
+        "intents" => [
+            {
+                "name"         => "projects/mandato-aberto/agent/intents/09fe19c6-1dc6-417c-9e2b-a81edd8e1e31",
+                "displayName"  => "saude",
+                "priority"     => 500000,
+                "webhookState" => "WEBHOOK_STATE_ENABLED"
+            },
+            {
+                "name"         => "projects/mandato-aberto/agent/intents/9eca11c4-90d9-4e7a-b199-03030e1f237d",
+                "displayName"  => "aborto",
+                "priority"     => 500000,
+                "webhookState" => "WEBHOOK_STATE_ENABLED"
+            },
+            {
+                "name"         => "projects/mandato-aberto/agent/intents/1dab4a2a-db67-451a-a49b-723c39a3775f",
+                "displayName"  => "mobilidade_urbana",
+                "priority"     => 500000,
+                "webhookState" => "WEBHOOK_STATE_ENABLED"
+            },
+        ]
+    }
+}
+
+sub setup_dialogflow_intents_response_with_skip {
+    $dialogflow_response = {
+        "intents" => [
+            {
+                "name"         => "projects/mandato-aberto/agent/intents/09fe19c6-1dc6-417c-9e2b-a81edd8e1e31",
+                "displayName"  => "saude",
+                "priority"     => 500000,
+                "webhookState" => "WEBHOOK_STATE_ENABLED"
+            },
+            {
+                "name"         => "projects/mandato-aberto/agent/intents/9eca11c4-90d9-4e7a-b199-03030e1f237d",
+                "displayName"  => "aborto",
+                "priority"     => 500000,
+                "webhookState" => "WEBHOOK_STATE_ENABLED"
+            },
+            {
+                "name"         => "projects/mandato-aberto/agent/intents/1dab4a2a-db67-451a-a49b-723c39a3775f",
+                "displayName"  => "Fallback",
+                "priority"     => 500000,
+                "webhookState" => "WEBHOOK_STATE_ENABLED"
+            },
+        ]
+      };
+}
+
 
 1;
 

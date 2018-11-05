@@ -11,7 +11,15 @@ db_transaction {
 
     my $politician_entity_rs = $schema->resultset('PoliticianEntity');
 
-    setup_dialogflow_entities_response();
+    # Sincronizando intents com uma que deverá ser pulada
+    db_transaction{
+        setup_dialogflow_intents_response_with_skip();
+
+        ok( $politician_entity_rs->sync_dialogflow, 'sync ok' );
+        is( $politician_entity_rs->count, 2, '2 entities created' );
+    };
+
+    setup_dialogflow_intents_response();
 
     ok ( $politician_entity_rs->sync_dialogflow, 'sync ok' );
     is ( $politician_entity_rs->count, 3, '3 entities created' );

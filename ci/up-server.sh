@@ -73,6 +73,7 @@ line
 
 ./script/daemon/PollNotificationd restart
 ./script/daemon/PollNotificationd status
-#./script/daemon/DirectMessagesd restart
-#./script/daemon/DirectMessagesd status
+
+./script/daemon/Campaignsd restart
+./script/daemon/Campaignsd status
 

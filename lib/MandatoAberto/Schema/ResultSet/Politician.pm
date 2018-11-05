@@ -64,7 +64,7 @@ sub verifiers_specs {
                     },
                 },
                 party_id => {
-                    required   => 1,
+                    required   => 0,
                     type       => "Int",
                     post_check => sub {
                         my $party_id = $_[0]->get_value('party_id');
@@ -72,7 +72,7 @@ sub verifiers_specs {
                     }
                 },
                 office_id => {
-                    required   => 1,
+                    required   => 0,
                     type       => "Int",
                     post_check => sub {
                         my $office_id = $_[0]->get_value('office_id');
@@ -134,39 +134,41 @@ sub action_specs {
             my %values = $r->valid_values;
             not defined $values{$_} and delete $values{$_} for keys %values;
 
-            if (length $values{password} < 6) {
-                die \["password", "must have at least 6 characters"];
-            }
-
-            if (length $values{gender} > 1 || !($values{gender} eq "F" || $values{gender} eq "M" ) ) {
-                die \["gender", "must be F or M"];
-            }
-
-            my $user = $self->result_source->schema->resultset("User")->create(
-                { ( map { $_ => $values{$_} } qw(email password) ) },
-            );
-
-            $user->add_to_roles( { id => 2 } );
-
-            my $politician = $self->create(
-                {
-                    (
-                        map { $_ => $values{$_} } qw(
-                            name address_state_id address_city_id party_id
-                            office_id fb_page_id fb_page_access_token gender
-                            movement_id
-                        )
-                    ),
-                    user_id => $user->id,
+            my $politician;
+            $self->result_source->schema->txn_do(sub{
+                if (length $values{password} < 6) {
+                    die \["password", "must have at least 6 characters"];
                 }
-            );
 
-            $self->result_source->schema->resultset("PoliticianPrivateReplyConfig")->create( { politician_id => $politician->id } );
-            $self->result_source->schema->resultset("PollSelfPropagationConfig")->create( { politician_id => $politician->id } );
+                if (length $values{gender} > 1 || !($values{gender} eq "F" || $values{gender} eq "M" ) ) {
+                    die \["gender", "must be F or M"];
+                }
 
-            $politician->send_greetings_email();
-            $politician->send_new_register_email();
-            $user->send_email_confirmation();
+                my $user = $self->result_source->schema->resultset("User")->create({ ( map { $_ => $values{$_} } qw(email password) ) },);
+
+                $user->add_to_roles( { id => 2 } );
+
+                $politician = $self->create(
+                    {
+                        (
+                            map { $_ => $values{$_} }
+                              qw(
+                              name address_state_id address_city_id party_id
+                              office_id fb_page_id fb_page_access_token gender
+                              movement_id
+                              )
+                        ),
+                        user_id => $user->id,
+                    }
+                );
+
+                $politician->send_greetings_email();
+                $politician->send_new_register_email();
+                $user->send_email_confirmation();
+
+                # my $entity_rs = $self->result_source->schema->resultset('PoliticianEntity');
+                # $entity_rs->sync_dialogflow_one_politician($politician->id);
+            });
 
             return $politician
         }
@@ -188,8 +190,8 @@ sub get_politicians {
                 gender             => $p->gender,
                 address_state      => $p->address_state->name,
                 address_city       => $p->address_city->name,
-                office             => $p->office->name,
-                party              => $p->party->name,
+                office             => $p->office ? $p->office->name : undef,
+                party              => $p->party  ? $p->party->name  : undef,
                 approved           => $p->user->approved,
                 approved_at        => $p->user->approved_at,
                 approved_by        => $p->user->approved_by_admin_id ? $p->user->approved_by_admin->email : undef,

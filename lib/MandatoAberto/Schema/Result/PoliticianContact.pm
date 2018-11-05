@@ -85,6 +85,12 @@ __PACKAGE__->table("politician_contact");
   data_type: 'text'
   is_nullable: 1
 
+=head2 active
+
+  data_type: 'boolean'
+  default_value: true
+  is_nullable: 0
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -109,6 +115,8 @@ __PACKAGE__->add_columns(
   { data_type => "text", is_nullable => 1 },
   "instagram",
   { data_type => "text", is_nullable => 1 },
+  "active",
+  { data_type => "boolean", default_value => \"true", is_nullable => 0 },
 );
 
 =head1 PRIMARY KEY
@@ -141,8 +149,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-03-12 14:49:32
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:598Jnk7Bhr4/l9NhV2vkrg
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-10-08 18:55:54
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:kwYAu3+Vsb6cpRcnDkPEeQ
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
@@ -193,8 +201,8 @@ sub action_specs {
             my %values = $r->valid_values;
             not defined $values{$_} and delete $values{$_} for keys %values;
 
-            if ($values{twitter} && $values{twitter} > 15) {
-                die \["twitter", "must'nt be longer than 15 chars"] if length $values{twitter} > 15;
+            if ($values{twitter} && $values{twitter} > 20) {
+                die \["twitter", "must'nt be longer than 20 chars"] if length $values{twitter} > 20;
             }
 
             $self->update(\%values);

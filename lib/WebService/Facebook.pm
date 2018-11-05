@@ -71,9 +71,6 @@ sub send_message {
         eval {
             retry {
                 my $url = $ENV{FB_API_URL} . '/me/messages?access_token=' . $opts{access_token};
-                print STDERR "\n===========================DEBUG_WEBSERVICE===========================\n";
-                print STDERR $opts{content};
-                print STDERR "\n===========================DEBUG_WEBSERVICE===========================\n";
 
                 $res = $self->ua->post(
                     $url,
@@ -91,7 +88,7 @@ sub send_message {
         };
         die $@ if $@;
 
-        return decode_json( $res->decoded_content );
+        return 1;
     }
 }
 

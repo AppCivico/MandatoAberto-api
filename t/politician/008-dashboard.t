@@ -26,11 +26,14 @@ db_transaction {
     ;
     my $question_id = stash "q1.id";
 
-    create_politician(
+    my $politician = create_politician(
         fb_page_id           => fake_words(1)->(),
         fb_page_access_token => fake_words(1)->()
     );
-    my $politician_id = stash "politician.id";
+    my $politician_id = $politician->{id};
+    $politician       = $schema->resultset('Politician')->find($politician_id);
+
+    $politician->user->update( { approved => 1 } );
 
     rest_post "/api/chatbot/recipient",
         name                => "Create recipient",
@@ -62,10 +65,28 @@ db_transaction {
             security_token => $security_token,
             entities       => encode_json(
                 {
-                    Saude => [
-                        'vacinacao',
-                        'posto de saude'
-                    ]
+                    id        => 'a8736300-e5b3-4ab8-a29e-c379ef7f61de',
+                    timestamp => '2018-09-19T21 => 39 => 43.452Z',
+                    lang      => 'pt-br',
+                    result    => {
+                        source           => 'agent',
+                        resolvedQuery    => 'O que você acha do aborto?',
+                        action           => '',
+                        actionIncomplete => 0,
+                        parameters       => {},
+                        contexts         => [],
+                        metadata         => {
+                            intentId                  => '4c3f7241-6990-4c92-8332-cfb8d437e3d1',
+                            webhookUsed               => 0,
+                            webhookForSlotFillingUsed => 0,
+                            isFallbackIntent          => 0,
+                            intentName                => 'direitos_animais'
+                        },
+                        fulfillment => { speech =>  '', messages =>  [] },
+                        score       => 1
+                    },
+                    status    => { code =>  200, errorType =>  'success' },
+                    sessionId => '1938538852857638'
                 }
             )
         ]

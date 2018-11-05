@@ -17,6 +17,8 @@ db_transaction {
     my $politician_id = stash "politician.id";
     my $politician    = $schema->resultset("Politician")->find($politician_id);
 
+    $politician->user->update( { approved => 1 } );
+
     my $item       = 'comment';
     my $post_id    = fake_words(1)->();
     my $comment_id = fake_words(1)->();
@@ -223,7 +225,7 @@ db_transaction {
         [
             page_id        => $page_id,
             item           => 'post',
-            post_id        => fake_words(2)->(),
+            post_id        => '136021913750928_204125850273867',
             permalink      => fake_words(2)->(),
             security_token => $security_token,
             user_id        => 'foobar'

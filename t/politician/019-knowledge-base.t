@@ -44,7 +44,32 @@ db_transaction {
             fb_id          => $recipient_fb_id,
             message        => $message,
             security_token => $security_token,
-            entities       => encode_json( { Saude => [ 'vacinacao' ] } )
+            entities       => encode_json(
+                {
+                    id        => 'a8736300-e5b3-4ab8-a29e-c379ef7f61de',
+                    timestamp => '2018-09-19T21 => 39 => 43.452Z',
+                    lang      => 'pt-br',
+                    result    => {
+                        source           => 'agent',
+                        resolvedQuery    => 'O que você acha do aborto?',
+                        action           => '',
+                        actionIncomplete => 0,
+                        parameters       => {},
+                        contexts         => [],
+                        metadata         => {
+                            intentId                  => '4c3f7241-6990-4c92-8332-cfb8d437e3d1',
+                            webhookUsed               => 0,
+                            webhookForSlotFillingUsed => 0,
+                            isFallbackIntent          => 0,
+                            intentName                => 'Saude'
+                        },
+                        fulfillment => { speech =>  '', messages =>  [] },
+                        score       => 1
+                    },
+                    status    => { code =>  200, errorType =>  'success' },
+                    sessionId => '1938538852857638'
+                }
+            )
         ]
     ;
     my $issue_id = stash "i1.id";
@@ -52,7 +77,7 @@ db_transaction {
     my $politician_entity_id = $schema->resultset('PoliticianEntity')->search(
         {
             politician_id => $politician_id,
-            name          => 'Saude'
+            name          => 'saude'
         }
     )->next->id;
 
@@ -78,6 +103,7 @@ db_transaction {
         [
             entity_id => $politician_entity_id,
             answer    => $answer,
+            type      => 'posicionamento'
         ]
     ;
     my $kb_id = stash 'k1.id';
@@ -96,6 +122,36 @@ db_transaction {
         is ( $res->{knowledge_base}->[0]->{answer}, $answer, 'kb answer' );
     };
 
+    rest_post "/api/politician/$politician_id/knowledge-base",
+        name                => 'creating knowledge base entry',
+        automatic_load_item => 0,
+        stash               => 'k1',
+        [
+            entity_id => $politician_entity_id,
+            answer    => 'upsert',
+            type      => 'posicionamento'
+        ]
+    ;
+
+    rest_reload_list 'get_knowledge_base';
+    stash_test 'get_knowledge_base.list' => sub {
+        my $res = shift;
+
+        is ( scalar @{ $res->{knowledge_base} },    1,        'one item in the array' );
+        is ( $res->{knowledge_base}->[0]->{id},     $kb_id,   'kb id' );
+        is ( $res->{knowledge_base}->[0]->{answer}, 'upsert', 'kb answer' );
+    };
+
+    rest_post "/api/politician/$politician_id/knowledge-base",
+        name                => 'creating knowledge base entry',
+        automatic_load_item => 0,
+        [
+            entity_id => $politician_entity_id,
+            answer    => $answer,
+            type      => 'posicionamento'
+        ]
+    ;
+
     rest_get "/api/politician/$politician_id/knowledge-base/$kb_id",
         name  => 'get politician knowledge base entry (result)',
         stash => 'get_knowledge_base_entry',
@@ -113,47 +169,15 @@ db_transaction {
         is ( defined $res->{created_at}, 1,                     'created_at is defined' );
         is ( ref $entities,              'ARRAY',               'entities is an array' );
         is ( $entities->[0]->{id},       $politician_entity_id, 'entity id' );
+        is ( ref $res->{type},           '',                    'type is a string' );
+        is ( $res->{type},               'posicionamento',      'kb is of posicionamento type' );
     };
-
-    # db_transaction{
-    #     rest_post "/api/politician/$politician_id/knowledge-base",
-    #         name                => 'creating second knowledge base entry',
-    #         automatic_load_item => 0,
-    #         stash               => 'k2',
-    #         files               => { file => "$Bin/picture.jpg" },
-    #         [
-    #             entity_id => $politician_entity_id,
-    #             answer    => 'lalalala',
-    #         ]
-    #     ;
-    #     my $second_kb_id = stash 'k2.id';
-
-	# 	rest_reload_list 'get_knowledge_base_entry';
-
-	# 	stash_test 'get_knowledge_base_entry.list' => sub {
-	# 		my $res = shift;
-
-	# 		is( $res->{active}, 0, 'not active' );
-	# 	};
-
-    #     rest_get "/api/politician/$politician_id/knowledge-base/$second_kb_id",
-    #         name  => 'get second politician knowledge base entry (result)',
-    #         stash => 'get_knowledge_base_entry_2',
-    #         list  => 1,
-    #     ;
-
-	# 	stash_test 'get_knowledge_base_entry_2' => sub {
-	# 		my $res = shift;
-
-	# 		is( $res->{active}, 1, 'active' );
-	# 	};
-    # };
 
     rest_put "/api/politician/$politician_id/knowledge-base/$kb_id",
         name => 'update politician knowledge base entry',
         [
             active   => 0,
-            answer   => 'foobar'
+            answer   => 'foobar',
         ]
     ;
 
@@ -167,6 +191,20 @@ db_transaction {
         is ( defined $res->{updated_at}, 1,                    'updated_at is defined' );
 
         is ( $res->{intents}->[0]->{recipients_count}, 1, 'one recipient' );
+    };
+
+    rest_put "/api/politician/$politician_id/knowledge-base/$kb_id",
+        name => 'update politician knowledge base entry',
+        [ type => 'Proposta' ]
+    ;
+
+
+    rest_reload_list 'get_knowledge_base_entry';
+
+    stash_test 'get_knowledge_base_entry.list' => sub {
+        my $res = shift;
+
+        is( $res->{type}, 'proposta', '"Proposta" type' );
     };
 
     # Listando entidades sem nenhum posiocionamento
@@ -188,13 +226,13 @@ db_transaction {
     #     [ active => 1 ]
     # ;
 
-	# rest_reload_list 'get_pending_entities';
+    # rest_reload_list 'get_pending_entities';
 
-	# stash_test 'get_pending_entities.list' => sub {
-	# 	my $res = shift;
+    # stash_test 'get_pending_entities.list' => sub {
+    # 	my $res = shift;
 
     #     is ( scalar @{ $res->{politician_entities} }, 0, 'empty array' );
-	# };
+    # };
 
     # rest_post "/api/chatbot/issue",
     #     name                => "issue creation",
@@ -209,13 +247,13 @@ db_transaction {
     #     ]
     # ;
 
-	# rest_reload_list 'get_pending_entities';
+    # rest_reload_list 'get_pending_entities';
 
-	# stash_test 'get_pending_entities.list' => sub {
-	# 	my $res = shift;
+    # stash_test 'get_pending_entities.list' => sub {
+    # 	my $res = shift;
 
-	# 	is( scalar @{ $res->{politician_entities} }, 1, 'one row' );
-	# };
+    # 	is( scalar @{ $res->{politician_entities} }, 1, 'one row' );
+    # };
 
     # rest_put "/api/politician/$politician_id/knowledge-base/$kb_id",
     #     name => 'update politician knowledge base entry',
@@ -224,11 +262,11 @@ db_transaction {
 
     # rest_reload_list 'get_pending_entities';
 
-	# stash_test 'get_pending_entities.list' => sub {
-	# 	my $res = shift;
+    # stash_test 'get_pending_entities.list' => sub {
+    # 	my $res = shift;
 
-	# 	is( scalar @{ $res->{politician_entities} }, 2, 'two rows' );
-	# };
+    # 	is( scalar @{ $res->{politician_entities} }, 2, 'two rows' );
+    # };
 
 };
 

@@ -66,6 +66,33 @@ __PACKAGE__->table("campaign");
 
   data_type: 'integer'
   is_foreign_key: 1
+  is_nullable: 0
+
+=head2 status_id
+
+  data_type: 'integer'
+  default_value: 1
+  is_foreign_key: 1
+  is_nullable: 0
+
+=head2 updated_at
+
+  data_type: 'timestamp'
+  is_nullable: 1
+
+=head2 count
+
+  data_type: 'integer'
+  is_nullable: 0
+
+=head2 groups
+
+  data_type: 'integer[]'
+  is_nullable: 1
+
+=head2 err_reason
+
+  data_type: 'text'
   is_nullable: 1
 
 =cut
@@ -88,7 +115,22 @@ __PACKAGE__->add_columns(
     original      => { default_value => \"now()" },
   },
   "politician_id",
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
+  "status_id",
+  {
+    data_type      => "integer",
+    default_value  => 1,
+    is_foreign_key => 1,
+    is_nullable    => 0,
+  },
+  "updated_at",
+  { data_type => "timestamp", is_nullable => 1 },
+  "count",
+  { data_type => "integer", is_nullable => 0 },
+  "groups",
+  { data_type => "integer[]", is_nullable => 1 },
+  "err_reason",
+  { data_type => "text", is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -132,12 +174,7 @@ __PACKAGE__->belongs_to(
   "politician",
   "MandatoAberto::Schema::Result::Politician",
   { user_id => "politician_id" },
-  {
-    is_deferrable => 0,
-    join_type     => "LEFT",
-    on_delete     => "NO ACTION",
-    on_update     => "NO ACTION",
-  },
+  { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
 );
 
 =head2 poll_propagate
@@ -153,6 +190,21 @@ __PACKAGE__->might_have(
   "MandatoAberto::Schema::Result::PollPropagate",
   { "foreign.campaign_id" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
+);
+
+=head2 status
+
+Type: belongs_to
+
+Related object: L<MandatoAberto::Schema::Result::CampaignStatus>
+
+=cut
+
+__PACKAGE__->belongs_to(
+  "status",
+  "MandatoAberto::Schema::Result::CampaignStatus",
+  { id => "status_id" },
+  { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
 );
 
 =head2 type
@@ -171,10 +223,85 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-07-31 13:22:19
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:5U8tpVS7i/2S+HwmbrBqRQ
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-10-24 15:51:22
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:UjK6zBi5/+M+gZxAQRQOnw
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
+
+use WebService::HttpCallback::Async;
+
+use JSON::MaybeXS;
+
+has _httpcb => (
+	is         => "ro",
+	isa        => "WebService::HttpCallback::Async",
+	lazy_build => 1,
+);
+
+sub process_and_send {
+    my ($self, $logger) = @_;
+
+    my @group_ids = @{ $self->groups || [] };
+
+    my $recipient_rs = $self->politician->recipients->only_opt_in->search_by_group_ids(@group_ids)->search(
+    	{},
+    	{
+    		'+select' => [ \"COUNT(1) OVER(PARTITION BY 1)" ],
+    		'+as'     => ['total'],
+    	}
+    );
+
+    $logger->info(sprintf("Número de contatos que receberão a campanha: '%d'.", $recipient_rs->count)) if $logger;
+
+    my $type_id = $self->type_id;
+
+    # Campanha de mensagem no Facebook
+    if ( $type_id == 1 ) {
+        $self->send_dm_facebook($recipient_rs, $logger);
+    }
+    else {
+        die 'fail while sending campaign';
+    }
+}
+
+sub send_dm_facebook {
+    my ($self, $recipient_rs, $logger) = @_;
+
+    my $message = $self->direct_message->build_message_object();
+
+    $logger->info("Message object:" . encode_json $message) if $logger;
+
+    my $count = 0;
+    while (my $recipient = $recipient_rs->next()) {
+        my $headers = $self->direct_message->build_headers( $recipient );
+
+        # Mando para o httpcallback
+        $self->_httpcb->add(
+            url     => $ENV{FB_API_URL} . '/me/messages?access_token=' . $self->politician->fb_page_access_token,
+            method  => "post",
+            headers => $headers,
+            body    => encode_json {
+                messaging_type => "UPDATE",
+                recipient => {
+                    id => $recipient->fb_id
+                },
+                message => $message
+            }
+        );
+
+        $count++;
+    }
+    $self->_httpcb->wait_for_all_responses();
+
+    $self->update( { count => $count } );
+}
+
+sub send_email {
+    # TODO
+}
+
+sub _build__httpcb { WebService::HttpCallback::Async->instance }
+
 __PACKAGE__->meta->make_immutable;
 1;

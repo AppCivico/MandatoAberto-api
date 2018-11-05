@@ -49,10 +49,28 @@ db_transaction {
             security_token => $security_token,
             entities       => encode_json(
                 {
-                    Saude => [
-                        'vacinacao',
-                        'posto de saude'
-                    ]
+                    id        => 'a8736300-e5b3-4ab8-a29e-c379ef7f61de',
+                    timestamp => '2018-09-19T21 => 39 => 43.452Z',
+                    lang      => 'pt-br',
+                    result    => {
+                        source           => 'agent',
+                        resolvedQuery    => 'O que você acha do aborto?',
+                        action           => '',
+                        actionIncomplete => 0,
+                        parameters       => {},
+                        contexts         => [],
+                        metadata         => {
+                            intentId                  => '4c3f7241-6990-4c92-8332-cfb8d437e3d1',
+                            webhookUsed               => 0,
+                            webhookForSlotFillingUsed => 0,
+                            isFallbackIntent          => 0,
+                            intentName                => 'direitos_animais'
+                        },
+                        fulfillment => { speech =>  '', messages =>  [] },
+                        score       => 1
+                    },
+                    status    => { code =>  200, errorType =>  'success' },
+                    sessionId => '1938538852857638'
                 }
             )
         ]
@@ -77,6 +95,8 @@ db_transaction {
 
     stash_test "get_issues" => sub {
         my $res = shift;
+
+        ok( defined $res->{itens_count}, 'itens_count is defined' );
 
         is ($res->{issues}->[0]->{message}, $message, 'issue message');
         is ($res->{issues}->[0]->{open},  1, 'issue status');
@@ -162,24 +182,42 @@ db_transaction {
             security_token => $security_token,
             entities       => encode_json(
                 {
-                    Saude => [
-                        'vacinacao',
-                        'posto de saude'
-                    ]
+                    id        => 'a8736300-e5b3-4ab8-a29e-c379ef7f61de',
+                    timestamp => '2018-09-19T21 => 39 => 43.452Z',
+                    lang      => 'pt-br',
+                    result    => {
+                        source           => 'agent',
+                        resolvedQuery    => 'O que você acha do aborto?',
+                        action           => '',
+                        actionIncomplete => 0,
+                        parameters       => {},
+                        contexts         => [],
+                        metadata         => {
+                            intentId                  => '4c3f7241-6990-4c92-8332-cfb8d437e3d1',
+                            webhookUsed               => 0,
+                            webhookForSlotFillingUsed => 0,
+                            isFallbackIntent          => 0,
+                            intentName                => 'direitos_animais'
+                        },
+                        fulfillment => { speech =>  '', messages =>  [] },
+                        score       => 1
+                    },
+                    status    => { code =>  200, errorType =>  'success' },
+                    sessionId => '1938538852857638'
                 }
             )
         ]
     ;
     my $second_issue_id = stash "i2.id";
-	my $second_issue    = $issue_rs->find($second_issue_id);
+    my $second_issue    = $issue_rs->find($second_issue_id);
 
     # Testando batch ignore de issues
     db_transaction{
-		$first_issue->update( { reply => undef, open => 1 } );
-		$second_issue->update( { reply => undef, open => 1 } );
+        $first_issue->update( { reply => undef, open => 1 } );
+        $second_issue->update( { reply => undef, open => 1 } );
 
         $first_issue  = $first_issue->discard_changes;
-		$second_issue = $second_issue->discard_changes;
+        $second_issue = $second_issue->discard_changes;
 
         rest_put "/api/politician/$politician_id/issue/batch-ignore",
             name    => 'batch ignore without ids',
@@ -207,36 +245,36 @@ db_transaction {
         }
     };
 
-	# Testando batch delete de issues
-	db_transaction{
-		$first_issue->update( { reply => undef, open => 1 } );
-		$second_issue->update( { reply => undef, open => 1 } );
+    # Testando batch delete de issues
+    db_transaction{
+        $first_issue->update( { reply => undef, open => 1 } );
+        $second_issue->update( { reply => undef, open => 1 } );
 
-		$first_issue  = $first_issue->discard_changes;
-		$second_issue = $second_issue->discard_changes;
+        $first_issue  = $first_issue->discard_changes;
+        $second_issue = $second_issue->discard_changes;
 
-		rest_put "/api/politician/$politician_id/issue/batch-delete",
-		  name    => 'batch delete without ids',
-		  is_fail => 1,
-		  code    => 400;
+        rest_put "/api/politician/$politician_id/issue/batch-delete",
+          name    => 'batch delete without ids',
+          is_fail => 1,
+          code    => 400;
 
-		rest_put "/api/politician/$politician_id/issue/batch-delete",
-		  name => 'batch delete',
-		  code => 200,
-		  [ ids => "$first_issue_id, $second_issue_id" ];
+        rest_put "/api/politician/$politician_id/issue/batch-delete",
+          name => 'batch delete',
+          code => 200,
+          [ ids => "$first_issue_id, $second_issue_id" ];
 
-		rest_get "/api/politician/$politician_id/issue",
-		  name  => 'get deleted issues',
-		  stash => 'get_deleted_issues',
-		  list  => 1,
-		  [ filter => 'open' ];
+        rest_get "/api/politician/$politician_id/issue",
+          name  => 'get deleted issues',
+          stash => 'get_deleted_issues',
+          list  => 1,
+          [ filter => 'open' ];
 
-		stash_test 'get_deleted_issues' => sub {
-			my $res = shift;
+        stash_test 'get_deleted_issues' => sub {
+            my $res = shift;
 
-			is( scalar @{ $res->{issues} }, 0, '0 issues' );
-		  }
-	};
+            is( scalar @{ $res->{issues} }, 0, '0 issues' );
+          }
+    };
 
     # Criando um grupo para adicionar o recipiente
     # no fechamento da segunda issue
@@ -276,10 +314,28 @@ db_transaction {
             security_token => $security_token,
             entities       => encode_json(
                 {
-                    Saude => [
-                        'vacinacao',
-                        'posto de saude'
-                    ]
+                    id        => 'a8736300-e5b3-4ab8-a29e-c379ef7f61de',
+                    timestamp => '2018-09-19T21 => 39 => 43.452Z',
+                    lang      => 'pt-br',
+                    result    => {
+                        source           => 'agent',
+                        resolvedQuery    => 'O que você acha do aborto?',
+                        action           => '',
+                        actionIncomplete => 0,
+                        parameters       => {},
+                        contexts         => [],
+                        metadata         => {
+                            intentId                  => '4c3f7241-6990-4c92-8332-cfb8d437e3d1',
+                            webhookUsed               => 0,
+                            webhookForSlotFillingUsed => 0,
+                            isFallbackIntent          => 0,
+                            intentName                => 'direitos_animais'
+                        },
+                        fulfillment => { speech =>  '', messages =>  [] },
+                        score       => 1
+                    },
+                    status    => { code =>  200, errorType =>  'success' },
+                    sessionId => '1938538852857638'
                 }
             )
         ]
@@ -291,7 +347,7 @@ db_transaction {
         files => { file => "$Bin/picture.jpg", },
     ;
 
-	my $third_issue    = $issue_rs->find($third_issue_id);
+    my $third_issue    = $issue_rs->find($third_issue_id);
     ok ( defined( $third_issue->saved_attachment_id ), 'defined' );
 };
 
