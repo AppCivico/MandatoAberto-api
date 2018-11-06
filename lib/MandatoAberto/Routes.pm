@@ -12,7 +12,7 @@ sub register {
     $register->post('/politician')->to('register-politician#post');
 
     # Register::Poll.
-    $register->post('/poll')->to('register-poll#post');
+    $register->post('/poll')->to('register-poll#post')->over(has_priv => 'politician');
 
     # Login.
     my $login = $api->route('/login');
