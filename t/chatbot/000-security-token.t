@@ -2,9 +2,10 @@ use common::sense;
 use FindBin qw($Bin);
 use lib "$Bin/../lib";
 
-use MandatoAberto::Test::Further;
+use MandatoAberto::Test;
 
-my $schema = MandatoAberto->model("DB");
+my $t      = test_instance;
+my $schema = $t->app->schema;
 
 db_transaction {
     my $security_token = $ENV{CHATBOT_SECURITY_TOKEN};
@@ -13,26 +14,31 @@ db_transaction {
         fb_page_id => 'foo'
     );
 
-    rest_get "/api/chatbot/",
-        name    => "get on chatbot without security_token",
-        is_fail => 1,
-        code    => 400
-    ;
+    subtest 'Chatbot | Without security token' => sub {
+        $t->get_ok('/api/chatbot/')->status_is(403);
+    };
 
-    rest_get "/api/chatbot/",
-        name    => "get on chatbot with wrong security_token",
-        is_fail => 1,
-        code    => 403,
-        [ security_token => fake_words(3)->() ]
-    ;
+	subtest 'Chatbot | With wrong security token' => sub {
+		$t->get_ok(
+            '/api/chatbot/',
+            form => {
+                security_token => fake_words(3)->()
+            }
+        )
+        ->status_is(403);
+	};
 
-    rest_get "/api/chatbot",
-        name    => "get on chatbot with correct security_token",
-        [
-            security_token => $security_token,
-            fb_page_id     => 'foo'
-        ]
-    ;
+
+	subtest 'Chatbot | With correct security token' => sub {
+		$t->get_ok(
+            '/api/chatbot/',
+            form => {
+                security_token => $security_token,
+                fb_page_id     => 'foo'
+            }
+        )
+        ->status_is(200);
+	};
 };
 
 done_testing();

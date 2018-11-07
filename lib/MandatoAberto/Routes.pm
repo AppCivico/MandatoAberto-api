@@ -87,6 +87,7 @@ sub register {
 
     # Chatbot.
     my $chatbot = $api->route('/chatbot')->under->to('chatbot#validade_security_token');
+    $chatbot->get()->to('chatbot#get');
 
     # Chatbot::Recipient.
     $chatbot->post('/recipient')->to('chatbot-recipient#post');
