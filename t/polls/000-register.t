@@ -208,8 +208,10 @@ db_transaction {
         )
         ->status_is(201);
 
+        my $poll_id = $t->tx->res->json->{id};
+
         subtest 'Poll status' => sub {
-            my $poll = $t->post_ok(
+            $t->post_ok(
                 '/api/register/poll',
                 form => {
                     name                       => 'this is the second poll',
@@ -225,44 +227,34 @@ db_transaction {
             )
             ->status_is(201);
 
+            my $second_poll_id = $t->tx->res->json->{id};
+
+            is( $schema->resultset('Poll')->find($poll_id)->status_id,        1, 'first poll is active' );
+            is( $schema->resultset('Poll')->find($second_poll_id)->status_id, 2, 'second poll is inactive' );
+
+            $t->post_ok(
+                '/api/register/poll',
+                form => {
+                    name                       => 'this is the third poll',
+                    status_id                  => 1,
+                    'questions[0]'             => 'Você está bem?',
+                    'questions[0][options][0]' => 'Sim',
+                    'questions[0][options][1]' => 'Não',
+                    'questions[1]'             => 'foobar?',
+                    'questions[1][options][0]' => 'foo',
+                    'questions[1][options][1]' => 'bar',
+                    'questions[1][options][2]' => 'não',
+                }
+            )
+            ->status_is(201);
+
+            my $third_poll_id = $t->tx->res->json->{id};
+
+            is( $schema->resultset('Poll')->find($poll_id)->status_id,        3, 'first poll is deactivated' );
+            is( $schema->resultset('Poll')->find($second_poll_id)->status_id, 2, 'second poll is inactive' );
+            is( $schema->resultset('Poll')->find($third_poll_id)->status_id,  1, 'third poll is active' );
         };
     };
 };
 
 done_testing();
-
-
-#     rest_post "/api/register/poll",
-#         name                => "Create inactive poll",
-#         automatic_load_item => 0,
-#         stash               => "p2",
-#         [
-#         ]
-#     ;
-
-#     is( $schema->resultset('Poll')->find(stash "p1.id")->status_id, 1, 'first poll is active' );
-#     is( $schema->resultset('Poll')->find(stash "p2.id")->status_id, 2, 'second poll is inactive' );
-
-#     rest_post "/api/register/poll",
-#         name                => "Create a new active poll",
-#         automatic_load_item => 0,
-#         stash               => "p3",
-#         [
-#             name                       => 'this is the third poll',
-#             status_id                  => 1,
-#             'questions[0]'             => 'Você está bem?',
-#             'questions[0][options][0]' => 'Sim',
-#             'questions[0][options][1]' => 'Não',
-#             'questions[1]'             => 'foobar?',
-#             'questions[1][options][0]' => 'foo',
-#             'questions[1][options][1]' => 'bar',
-#             'questions[1][options][2]' => 'não',
-#         ]
-#     ;
-
-#     is( $schema->resultset('Poll')->find(stash "p1.id")->status_id, 3, 'first poll is deactivated' );
-#     is( $schema->resultset('Poll')->find(stash "p2.id")->status_id, 2, 'second poll is inactive' );
-#     is( $schema->resultset('Poll')->find(stash "p3.id")->status_id, 1, 'third poll is active' );
-# };
-
-# done_testing();

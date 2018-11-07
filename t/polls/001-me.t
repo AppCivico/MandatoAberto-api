@@ -2,35 +2,39 @@ use common::sense;
 use FindBin qw($Bin);
 use lib "$Bin/../lib";
 
-use MandatoAberto::Test::Further;
+use MandatoAberto::Test;
 
-my $schema = MandatoAberto->model("DB");
+my $t = test_instance;
+my $schema = $t->app->schema;
 
 db_transaction {
-    create_politician;
-    api_auth_as user_id => stash "politician.id";
+    my $politician = create_politician;
+    api_auth_as user_id => $politician->{id};
 
     my $poll_name = fake_words(1)->();
 
     my $first_option_content  = fake_words(1)->();
     my $second_option_content = fake_words(1)->();
 
-    rest_post "/api/register/poll",
-        name                => "Sucessful poll creation",
-        automatic_load_item => 0,
-        stash               => "p1",
-        [
-            name                       => $poll_name,
-            status_id                  => 1,
-            'questions[0]'             => 'Foobar',
-            'questions[0][options][0]' => $first_option_content,
-            'questions[0][options][1]' => $second_option_content,
-        ]
-    ;
+    my $poll_id;
+    subtest 'Politician | Create poll' => sub {
+        $t->post_ok(
+            '/api/register/poll',
+            form => {
+                name                       => $poll_name,
+                status_id                  => 1,
+                'questions[0]'             => 'Foobar',
+                'questions[0][options][0]' => $first_option_content,
+                'questions[0][options][1]' => $second_option_content,
+            }
+        )
+        ->status_is(201)
+        ->json_has('/id');
 
-    my $poll_id = stash "p1.id";
+        $poll_id = $t->tx->res->json->{id};
+    };
 
-    my $question_id     = $schema->resultset('PollQuestion')->search( { poll_id => $poll_id } )->next->id;
+    my $question_id = $schema->resultset('PollQuestion')->search( { poll_id => $poll_id } )->next->id;
 
     my $first_option_id = $schema->resultset('PollQuestionOption')->search(
         {
@@ -46,46 +50,46 @@ db_transaction {
         }
     )->next->id;
 
-    rest_get "/api/poll",
-        name  => "Get all poll data",
-        list  => 1,
-        stash => "get_poll_data"
-    ;
+    subtest 'Politician | Get and edit poll' => sub {
+        $t->get_ok('/api/poll')
+          ->status_is(200)
+          ->json_has('/polls')
+          ->json_is('/polls/0/id',                  $poll_id,     'poll id')
+          ->json_is('/polls/0/status_id',           1,            'poll status_id')
+          ->json_is('/polls/0/name',                $poll_name,   'poll name')
+          ->json_is('/polls/0/questions/0/content', 'Foobar',     'question content')
+          ->json_is('/polls/0/questions/0/id',      $question_id, 'question id');
 
-    stash_test "get_poll_data" => sub {
-        my $res = shift;
+        # set poll to inactive
+        $t->put_ok(
+            "/api/poll/$poll_id",
+            form => {
+                status_id => 2
+            }
+        )
+        ->status_is(400);
 
-        is ($res->{polls}->[0]->{id}, $poll_id, 'poll id');
-        is ($res->{polls}->[0]->{status_id}, 1, 'poll status_id');
-        is ($res->{polls}->[0]->{name}, $poll_name, 'poll name');
-        is ($res->{polls}->[0]->{questions}->[0]->{content}, 'Foobar', 'question content');
-        is ($res->{polls}->[0]->{questions}->[0]->{id}, $question_id, 'question id');
-    };
+        # Deactivate poll
+        $t->put_ok(
+            "/api/poll/$poll_id",
+            form => {
+                status_id => 3
+            }
+        )
+        ->status_is(202);
 
-    rest_put "/api/poll/$poll_id",
-        name    => "set poll to inactive",
-        is_fail => 1,
-        code    => 400,
-        [ status_id => 2 ]
-    ;
+        # Activate poll that has been activated before
+        $t->put_ok(
+            "/api/poll/$poll_id",
+            form => {
+                status_id => 1
+            }
+        )
+        ->status_is(400);
 
-    rest_put "/api/poll/$poll_id",
-        name => "Deactivate poll",
-        [ status_id => 3 ]
-    ;
-
-    rest_put "/api/poll/$poll_id",
-        name    => "Activate poll that has been activated before",
-        is_fail => 1,
-        code    => 400,
-        [ status_id => 1 ]
-    ;
-
-    rest_reload_list "get_poll_data";
-    stash_test "get_poll_data.list" => sub {
-        my $res = shift;
-
-        is ($res->{polls}->[0]->{status_id}, 3, 'poll deactivated');
+        $t->get_ok('/api/poll')
+          ->status_is(200)
+          ->json_is('/polls/0/status_id', 3, 'poll deactivated');
     };
 };
 

@@ -45,6 +45,7 @@ sub register {
     # Poll.
     my $poll      = $api->route('/poll');
     my $poll_item = $poll->route('/:poll_id')->under->to('poll#item_stasher');
+    $poll->get()->to('poll#get');
     $poll_item->put()->to('poll#item_put');
 
     # Politician.
