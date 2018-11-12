@@ -85,6 +85,10 @@ sub register {
     # Politician::Groups::Count.
     $politician_groups->post('/count')->to('politician-groups-count#post');
 
+    # Politician::VotoLegalIntegration
+    my $politician_votolegal_integration = $politician_result->route('/votolegal-integration');
+    $politician_votolegal_integration->post()->to('politician-voto_legal_integration#post');
+
     # Chatbot.
     my $chatbot = $api->route('/chatbot')->under->to('chatbot#validade_security_token');
     $chatbot->get()->to('chatbot#get');
@@ -94,6 +98,10 @@ sub register {
 
     # Chatbot::Issue.
     $chatbot->post('/issue')->to('chatbot-issue#post');
+
+    # Chatbot::Politician
+    my $chatbot_politician = $chatbot->route('/politician')->under->to('chatbot-politician#stasher');
+    $chatbot_politician->get()->to('chatbot-politician#get');
 
     #"/api/politician/$politician_id/answers",
 }
