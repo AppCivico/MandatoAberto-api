@@ -2,8 +2,6 @@ use common::sense;
 use FindBin qw($Bin);
 use lib "$Bin/../lib";
 
-use MandatoAberto::Test::Further;
-
 use MandatoAberto::Test;
 
 my $t      = test_instance;
