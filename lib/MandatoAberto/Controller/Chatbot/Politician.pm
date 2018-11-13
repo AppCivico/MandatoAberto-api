@@ -45,6 +45,16 @@ sub stasher {
     );
 }
 
+sub verify_id {
+    my $c = shift;
+
+    my $politician_id = $c->param('politician_id');
+
+    # Faço essa verificação para garantir que um usuário com o seu respectivo id
+    # não está tentando acessar a rota de outro usuário
+
+}
+
 sub get {
     my $c = shift;
 

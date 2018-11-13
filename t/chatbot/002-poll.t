@@ -2,17 +2,18 @@ use common::sense;
 use FindBin qw($Bin);
 use lib "$Bin/../lib";
 
-use MandatoAberto::Test::Further;
+use MandatoAberto::Test;
 
-my $schema = MandatoAberto->model("DB");
+my $t      = test_instance;
+my $schema = $t->app->schema;
 
 db_transaction {
     my $security_token = $ENV{CHATBOT_SECURITY_TOKEN};
 
-    create_politician(
+    my $politician = create_politician(
         fb_page_id => "foobar"
     );
-    my $politician_id = stash "politician.id";
+    my $politician_id = $politician->{id};
     api_auth_as user_id => $politician_id;
 
     my $poll_name = fake_words(1)->();

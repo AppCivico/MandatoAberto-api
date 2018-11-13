@@ -99,9 +99,16 @@ sub register {
     # Chatbot::Issue.
     $chatbot->post('/issue')->to('chatbot-issue#post');
 
+    # Chatbot::Poll
+    $chatbot->post('/issue')->to('chatbot-poll#get');
+
     # Chatbot::Politician
-    my $chatbot_politician = $chatbot->route('/politician')->under->to('chatbot-politician#stasher');
+    my $chatbot_politician        = $chatbot->route('/politician')->under->to('chatbot-politician#stasher');
+    my $chatbot_politician_result = $chatbot_politician->route('/:politician_id')->under->to('chatbot-politician#verify_id');
     $chatbot_politician->get()->to('chatbot-politician#get');
+
+    # Chatbot::Politician::Poll
+    my $chatbot_politician_poll = $chatbot_politician_result->route('/poll');
 
     #"/api/politician/$politician_id/answers",
 }
