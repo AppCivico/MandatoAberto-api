@@ -64,11 +64,11 @@ sub list_POST {
         with => $c->req->params
     );
 
-	return $self->status_created(
-		$c,
-		location => $c->uri_for($c->controller('API::Chatbot::Politician::Recipient')->action_for('result'), [ $recipient->id ]),
-		entity   => { id => $recipient->id }
-	);
+    return $self->status_created(
+        $c,
+        location => $c->uri_for($c->controller('API::Chatbot::Politician::Recipient')->action_for('result'), [ $recipient->id ]),
+        entity   => { id => $recipient->id }
+    );
 }
 
 __PACKAGE__->meta->make_immutable;

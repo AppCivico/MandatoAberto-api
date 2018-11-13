@@ -251,7 +251,7 @@ sub build_message_object {
 sub build_headers {
     my ($self, $recipient) = @_;
 
-	my $message_type = $self->message_type;
+    my $message_type = $self->message_type;
 
     my $ret;
     if ( $message_type eq 'text_and_attachment' ) {

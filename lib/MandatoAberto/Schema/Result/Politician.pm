@@ -811,8 +811,8 @@ sub action_specs {
                 }
 
                 # Tratando possibilidade de retirar partido e cargo
-				$values{party_id}  = undef if defined $values{party_id}  && $values{party_id} == 0;
-				$values{office_id} = undef if defined $values{office_id} && $values{office_id} == 0;
+                $values{party_id}  = undef if defined $values{party_id}  && $values{party_id} == 0;
+                $values{office_id} = undef if defined $values{office_id} && $values{office_id} == 0;
 
                 # Caso ocorra mudança no fb_page_id e o político possuir integração do voto legal
                 # devo avisar o novo page_id ao voto legal

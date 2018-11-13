@@ -17,14 +17,14 @@ sub base : Chained('root') : PathPart('knowledge-base') : CaptureArgs(0) {
 }
 
 sub object : Chained('base') : PathPart('') : CaptureArgs(1) {
-	my ($self, $c, $knowledge_base_id) = @_;
+    my ($self, $c, $knowledge_base_id) = @_;
 
-	$c->stash->{collection} = $c->stash->{collection}->search( { id => $knowledge_base_id } );
+    $c->stash->{collection} = $c->stash->{collection}->search( { id => $knowledge_base_id } );
 
-	my $knowledge_base = $c->stash->{collection}->find($knowledge_base_id);
-	$c->detach("/error_404") unless ref $knowledge_base;
+    my $knowledge_base = $c->stash->{collection}->find($knowledge_base_id);
+    $c->detach("/error_404") unless ref $knowledge_base;
 
-	$c->stash->{knowledge_base} = $knowledge_base;
+    $c->stash->{knowledge_base} = $knowledge_base;
 }
 
 sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }

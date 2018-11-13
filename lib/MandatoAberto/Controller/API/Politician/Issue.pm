@@ -203,7 +203,7 @@ sub list_GET {
                     }
                   )->all()
             ],
-			itens_count => $c->stash->{collection}->count
+            itens_count => $c->stash->{collection}->count
         }
     );
 }

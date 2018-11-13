@@ -18,10 +18,10 @@ sub object : Chained('base') : PathPart('') : CaptureArgs(1) {
 
     $c->stash->{collection} = $c->stash->{collection}->search( { user_id => $politician_id } );
 
-	my $politician = $c->stash->{collection}->find($politician_id);
-	$c->detach("/error_404") unless ref $politician;
+    my $politician = $c->stash->{collection}->find($politician_id);
+    $c->detach("/error_404") unless ref $politician;
 
-	$c->stash->{politician} = $politician;
+    $c->stash->{politician} = $politician;
 }
 
 sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }

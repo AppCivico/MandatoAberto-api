@@ -234,9 +234,9 @@ use WebService::HttpCallback::Async;
 use JSON::MaybeXS;
 
 has _httpcb => (
-	is         => "ro",
-	isa        => "WebService::HttpCallback::Async",
-	lazy_build => 1,
+    is         => "ro",
+    isa        => "WebService::HttpCallback::Async",
+    lazy_build => 1,
 );
 
 sub process_and_send {
@@ -245,11 +245,11 @@ sub process_and_send {
     my @group_ids = @{ $self->groups || [] };
 
     my $recipient_rs = $self->politician->recipients->only_opt_in->search_by_group_ids(@group_ids)->search(
-    	{},
-    	{
-    		'+select' => [ \"COUNT(1) OVER(PARTITION BY 1)" ],
-    		'+as'     => ['total'],
-    	}
+        {},
+        {
+            '+select' => [ \"COUNT(1) OVER(PARTITION BY 1)" ],
+            '+as'     => ['total'],
+        }
     );
 
     $logger->info(sprintf("Número de contatos que receberão a campanha: '%d'.", $recipient_rs->count)) if $logger;

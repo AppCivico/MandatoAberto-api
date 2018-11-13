@@ -14,7 +14,7 @@ sub _build_furl { Furl->new() }
 sub generate_access_token {
     my ($self) = @_;
     my $whoami = `whoami`;
-	print STDERR "\nwhoami: $whoami\n";
+    print STDERR "\nwhoami: $whoami\n";
 
     my $access_token = `export GOOGLE_APPLICATION_CREDENTIALS='$ENV{GOOGLE_APPLICATION_CREDENTIALS}' && gcloud auth application-default print-access-token`;
     print STDERR $access_token;

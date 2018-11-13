@@ -27,11 +27,11 @@ sub list_POST {
         }
     );
 
-	return $self->status_created(
-		$c,
-		location => $c->uri_for($c->controller('API::Chatbot::Politician::Entities::Stat'), $stats->recipient_id),
-		entity   => { success => 1 }
-	);
+    return $self->status_created(
+        $c,
+        location => $c->uri_for($c->controller('API::Chatbot::Politician::Entities::Stat'), $stats->recipient_id),
+        entity   => { success => 1 }
+    );
 }
 
 __PACKAGE__->meta->make_immutable;

@@ -9,10 +9,10 @@ my $schema = MandatoAberto->model("DB");
 db_transaction {
     my $security_token = $ENV{CHATBOT_SECURITY_TOKEN};
 
-	use_ok 'MandatoAberto::Worker::Campaign';
+    use_ok 'MandatoAberto::Worker::Campaign';
 
-	my $worker = new_ok('MandatoAberto::Worker::Campaign', [ schema => $schema ]);
-	ok( $worker->does('MandatoAberto::Worker'), 'worker does MandatoAberto::Worker' );
+    my $worker = new_ok('MandatoAberto::Worker::Campaign', [ schema => $schema ]);
+    ok( $worker->does('MandatoAberto::Worker'), 'worker does MandatoAberto::Worker' );
 
     create_politician(
         fb_page_id => 'foo'
@@ -162,8 +162,8 @@ db_transaction {
         is ($res->{direct_messages}->[0]->{count}, 1, 'dm count');
         is ($res->{direct_messages}->[0]->{groups}->[0]->{name}, 'foobar', 'group name');
 
-		ok(defined $res->{direct_messages}->[0]->{created_at}, 'created_at is defined');
-		ok(defined $res->{direct_messages}->[0]->{status},     'status is defined');
+        ok(defined $res->{direct_messages}->[0]->{created_at}, 'created_at is defined');
+        ok(defined $res->{direct_messages}->[0]->{status},     'status is defined');
     };
 
     rest_post "/api/politician/$politician_id/direct-message",
@@ -243,7 +243,7 @@ db_transaction {
             files => { file => "$Bin/picture.jpg" }
         ;
 
-		ok( $worker->run_once(), 'run once' );
+        ok( $worker->run_once(), 'run once' );
 
         rest_post "/api/politician/$politician_id/direct-message",
             name    => 'POST without attachment url',
@@ -255,7 +255,7 @@ db_transaction {
             files => { file => "$Bin/picture.jpg", },
         ;
 
-		ok( $worker->run_once(), 'run once' );
+        ok( $worker->run_once(), 'run once' );
     };
 
     subtest 'direct message without any required param' => sub {

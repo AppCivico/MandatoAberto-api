@@ -66,17 +66,17 @@ sub list_GET {
 
     my $politician = $c->stash->{politician};
 
-	$self->validate_request_params(
-		$c,
-		page => {
-			required   => 0,
-			type       => 'Int'
-		},
-		results => {
-			required => 0,
-			type     => 'Int',
-		},
-	);
+    $self->validate_request_params(
+        $c,
+        page => {
+            required   => 0,
+            type       => 'Int'
+        },
+        results => {
+            required => 0,
+            type     => 'Int',
+        },
+    );
 
     my $page    = $c->req->params->{page}    || 1;
     my $results = $c->req->params->{results} || 20;
