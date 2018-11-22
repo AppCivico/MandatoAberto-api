@@ -31,7 +31,7 @@ db_transaction {
     is($schema->resultset('EmailQueue')->count, "2", "greetings and new register emails");
 
     is (
-        $schema->resultset("Politician")->find(stash "d1.id")->user->email,
+        $schema->resultset("User")->find(stash "d1.id")->email,
         $email,
         "created user and politician",
     );
@@ -61,19 +61,6 @@ db_transaction {
             party_id         => fake_int(1, 35)->(),
             office_id        => fake_int(1, 8)->(),
             gender           => fake_pick(qw/F M/)->(),
-        ]
-    ;
-
-    rest_post "/api/register/politician",
-        name    => "politician without address data",
-        is_fail => 1,
-        [
-            email         => fake_email()->(),
-            password      => '1234567',
-            name          => 'Lucas Ansei',
-            party_id      => fake_int(1, 35)->(),
-            office_id     => fake_int(1, 8)->(),
-            gender        => fake_pick(qw/F M/)->(),
         ]
     ;
 
@@ -151,20 +138,6 @@ db_transaction {
             party_id         => fake_int(1, 35)->(),
             office_id        => 'Developer',
             gender           => fake_pick(qw/F M/)->(),
-        ]
-    ;
-
-    rest_post "/api/register/politician",
-        name    => "politician without gender",
-        is_fail => 1,
-        [
-            email            => fake_email()->(),
-            password         => '1234567',
-            name             => 'Lucas Ansei',
-            address_state_id => 26,
-            address_city_id  => 9508,
-            party_id         => fake_int(1, 35)->(),
-            office_id        => fake_int(1, 8)->(),
         ]
     ;
 

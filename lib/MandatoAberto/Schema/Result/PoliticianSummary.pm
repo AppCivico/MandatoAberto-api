@@ -66,6 +66,12 @@ __PACKAGE__->table("politician_summary");
   default_value: 0
   is_nullable: 0
 
+=head2 user_id
+
+  data_type: 'integer'
+  is_foreign_key: 1
+  is_nullable: 1
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -77,6 +83,8 @@ __PACKAGE__->add_columns(
   { data_type => "integer", default_value => 0, is_nullable => 0 },
   "campaign_count",
   { data_type => "integer", default_value => 0, is_nullable => 0 },
+  "user_id",
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -108,9 +116,29 @@ __PACKAGE__->belongs_to(
   { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
 );
 
+=head2 user
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-10-16 14:00:22
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:veOHSUSvUI7dCPrC7/WUkw
+Type: belongs_to
+
+Related object: L<MandatoAberto::Schema::Result::User>
+
+=cut
+
+__PACKAGE__->belongs_to(
+  "user",
+  "MandatoAberto::Schema::Result::User",
+  { id => "user_id" },
+  {
+    is_deferrable => 0,
+    join_type     => "LEFT",
+    on_delete     => "NO ACTION",
+    on_update     => "NO ACTION",
+  },
+);
+
+
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-11-22 00:41:42
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:u7ij8aBdZ9R2XVmMGZxwqQ
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
