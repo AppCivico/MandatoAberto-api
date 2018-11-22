@@ -93,7 +93,7 @@ sub result_GET {
 
             ( $has_movement ? ( movement => { map { $_ => $c->stash->{politician}->movement->$_ } qw/name id/  } ) : () ),
 
-            ( state => { map { $_ => $c->stash->{politician}->address_state->$_ } qw/name code/  } ),
+            ( state => { map { $_ => $c->stash->{politician}->address_state->$_ } qw/name code id/  } ),
 
             ( city => {map { $_ => $c->stash->{politician}->address_city->$_ } qw/name id/}  ),
 
