@@ -211,4 +211,42 @@ sub get_open_issues_created_today {
     );
 }
 
+sub extract_metrics {
+    my ($self, $politician_id) = @_;
+
+    my $issue_response_view = $self->result_source->schema->resultset('ViewAvgIssueResponseTime')->search( undef, { bind => [ $politician_id ] } )->next;
+    use DDP; p $self->result_class;
+
+    my $count_open        = $self->search( { open => 1 } )->count;
+    my $count_ignored     = $self->search( { open => 0, reply => \'IS NULL' } )->count;
+    my $count_replied     = $self->search( { open => 0, reply => \'IS NOT NULL' } )->count;
+    my $avg_response_time = $issue_response_view ? $issue_response_view->avg_response_time : 0;
+
+    return {
+        count             => $self->count,
+        suggested_actions => [
+            {
+                alert             => 'Tempo médio de respostas: ' . $avg_response_time,
+                alert_is_positive => $avg_response_time <= 90 ? 1 : 0,
+                link              => '',
+                link_text         => ''
+            }
+        ],
+        sub_metrics => [
+            {
+                text              => $count_open . ' mensagens em aberto',
+                suggested_actions => []
+            },
+            {
+                text              => $count_ignored . ' mensagens descartadas',
+                suggested_actions => []
+            },
+            {
+				text              => $count_replied . ' mensagens respondidas',
+				suggested_actions => []
+            }
+        ]
+    }
+}
+
 1;

@@ -93,6 +93,44 @@ db_transaction {
     ;
     my $issue_id = stash 'i1.id';
 
+    rest_post "/api/chatbot/issue",
+        name                => 'creating issue',
+        automatic_load_item => 0,
+        stash               => 'i1',
+        [
+            politician_id  => $politician_id,
+            fb_id          => 'foobar',
+            message        => fake_words(1)->(),
+            security_token => $security_token,
+            entities       => encode_json(
+                {
+                    id        => 'a8736300-e5b3-4ab8-a29e-c379ef7f61de',
+                    timestamp => '2018-09-19T21 => 39 => 43.452Z',
+                    lang      => 'pt-br',
+                    result    => {
+                        source           => 'agent',
+                        resolvedQuery    => 'O que você acha do aborto?',
+                        action           => '',
+                        actionIncomplete => 0,
+                        parameters       => {},
+                        contexts         => [],
+                        metadata         => {
+                            intentId                  => '4c3f7241-6990-4c92-8332-cfb8d437e3d1',
+                            webhookUsed               => 0,
+                            webhookForSlotFillingUsed => 0,
+                            isFallbackIntent          => 0,
+                            intentName                => 'direitos_animais'
+                        },
+                        fulfillment => { speech =>  '', messages =>  [] },
+                        score       => 1
+                    },
+                    status    => { code =>  200, errorType =>  'success' },
+                    sessionId => '1938538852857638'
+                }
+            )
+        ]
+    ;
+
     api_auth_as user_id => 1;
 
     rest_get "/api/politician/$politician_id/dashboard",

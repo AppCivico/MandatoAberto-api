@@ -7,7 +7,10 @@ use Data::Section::Simple qw(get_data_section);
 use vars qw(@ISA @EXPORT);
 
 @ISA    = (qw(Exporter));
-@EXPORT = qw(is_test random_string get_data_section get_mandatoaberto_api_url_for get_mandatoaberto_httpcb_url_for);
+@EXPORT = qw( is_test random_string get_data_section
+    get_mandatoaberto_api_url_for get_mandatoaberto_httpcb_url_for
+    get_metric_name_for_dashboard get_metric_text_for_dashboard
+);
 
 sub is_test {
     if ($ENV{HARNESS_ACTIVE} || $0 =~ m{forkprove}) {
@@ -34,6 +37,46 @@ sub get_mandatoaberto_httpcb_url_for {
     $mandatoaberto_httpcb_url =~ s/\/$//;
 
     return ( ( is_test() ? "http://localhost" : $mandatoaberto_httpcb_url ) . $args );
+}
+
+sub get_metric_name_for_dashboard {
+    my ($relation) = @_;
+
+    my $name;
+    if ( $relation eq 'issues' ) {
+        $name = 'issue';
+    }
+    elsif ( $relation eq 'campaigns' ) {
+        $name = 'campaign';
+    }
+    elsif ( $relation eq 'groups' ) {
+        $name = 'group';
+    }
+    elsif ( $relation eq 'polls' ) {
+        $name = 'poll';
+    }
+
+    return $name;
+}
+
+sub get_metric_text_for_dashboard {
+    my ($relation) = @_;
+
+    my $text;
+    if ( $relation eq 'issues' ) {
+        $text = 'Mensagens';
+    }
+    elsif ( $relation eq 'campaigns' ) {
+        $text = 'Campanhas';
+    }
+    elsif ( $relation eq 'groups' ) {
+        $text = 'Grupos';
+    }
+    elsif ( $relation eq 'polls' ) {
+        $text = 'Consultas';
+    }
+
+    return $text;
 }
 
 1;
