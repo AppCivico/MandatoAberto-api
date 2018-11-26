@@ -158,4 +158,21 @@ sub non_self_propagated {
     );
 }
 
+sub extract_metrics {
+    my ($self) = @_;
+
+	return {
+		count             => $self->count,
+		suggested_actions => [
+			{
+				alert             => 'Melhore o seu engajamento',
+				alert_is_positive => 0,
+				link              => '',
+				link_text         => ''
+			},
+		],
+		sub_metrics => [ ]
+	}
+}
+
 1;

@@ -2,6 +2,8 @@ package MandatoAberto::Controller::API::Politician::Dashboard;
 use Moose;
 use namespace::autoclean;
 
+use MandatoAberto::Utils qw( get_metric_name_for_dashboard get_metric_text_for_dashboard );
+
 use utf8;
 use Furl;
 use JSON::MaybeXS;
@@ -180,6 +182,67 @@ sub list_GET {
                 # reach_propagated => $poll_results->search( { 'poll_results.origin' => 'propagate' } )->count
             }
 
+        }
+    );
+}
+
+sub list_new : Chained('base') : PathPart('new') : Args(0) : ActionClass('REST') { }
+
+sub list_new_GET {
+    my ($self, $c) = @_;
+
+    my $politician = $c->stash->{politician};
+
+    my @relations = qw( issues campaigns groups polls );
+
+    my $recipients = $politician->recipients;
+
+    my $ever_had_poll = $politician->polls->count > 0 ? 1 : 0;
+
+    my $active_poll = $politician->polls->get_active_politician_poll_with_data;
+
+    my $last_active_poll;
+    if ($ever_had_poll && !$active_poll) {
+        $last_active_poll = $politician->polls->search(
+            { status_id => 3 },
+            {
+                order_by => { -desc => qw/updated_at/ },
+                prefetch => [ 'poll_questions' , { 'poll_questions' => { "poll_question_options" => 'poll_results' } } ]
+            }
+        )->next;
+    }
+
+    my $has_greeting      = $politician->politicians_greeting->count;
+    my $has_contacts      = $politician->politician_contacts->count;
+    my $has_dialogs       = $politician->answers->count > 0 ? 1 : 0;
+    my $has_facebook_auth = $politician->fb_page_access_token ? 1 : 0;
+
+    my $first_access = $politician->user->user_sessions->count > 1 ? 0 : 1;
+
+    return $self->status_ok(
+        $c,
+        entity => {
+            first_access        => $first_access,
+            has_greeting        => $has_greeting,
+            has_contacts        => $has_contacts,
+            has_dialogs         => $has_dialogs,
+            has_facebook_auth   => $has_facebook_auth,
+            has_active_poll     => $active_poll ? 1 : 0,
+            ever_had_poll       => $ever_had_poll,
+
+			metrics => [
+				map {
+					my $r = $_;
+
+					my $metrics = $politician->$r->extract_metrics;
+
+					+{
+						name => get_metric_name_for_dashboard($_),
+						text => get_metric_text_for_dashboard($_),
+						%$metrics,
+					  }
+				} @relations
+			]
         }
     );
 }

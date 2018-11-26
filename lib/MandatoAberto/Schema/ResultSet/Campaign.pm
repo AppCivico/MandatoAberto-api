@@ -48,4 +48,26 @@ sub get_politician_campaign_reach_poll_propagate_count {
     return $sum;
 }
 
+sub extract_metrics {
+    my ($self) = @_;
+
+    return {
+        count             => $self->count,
+        suggested_actions => [
+            {
+                alert             => 'Melhore o engajamento das suas campanhas',
+                alert_is_positive => 0,
+                link              => '',
+                link_text         => ''
+            },
+        ],
+		sub_metrics => [
+			{
+				text              => $self->search( { type_id => 1 } )->count . ' campanhas pelo Facebook',
+				suggested_actions => []
+			},
+		]
+    }
+}
+
 1;
