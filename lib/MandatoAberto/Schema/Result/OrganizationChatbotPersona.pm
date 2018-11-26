@@ -68,7 +68,7 @@ __PACKAGE__->table("organization_chatbot_persona");
 =head2 facebook_picture_url
 
   data_type: 'text'
-  is_nullable: 1
+  is_nullable: 0
 
 =head2 created_at
 
@@ -94,7 +94,7 @@ __PACKAGE__->add_columns(
   "facebook_id",
   { data_type => "text", is_nullable => 0 },
   "facebook_picture_url",
-  { data_type => "text", is_nullable => 1 },
+  { data_type => "text", is_nullable => 0 },
   "created_at",
   {
     data_type     => "timestamp",
@@ -139,8 +139,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-11-26 10:53:05
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:JANMUmtTRTiAs3Rlc+XxdQ
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-11-26 14:48:46
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Sgl8F3IrU77ENMHZe5cB8w
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
