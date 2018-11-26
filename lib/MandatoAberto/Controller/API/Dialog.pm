@@ -92,7 +92,13 @@ sub list_GET {
                             } $d->questions->search( { 'me.active' => 1 } )->all()
                         ],
                     }
-                } $c->stash->{collection}->search( { 'me.active' => 1 }, { prefetch => [ 'questions', { 'questions' => 'answers' } ] })->all()
+                } $c->stash->{collection}->search(
+                    {
+                        'me.active'                     => 1,
+                        'organization.is_mandatoaberto' => 1
+                    },
+                    { prefetch => [ 'questions', { 'questions' => { 'answers' => { 'politician' => { 'user' => 'organization' } } } } ] }
+                  )->all()
             ],
         }
     );
