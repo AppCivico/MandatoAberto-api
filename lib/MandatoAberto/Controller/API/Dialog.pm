@@ -50,7 +50,7 @@ sub list_GET {
     my $politician_id = $c->user->id;
 
     my $show_question_name = $ENV{SHOW_QUESTION_NAME};
-
+    use DDP; p $0;
     return $self->status_ok(
         $c,
         entity => {

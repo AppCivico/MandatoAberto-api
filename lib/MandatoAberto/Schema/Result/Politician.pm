@@ -802,6 +802,19 @@ sub action_specs {
 
                     # Setando o botão get started
                     $self->set_get_started_button_and_persistent_menu($values{fb_page_access_token});
+
+                    # Criando entrada na tabela organization_chatbot
+                    $self->user->organization->organization_chatbots->create(
+                        {
+                            chatbot_platform_id => 1,
+                            organization_chatbot_facebook_config => {
+                                page_id      => $values{fb_page_id},
+                                access_token => $values{fb_page_access_token}
+                            }
+                        }
+                    );
+
+
                 }
 
                 if ( exists $values{private_reply_activated} ) {
