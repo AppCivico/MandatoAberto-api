@@ -186,7 +186,7 @@ sub list_GET {
     );
 }
 
-sub list_new : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }
+sub list_new : Chained('base') : PathPart('new') : Args(0) : ActionClass('REST') { }
 
 sub list_new_GET {
     my ($self, $c) = @_;
@@ -194,30 +194,6 @@ sub list_new_GET {
     my $politician = $c->stash->{politician};
 
     my @relations = qw( issues campaigns groups polls );
-    use DDP;
-    for my $relation (@relations) {
-        my $rs = $politician->$relation;
-        # p $rs->extract_metrics($politician->id);
-    }
-
-    my $foo = {
-        metrics => [
-            map {
-                my $r = $_;
-
-                my $metrics = $politician->$r->extract_metrics;
-                # p $metrics;
-
-                +{
-                    name => get_metric_name_for_dashboard($_),
-                    text => get_metric_text_for_dashboard($_),
-                    %$metrics,
-                }
-            } @relations
-        ]
-    };
-
-    p $foo;
 
     my $recipients = $politician->recipients;
 
@@ -243,22 +219,6 @@ sub list_new_GET {
 
     my $first_access = $politician->user->user_sessions->count > 1 ? 0 : 1;
 
-    my $issues       = $politician->issues;
-    my $campaigns    = $politician->campaigns;
-    my $groups       = $politician->groups->search( { deleted => 0 } );
-    my $polls        = $politician->polls;
-    my $poll_results = $recipients->get_recipients_poll_results;
-
-    my $issue_response_view = $c->model('DB::ViewAvgIssueResponseTime')->search( undef, { bind => [ $politician->user_id ] } )->next;
-
-    # Condição para puxar dados dos últimos 7 dias
-    my $last_week_issue_response_view = $c->model('DB::ViewAvgIssueResponseTimeLastWeek')->search( undef, { bind => [ $politician->user_id ] } )->next;
-    my $last_week_cond = { created_at => { '>=' => \"NOW() - interval '7 days'" } };
-
-    my $last_week_issues     = $issues->search( $last_week_cond );
-    my $last_week_recipients = $recipients->search($last_week_cond);
-    my $last_week_campaigns  = $campaigns->search($last_week_cond);
-
     return $self->status_ok(
         $c,
         entity => {
@@ -269,79 +229,20 @@ sub list_new_GET {
             has_facebook_auth   => $has_facebook_auth,
             has_active_poll     => $active_poll ? 1 : 0,
             ever_had_poll       => $ever_had_poll,
-            # citizen_interaction => $citizen_interaction,
-            # citizen_gender      => $citizen_gender,
-            # group_count         => $group_count,
-            last_week_data => {
-                issues => {
-                    avg_response_time => $issue_response_view ? $issue_response_view->avg_response_time : 0,
-                    count             => $last_week_issues->count,
-                    count_open        => $last_week_issues->search( { open => 1 } )->count,
-                    count_ignored     => $last_week_issues->search( { open => 0, reply => \'IS NULL' } )->count,
-                },
-                recipients => {
-                    count => $last_week_recipients->count
-                },
-                campaigns => {
-                    count                => $last_week_campaigns->count,
-                    count_direct_message => $last_week_campaigns->search( { type_id => 1 } )->count,
-                    count_poll_propagate => $last_week_campaigns->search( { type_id => 2 } )->count
-                }
-            },
-            recipients => {
-                count                          => $recipients->count,
-                count_with_email               => $recipients->search( { email => \'IS NOT NULL' } )->count,
-                count_with_cellphone           => $recipients->search( { cellphone => \'IS NOT NULL' } )->count,
-                count_facebook                 => $recipients->search( { platform => 'facebook' } )->count,
-                count_twitter                  => $recipients->search( { platform => 'twitter' } )->count,
-                count_segmented_recipients     => $recipients->search( { groups => { '!=' => '' } } )->count,
-                count_non_segmented_recipients => $recipients->search( { groups => '' } )->count,
-            },
-            issues => {
-                count                    => $issues->count(),
-                count_open               => $issues->get_politician_open_issues->count,
-                count_ignored            => $issues->search( { open => 0, reply => \'IS NULL' } )->count,
-                count_replied            => $issues->search( { open => 0, reply => \'IS NOT NULL' } )->count,
-                count_open_last_24_hours => $issues->get_open_issues_created_today->count,
-                avg_response_time        => $issue_response_view ? $issue_response_view->avg_response_time : 0,
-            },
-            campaigns => {
-                count                => $politician->campaigns->count,
-                count_direct_message => $politician->campaigns->search( { type_id => 1 } )->count,
-                count_poll_propagate => $politician->campaigns->search( { type_id => 2 } )->count,
 
-                reach                => $politician->campaigns->get_politician_campaign_reach_count(),
-                reach_direct_message => $politician->campaigns->get_politician_campaign_reach_dm_count(),
-                reach_poll_propagate => $politician->campaigns->get_politician_campaign_reach_poll_propagate_count(),
-            },
-            groups => {
-                count                => $groups->count,
-                count_all_recipients => $recipients->count,
-                count_empty          => $groups->search( { recipients_count => 0 } )->count,
-                count_populated      => $groups->search( { recipients_count => { '!=' => 0 } } )->count,
+			metrics => [
+				map {
+					my $r = $_;
 
-                top_3_groups_by_recipients => [
-                    map {
-                        my $g = $_;
+					my $metrics = $politician->$r->extract_metrics;
 
-                        {
-                            id              => $g->id,
-                            name            => $g->name,
-                            recipient_count => $g->recipients_count
-                        }
-                    } $groups->get_groups_ordered_by_recipient_count->all()
-                ]
-            },
-            polls => {
-                count                => $polls->count,
-                count_propagated     => $politician->poll_propagates->count,
-                count_non_propagated => $polls->get_non_propagated_polls( $politician->user_id )->count,
-
-                # reach            => $poll_results->count,
-                # reach_dialog     => $poll_results->search( { 'poll_results.origin' => 'dialog' } )->count,
-                # reach_propagated => $poll_results->search( { 'poll_results.origin' => 'propagate' } )->count
-            }
-
+					+{
+						name => get_metric_name_for_dashboard($_),
+						text => get_metric_text_for_dashboard($_),
+						%$metrics,
+					  }
+				} @relations
+			]
         }
     );
 }
