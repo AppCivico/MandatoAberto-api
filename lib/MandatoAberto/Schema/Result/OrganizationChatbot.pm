@@ -165,6 +165,21 @@ __PACKAGE__->might_have(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 organization_chatbot_personae
+
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::OrganizationChatbotPersona>
+
+=cut
+
+__PACKAGE__->has_many(
+  "organization_chatbot_personae",
+  "MandatoAberto::Schema::Result::OrganizationChatbotPersona",
+  { "foreign.organization_chatbot_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 organization_chatbot_twitter_config
 
 Type: might_have
@@ -181,10 +196,17 @@ __PACKAGE__->might_have(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-11-20 19:17:02
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:B5zbwvtokz8F2COhc2aKHQ
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-11-26 10:53:05
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:aAEft0QRIfv/ge0bQMUW2Q
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
+
+sub create_persona {
+    my ($self, %opts) = @_;
+
+
+}
+
 __PACKAGE__->meta->make_immutable;
 1;
