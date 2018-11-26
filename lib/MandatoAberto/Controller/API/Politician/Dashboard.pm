@@ -193,7 +193,7 @@ sub list_new_GET {
 
     my $politician = $c->stash->{politician};
 
-    my @relations = qw( issues    );
+    my @relations = qw( issues campaigns groups polls );
     use DDP;
     for my $relation (@relations) {
         my $rs = $politician->$relation;

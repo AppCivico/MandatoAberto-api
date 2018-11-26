@@ -215,7 +215,6 @@ sub extract_metrics {
     my ($self, $politician_id) = @_;
 
     my $issue_response_view = $self->result_source->schema->resultset('ViewAvgIssueResponseTime')->search( undef, { bind => [ $politician_id ] } )->next;
-    use DDP; p $self->result_class;
 
     my $count_open        = $self->search( { open => 1 } )->count;
     my $count_ignored     = $self->search( { open => 0, reply => \'IS NULL' } )->count;

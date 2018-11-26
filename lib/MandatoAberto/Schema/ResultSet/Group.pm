@@ -124,5 +124,33 @@ sub get_groups_ordered_by_recipient_count {
     );
 }
 
+sub extract_metrics {
+    my ($self) = @_;
+
+    return {
+        count             => $self->count,
+        suggested_actions => [
+            {
+                alert             => '',
+                alert_is_positive => 0,
+                link              => '',
+                link_text         => ''
+            },
+        ],
+		sub_metrics => [
+			# Métrica: grupo com seguidores
+            {
+				text              => $self->search( { recipients_count => { '!=' => 0 } } )->count . ' grupos com seguidores',
+				suggested_actions => []
+			},
+            # Métrica: grupo sem seguidores
+            {
+				text              => $self->search( { recipients_count => 0 } )->count . ' grupos sem seguidores',
+				suggested_actions => []
+			},
+		]
+    }
+}
+
 1;
 
