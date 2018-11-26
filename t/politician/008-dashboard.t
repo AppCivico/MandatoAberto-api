@@ -325,6 +325,24 @@ db_transaction {
 
         is ( $res->{issues}->{avg_response_time}, '60', '60 minutes avg response time' );
     };
+
+    subtest 'Politician | Dashboard (new)' => sub {
+        rest_get "/api/politician/$politician_id/dashboard/new",
+            name  => 'get new dashboard',
+            stash => 'd2',
+            list  => 1
+        ;
+
+        stash_test 'd2' => sub {
+            my $res = shift;
+
+            is( ref $res->{metrics},                     'ARRAY', 'metrics is an array' );
+			is( ref $res->{metrics}->[0]->{sub_metrics}, 'ARRAY', 'sub_metrics is an array' );
+			ok( defined $res->{metrics}->[0]->{count}, 'count is defined' );
+			ok( defined $res->{metrics}->[0]->{text}, 'text is defined' );
+			ok( defined $res->{metrics}->[0]->{name}, 'name is defined' );
+        }
+    }
 };
 
 done_testing();

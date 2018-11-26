@@ -128,6 +128,8 @@ sub action_specs {
                     die \["gender", "must be F or M"];
                 }
 
+                my $organization = $self->result_source->schema->resultset('Organization')->create( { name => $values{name} } );
+
 				$user = $self->create(
 					{
 						(
@@ -135,8 +137,9 @@ sub action_specs {
 							  qw(
 							  name email password address_state_id address_city_id party_id
 							  office_id gender movement_id
-							  )
+							  ),
 						),
+                        organization_id => $organization->id,
 						politician => {(
 							map { $_ => $values{$_} }
 							  qw(
@@ -145,6 +148,7 @@ sub action_specs {
 							  movement_id
 							  )
 						)},
+
 					}
 				);
 

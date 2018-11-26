@@ -139,3 +139,5 @@
 0135-add-err_reason [0134-remove-type] 2018-10-24T18:49:57Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the 'err_reason' on the 'campaign' table
 0136-allow-null-party-and-office [0135-add-err_reason] 2018-10-31T19:37:10Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Allowing null party_id and office_id on politician
 0137-add-organization [0136-allow-null-party-and-office] 2018-11-22T02:40:15Z Lucas Ansei,,, <lucas@lucas-G750JX> # Adding nedded tables for organization
+0138-add-is_mandatoaberto [0137-add-organization] 2018-11-26T12:43:02Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the 'is_mandatoaberto' column on the 'organization' table
+0139-add-persona [0138-add-is_mandatoaberto] 2018-11-26T16:47:21Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the persona table
