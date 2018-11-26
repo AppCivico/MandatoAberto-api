@@ -22,15 +22,22 @@ db_transaction {
         address_city_id      => 9508,
         party_id             => $party,
         office_id            => $office,
-        fb_page_id           => "FOO",
-        fb_page_access_token => "FOOBAR",
         gender               => $gender,
         movement_id          => $movement_id
     );
 
-    my $politician_id = stash "politician.id";
+    my $politician_id   = stash "politician.id";
+	my $politician      = $schema->resultset("Politician")->find($politician_id);
+	my $politician_user = $schema->resultset("User")->find($politician_id);
 
-    $schema->resultset("User")->find($politician_id)->update({ approved => 1 });
+    $politician_user->update( { approved => 1 } );
+
+    $politician->update(
+        {
+			fb_page_id           => "FOO",
+			fb_page_access_token => "FOOBAR",
+		}
+    );
 
     is($schema->resultset('PoliticianPrivateReplyConfig')->count, 1, 'one private_reply config created');
     is($schema->resultset('PollSelfPropagationConfig')->count,    1, 'one poll_self_propagation config created');

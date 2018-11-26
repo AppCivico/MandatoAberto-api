@@ -138,3 +138,4 @@
 0134-remove-type [0133-add-politician_entity_stats] 2018-10-24T13:55:06Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Removing the 'type' column from the 'direct_message' table
 0135-add-err_reason [0134-remove-type] 2018-10-24T18:49:57Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the 'err_reason' on the 'campaign' table
 0136-allow-null-party-and-office [0135-add-err_reason] 2018-10-31T19:37:10Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Allowing null party_id and office_id on politician
+0137-add-organization [0136-allow-null-party-and-office] 2018-11-22T02:40:15Z Lucas Ansei,,, <lucas@lucas-G750JX> # Adding nedded tables for organization

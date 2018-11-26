@@ -50,7 +50,6 @@ db_transaction {
 
     is ($schema->resultset('EmailQueue')->count, "3", "all emails queued");
 
-    $schema->resultset("User")->find($politician_id)->update({ approved => 1 });
 
     rest_post "/api/login",
         name  => "login",
