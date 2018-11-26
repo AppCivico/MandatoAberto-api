@@ -111,7 +111,7 @@ CREATE TABLE organization_chatbot_twitter_config (
 --
 
 --- Inserting data on the chatbot config tables
-INSERT INTO organization_chatbot (chatbot_platform_id, organization_id)
+INSERT INTO organization_chatbot (organization_id, chatbot_platform_id)
 SELECT id, 1 as chatbot_platform_id FROM organization;
 
 WITH cte AS (
