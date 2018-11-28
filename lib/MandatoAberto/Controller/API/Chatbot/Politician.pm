@@ -110,13 +110,23 @@ sub list_GET {
                     ) : ()
                     ),
 
-                    party => {
-                        name    => $p->party->get_column('name'),
-                        acronym => $p->party->get_column('acronym'),
-                    },
-                    office => {
-                        name => $p->office->get_column('name'),
-                    },
+                    (
+                        $p->party ?
+                        (
+                            party => {
+                                name    => $p->party->get_column('name'),
+                                acronym => $p->party->get_column('acronym'),
+                            },
+                        ) : ( )
+                    ),
+                    (
+                        $p->office ?
+                        (
+                            office => {
+                                name => $p->office->get_column('name'),
+                            },
+                        ) : ( )
+                    ),
                     contact => {
                         map {
                             my $c = $_;
