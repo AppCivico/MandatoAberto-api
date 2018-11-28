@@ -706,8 +706,8 @@ sub send_new_register_email {
             email         => $self->email,
             name          => $self->name,
             gender        => $self->gender,
-            office        => $self->office->name,
-            party         => $self->party->name,
+            office        => $self->office ? ( $self->office->name ) : (),
+            party         => $self->party ? ( $self->party->name ) : (),
             address_state => $self->address_state->name,
             address_city  => $self->address_city->name,
             ( $self->movement ?
