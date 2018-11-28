@@ -150,15 +150,17 @@ sub result_GET {
 
             (
                 organization => {
-                    name    => $c->stash->{politician}->user->organization->name,
-                    picture => $c->stash->{politician}->user->organization->picture,
+                    name             => $c->stash->{politician}->user->organization->name,
+                    picture          => $c->stash->{politician}->user->organization->picture,
+                    is_mandatoaberto => $c->stash->{politician}->user->organization->picture,
                     (
                         $chatbot ?
-                        {
-                            name    => $chatbot->name,
-                            picture => $chatbot->picture
-                        } :
-                        ( )
+                        (
+                            chatbot => {
+                                name    => $chatbot->name,
+                                picture => $chatbot->picture
+                            }
+                        ): ( )
                     )
                 }
             )
