@@ -219,16 +219,22 @@ sub list_new_GET {
 
     my $first_access = $politician->user->user_sessions->count > 1 ? 0 : 1;
 
+	my $facebook_active_page = {};
+	if ($politician->fb_page_id) {
+		$facebook_active_page = $politician->get_current_facebook_page();
+	}
+
     return $self->status_ok(
         $c,
         entity => {
-            first_access        => $first_access,
-            has_greeting        => $has_greeting,
-            has_contacts        => $has_contacts,
-            has_dialogs         => $has_dialogs,
-            has_facebook_auth   => $has_facebook_auth,
-            has_active_poll     => $active_poll ? 1 : 0,
-            ever_had_poll       => $ever_had_poll,
+            first_access         => $first_access,
+            has_greeting         => $has_greeting,
+            has_contacts         => $has_contacts,
+            has_dialogs          => $has_dialogs,
+            has_facebook_auth    => $has_facebook_auth,
+            has_active_poll      => $active_poll ? 1 : 0,
+            ever_had_poll        => $ever_had_poll,
+            facebook_active_page => $facebook_active_page,
 
 			metrics => [
 				map {
