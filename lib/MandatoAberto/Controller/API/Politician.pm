@@ -83,6 +83,8 @@ sub result_GET {
             ( map { $_ => $c->stash->{politician}->$_ } qw/
                 name gender premium twitter_id use_dialogflow/ ),
 
+            picture => $c->stash->{politician}->user->picture,
+
             picframe_url  => $c->stash->{politician}->share_url,
             picframe_text => $c->stash->{politician}->share_text,
             share_url     => $c->stash->{politician}->share_url,
@@ -142,6 +144,13 @@ sub result_GET {
                         greeting        => $votolegal_integration->greeting
                     }
                 ) : ()
+            ),
+
+            (
+                organization => {
+                    name    => $c->stash->{politician}->user->organization->name,
+                    picture => $c->stash->{politician}->user->organization->picture
+                }
             )
         }
     );

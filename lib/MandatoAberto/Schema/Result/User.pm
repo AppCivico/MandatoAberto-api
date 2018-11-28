@@ -140,6 +140,11 @@ __PACKAGE__->table("user");
   data_type: 'text'
   is_nullable: 1
 
+=head2 picture
+
+  data_type: 'text'
+  is_nullable: 1
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -186,6 +191,8 @@ __PACKAGE__->add_columns(
   "address_city_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
   "name",
+  { data_type => "text", is_nullable => 1 },
+  "picture",
   { data_type => "text", is_nullable => 1 },
 );
 
@@ -533,8 +540,8 @@ Composing rels: L</user_roles> -> role
 __PACKAGE__->many_to_many("roles", "user_roles", "role");
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-11-22 00:41:43
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:I/klSJ0o1SYnugZIg83XdQ
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-11-26 15:00:25
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:cczdF+6iRVG27Co7WTk88A
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
