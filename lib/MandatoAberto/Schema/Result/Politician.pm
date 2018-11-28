@@ -744,6 +744,22 @@ sub verifiers_specs {
                 use_dialogflow => {
                     required => 0,
                     type     => 'Bool'
+                },
+                organization_name => {
+                    required => 0,
+                    type     => 'Str'
+                },
+                organization_picture => {
+                    required => 0,
+                    type     => 'Str'
+                },
+                organization_chatbot_name => {
+                    required => 0,
+                    type     => 'Str'
+                },
+                organization_chatbot_picture => {
+                    required => 0,
+                    type     => 'Str'
                 }
             }
         ),
@@ -813,8 +829,6 @@ sub action_specs {
                             }
                         }
                     );
-
-
                 }
 
                 if ( exists $values{private_reply_activated} ) {
@@ -839,6 +853,17 @@ sub action_specs {
                 delete $values{deactivate_chatbot};
 
                 $self->user->update( { password => $values{new_password} } ) and delete $values{new_password} if $values{new_password};
+                use DDP;
+
+				$self->user->update( { picture => $values{picture} } ) and delete $values{picture} if $values{picture};
+				$self->user->update( { name => $values{name} } ) if $values{name};
+                $self->user->organization->update( { picture => $values{organization_picture} } ) and delete $values{organization_picture} if $values{organization_picture};
+				$self->user->organization->update( { picture => $values{organization_name} } ) and delete $values{organization_name} if $values{organization_name};
+
+                # p \%values;
+                # my @organization_fields = qw( organization_name organization_picture organization_chatbot_name organization_chatbot_picture );
+                # @organization_fields = grep { my $p = $_; grep { $p eq $_ and delete $values{$_} } @organization_fields } keys %values;
+                # p \@organization_fields;
 
                 $politician = $self->update(\%values);
 
