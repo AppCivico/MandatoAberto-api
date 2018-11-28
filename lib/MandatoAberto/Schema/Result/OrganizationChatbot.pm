@@ -73,6 +73,11 @@ __PACKAGE__->table("organization_chatbot");
   data_type: 'text'
   is_nullable: 1
 
+=head2 picture
+
+  data_type: 'text'
+  is_nullable: 1
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -95,6 +100,8 @@ __PACKAGE__->add_columns(
     original      => { default_value => \"now()" },
   },
   "name",
+  { data_type => "text", is_nullable => 1 },
+  "picture",
   { data_type => "text", is_nullable => 1 },
 );
 
@@ -203,8 +210,8 @@ __PACKAGE__->might_have(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-11-26 15:00:24
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:1vtih2AdO5L6zadhm5hs2w
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-11-28 12:05:14
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:gWy2PYP5ksNFZpoS8BMejg
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

@@ -77,6 +77,8 @@ sub result_GET {
 
     my $has_movement = $c->stash->{politician}->movement ? 1 : 0;
 
+    my $chatbot = $c->stash->{politician}->user->organization->organization_chatbots->next;
+
     return $self->status_ok(
         $c,
         entity => {
@@ -149,7 +151,15 @@ sub result_GET {
             (
                 organization => {
                     name    => $c->stash->{politician}->user->organization->name,
-                    picture => $c->stash->{politician}->user->organization->picture
+                    picture => $c->stash->{politician}->user->organization->picture,
+                    (
+                        $chatbot ?
+                        {
+                            name    => $chatbot->name,
+                            picture => $chatbot->picture
+                        } :
+                        ( )
+                    )
                 }
             )
         }
