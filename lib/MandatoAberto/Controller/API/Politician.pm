@@ -152,7 +152,7 @@ sub result_GET {
                 organization => {
                     name             => $c->stash->{politician}->user->organization->name,
 					picture          => $c->stash->{politician}->user->organization->picture ? $c->stash->{politician}->user->organization->picture : 'assets/images/avatar-appcivico.jpg',
-                    is_mandatoaberto => $c->stash->{politician}->user->organization->picture,
+                    is_mandatoaberto => $c->stash->{politician}->user->organization->is_mandatoaberto,
                     (
                         $chatbot ?
                         (
