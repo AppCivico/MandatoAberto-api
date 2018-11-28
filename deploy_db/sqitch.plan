@@ -141,3 +141,4 @@
 0137-add-organization [0136-allow-null-party-and-office] 2018-11-22T02:40:15Z Lucas Ansei,,, <lucas@lucas-G750JX> # Adding nedded tables for organization
 0138-add-is_mandatoaberto [0137-add-organization] 2018-11-26T12:43:02Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the 'is_mandatoaberto' column on the 'organization' table
 0139-add-persona [0138-add-is_mandatoaberto] 2018-11-26T16:47:21Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the persona table
+0140-add-picture [0139-add-persona] 2018-11-28T13:13:44Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding picture to some tables
