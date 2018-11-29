@@ -330,7 +330,8 @@ db_transaction {
         rest_get "/api/politician/$politician_id/dashboard/new",
             name  => 'get new dashboard',
             stash => 'd2',
-            list  => 1
+            list  => 1,
+            [ range => 7 ]
         ;
 
         stash_test 'd2' => sub {

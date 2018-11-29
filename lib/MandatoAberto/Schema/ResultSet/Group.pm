@@ -125,7 +125,9 @@ sub get_groups_ordered_by_recipient_count {
 }
 
 sub extract_metrics {
-    my ($self) = @_;
+    my ($self, %opts) = @_;
+
+	$self = $self->search_rs( { 'me.created_at' => { '<=' => \"NOW() - interval '$opts{range}'" } } ) if $opts{range};
 
     return {
         count             => $self->count,
@@ -133,8 +135,8 @@ sub extract_metrics {
             {
                 alert             => '',
                 alert_is_positive => 0,
-                link              => '',
-                link_text         => ''
+                link              => '/grupos?page=1',
+                link_text         => 'Ver grupos'
             },
         ],
 		sub_metrics => [

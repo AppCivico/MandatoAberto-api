@@ -55,7 +55,10 @@ sub list_GET {
                         status => $c->status->name,
                         count  => $c->count
                     }
-                } $c->stash->{collection}->all()
+                } $c->stash->{collection}->search(
+                    { 'campaign.politician_id' => $c->stash->{politician}->id },
+                    { prefetch => 'campaign' }
+                  )->all()
             ]
         }
     );

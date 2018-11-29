@@ -545,4 +545,35 @@ sub find_human_name {
     return $name;
 }
 
+sub extract_metrics {
+    my ($self, %opts) = @_;
+
+	$self = $self->search_rs( { 'me.created_at' => { '<=' => \"NOW() - interval '$opts{range}'" } } ) if $opts{range};
+
+    my $most_significative_entity = $self->search(
+        undef,
+        { order_by => { -desc => 'recipient_count' } }
+    )->first;
+
+    return {
+        # Contagem total de temas
+		count             => $self->count,
+		suggested_actions => [
+			{
+				alert             => '',
+				alert_is_positive => 0,
+				link              => '/temas',
+				link_text         => 'Ver temas'
+			},
+		],
+		sub_metrics => [
+			# Métrica: o tema mais popular
+			{
+				text              => $most_significative_entity ? $most_significative_entity->name . ' é o seu tema mais popular' : undef,
+				suggested_actions => []
+			},
+		]
+	}
+}
+
 1;

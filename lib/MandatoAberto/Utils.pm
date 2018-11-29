@@ -55,6 +55,15 @@ sub get_metric_name_for_dashboard {
     elsif ( $relation eq 'polls' ) {
         $name = 'poll';
     }
+    elsif ( $relation eq 'recipients' ) {
+        $name = 'recipient';
+    }
+    elsif ( $relation eq 'politician_entities' ) {
+        $name = 'entities';
+    }
+    else {
+        die 'missing relation name on MandatoAberto::Utils on get_metric_name_for_dashboard'
+    }
 
     return $name;
 }
@@ -74,6 +83,15 @@ sub get_metric_text_for_dashboard {
     }
     elsif ( $relation eq 'polls' ) {
         $text = 'Consultas';
+    }
+    elsif ( $relation eq 'recipients' ) {
+        $text = 'Seguidores';
+    }
+    elsif ( $relation eq 'politician_entities' ) {
+        $text = 'Temas';
+    }
+    else {
+        die 'missing relation name on MandatoAberto::Utils on get_metric_text_for_dashboard'
     }
 
     return $text;

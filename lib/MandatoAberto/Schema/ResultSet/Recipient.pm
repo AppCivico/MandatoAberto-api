@@ -374,5 +374,37 @@ sub get_recipients_poll_results {
     );
 }
 
+sub extract_metrics {
+    my ($self, %opts) = @_;
+
+	$self = $self->search_rs( { 'me.created_at' => { '<=' => \"NOW() - interval '$opts{range}'" } } ) if $opts{range};
+
+	return {
+        # Contagem total de seguidores
+		count             => $self->count,
+		suggested_actions => [
+			{
+				alert             => '',
+				alert_is_positive => 0,
+				link              => '/seguidores?page=1',
+				link_text         => 'Ver seguidores'
+			},
+		],
+		sub_metrics => [
+			# Métrica: seguidores com email cadastrado
+			{
+				text              => $self->search( { email => \'IS NOT NULL' } )->count . ' seguidores com e-mail',
+				suggested_actions => []
+			},
+
+			# Métrica: seguidores com telefone cadastrado
+			{
+				text              => $self->search( { cellphone => \'IS NOT NULL' } )->count . ' seguidores com telefone',
+				suggested_actions => []
+			},
+		]
+	}
+}
+
 1;
 
