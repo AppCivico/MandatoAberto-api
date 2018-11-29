@@ -156,7 +156,10 @@ sub list_GET {
                     }
                 )->all()
             ],
-            itens_count => $c->stash->{collection}->count
+            itens_count => $c->stash->{collection}->search(
+                { 'campaign.politician_id' => $politician_id },
+                { prefetch => 'campaign' }
+            )->count
         }
     );
 }
