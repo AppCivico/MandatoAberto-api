@@ -147,7 +147,7 @@ sub list_GET {
                         ]
                     }
                 } $c->stash->{collection}->search(
-                    undef,
+                    { 'campaign.politician_id' => $politician_id },
                     {
                         prefetch => { 'campaign' => 'status' },
                         page     => $page,
