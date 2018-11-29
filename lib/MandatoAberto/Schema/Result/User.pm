@@ -595,17 +595,26 @@ sub new_session {
 sub send_email_forgot_password {
     my ($self, $token) = @_;
 
-    my $url = $ENV{MANDATOABERTO_URL} . 'reset-password/';
+    my $is_mandatoaberto = $self->organization->is_mandatoaberto;
+
+    my $subject        = $is_mandatoaberto ? 'Mandato Aberto - Recuperação de senha' : 'AppCívico Chatbot - Recuperação de senha';
+	my $url            = $is_mandatoaberto ? $ENV{MANDATOABERTO_URL} . 'reset-password/' : 'http://v4.app.mandatoaberto.com.br/reset-password';
+	my $home_url       = $is_mandatoaberto ? $ENV{MANDATOABERTO_URL}: 'http://v4.app.mandatoaberto.com.br/';
+    my $header_picture = $is_mandatoaberto ?
+        'https://gallery.mailchimp.com/3db402cdd48dbf45ea97bd7da/images/940adc5a-6e89-468e-9a03-2a4769245c79.png' :
+        'https://gallery.mailchimp.com/3db402cdd48dbf45ea97bd7da/images/9d57c56a-5c19-4dc2-946c-7531dc31acfc.png';
 
     my $email = MandatoAberto::Mailer::Template->new(
         to       => $self->email,
         from     => 'no-reply@mandatoaberto.org.br',
-        subject  => "Mandato Aberto - Recuperação de senha",
+        subject  => $subject,
         template => get_data_section('forgot_password.tt'),
         vars     => {
-            name  => $self->name,
-            token => $token,
-            url   => $url
+            name           => $self->name,
+            token          => $token,
+            url            => $url,
+            home_url       => $home_url,
+            header_picture => $header_picture
         },
     )->build_email();
 
@@ -1994,7 +2003,7 @@ Este projeto é distribuído sob a licença Affero General Public License.
 <tbody>
 <tr>
 <td align="justify" style="color:#666666; font-family:'Montserrat',Arial,sans-serif; font-size:16px; font-weight:300; line-height:23px; margin:0">
-<p style="text-align: center;"><a href="https://mandatoaberto.com.br/"><img src="https://gallery.mailchimp.com/3db402cdd48dbf45ea97bd7da/images/940adc5a-6e89-468e-9a03-2a4769245c79.png" class="x_deviceWidth" style="border-radius:7px 7px 0 0; align: center"></a></p>
+<p style="text-align: center;"><a href="[% home_url %]"><img src="[% header_image %]" class="x_deviceWidth" style="border-radius:7px 7px 0 0; align: center"></a></p>
 <p><b>Olá, [% name %]. </b></p>
 <p> <strong> </strong>Recebemos a sua solicitação para uma nova senha de acesso ao Mandato Aberto.
 É muito simples, clique no botão abaixo para trocar sua senha.</p>
