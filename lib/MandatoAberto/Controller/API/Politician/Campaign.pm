@@ -28,7 +28,10 @@ sub root : Chained('/api/politician/object') : PathPart('') : CaptureArgs(0) {
 sub base : Chained('root') : PathPart('direct-message') : CaptureArgs(0) {
     my ($self, $c) = @_;
 
-    $c->stash->{collection} = $c->model('DB::DirectMessage')->search( { 'me.politician_id' => $c->stash->{politician}->id } );
+    $c->stash->{collection} = $c->model('DB::DirectMessage')->search(
+        { 'campaign.politician_id' => $c->stash->{politician}->id },
+        { prefetch => 'campaign' }
+    );
 }
 
 sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }
