@@ -143,3 +143,4 @@
 0139-add-persona [0138-add-is_mandatoaberto] 2018-11-26T16:47:21Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the persona table
 0140-add-picture [0139-add-persona] 2018-11-28T13:13:44Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding picture to some tables
 0141-add-picture-chatbot [0140-add-picture] 2018-11-28T14:04:12Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding picture on the chatbot table
+0142-add-project_id [0141-add-picture-chatbot] 2018-11-30T12:36:18Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the 'project_id' column for the dialogflow config

@@ -222,5 +222,11 @@ sub create_persona {
 
 }
 
+sub general_config {
+    my ($self) = @_;
+
+    return $self->organization_chatbot_general_config;
+}
+
 __PACKAGE__->meta->make_immutable;
 1;

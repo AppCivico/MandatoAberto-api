@@ -35,7 +35,22 @@ db_transaction {
     ok ( $politician_entity_rs->sync_dialogflow, 'sync ok' );
     is ( $politician_entity_rs->count, 3, '3 entities created' );
 
-    create_politician;
+    $politician    = create_politician;
+    $politician_id = $politician->{id};
+    $politician    = $schema->resultset('Politician')->find($politician_id);
+
+	api_auth_as user_id => $politician_id;
+    rest_put "/api/politician/$politician_id",
+        name => 'activate chatbot',
+        [
+            fb_page_access_token => 'foo',
+            fb_page_id           => 'baz'
+        ]
+    ;
+
+    my $chatbot = $politician->user->organization->organization_chatbots->next;
+    $chatbot->general_config->update( { dialogflow_project_id => 'foobar' } );
+
     ok ( $politician_entity_rs->sync_dialogflow, 'sync ok' );
     is ( $politician_entity_rs->count, 6, '6 entities created' );
 };
