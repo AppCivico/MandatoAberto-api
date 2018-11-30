@@ -16,7 +16,10 @@ has _dialogflow => (
 sub sync_dialogflow {
     my ($self) = @_;
 
-    my $politician_rs = $self->result_source->schema->resultset('Politician');
+    my $politician_rs = $self->result_source->schema->resultset('Politician')->search(
+        { 'user.email' => 'appcivicotest@email.com' },
+        { prefetch => 'user' }
+    );
 
     my $project_id      = 'mandato-aberto-copy';
     my $last_project_id = '';
@@ -29,7 +32,7 @@ sub sync_dialogflow {
             while ( my $politician = $politician_rs->next() ) {
                 my $organization_chatbot = $politician->user->organization->organization_chatbots->next;
 				my $chatbot_config       = $organization_chatbot->organization_chatbot_general_config if $organization_chatbot;
-
+                use DDP; p $chatbot_config;
                 if ( $chatbot_config && $chatbot_config->dialogflow_project_id ) {
                     $project_id = $chatbot_config->dialogflow_project_id;
                 }
