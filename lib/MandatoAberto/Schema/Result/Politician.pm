@@ -813,11 +813,11 @@ sub action_specs {
                     # O access token gerado pela primeira vez é o de vida curta
                     # portanto devo pegar o mesmo e gerar um novo token de vida longa
                     # API do Facebook: https://developers.facebook.com/docs/facebook-login/access-tokens/expiration-and-extension
-                    my $short_lived_token = $values{fb_page_access_token};
-                    $values{fb_page_access_token} = $self->get_long_lived_access_token($short_lived_token);
+                    # my $short_lived_token = $values{fb_page_access_token};
+                    # $values{fb_page_access_token} = $self->get_long_lived_access_token($short_lived_token);
 
                     # Setando o botão get started
-                    $self->set_get_started_button_and_persistent_menu($values{fb_page_access_token});
+                    # $self->set_get_started_button_and_persistent_menu($values{fb_page_access_token});
 
                     # Criando entrada na tabela organization_chatbot
                     $self->user->organization->organization_chatbots->create(
