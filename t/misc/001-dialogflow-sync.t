@@ -7,7 +7,18 @@ use MandatoAberto::Test::Further;
 my $schema = MandatoAberto->model("DB");
 
 db_transaction {
-    create_politician;
+    my $politician    = create_politician;
+    my $politician_id = $politician->{id};
+
+    api_auth_as user_id => $politician_id;
+    # Ativando um chatbot para o político
+    rest_put "/api/politician/$politician_id",
+        name => 'activate chatbot',
+        [
+            fb_page_access_token => 'foo',
+            fb_page_id           => 'bar'
+        ]
+    ;
 
     my $politician_entity_rs = $schema->resultset('PoliticianEntity');
 

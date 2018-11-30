@@ -60,7 +60,7 @@ sub get_entities {
 sub get_intents {
     my ( $self, %opts ) = @_;
 
-    my $project = $ENV{DIALOGFLOW_PROJECT_NAME} || 'mandato-aberto';
+    my $project = $opts{dialogflow_project_id};
 
     my $res;
     if (is_test()) {

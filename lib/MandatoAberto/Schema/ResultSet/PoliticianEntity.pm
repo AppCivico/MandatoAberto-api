@@ -18,21 +18,34 @@ sub sync_dialogflow {
 
     my $politician_rs = $self->result_source->schema->resultset('Politician');
 
+    my $project_id      = 'mandato-aberto';
+    my $last_project_id = '';
+
     my @entities_names;
-    my $res = $self->_dialogflow->get_intents;
-
-    for my $entity ( @{ $res->{intents} } ) {
-        my $name = $entity->{displayName};
-
-        if ( $self->skip_intent($name) == 0 ) {
-            $name = lc $name;
-            push @entities_names, $name;
-        }
-    }
+    my $res;
 
     $self->result_source->schema->txn_do(
         sub{
             while ( my $politician = $politician_rs->next() ) {
+                my $organization_chatbot = $politician->user->organization->organization_chatbots->next;
+				my $chatbot_config       = $organization_chatbot->organization_chatbot_general_config if $organization_chatbot;
+
+                if ( $chatbot_config && $chatbot_config->dialogflow_project_id ) {
+                    $project_id = $chatbot_config->dialogflow_project_id;
+                }
+
+                $res             = $self->_dialogflow->get_intents( dialogflow_project_id => $project_id ) if $last_project_id ne $project_id;
+                $last_project_id = $project_id;
+
+				for my $entity ( @{ $res->{intents} } ) {
+					my $name = $entity->{displayName};
+
+					if ( $self->skip_intent($name) == 0 ) {
+						$name = lc $name;
+						push @entities_names, $name;
+					}
+				}
+
                 for my $entity_name (@entities_names) {
                     $self->find_or_create(
                         {
