@@ -3,6 +3,8 @@ use common::sense;
 use Moose;
 use namespace::autoclean;
 
+use MandatoAberto::Utils qw( is_test );
+
 use WebService::Dialogflow;
 
 extends "DBIx::Class::ResultSet";
@@ -16,10 +18,13 @@ has _dialogflow => (
 sub sync_dialogflow {
     my ($self) = @_;
 
-    my $politician_rs = $self->result_source->schema->resultset('Politician')->search(
-        { 'user.email' => 'appcivicotest@email.com' },
-        { prefetch => 'user' }
-    );
+    my $politician_rs;
+    if ( is_test() ) {
+		$politician_rs = $self->result_source->schema->resultset('Politician');
+    }
+    else {
+		$politician_rs = $self->result_source->schema->resultset('Politician')->search({ 'user.email' => 'appcivicotest@email.com' },{ prefetch => 'user' });
+    }
 
     my $project_id      = 'mandato-aberto-copy';
     my $last_project_id = '';
