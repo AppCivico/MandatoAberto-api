@@ -598,6 +598,7 @@ sub send_email_forgot_password {
     my $is_mandatoaberto = $self->organization->is_mandatoaberto;
 
     my $subject        = $is_mandatoaberto ? 'Mandato Aberto - Recuperação de senha' : 'AppCívico Chatbot - Recuperação de senha';
+    my $project_name   = $is_mandatoaberto ? 'Mandato Aberto' : 'AppCívico Chatbots';
 	my $url            = $is_mandatoaberto ? $ENV{MANDATOABERTO_URL} . 'reset-password/' : 'http://v4.app.mandatoaberto.com.br/reset-password';
 	my $home_url       = $is_mandatoaberto ? $ENV{MANDATOABERTO_URL}: 'http://v4.app.mandatoaberto.com.br/';
     my $header_picture = $is_mandatoaberto ?
@@ -614,6 +615,7 @@ sub send_email_forgot_password {
             token          => $token,
             url            => $url,
             home_url       => $home_url,
+            project_name   => $project_name,
             header_picture => $header_picture
         },
     )->build_email();
@@ -2003,9 +2005,9 @@ Este projeto é distribuído sob a licença Affero General Public License.
 <tbody>
 <tr>
 <td align="justify" style="color:#666666; font-family:'Montserrat',Arial,sans-serif; font-size:16px; font-weight:300; line-height:23px; margin:0">
-<p style="text-align: center;"><a href="[% home_url %]"><img src="[% header_image %]" class="x_deviceWidth" style="border-radius:7px 7px 0 0; align: center"></a></p>
+<p style="text-align: center;"><a href="[% home_url %]"><img src="[% header_picture %]" class="x_deviceWidth" style="border-radius:7px 7px 0 0; align: center"></a></p>
 <p><b>Olá, [% name %]. </b></p>
-<p> <strong> </strong>Recebemos a sua solicitação para uma nova senha de acesso ao Mandato Aberto.
+<p> <strong> </strong>Recebemos a sua solicitação para uma nova senha de acesso ao [% project_name %].
 É muito simples, clique no botão abaixo para trocar sua senha.</p>
   </td>
 </tr>
@@ -2029,7 +2031,7 @@ Este projeto é distribuído sob a licença Affero General Public License.
 <tr>
 <td align="justify" style="color:#999999; font-size:13px; font-style:normal; font-weight:normal; line-height:16px"><strong id="docs-internal-guid-d5013b4e-a1b5-bf39-f677-7dd0712c841b">
   <p>Caso você não tenha solicitado esta alteração de senha, por favor desconsidere esta mensagem, nenhuma alteração foi feita na sua conta.</p>
-  Equipe Mandato Aberto</strong><a href="mailto:contato@mandatoaberto.org.br" target="_blank" style="color:#4ab957"></a></td>
+  Equipe [% project_name %]</strong><a href="mailto:contato@mandatoaberto.org.br" target="_blank" style="color:#4ab957"></a></td>
 </tr>
 <tr>
 <td height="30"></td>
@@ -2044,7 +2046,7 @@ Este projeto é distribuído sob a licença Affero General Public License.
   <tbody>
 <tr>
 <td align="center" style="color:#666666; font-family:'Montserrat',Arial,sans-serif; font-size:11px; font-weight:300; line-height:16px; margin:0; padding:30px 0px">
-<span><strong>Mandato Aberto</strong></span></td>
+<span><strong>[% project_name %]</strong></span></td>
 </tr>
 </tbody>
 </table>
