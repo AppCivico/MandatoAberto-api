@@ -603,7 +603,7 @@ sub send_email_forgot_password {
 	my $home_url       = $is_mandatoaberto ? $ENV{MANDATOABERTO_URL}: 'http://v4.app.mandatoaberto.com.br/';
     my $header_picture = $is_mandatoaberto ?
         'https://gallery.mailchimp.com/3db402cdd48dbf45ea97bd7da/images/940adc5a-6e89-468e-9a03-2a4769245c79.png' :
-        'https://gallery.mailchimp.com/3db402cdd48dbf45ea97bd7da/images/9d57c56a-5c19-4dc2-946c-7531dc31acfc.png';
+        'https://gallery.mailchimp.com/3db402cdd48dbf45ea97bd7da/images/ed7d692f-fa0e-4b93-8dd7-5f7e4165517e.png';
 
     my $email = MandatoAberto::Mailer::Template->new(
         to       => $self->email,
@@ -2019,7 +2019,7 @@ Este projeto é distribuído sob a licença Affero General Public License.
 <table align="center" border="0" cellpadding="0" cellspacing="0" style="border-collapse:separate; border-radius:7px; margin:0">
 <tbody>
 <tr>
-<td align="center" valign="middle"><a href="[% url %][% token %]" target="_blank" class="x_btn" style="background:#B04783; border-radius:8px; color:#ffffff; font-family:'Montserrat',Arial,sans-serif; font-size:15px; padding:16px 24px 15px 24px; text-decoration:none; text-transform:uppercase"><strong>TROCAR MINHA SENHA</strong></a></td>
+<td align="center" valign="middle"><a href="[% url %][% token %]" target="_blank" class="x_btn" style="background:#50248; border-radius:8px; color:#ffffff; font-family:'Montserrat',Arial,sans-serif; font-size:15px; padding:16px 24px 15px 24px; text-decoration:none; text-transform:uppercase"><strong>TROCAR MINHA SENHA</strong></a></td>
 </tr>
 </tbody>
 </table>
