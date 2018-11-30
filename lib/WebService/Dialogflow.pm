@@ -72,12 +72,11 @@ sub get_intents {
         eval {
             retry {
                 my $url = $ENV{DIALOGFLOW_URL} . "/v2/projects/$project/agent/intents";
-                p my $v = 'access_token dentro do eval: ' . "Bearer $access_token";
+
                 $res = $self->furl->get(
                     $url,
-                    [ 'Authorization', "Bearer $access_token" ]
+                    [ 'Authorization', 'Bearer ' . $access_token ]
                 );
-                p $res->request->header;
                 die $res->decoded_content unless $res->is_success;
             }
             retry_if { shift() < 3 } catch { die $_; };
