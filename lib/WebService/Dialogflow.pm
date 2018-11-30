@@ -77,6 +77,8 @@ sub get_intents {
                     $url,
                     [ 'Authorization', 'Bearer ' . $access_token ]
                 );
+
+                p $res->req;
                 die $res->decoded_content unless $res->is_success;
             }
             retry_if { shift() < 3 } catch { die $_; };
