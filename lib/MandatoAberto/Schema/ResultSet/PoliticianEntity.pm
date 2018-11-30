@@ -47,7 +47,7 @@ sub sync_dialogflow {
 
 				for my $entity ( @{ $res->{intents} } ) {
 					my $name = $entity->{displayName};
-
+                    use DDP; p $entity;
 					if ( $self->skip_intent($name) == 0 ) {
 						$name = lc $name;
 						push @entities_names, $name;
