@@ -18,7 +18,7 @@ sub sync_dialogflow {
 
     my $politician_rs = $self->result_source->schema->resultset('Politician');
 
-    my $project_id      = 'mandato-aberto';
+    my $project_id      = 'mandato-aberto-copy';
     my $last_project_id = '';
 
     my @entities_names;
