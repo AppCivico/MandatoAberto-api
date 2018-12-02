@@ -43,8 +43,12 @@ sub action_specs {
 
                 for (my $i = 0; $i < scalar @{ $values{answers} } ; $i++) {
                     my $answer = $values{answers}->[$i];
-
+                    use DDP; p $answer;
                     $politician_id = $answer->{politician_id} unless $politician_id;
+
+                    # Tratando answer como do organization_chatbot e não do politician
+                    my $politician = $self->result_source->schema->resultset('Politician')->find($politician_id);
+                    my $organization_chatbot_id = $politician->user->organization_chatbot->id;
 
                     if ($answer->{id}) {
                         my $answer_id      = $answer->{id};
