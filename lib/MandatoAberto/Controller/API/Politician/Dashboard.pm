@@ -58,7 +58,7 @@ sub list_GET {
 
     my $has_greeting      = $politician->politicians_greeting->count;
     my $has_contacts      = $politician->politician_contacts->count;
-    my $has_dialogs       = $politician->answers->count > 0 ? 1 : 0;
+    my $has_dialogs       = $politician->user->chatbot->answers->count > 0 ? 1 : 0;
     my $has_facebook_auth = $politician->fb_page_access_token ? 1 : 0;
 
     my $first_access = $politician->user->user_sessions->count > 1 ? 0 : 1;

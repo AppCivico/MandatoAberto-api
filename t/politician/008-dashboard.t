@@ -35,6 +35,9 @@ db_transaction {
 
     $politician->user->update( { approved => 1 } );
 
+	api_auth_as user_id => $politician_id;
+	activate_chatbot($politician_id);
+
     rest_post "/api/chatbot/recipient",
         name                => "Create recipient",
         automatic_load_item => 0,

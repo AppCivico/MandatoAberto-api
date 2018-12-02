@@ -739,6 +739,24 @@ sub send_new_register_email {
     return $self->result_source->schema->resultset('EmailQueue')->create({ body => $email->as_string });
 }
 
+sub organization_chatbot {
+    my ($self) = @_;
+
+    return $self->organization->chatbot;
+}
+
+sub organization_chatbot_id {
+    my ($self) = @_;
+
+    return $self->organization_chatbot->id;
+}
+
+sub chatbot {
+    my ($self) = @_;
+
+    return $self->organization_chatbot;
+}
+
 __PACKAGE__->meta->make_immutable;
 1;
 

@@ -119,6 +119,21 @@ __PACKAGE__->set_primary_key("id");
 
 =head1 RELATIONS
 
+=head2 answers
+
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::Answer>
+
+=cut
+
+__PACKAGE__->has_many(
+  "answers",
+  "MandatoAberto::Schema::Result::Answer",
+  { "foreign.organization_chatbot_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 chatbot_platform
 
 Type: belongs_to
@@ -210,8 +225,8 @@ __PACKAGE__->might_have(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-11-28 12:05:14
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:gWy2PYP5ksNFZpoS8BMejg
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-12-02 16:07:54
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:jK8RWTt5p0ewxE1JU/agSg
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

@@ -429,6 +429,20 @@ sub setup_dialogflow_intents_response_with_skip {
       };
 }
 
+sub activate_chatbot {
+    my ($politician_id) = shift;
+
+    return $obj->rest_put(
+        "/api/politician/$politician_id",
+        name                => 'edit politician',
+        automatic_load_item => 0,
+        stash               => "chatbot",
+        [
+            fb_page_access_token => fake_words(3)->(),
+            fb_page_id           => fake_words(3)->(),
+        ],
+    );
+}
 
 1;
 

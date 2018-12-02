@@ -233,21 +233,6 @@ __PACKAGE__->belongs_to(
   { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
 );
 
-=head2 answers
-
-Type: has_many
-
-Related object: L<MandatoAberto::Schema::Result::Answer>
-
-=cut
-
-__PACKAGE__->has_many(
-  "answers",
-  "MandatoAberto::Schema::Result::Answer",
-  { "foreign.politician_id" => "self.user_id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
-
 =head2 campaigns
 
 Type: has_many
@@ -579,8 +564,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-10-31 16:23:53
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:SaJQjnnOojLCBrX5pERxBQ
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-12-02 16:07:54
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Xce9Gs1uqv9LR8vFDOSyWw
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

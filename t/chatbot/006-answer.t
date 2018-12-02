@@ -12,6 +12,9 @@ db_transaction {
     create_politician;
     my $politician_id = stash "politician.id";
 
+	api_auth_as user_id => $politician_id;
+	activate_chatbot($politician_id);
+
     api_auth_as user_id => 1;
 
     create_dialog(
