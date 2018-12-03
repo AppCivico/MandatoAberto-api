@@ -26,7 +26,7 @@ sub list_GET {
     return $self->status_ok(
         $c,
         entity => {
-            $c->stash->{politician}->answers->get_answered_dialogs
+            $c->stash->{politician}->user->chatbot->answers->get_answered_dialogs
         }
     );
 }

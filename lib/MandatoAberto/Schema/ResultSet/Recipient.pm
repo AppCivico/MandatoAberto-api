@@ -131,6 +131,12 @@ sub action_specs {
             my %values = $r->valid_values;
             not defined $values{$_} and delete $values{$_} for keys %values;
 
+            # Tratando recipient como do organization_chatbot e não do politician
+            my $politician              = $self->result_source->schema->resultset('Politician')->find($values{politician_id});
+            my $organization_chatbot_id = $politician->user->organization_chatbot->id;
+
+            delete $values{politician_id} and $values{organization_chatbot_id} = $organization_chatbot_id;
+
             if ( defined($values{gender}) && $values{gender} !~ m{^[FM]{1}$} ) {
                 die \["gender", "must be F or M"];
             }
@@ -372,6 +378,38 @@ sub get_recipients_poll_results {
         undef,
         { prefetch => 'poll_results' }
     );
+}
+
+sub extract_metrics {
+    my ($self, %opts) = @_;
+
+	$self = $self->search_rs( { 'me.created_at' => { '<=' => \"NOW() - interval '$opts{range}'" } } ) if $opts{range};
+
+	return {
+        # Contagem total de seguidores
+		count             => $self->count,
+		suggested_actions => [
+			{
+				alert             => '',
+				alert_is_positive => 0,
+				link              => '/seguidores?page=1',
+				link_text         => 'Ver seguidores'
+			},
+		],
+		sub_metrics => [
+			# Métrica: seguidores com email cadastrado
+			{
+				text              => $self->search( { email => \'IS NOT NULL' } )->count . ' seguidores com e-mail',
+				suggested_actions => []
+			},
+
+			# Métrica: seguidores com telefone cadastrado
+			{
+				text              => $self->search( { cellphone => \'IS NOT NULL' } )->count . ' seguidores com telefone',
+				suggested_actions => []
+			},
+		]
+	}
 }
 
 1;

@@ -49,21 +49,25 @@ sub get_politician_campaign_reach_poll_propagate_count {
 }
 
 sub extract_metrics {
-    my ($self) = @_;
+    my ($self, %opts) = @_;
+
+	$self = $self->search_rs( { 'me.created_at' => { '<=' => \"NOW() - interval '$opts{range}'" } } ) if $opts{range};
 
     return {
+        # Contagem total de campanhas
         count             => $self->count,
         suggested_actions => [
             {
                 alert             => 'Melhore o engajamento das suas campanhas',
                 alert_is_positive => 0,
-                link              => '',
-                link_text         => ''
+                link              => '/campanhas?page=1',
+                link_text         => 'Ver campanhas'
             },
         ],
 		sub_metrics => [
+            # Métrica: alcance das campanhas
 			{
-				text              => $self->search( { type_id => 1 } )->count . ' campanhas pelo Facebook',
+				text              => $self->get_column('count')->sum ? $self->get_column('count')->sum . ' pessoas alcançadas' : undef,
 				suggested_actions => []
 			},
 		]

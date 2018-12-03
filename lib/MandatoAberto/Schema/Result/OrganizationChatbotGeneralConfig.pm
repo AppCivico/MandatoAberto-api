@@ -95,6 +95,11 @@ __PACKAGE__->table("organization_chatbot_general_config");
   is_nullable: 0
   original: {default_value => \"now()"}
 
+=head2 dialogflow_project_id
+
+  data_type: 'text'
+  is_nullable: 1
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -126,6 +131,8 @@ __PACKAGE__->add_columns(
     is_nullable   => 0,
     original      => { default_value => \"now()" },
   },
+  "dialogflow_project_id",
+  { data_type => "text", is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -175,8 +182,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-11-20 19:17:02
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:sI75OStho1uYddnJ3jmS/w
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-11-29 10:26:42
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:QxqdnxcUFyenfBNSKrGhiQ
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

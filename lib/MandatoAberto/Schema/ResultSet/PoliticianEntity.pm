@@ -3,6 +3,8 @@ use common::sense;
 use Moose;
 use namespace::autoclean;
 
+use MandatoAberto::Utils qw( is_test );
+
 use WebService::Dialogflow;
 
 extends "DBIx::Class::ResultSet";
@@ -16,23 +18,42 @@ has _dialogflow => (
 sub sync_dialogflow {
     my ($self) = @_;
 
-    my $politician_rs = $self->result_source->schema->resultset('Politician');
+    my $politician_rs;
+    if ( is_test() ) {
+		$politician_rs = $self->result_source->schema->resultset('Politician');
+    }
+    else {
+		$politician_rs = $self->result_source->schema->resultset('Politician')->search({ 'user.email' => 'appcivicotest@email.com' },{ prefetch => 'user' });
+    }
+
+    my $project_id      = 'mandato-aberto-copy';
+    my $last_project_id = '';
 
     my @entities_names;
-    my $res = $self->_dialogflow->get_intents;
-
-    for my $entity ( @{ $res->{intents} } ) {
-        my $name = $entity->{displayName};
-
-        if ( $self->skip_intent($name) == 0 ) {
-            $name = lc $name;
-            push @entities_names, $name;
-        }
-    }
+    my $res;
 
     $self->result_source->schema->txn_do(
         sub{
             while ( my $politician = $politician_rs->next() ) {
+                my $organization_chatbot = $politician->user->organization->organization_chatbots->next;
+				my $chatbot_config       = $organization_chatbot->organization_chatbot_general_config if $organization_chatbot;
+                use DDP; p $chatbot_config;
+                if ( $chatbot_config && $chatbot_config->dialogflow_project_id ) {
+                    $project_id = $chatbot_config->dialogflow_project_id;
+                }
+
+                $res             = $self->_dialogflow->get_intents( dialogflow_project_id => $project_id ) if $last_project_id ne $project_id;
+                $last_project_id = $project_id;
+
+				for my $entity ( @{ $res->{intents} } ) {
+					my $name = $entity->{displayName};
+                    use DDP; p $entity;
+					if ( $self->skip_intent($name) == 0 ) {
+						$name = lc $name;
+						push @entities_names, $name;
+					}
+				}
+
                 for my $entity_name (@entities_names) {
                     $self->find_or_create(
                         {
@@ -543,6 +564,37 @@ sub find_human_name {
     }
 
     return $name;
+}
+
+sub extract_metrics {
+    my ($self, %opts) = @_;
+
+	$self = $self->search_rs( { 'me.created_at' => { '<=' => \"NOW() - interval '$opts{range}'" } } ) if $opts{range};
+
+    my $most_significative_entity = $self->search(
+        undef,
+        { order_by => { -desc => 'recipient_count' } }
+    )->first;
+
+    return {
+        # Contagem total de temas
+		count             => $self->count,
+		suggested_actions => [
+			{
+				alert             => '',
+				alert_is_positive => 0,
+				link              => '/temas',
+				link_text         => 'Ver temas'
+			},
+		],
+		sub_metrics => [
+			# Métrica: o tema mais popular
+			{
+				text              => $most_significative_entity ? $most_significative_entity->name . ' é o seu tema mais popular' : undef,
+				suggested_actions => []
+			},
+		]
+	}
 }
 
 1;

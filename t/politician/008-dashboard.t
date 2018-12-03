@@ -35,6 +35,9 @@ db_transaction {
 
     $politician->user->update( { approved => 1 } );
 
+	api_auth_as user_id => $politician_id;
+	activate_chatbot($politician_id);
+
     rest_post "/api/chatbot/recipient",
         name                => "Create recipient",
         automatic_load_item => 0,
@@ -330,7 +333,8 @@ db_transaction {
         rest_get "/api/politician/$politician_id/dashboard/new",
             name  => 'get new dashboard',
             stash => 'd2',
-            list  => 1
+            list  => 1,
+            [ range => 7 ]
         ;
 
         stash_test 'd2' => sub {

@@ -99,12 +99,17 @@ sub action_specs {
                 }
             }
 
+            # Tratando group como do organization_chatbot e não do politician
+            my $politician    = $self->result_source->schema->resultset('Politician')->find($values{politician_id});
+
+            $values{chatbot_organization_id} = $politician->user->chatbot_organization_id;
+
             return $self->create(
                 {
-                    name          => $values{name},
-                    politician_id => $values{politician_id},
-                    filter        => $values{filter},
-                    status        => 'processing',
+                    name                    => $values{name},
+                    chatbot_organization_id => $values{chatbot_organization_id},
+                    filter                  => $values{filter},
+                    status                  => 'processing',
                 }
             );
         },
@@ -125,7 +130,9 @@ sub get_groups_ordered_by_recipient_count {
 }
 
 sub extract_metrics {
-    my ($self) = @_;
+    my ($self, %opts) = @_;
+
+	$self = $self->search_rs( { 'me.created_at' => { '<=' => \"NOW() - interval '$opts{range}'" } } ) if $opts{range};
 
     return {
         count             => $self->count,
@@ -133,8 +140,8 @@ sub extract_metrics {
             {
                 alert             => '',
                 alert_is_positive => 0,
-                link              => '',
-                link_text         => ''
+                link              => '/grupos?page=1',
+                link_text         => 'Ver grupos'
             },
         ],
 		sub_metrics => [

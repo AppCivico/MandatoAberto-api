@@ -595,17 +595,28 @@ sub new_session {
 sub send_email_forgot_password {
     my ($self, $token) = @_;
 
-    my $url = $ENV{MANDATOABERTO_URL} . 'reset-password/';
+    my $is_mandatoaberto = $self->organization->is_mandatoaberto;
+
+    my $subject        = $is_mandatoaberto ? 'Mandato Aberto - Recuperação de senha' : 'AppCívico Chatbot - Recuperação de senha';
+    my $project_name   = $is_mandatoaberto ? 'Mandato Aberto' : 'AppCívico Chatbots';
+	my $url            = $is_mandatoaberto ? $ENV{MANDATOABERTO_URL} . 'reset-password/' : 'http://v4.app.mandatoaberto.com.br/reset-password';
+	my $home_url       = $is_mandatoaberto ? $ENV{MANDATOABERTO_URL}: 'http://v4.app.mandatoaberto.com.br/';
+    my $header_picture = $is_mandatoaberto ?
+        'https://gallery.mailchimp.com/3db402cdd48dbf45ea97bd7da/images/940adc5a-6e89-468e-9a03-2a4769245c79.png' :
+        'https://gallery.mailchimp.com/3db402cdd48dbf45ea97bd7da/images/ed7d692f-fa0e-4b93-8dd7-5f7e4165517e.png';
 
     my $email = MandatoAberto::Mailer::Template->new(
         to       => $self->email,
         from     => 'no-reply@mandatoaberto.org.br',
-        subject  => "Mandato Aberto - Recuperação de senha",
+        subject  => $subject,
         template => get_data_section('forgot_password.tt'),
         vars     => {
-            name  => $self->name,
-            token => $token,
-            url   => $url
+            name           => $self->name,
+            token          => $token,
+            url            => $url,
+            home_url       => $home_url,
+            project_name   => $project_name,
+            header_picture => $header_picture
         },
     )->build_email();
 
@@ -706,8 +717,8 @@ sub send_new_register_email {
             email         => $self->email,
             name          => $self->name,
             gender        => $self->gender,
-            office        => $self->office->name,
-            party         => $self->party->name,
+            office        => $self->office ? ( $self->office->name ) : (),
+            party         => $self->party ? ( $self->party->name ) : (),
             address_state => $self->address_state->name,
             address_city  => $self->address_city->name,
             ( $self->movement ?
@@ -726,6 +737,24 @@ sub send_new_register_email {
     )->build_email();
 
     return $self->result_source->schema->resultset('EmailQueue')->create({ body => $email->as_string });
+}
+
+sub organization_chatbot {
+    my ($self) = @_;
+
+    return $self->organization->chatbot;
+}
+
+sub organization_chatbot_id {
+    my ($self) = @_;
+
+    return $self->organization_chatbot->id;
+}
+
+sub chatbot {
+    my ($self) = @_;
+
+    return $self->organization_chatbot;
 }
 
 __PACKAGE__->meta->make_immutable;
@@ -1994,9 +2023,9 @@ Este projeto é distribuído sob a licença Affero General Public License.
 <tbody>
 <tr>
 <td align="justify" style="color:#666666; font-family:'Montserrat',Arial,sans-serif; font-size:16px; font-weight:300; line-height:23px; margin:0">
-<p style="text-align: center;"><a href="https://mandatoaberto.com.br/"><img src="https://gallery.mailchimp.com/3db402cdd48dbf45ea97bd7da/images/940adc5a-6e89-468e-9a03-2a4769245c79.png" class="x_deviceWidth" style="border-radius:7px 7px 0 0; align: center"></a></p>
+<p style="text-align: center;"><a href="[% home_url %]"><img src="[% header_picture %]" class="x_deviceWidth" style="border-radius:7px 7px 0 0; align: center"></a></p>
 <p><b>Olá, [% name %]. </b></p>
-<p> <strong> </strong>Recebemos a sua solicitação para uma nova senha de acesso ao Mandato Aberto.
+<p> <strong> </strong>Recebemos a sua solicitação para uma nova senha de acesso ao [% project_name %].
 É muito simples, clique no botão abaixo para trocar sua senha.</p>
   </td>
 </tr>
@@ -2008,7 +2037,7 @@ Este projeto é distribuído sob a licença Affero General Public License.
 <table align="center" border="0" cellpadding="0" cellspacing="0" style="border-collapse:separate; border-radius:7px; margin:0">
 <tbody>
 <tr>
-<td align="center" valign="middle"><a href="[% url %][% token %]" target="_blank" class="x_btn" style="background:#B04783; border-radius:8px; color:#ffffff; font-family:'Montserrat',Arial,sans-serif; font-size:15px; padding:16px 24px 15px 24px; text-decoration:none; text-transform:uppercase"><strong>TROCAR MINHA SENHA</strong></a></td>
+<td align="center" valign="middle"><a href="[% url %]/[% token %]" target="_blank" class="x_btn" style="background:#502489; border-radius:8px; color:#ffffff; font-family:'Montserrat',Arial,sans-serif; font-size:15px; padding:16px 24px 15px 24px; text-decoration:none; text-transform:uppercase"><strong>TROCAR MINHA SENHA</strong></a></td>
 </tr>
 </tbody>
 </table>
@@ -2020,7 +2049,7 @@ Este projeto é distribuído sob a licença Affero General Public License.
 <tr>
 <td align="justify" style="color:#999999; font-size:13px; font-style:normal; font-weight:normal; line-height:16px"><strong id="docs-internal-guid-d5013b4e-a1b5-bf39-f677-7dd0712c841b">
   <p>Caso você não tenha solicitado esta alteração de senha, por favor desconsidere esta mensagem, nenhuma alteração foi feita na sua conta.</p>
-  Equipe Mandato Aberto</strong><a href="mailto:contato@mandatoaberto.org.br" target="_blank" style="color:#4ab957"></a></td>
+  Equipe [% project_name %]</strong><a href="mailto:contato@mandatoaberto.org.br" target="_blank" style="color:#4ab957"></a></td>
 </tr>
 <tr>
 <td height="30"></td>
@@ -2035,7 +2064,7 @@ Este projeto é distribuído sob a licença Affero General Public License.
   <tbody>
 <tr>
 <td align="center" style="color:#666666; font-family:'Montserrat',Arial,sans-serif; font-size:11px; font-weight:300; line-height:16px; margin:0; padding:30px 0px">
-<span><strong>Mandato Aberto</strong></span></td>
+<span><strong>[% project_name %]</strong></span></td>
 </tr>
 </tbody>
 </table>

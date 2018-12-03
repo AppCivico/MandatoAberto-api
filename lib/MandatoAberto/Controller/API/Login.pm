@@ -36,7 +36,6 @@ sub login_POST {
     );
 
     my $user = $c->model("DB::User")->search( { email => $c->req->params->{email} } )->next;
-    die \['email', 'email does not exists'] unless $user;
 
     if ($user) {
         $user->approved == 1 ? () : die \['approved', 'user not approved']

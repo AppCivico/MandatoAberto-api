@@ -73,6 +73,11 @@ __PACKAGE__->table("organization_chatbot");
   data_type: 'text'
   is_nullable: 1
 
+=head2 picture
+
+  data_type: 'text'
+  is_nullable: 1
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -96,6 +101,8 @@ __PACKAGE__->add_columns(
   },
   "name",
   { data_type => "text", is_nullable => 1 },
+  "picture",
+  { data_type => "text", is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -112,6 +119,36 @@ __PACKAGE__->set_primary_key("id");
 
 =head1 RELATIONS
 
+=head2 answers
+
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::Answer>
+
+=cut
+
+__PACKAGE__->has_many(
+  "answers",
+  "MandatoAberto::Schema::Result::Answer",
+  { "foreign.organization_chatbot_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+=head2 campaigns
+
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::Campaign>
+
+=cut
+
+__PACKAGE__->has_many(
+  "campaigns",
+  "MandatoAberto::Schema::Result::Campaign",
+  { "foreign.organization_chatbot_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 chatbot_platform
 
 Type: belongs_to
@@ -125,6 +162,21 @@ __PACKAGE__->belongs_to(
   "MandatoAberto::Schema::Result::ChatbotPlatform",
   { id => "chatbot_platform_id" },
   { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
+);
+
+=head2 groups
+
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::Group>
+
+=cut
+
+__PACKAGE__->has_many(
+  "groups",
+  "MandatoAberto::Schema::Result::Group",
+  { "foreign.organization_chatbot_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
 );
 
 =head2 organization
@@ -202,9 +254,24 @@ __PACKAGE__->might_have(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 recipients
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-11-26 15:00:24
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:1vtih2AdO5L6zadhm5hs2w
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::Recipient>
+
+=cut
+
+__PACKAGE__->has_many(
+  "recipients",
+  "MandatoAberto::Schema::Result::Recipient",
+  { "foreign.organization_chatbot_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-12-03 11:33:12
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:+xz0gIYgaSGoRHLi5gDALQ
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
@@ -213,6 +280,18 @@ sub create_persona {
     my ($self, %opts) = @_;
 
 
+}
+
+sub general_config {
+    my ($self) = @_;
+
+    return $self->organization_chatbot_general_config;
+}
+
+sub fb_config {
+    my ($self) = @_;
+
+    return $self->organization_chatbot_facebook_config;
 }
 
 __PACKAGE__->meta->make_immutable;

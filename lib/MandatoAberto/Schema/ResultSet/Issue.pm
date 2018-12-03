@@ -212,9 +212,11 @@ sub get_open_issues_created_today {
 }
 
 sub extract_metrics {
-    my ($self, $politician_id) = @_;
+    my ($self, %opts) = @_;
 
-    my $issue_response_view = $self->result_source->schema->resultset('ViewAvgIssueResponseTime')->search( undef, { bind => [ $politician_id ] } )->next;
+	$self = $self->search_rs( { 'me.created_at' => { '<=' => \"NOW() - interval '$opts{range}'" } } ) if $opts{range};
+
+    my $issue_response_view = $self->result_source->schema->resultset('ViewAvgIssueResponseTime')->search( undef, { bind => [ $opts{politician_id} ] } )->next;
 
     my $count_open        = $self->search( { open => 1 } )->count;
     my $count_ignored     = $self->search( { open => 0, reply => \'IS NULL' } )->count;
@@ -227,8 +229,8 @@ sub extract_metrics {
             {
                 alert             => 'Tempo médio de respostas: ' . $avg_response_time,
                 alert_is_positive => $avg_response_time <= 90 ? 1 : 0,
-                link              => '',
-                link_text         => ''
+                link              => '/mensagens',
+                link_text         => 'Ver mensagens'
             }
         ],
         sub_metrics => [
