@@ -30,10 +30,12 @@ sub root : Chained('/api/politician/object') : PathPart('') : CaptureArgs(0) { }
 sub base : Chained('root') : PathPart('group') : CaptureArgs(0) {
     my ($self, $c) = @_;
 
+    my $politician = $c->model('DB::Politician')->find($c->user->id);
+
     $c->stash->{collection} = $c->model('DB::Group')->search(
         {
-            'me.politician_id' => $c->user->id,
-            'me.deleted'       => 'false',
+            'me.chatbot_organization_id' => $politician->user->chatbot_organization_id,
+            'me.deleted'                 => 'false',
         }
     );
 }

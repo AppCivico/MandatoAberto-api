@@ -233,36 +233,6 @@ __PACKAGE__->belongs_to(
   { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
 );
 
-=head2 campaigns
-
-Type: has_many
-
-Related object: L<MandatoAberto::Schema::Result::Campaign>
-
-=cut
-
-__PACKAGE__->has_many(
-  "campaigns",
-  "MandatoAberto::Schema::Result::Campaign",
-  { "foreign.politician_id" => "self.user_id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
-
-=head2 groups
-
-Type: has_many
-
-Related object: L<MandatoAberto::Schema::Result::Group>
-
-=cut
-
-__PACKAGE__->has_many(
-  "groups",
-  "MandatoAberto::Schema::Result::Group",
-  { "foreign.politician_id" => "self.user_id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
-
 =head2 issues
 
 Type: has_many
@@ -533,21 +503,6 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 recipients
-
-Type: has_many
-
-Related object: L<MandatoAberto::Schema::Result::Recipient>
-
-=cut
-
-__PACKAGE__->has_many(
-  "recipients",
-  "MandatoAberto::Schema::Result::Recipient",
-  { "foreign.politician_id" => "self.user_id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
-
 =head2 user
 
 Type: belongs_to
@@ -564,8 +519,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-12-02 16:07:54
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Xce9Gs1uqv9LR8vFDOSyWw
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-12-03 11:33:12
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:9SpjDTEQ+V43ipR72opghg
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

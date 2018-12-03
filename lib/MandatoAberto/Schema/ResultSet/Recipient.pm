@@ -131,6 +131,12 @@ sub action_specs {
             my %values = $r->valid_values;
             not defined $values{$_} and delete $values{$_} for keys %values;
 
+            # Tratando recipient como do organization_chatbot e não do politician
+            my $politician              = $self->result_source->schema->resultset('Politician')->find($values{politician_id});
+            my $organization_chatbot_id = $politician->user->organization_chatbot->id;
+
+            delete $values{politician_id} and $values{organization_chatbot_id} = $organization_chatbot_id;
+
             if ( defined($values{gender}) && $values{gender} !~ m{^[FM]{1}$} ) {
                 die \["gender", "must be F or M"];
             }
