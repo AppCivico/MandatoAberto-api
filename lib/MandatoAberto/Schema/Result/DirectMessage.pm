@@ -205,21 +205,42 @@ sub build_message_object {
         # Obs: quando há o saved_attachment_id significa que recebemos o arquivo
         # e o enviamos para o Facebook hospedar.
         if ( $self->attachment_type ne 'template' ) {
-            $ret = {
-                attachment => {
-                    type    => $self->attachment_type,
-                    payload => {
-                        attachment_id => $self->saved_attachment_id
-                    }
-                },
-                quick_replies   => [
-                    {
-                        content_type => 'text',
-                        title        => "Voltar para o início",
-                        payload      => 'greetings'
-                    }
-                ]
-            };
+
+            if ( $self->saved_attachment_id ) {
+				$ret = {
+					attachment => {
+						type    => $self->attachment_type,
+						payload => {
+							attachment_id => $self->saved_attachment_id
+						}
+					},
+					quick_replies   => [
+						{
+							content_type => 'text',
+							title        => "Voltar para o início",
+							payload      => 'greetings'
+						}
+					]
+				};
+            }
+            else {
+				$ret = {
+					attachment => {
+						type    => $self->attachment_type,
+						payload => {
+							url => $self->attachment_url
+						}
+					},
+					quick_replies   => [
+						{
+							content_type => 'text',
+							title        => "Voltar para o início",
+							payload      => 'greetings'
+						}
+					]
+				};
+            }
+
         }
         else {
 

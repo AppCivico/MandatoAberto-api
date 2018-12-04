@@ -127,6 +127,10 @@ sub action_specs {
                     die \['content', 'must have at least one param.'];
                 }
 
+                if ( $values{saved_attachment_id} && $values{attachment_url} ) {
+                    die \['saved_attachment_id', 'must have only that or only attachment_url'];
+                }
+
                 my $politician_id = delete $values{politician_id};
                 my $politician    = $self->result_source->schema->resultset('Politician')->find($politician_id);
 

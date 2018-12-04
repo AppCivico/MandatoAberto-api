@@ -99,6 +99,7 @@ sub list_POST {
             name                => $c->req->params->{name},
             attachment_type     => $c->req->params->{attachment_type},
             attachment_template => $c->req->params->{attachment_template},
+            attachment_url      => $c->req->params->{attachment_url},
             saved_attachment_id => $c->req->params->{saved_attachment_id},
         },
     );
