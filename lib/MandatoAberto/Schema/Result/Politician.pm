@@ -1186,6 +1186,38 @@ sub poll_self_propagation_active {
     return $self->poll_self_propagation_config->active;
 }
 
+sub build_notification_bar {
+    my ($self) = @_;
+
+	my @relations = qw( issues );
+
+    my $issue_response_view = $self->result_source->schema->resultset('ViewAvgIssueResponseTime')->search( undef, { bind => [ $self->user_id ] } )->next;
+    my $avg_response_time = $issue_response_view ? $issue_response_view->avg_response_time : 0;
+
+
+    my $unread_count  = $self->issues->search( { read => 0 } )->count;
+    my $response_time = $avg_response_time <= 90 ? 'Bom' : 'Ruim';
+
+	return [
+		{
+            name     => 'issue_response_time',
+            text     => 'Tempo de resposta',
+            is_count => 0,
+            count    => undef,
+            message  => $response_time,
+            icon     => '/assets/images/notifications/issue_response_time.svg'
+        },
+        {
+            name     => 'issue',
+            text     => 'Caixa de Entrada',
+            is_count => 1,
+            count    => $unread_count,
+            message  => undef,
+            icon     => '/assets/images/notifications/issue.svg'
+        }
+	];
+}
+
 __PACKAGE__->meta->make_immutable;
 1;
 
