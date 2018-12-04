@@ -286,7 +286,7 @@ sub action_specs {
 sub update_recipients {
     my ($self) = @_;
 
-    my $recipients_rs = $self->politician->recipients;
+    my $recipients_rs = $self->organization_chatbot->recipients;
 
     my $count;
     $self->result_source->schema->txn_do(sub {

@@ -438,8 +438,8 @@ sub activate_chatbot {
         automatic_load_item => 0,
         stash               => "chatbot",
         [
-            fb_page_access_token => fake_words(3)->(),
-            fb_page_id           => fake_words(3)->(),
+            fb_page_access_token => 'fake_access_token',
+            fb_page_id           => 'fake_page_id',
         ],
     );
 }

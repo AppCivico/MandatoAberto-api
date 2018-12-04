@@ -26,7 +26,7 @@ sub list_GET {
 
     my ( $page_id, $page_id_param );
     if ( $platform eq 'facebook' ) {
-        $page_id_param = 'politician.fb_page_id';
+        $page_id_param = 'organization_chatbot_facebook_config.access_token';
         $page_id       = $c->req->params->{fb_page_id};
         die \["fb_page_id", "missing"] unless $page_id;
     }
@@ -35,13 +35,13 @@ sub list_GET {
         $page_id       = $c->req->params->{twitter_id};
         die \["twitter_id", "missing"] unless $page_id;
     }
-
+    use DDP; p $c->model('DB::OrganizationChatbotFacebookConfig')->next;
     return $self->status_ok(
         $c,
         entity => {
             map {
                 my $p = $_;
-
+                use DDP; p $p;
                 id        => $p->get_column('id'),
                 name      => $p->get_column('name'),
 
@@ -71,7 +71,7 @@ sub list_GET {
                     "$page_id_param" => $page_id,
                     status_id        => 1
                 },
-                { prefetch => [ 'poll_questions', { 'poll_questions' => "poll_question_options" }, 'politician' ] }
+                { prefetch => [ 'poll_questions', { 'poll_questions' => "poll_question_options" }, { 'organization_chatbot' => 'organization_chatbot_facebook_config' } ] }
             )
         }
     )

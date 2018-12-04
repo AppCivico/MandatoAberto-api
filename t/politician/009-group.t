@@ -17,6 +17,9 @@ db_transaction {
     );
     my $politician_id = stash "politician.id";
 
+	api_auth_as user_id => $politician_id;
+	activate_chatbot($politician_id);
+
     my @recipient_ids = ();
     subtest 'mocking recipients' => sub {
 

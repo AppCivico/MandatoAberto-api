@@ -13,6 +13,9 @@ db_transaction {
     my $politician_id = $politician->{id};
     $politician       = $schema->resultset('Politician')->find($politician_id);
 
+	api_auth_as user_id => $politician_id;
+	activate_chatbot($politician_id);
+
     $politician->user->update( { approved => 1 } );
 
     # Adicionando um recipient.
@@ -39,7 +42,7 @@ db_transaction {
         list  => 1,
         stash => 'get_poll',
         [
-            fb_page_id     => 'politician_foobar',
+            fb_page_id     => 'long_lived_fake_access_token',
             security_token => $security_token
         ]
     ;

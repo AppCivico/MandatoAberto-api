@@ -102,12 +102,12 @@ sub action_specs {
             # Tratando group como do organization_chatbot e não do politician
             my $politician    = $self->result_source->schema->resultset('Politician')->find($values{politician_id});
 
-            $values{chatbot_organization_id} = $politician->user->chatbot_organization_id;
+            $values{organization_chatbot_id} = $politician->user->organization_chatbot_id;
 
             return $self->create(
                 {
                     name                    => $values{name},
-                    chatbot_organization_id => $values{chatbot_organization_id},
+                    organization_chatbot_id => $values{organization_chatbot_id},
                     filter                  => $values{filter},
                     status                  => 'processing',
                 }

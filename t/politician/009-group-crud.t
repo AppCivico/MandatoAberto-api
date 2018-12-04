@@ -389,6 +389,7 @@ db_transaction {
             is( ref($res->{recipients}), 'ARRAY', 'recipients=arrayref' );
 
             # Somente os dois ultimos recipients não responderam a última questão.
+            use DDP; p $res;
             is_deeply(
                 [ sort $recipient_ids[2], $recipient_ids[3] ],
                 [ sort map { $_->{id} } @{ $res->{recipients} } ],

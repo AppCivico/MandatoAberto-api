@@ -473,21 +473,6 @@ __PACKAGE__->might_have(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 polls
-
-Type: has_many
-
-Related object: L<MandatoAberto::Schema::Result::Poll>
-
-=cut
-
-__PACKAGE__->has_many(
-  "polls",
-  "MandatoAberto::Schema::Result::Poll",
-  { "foreign.politician_id" => "self.user_id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
-
 =head2 private_replies
 
 Type: has_many
@@ -519,8 +504,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-12-03 11:33:12
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:9SpjDTEQ+V43ipR72opghg
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-12-03 15:35:21
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:byU5jnQdwyd4TFjOzRYLkg
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
@@ -749,13 +734,13 @@ sub action_specs {
                     die \["new_password", "must have at least 6 characters"];
                 }
 
-                if ($values{fb_page_access_token}) {
+                if (defined $values{fb_page_access_token}) {
                     # O access token gerado pela primeira vez é o de vida curta
                     # portanto devo pegar o mesmo e gerar um novo token de vida longa
                     # API do Facebook: https://developers.facebook.com/docs/facebook-login/access-tokens/expiration-and-extension
                     my $short_lived_token = $values{fb_page_access_token};
                     $values{fb_page_access_token} = $self->get_long_lived_access_token($short_lived_token);
-
+                    use DDP; p $self->get_long_lived_access_token($short_lived_token);;
                     # Setando o botão get started
                     $self->set_get_started_button_and_persistent_menu($values{fb_page_access_token});
 
@@ -830,7 +815,7 @@ sub get_long_lived_access_token {
     my $short_lived_token = $_[1];
 
     if (is_test()) {
-        return 1;
+        return 'long_lived_fake_access_token';
     }
 
     my $furl = Furl->new();

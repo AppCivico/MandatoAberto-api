@@ -34,7 +34,7 @@ sub base : Chained('root') : PathPart('group') : CaptureArgs(0) {
 
     $c->stash->{collection} = $c->model('DB::Group')->search(
         {
-            'me.chatbot_organization_id' => $politician->user->chatbot_organization_id,
+            'me.organization_chatbot_id' => $politician->user->organization_chatbot_id,
             'me.deleted'                 => 'false',
         }
     );
@@ -53,7 +53,7 @@ sub result_GET {
 
     my $group = $c->stash->{group};
 
-    my $recipients_rs = $group->politician->recipients->search(
+    my $recipients_rs = $group->organization_chatbot->recipients->search(
         {},
         {
             page => $page,
@@ -75,17 +75,20 @@ sub result_GET {
         }
     }
 
+
+
     return $self->status_ok(
         $c,
         entity => {
-            id               => $group->id,
-            filter           => $filter,
-            name             => $group->get_column('name'),
-            status           => $group->get_column('status'),
-            updated_at       => $group->get_column('updated_at'),
-            created_at       => $group->get_column('created_at'),
-            politician_id    => $group->get_column('politician_id'),
-            recipients_count => $group->get_column('recipients_count'),
+            id                      => $group->id,
+            filter                  => $filter,
+            name                    => $group->get_column('name'),
+            status                  => $group->get_column('status'),
+            updated_at              => $group->get_column('updated_at'),
+            created_at              => $group->get_column('created_at'),
+            politician_id           => $c->stash->{politician}->id,
+            organization_chatbot_id => $group->get_column('organization_chatbot_id'),
+            recipients_count        => $group->get_column('recipients_count'),
 
             recipients => [
                 map {
@@ -138,14 +141,15 @@ sub list_GET {
     my @rows;
     while ( my $r = $c->stash->{collection}->next() ) {
         push @rows, {
-            id               => $r->id,
-            filter           => $r->filter,
-            name             => $r->get_column('name'),
-            status           => $r->get_column('status'),
-            updated_at       => $r->get_column('updated_at'),
-            created_at       => $r->get_column('created_at'),
-            politician_id    => $r->get_column('politician_id'),
-            recipients_count => $r->get_column('recipients_count'),
+            id                      => $r->id,
+            filter                  => $r->filter,
+            name                    => $r->get_column('name'),
+            status                  => $r->get_column('status'),
+            updated_at              => $r->get_column('updated_at'),
+            created_at              => $r->get_column('created_at'),
+            politician_id           => $c->stash->{politician}->id,
+            organization_chatbot_id => $r->get_column('organization_chatbot_id'),
+            recipients_count        => $r->get_column('recipients_count'),
         };
     }
 
