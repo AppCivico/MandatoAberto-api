@@ -1205,7 +1205,8 @@ sub build_notification_bar {
             is_count => 0,
             count    => undef,
             message  => $response_time,
-            icon     => '/assets/images/notifications/issue_response_time.svg'
+            icon     => '/assets/images/notifications/issue_response_time.svg',
+            link     => '/mensagens'
         },
         {
             name     => 'issue',
@@ -1213,7 +1214,8 @@ sub build_notification_bar {
             is_count => 1,
             count    => $unread_count,
             message  => undef,
-            icon     => '/assets/images/notifications/issue.svg'
+            icon     => '/assets/images/notifications/issue.svg',
+            link     => '/mensagens'
         }
 	];
 }
