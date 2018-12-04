@@ -116,6 +116,12 @@ __PACKAGE__->table("issue");
   default_value: false
   is_nullable: 0
 
+=head2 read
+
+  data_type: 'boolean'
+  default_value: false
+  is_nullable: 0
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -154,6 +160,8 @@ __PACKAGE__->add_columns(
   "saved_attachment_type",
   { data_type => "text", is_nullable => 1 },
   "deleted",
+  { data_type => "boolean", default_value => \"false", is_nullable => 0 },
+  "read",
   { data_type => "boolean", default_value => \"false", is_nullable => 0 },
 );
 
@@ -202,8 +210,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-09-25 14:43:58
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:jYBCVca0RmbGz7EExCBIJw
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-12-04 08:42:59
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:oIT7UfoiOzG4Mpv88v6MQg
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
@@ -285,6 +293,10 @@ sub verifiers_specs {
                 deleted => {
                     required => 0,
                     type     => 'Bool'
+                },
+                read => {
+                    required => 0,
+                    type     => 'Bool'
                 }
             }
         )
@@ -300,6 +312,12 @@ sub action_specs {
 
             my %values = $r->valid_values;
             not defined $values{$_} and delete $values{$_} for keys %values;
+
+            # Tratando caso de apenas abrir e ler a mensagem
+            if ( $values{read} ) {
+
+                return $self->update( { read => $values{read} } );;
+            }
 
             if ($values{ignore} == 1 && $values{reply}) {
                 die \['ignore', 'must not have reply'];
