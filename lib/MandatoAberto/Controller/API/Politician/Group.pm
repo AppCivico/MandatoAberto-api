@@ -129,7 +129,7 @@ sub list_GET {
 
     my $total = $c->stash->{collection}->count;
 
-    $c->stash->{collection} = $c->stash->{collection}->search( {}, { page => $page, rows => $results } );
+    $c->stash->{collection} = $c->stash->{collection}->search( {}, { page => $page, rows => $results, order_by => { -desc => 'me.created_at' } } );
 
     my $func = $self->config->{build_list_row} || $self->config->{build_row};
 
