@@ -116,6 +116,12 @@ __PACKAGE__->table("issue");
   is_foreign_key: 1
   is_nullable: 0
 
+=head2 read
+
+  data_type: 'boolean'
+  default_value: false
+  is_nullable: 0
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -155,6 +161,8 @@ __PACKAGE__->add_columns(
   { data_type => "boolean", default_value => \"false", is_nullable => 0 },
   "organization_chatbot_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
+  "read",
+  { data_type => "boolean", default_value => \"false", is_nullable => 0 },
 );
 
 =head1 PRIMARY KEY
@@ -285,6 +293,10 @@ sub verifiers_specs {
                 deleted => {
                     required => 0,
                     type     => 'Bool'
+                },
+                read => {
+                    required => 0,
+                    type     => 'Bool'
                 }
             }
         )
@@ -300,6 +312,12 @@ sub action_specs {
 
             my %values = $r->valid_values;
             not defined $values{$_} and delete $values{$_} for keys %values;
+
+            # Tratando caso de apenas abrir e ler a mensagem
+            if ( $values{read} ) {
+
+                return $self->update( { read => $values{read} } );;
+            }
 
             if ($values{ignore} == 1 && $values{reply}) {
                 die \['ignore', 'must not have reply'];

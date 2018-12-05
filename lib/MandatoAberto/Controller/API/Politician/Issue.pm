@@ -164,6 +164,7 @@ sub list_GET {
                         id           => $i->get_column('id'),
                         reply        => $i->get_column('reply'),
                         open         => $i->get_column('open'),
+                        read         => $i->get_column('read'),
                         ignored      => $ignored_flag,
                         replied      => $replied_flag,
                         message      => $i->get_column('message'),

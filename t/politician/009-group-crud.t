@@ -498,7 +498,7 @@ db_transaction {
             is( $res->{total}, 25, 'total=25' );
             is_deeply(
                 [ sort map { $_->{name} } @{ $res->{groups } } ],
-                [ 'AppCivico 4', 'AppCivico 5', 'AppCivico 6' ],
+                [ 'AppCivico 1', 'AppCivico 5', 'AppCivico 6' ],
             );
         };
     };

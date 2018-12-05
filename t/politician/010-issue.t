@@ -90,6 +90,11 @@ db_transaction {
 
     api_auth_as "user_id" => $politician_id;
 
+    rest_put "/api/politician/$politician_id/issue/$first_issue_id",
+        name => "reading an issue",
+        [ read => 1 ]
+    ;
+
     rest_get "/api/politician/$politician_id/issue",
         name  => "get issues",
         list  => 1,
@@ -108,6 +113,7 @@ db_transaction {
         is ($res->{issues}->[0]->{updated_at}, undef, 'issue updated timestamp');
         is ($res->{issues}->[0]->{ignored}, 0, 'issue is not ignored');
         is ($res->{issues}->[0]->{replied}, 0, 'issue is not replied');
+        is ($res->{issues}->[0]->{read}, 1, 'issue was read');
     };
 
     rest_put "/api/politician/$politician_id/issue/$first_issue_id",
