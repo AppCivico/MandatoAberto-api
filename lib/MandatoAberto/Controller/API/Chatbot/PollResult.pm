@@ -23,7 +23,7 @@ __PACKAGE__->config(
         die \["fb_id", "could not find recipient with that fb_id"] unless $recipient;
 
         $params->{recipient_id} = $recipient->id;
-        use DDP; p $params;
+
         return $params;
     },
 );

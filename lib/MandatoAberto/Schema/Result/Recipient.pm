@@ -426,7 +426,7 @@ sub add_to_group {
     my $ret;
     $self->result_source->schema->txn_do(sub {
         # Verificando se este recipient já estava no grupo.
-        my $recipients_rs = $self->politician->recipients;
+        my $recipients_rs = $self->organization_chatbot->recipients;
 
         my $already_in_this_group = $recipients_rs->search(
             {
@@ -442,7 +442,7 @@ sub add_to_group {
 
         return if $already_in_this_group;
 
-        $self->politician->groups
+        $self->organization_chatbot->groups
         ->search( { 'me.id' => $group_id } )
         ->update(
             {
@@ -458,7 +458,7 @@ sub add_to_group {
 sub groups_rs {
     my ($self) = @_;
 
-    return $self->politician->groups->search(
+    return $self->organization_chatbot->groups->search(
         {
             'me.id' => { 'in' => [ keys %{ $self->groups || {} } ] },
             deleted => 0
@@ -469,7 +469,7 @@ sub groups_rs {
 sub entity_rs {
     my ($self) = @_;
 
-    return $self->politician->politician_entities->search(
+    return $self->organization_chatbot->politician_entities->search(
         {
             'me.id' => { 'in' => $self->entities ? $self->entities : 0 },
         }
@@ -483,7 +483,7 @@ sub add_to_politician_entity {
     $self->result_source->schema->txn_do(
         sub {
             # Verificando se este recipient já estava na entidade.
-            my $recipients_rs = $self->politician->recipients;
+            my $recipients_rs = $self->organization_chatbot->recipients;
 
             my $already_in_this_group = $recipients_rs->search(
                 {
@@ -499,7 +499,7 @@ sub add_to_politician_entity {
 
             $ret = $self->update( { entities => \[ "array_append(entities, ?)", $politician_entity_id ] } );
 
-            $self->politician->politician_entities->search( { 'me.id' => $politician_entity_id } )->update(
+            $self->organization_chatbot->politician_entities->search( { 'me.id' => $politician_entity_id } )->update(
                 {
                     recipient_count => \'recipient_count + 1',
                     updated_at      => \'NOW()',

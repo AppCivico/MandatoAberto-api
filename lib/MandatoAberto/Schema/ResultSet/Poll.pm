@@ -35,6 +35,7 @@ sub verifiers_specs {
                                 organization_chatbot_id => $politician->user->organization_chatbot_id
                             }
                         )->count;
+
                         die \["name", 'alredy exists'] unless $count == 0;
                     }
                 },

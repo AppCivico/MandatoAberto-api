@@ -19,6 +19,16 @@ db_transaction {
         fb_page_access_token => fake_words(1)->()
     );
     my $politician_id = stash "politician.id";
+    my $politician    = $schema->resultset('Politician')->find($politician_id);
+
+    rest_get "/api/politician/$politician_id/issue",
+        name    => "get issues without login",
+        is_fail => 1,
+        code    => 403
+    ;
+
+	api_auth_as user_id => $politician_id;
+	activate_chatbot($politician_id);
 
     rest_post "/api/chatbot/recipient",
         name                => "create recipient",
@@ -77,12 +87,6 @@ db_transaction {
     ;
     my $first_issue_id = stash "i1.id";
     my $first_issue    = $issue_rs->find($first_issue_id);
-
-    rest_get "/api/politician/$politician_id/issue",
-        name    => "get issues without login",
-        is_fail => 1,
-        code    => 403
-    ;
 
     api_auth_as "user_id" => $politician_id;
 

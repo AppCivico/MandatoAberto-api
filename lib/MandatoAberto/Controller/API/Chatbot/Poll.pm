@@ -35,13 +35,13 @@ sub list_GET {
         $page_id       = $c->req->params->{twitter_id};
         die \["twitter_id", "missing"] unless $page_id;
     }
-    use DDP; p $c->model('DB::OrganizationChatbotFacebookConfig')->next;
+
     return $self->status_ok(
         $c,
         entity => {
             map {
                 my $p = $_;
-                use DDP; p $p;
+
                 id        => $p->get_column('id'),
                 name      => $p->get_column('name'),
 

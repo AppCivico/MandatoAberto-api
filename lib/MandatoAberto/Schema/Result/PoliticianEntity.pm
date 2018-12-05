@@ -49,12 +49,6 @@ __PACKAGE__->table("politician_entity");
   is_nullable: 0
   sequence: 'politician_entity_id_seq'
 
-=head2 politician_id
-
-  data_type: 'integer'
-  is_foreign_key: 1
-  is_nullable: 0
-
 =head2 recipient_count
 
   data_type: 'integer'
@@ -83,6 +77,12 @@ __PACKAGE__->table("politician_entity");
   data_type: 'text'
   is_nullable: 1
 
+=head2 organization_chatbot_id
+
+  data_type: 'integer'
+  is_foreign_key: 1
+  is_nullable: 0
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -93,8 +93,6 @@ __PACKAGE__->add_columns(
     is_nullable       => 0,
     sequence          => "politician_entity_id_seq",
   },
-  "politician_id",
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "recipient_count",
   { data_type => "integer", default_value => 0, is_nullable => 0 },
   "updated_at",
@@ -110,6 +108,8 @@ __PACKAGE__->add_columns(
   { data_type => "text", is_nullable => 0 },
   "human_name",
   { data_type => "text", is_nullable => 1 },
+  "organization_chatbot_id",
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
 );
 
 =head1 PRIMARY KEY
@@ -126,18 +126,18 @@ __PACKAGE__->set_primary_key("id");
 
 =head1 RELATIONS
 
-=head2 politician
+=head2 organization_chatbot
 
 Type: belongs_to
 
-Related object: L<MandatoAberto::Schema::Result::Politician>
+Related object: L<MandatoAberto::Schema::Result::OrganizationChatbot>
 
 =cut
 
 __PACKAGE__->belongs_to(
-  "politician",
-  "MandatoAberto::Schema::Result::Politician",
-  { user_id => "politician_id" },
+  "organization_chatbot",
+  "MandatoAberto::Schema::Result::OrganizationChatbot",
+  { id => "organization_chatbot_id" },
   { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
 );
 
@@ -157,8 +157,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-10-19 15:05:15
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:SLMiLHfnDfY+lTtVW6xeig
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-12-05 10:51:56
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:qKNyEnNP00Wx0Ab1/IrIEg
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
@@ -182,7 +182,7 @@ sub knowledge_base_rs {
  @> ARRAY[?]::integer[]
 SQL_QUERY
 
-    return $self->politician->politician_knowledge_bases->search( { entities => $cond } );
+    return $self->organization_chatbot->politician_knowledge_bases->search( { entities => $cond } );
 }
 
 sub has_active_knowledge_base {

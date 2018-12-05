@@ -78,7 +78,11 @@ sub root : Chained('/api/politician/object') : PathPart('') : CaptureArgs(0) {
     }
 }
 
-sub base : Chained('root') : PathPart('issue') : CaptureArgs(0) { }
+sub base : Chained('root') : PathPart('issue') : CaptureArgs(0) {
+    my ($self, $c) = @_;
+
+    $c->stash->{collection} = $c->stash->{politician}->user->organization_chatbot->issues;
+}
 
 sub object : Chained('base') : PathPart('') : CaptureArgs(1) {
     my ($self, $c, $issue_id) = @_;
@@ -105,7 +109,6 @@ sub list_GET {
     my $cond;
     if ( $filter eq 'open' ) {
         $cond = {
-            'me.politician_id' => $politician_id,
             open               => 1,
             'me.message'       => { '!=' => 'Participar' },
             deleted            => 0
@@ -113,7 +116,6 @@ sub list_GET {
     }
     elsif ( $filter eq 'ignored' ) {
         $cond = {
-            'me.politician_id' => $politician_id,
             open               => 0,
             reply              => \'IS NULL',
             'me.message'       => { '!=' => 'Participar' },
@@ -122,7 +124,6 @@ sub list_GET {
     }
     else {
         $cond = {
-            'me.politician_id' => $politician_id,
             open               => 0,
             reply              => \'IS NOT NULL',
             'me.message'       => { '!=' => 'Participar' },

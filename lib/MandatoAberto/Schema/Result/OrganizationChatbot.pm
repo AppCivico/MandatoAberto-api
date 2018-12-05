@@ -179,6 +179,21 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 issues
+
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::Issue>
+
+=cut
+
+__PACKAGE__->has_many(
+  "issues",
+  "MandatoAberto::Schema::Result::Issue",
+  { "foreign.organization_chatbot_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 organization
 
 Type: belongs_to
@@ -254,6 +269,36 @@ __PACKAGE__->might_have(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 politician_entities
+
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::PoliticianEntity>
+
+=cut
+
+__PACKAGE__->has_many(
+  "politician_entities",
+  "MandatoAberto::Schema::Result::PoliticianEntity",
+  { "foreign.organization_chatbot_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+=head2 politician_knowledge_bases
+
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::PoliticianKnowledgeBase>
+
+=cut
+
+__PACKAGE__->has_many(
+  "politician_knowledge_bases",
+  "MandatoAberto::Schema::Result::PoliticianKnowledgeBase",
+  { "foreign.organization_chatbot_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 polls
 
 Type: has_many
@@ -285,8 +330,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-12-03 15:35:21
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:LXXOzTg+tRZzN7eXs0RMqA
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-12-05 11:04:59
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:G/w3Q8BplZet70sviU3vNw
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

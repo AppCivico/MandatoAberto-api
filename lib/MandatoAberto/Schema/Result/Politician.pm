@@ -233,21 +233,6 @@ __PACKAGE__->belongs_to(
   { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
 );
 
-=head2 issues
-
-Type: has_many
-
-Related object: L<MandatoAberto::Schema::Result::Issue>
-
-=cut
-
-__PACKAGE__->has_many(
-  "issues",
-  "MandatoAberto::Schema::Result::Issue",
-  { "foreign.politician_id" => "self.user_id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
-
 =head2 logs
 
 Type: has_many
@@ -349,36 +334,6 @@ Related object: L<MandatoAberto::Schema::Result::PoliticianContact>
 __PACKAGE__->has_many(
   "politician_contacts",
   "MandatoAberto::Schema::Result::PoliticianContact",
-  { "foreign.politician_id" => "self.user_id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
-
-=head2 politician_entities
-
-Type: has_many
-
-Related object: L<MandatoAberto::Schema::Result::PoliticianEntity>
-
-=cut
-
-__PACKAGE__->has_many(
-  "politician_entities",
-  "MandatoAberto::Schema::Result::PoliticianEntity",
-  { "foreign.politician_id" => "self.user_id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
-
-=head2 politician_knowledge_bases
-
-Type: has_many
-
-Related object: L<MandatoAberto::Schema::Result::PoliticianKnowledgeBase>
-
-=cut
-
-__PACKAGE__->has_many(
-  "politician_knowledge_bases",
-  "MandatoAberto::Schema::Result::PoliticianKnowledgeBase",
   { "foreign.politician_id" => "self.user_id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
@@ -504,8 +459,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-12-03 15:35:21
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:byU5jnQdwyd4TFjOzRYLkg
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-12-05 11:04:59
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:ckHJanawAM1UUXUzk4dgTQ
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
@@ -740,7 +695,7 @@ sub action_specs {
                     # API do Facebook: https://developers.facebook.com/docs/facebook-login/access-tokens/expiration-and-extension
                     my $short_lived_token = $values{fb_page_access_token};
                     $values{fb_page_access_token} = $self->get_long_lived_access_token($short_lived_token);
-                    use DDP; p $self->get_long_lived_access_token($short_lived_token);;
+
                     # Setando o botão get started
                     $self->set_get_started_button_and_persistent_menu($values{fb_page_access_token});
 

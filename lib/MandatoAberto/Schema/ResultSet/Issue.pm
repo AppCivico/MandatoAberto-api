@@ -58,13 +58,18 @@ sub verifiers_specs {
                     post_check => sub {
                         my $ids = $_[0]->get_value('ids');
 
+						my $politician_id = $_[0]->get_value('politician_id');
+						my $politician    = $self->result_source->schema->resultset('Politician')->find($politician_id);
+
                         for my $id ( @{ $ids } ) {
+                            use DDP; p $politician->user->organization_chatbot_id;
                             my $issue = $self->search(
                                 {
-                                    id            => $id,
-                                    politician_id => $_[0]->get_value('politician_id'),
+                                    id                      => $id,
+                                    organization_chatbot_id => $politician->user->organization_chatbot_id,
                                 }
                             )->next;
+                            p 'bar';
 
                             die \["issue_id: $id", 'no such issue'] unless $issue;
                         }
@@ -92,11 +97,14 @@ sub verifiers_specs {
                     post_check => sub {
                         my $ids = $_[0]->get_value('ids');
 
+						my $politician_id = $_[0]->get_value('politician_id');
+						my $politician    = $self->result_source->schema->resultset('Politician')->find($politician_id);
+
                         for my $id ( @{$ids} ) {
                             my $issue = $self->search(
                                 {
-                                    id            => $id,
-                                    politician_id => $_[0]->get_value('politician_id'),
+                                    id                      => $id,
+                                    organization_chatbot_id => $politician->user->organization_chatbot_id,
                                 }
                             )->next;
 
@@ -127,8 +135,13 @@ sub action_specs {
                 $values{open} = 1;
 
                 my $politician = $self->result_source->schema->resultset('Politician')->find( $values{politician_id} );
-                my $recipient  = $politician->recipients->find($values{recipient_id});
+                my $recipient  = $politician->user->organization_chatbot->recipients->find($values{recipient_id});
                 my $entity_rs  = $self->result_source->schema->resultset('Entity');
+
+                 # Tratando issue como do organization_chatbot e não do politician
+                my $organization_chatbot_id = $politician->user->organization_chatbot->id;
+
+                delete $values{politician_id} and $values{organization_chatbot_id} = $organization_chatbot_id;
 
                 my @entities_id;
                 if ( $values{entities} ) {
@@ -138,10 +151,10 @@ sub action_specs {
                     die \['intentName', 'missing'] unless $intent;
 
                     $intent = lc $intent;
-                    my $human_name = $politician->politician_entities->find_human_name($intent);
+                    my $human_name = $politician->user->organization_chatbot->politician_entities->find_human_name($intent);
                     die \['entities', "could not find human_name for $intent"] unless $human_name;
 
-                    my $upsert_entity = $politician->politician_entities->find_or_create(
+                    my $upsert_entity = $politician->user->organization_chatbot->politician_entities->find_or_create(
                         {
                             name       => $intent,
                             human_name => $human_name

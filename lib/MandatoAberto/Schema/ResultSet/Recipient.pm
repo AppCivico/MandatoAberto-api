@@ -133,7 +133,7 @@ sub action_specs {
 
             # Tratando recipient como do organization_chatbot e não do politician
             my $politician              = $self->result_source->schema->resultset('Politician')->find($values{politician_id});
-            my $organization_chatbot_id = $politician->user->organization_chatbot->id;
+            my $organization_chatbot_id = $politician->user->organization_chatbot_id;
 
             delete $values{politician_id} and $values{organization_chatbot_id} = $organization_chatbot_id;
 

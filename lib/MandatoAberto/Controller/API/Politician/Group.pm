@@ -175,7 +175,7 @@ sub count_POST {
     return $self->status_ok(
         $c,
         entity => {
-            count => $c->stash->{politician}->recipients->search_by_filter($filter)->count,
+            count => $c->stash->{politician}->user->organization_chatbot->recipients->search_by_filter($filter)->count,
         },
     );
 }

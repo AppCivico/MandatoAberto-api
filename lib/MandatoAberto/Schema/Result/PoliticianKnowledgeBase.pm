@@ -49,12 +49,6 @@ __PACKAGE__->table("politician_knowledge_base");
   is_nullable: 0
   sequence: 'politician_knowledge_base_id_seq'
 
-=head2 politician_id
-
-  data_type: 'integer'
-  is_foreign_key: 1
-  is_nullable: 0
-
 =head2 entities
 
   data_type: 'integer[]'
@@ -99,6 +93,12 @@ __PACKAGE__->table("politician_knowledge_base");
   default_value: 'posicionamento'
   is_nullable: 0
 
+=head2 organization_chatbot_id
+
+  data_type: 'integer'
+  is_foreign_key: 1
+  is_nullable: 0
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -109,8 +109,6 @@ __PACKAGE__->add_columns(
     is_nullable       => 0,
     sequence          => "politician_knowledge_base_id_seq",
   },
-  "politician_id",
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "entities",
   { data_type => "integer[]", is_nullable => 0 },
   "active",
@@ -136,6 +134,8 @@ __PACKAGE__->add_columns(
     default_value => "posicionamento",
     is_nullable   => 0,
   },
+  "organization_chatbot_id",
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
 );
 
 =head1 PRIMARY KEY
@@ -152,24 +152,24 @@ __PACKAGE__->set_primary_key("id");
 
 =head1 RELATIONS
 
-=head2 politician
+=head2 organization_chatbot
 
 Type: belongs_to
 
-Related object: L<MandatoAberto::Schema::Result::Politician>
+Related object: L<MandatoAberto::Schema::Result::OrganizationChatbot>
 
 =cut
 
 __PACKAGE__->belongs_to(
-  "politician",
-  "MandatoAberto::Schema::Result::Politician",
-  { user_id => "politician_id" },
+  "organization_chatbot",
+  "MandatoAberto::Schema::Result::OrganizationChatbot",
+  { id => "organization_chatbot_id" },
   { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-09-17 16:49:57
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:ivV9l3bZRs6123fjgebJmQ
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-12-05 11:04:59
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:91siOI5etoAcOpZP/lnteQ
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
