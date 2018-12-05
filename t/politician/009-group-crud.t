@@ -13,9 +13,12 @@ db_transaction {
         fb_page_id => 'foo'
     );
     my $politician_id = stash "politician.id";
+	my $politician    = $schema->resultset('Politician')->find($politician_id);
 
 	api_auth_as user_id => $politician_id;
 	activate_chatbot($politician_id);
+
+	my $organization_chatbot_id = $politician->user->organization_chatbot_id;
 
     my @recipient_ids = ();
     subtest 'mocking recipients' => sub {
@@ -37,9 +40,9 @@ db_transaction {
         ok(
             $poll = $schema->resultset('Poll')->create(
                 {
-                    name          => 'Pizza',
-                    politician_id => $politician_id,
-                    status_id     => 1,
+                    name                    => 'Pizza',
+                    organization_chatbot_id => $organization_chatbot_id,
+                    status_id               => 1,
                 },
             ),
             'add poll',
@@ -389,7 +392,6 @@ db_transaction {
             is( ref($res->{recipients}), 'ARRAY', 'recipients=arrayref' );
 
             # Somente os dois ultimos recipients não responderam a última questão.
-            use DDP; p $res;
             is_deeply(
                 [ sort $recipient_ids[2], $recipient_ids[3] ],
                 [ sort map { $_->{id} } @{ $res->{recipients} } ],

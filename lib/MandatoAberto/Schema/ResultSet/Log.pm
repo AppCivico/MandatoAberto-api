@@ -45,10 +45,12 @@ sub verifiers_specs {
                         my $recipient_fb_id = $_[0]->get_value('recipient_fb_id');
                         my $politician_id   = $_[0]->get_value('politician_id');
 
+						my $politician = $self->result_source->schema->resultset('Politician')->find($politician_id);
+
                         $self->result_source->schema->resultset("Recipient")->search(
                             {
-                                'me.fb_id'         => $recipient_fb_id,
-                                'me.politician_id' => $politician_id
+                                'me.fb_id'                   => $recipient_fb_id,
+                                'me.organization_chatbot_id' => $politician->user->organization_chatbot_id
                             }
                         )->count;
                     }
@@ -93,6 +95,9 @@ sub action_specs {
             my $log;
             $self->result_source->schema->txn_do(sub {
                 my $politician_id = $values{politician_id};
+                my $politician    = $self->result_source->schema->resultset('Politician')->find($politician_id);
+
+                my $organization_chatbot_id = $politician->user->organization_chatbot_id;
 
                 # Tratando timestamp
                 my $ts = DateTime::Format::DateParse->parse_datetime($values{timestamp});
@@ -128,7 +133,7 @@ sub action_specs {
                     }
                     elsif ( $action->name eq 'ANSWERED_POLL' ) {
                         $rs = $self->resultset('PollQuestionOption')->search(
-                            { 'poll.politician_id' => $politician_id },
+                            { 'poll.organization_chatbot_id' => $organization_chatbot_id },
                             { prefetch => { 'poll_question' => 'poll' } }
                         );
 

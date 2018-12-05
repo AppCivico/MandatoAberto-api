@@ -269,6 +269,21 @@ __PACKAGE__->might_have(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 politician_contacts
+
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::PoliticianContact>
+
+=cut
+
+__PACKAGE__->has_many(
+  "politician_contacts",
+  "MandatoAberto::Schema::Result::PoliticianContact",
+  { "foreign.organization_chatbot_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 politician_entities
 
 Type: has_many
@@ -299,6 +314,36 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 politician_private_reply_config
+
+Type: might_have
+
+Related object: L<MandatoAberto::Schema::Result::PoliticianPrivateReplyConfig>
+
+=cut
+
+__PACKAGE__->might_have(
+  "politician_private_reply_config",
+  "MandatoAberto::Schema::Result::PoliticianPrivateReplyConfig",
+  { "foreign.organization_chatbot_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+=head2 politicians_greeting
+
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::PoliticianGreeting>
+
+=cut
+
+__PACKAGE__->has_many(
+  "politicians_greeting",
+  "MandatoAberto::Schema::Result::PoliticianGreeting",
+  { "foreign.organization_chatbot_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 polls
 
 Type: has_many
@@ -310,6 +355,21 @@ Related object: L<MandatoAberto::Schema::Result::Poll>
 __PACKAGE__->has_many(
   "polls",
   "MandatoAberto::Schema::Result::Poll",
+  { "foreign.organization_chatbot_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+=head2 private_replies
+
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::PrivateReply>
+
+=cut
+
+__PACKAGE__->has_many(
+  "private_replies",
+  "MandatoAberto::Schema::Result::PrivateReply",
   { "foreign.organization_chatbot_id" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
@@ -330,8 +390,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-12-05 11:04:59
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:G/w3Q8BplZet70sviU3vNw
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-12-05 16:46:30
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:PIxrsSoD2fs5aA0JgIpdCQ
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

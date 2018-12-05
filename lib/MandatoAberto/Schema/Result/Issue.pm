@@ -210,8 +210,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-12-05 10:55:58
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:1ndRkhqyMOKyL4KdI7KoEg
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-12-05 11:23:59
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:jeuiDq+Yr2iCgfq2ILlEWA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
@@ -263,15 +263,15 @@ sub verifiers_specs {
                     required   => 0,
                     type       => "ArrayRef[Int]",
                     post_check => sub {
-                        my $groups = $_[0]->get_value('groups');
+                        my $groups     = $_[0]->get_value('groups');
 
                         for (my $i = 0; $i < @{ $groups }; $i++) {
                             my $group_id = $groups->[$i];
 
                             my $group = $self->result_source->schema->resultset("Group")->search(
                                 {
-                                   'me.id'            => $group_id,
-                                   'me.politician_id' => $self->politician_id,
+                                   'me.id'                      => $group_id,
+                                   'me.organization_chatbot_id' => $self->organization_chatbot_id,
                                 }
                             )->next;
 

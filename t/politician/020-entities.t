@@ -16,6 +16,11 @@ db_transaction {
     my $politician    = $schema->resultset('Politician')->find(stash 'politician.id');
     my $politician_id = $politician->id;
 
+	api_auth_as user_id => $politician_id;
+	activate_chatbot($politician_id);
+
+	my $organization_chatbot_id = $politician->user->organization_chatbot_id;
+
     create_recipient( politician_id => $politician_id );
     my $recipient = $schema->resultset('Recipient')->find(stash 'recipient.id');
 
@@ -58,10 +63,8 @@ db_transaction {
         ],
     ;
 
-    my $politician_entity = $schema->resultset('PoliticianEntity')->search( { politician_id => $politician_id } )->next;
+    my $politician_entity = $schema->resultset('PoliticianEntity')->search( { organization_chatbot_id => $organization_chatbot_id } )->next;
     my $politician_entity_id = $politician_entity->id;
-
-    api_auth_as user_id => $politician_id;
 
     rest_post "/api/politician/$politician_id/knowledge-base",
         name                => 'creating knowledge base entry',

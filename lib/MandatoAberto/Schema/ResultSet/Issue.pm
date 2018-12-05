@@ -62,14 +62,12 @@ sub verifiers_specs {
 						my $politician    = $self->result_source->schema->resultset('Politician')->find($politician_id);
 
                         for my $id ( @{ $ids } ) {
-                            use DDP; p $politician->user->organization_chatbot_id;
                             my $issue = $self->search(
                                 {
                                     id                      => $id,
                                     organization_chatbot_id => $politician->user->organization_chatbot_id,
                                 }
                             )->next;
-                            p 'bar';
 
                             die \["issue_id: $id", 'no such issue'] unless $issue;
                         }
@@ -138,7 +136,7 @@ sub action_specs {
                 my $recipient  = $politician->user->organization_chatbot->recipients->find($values{recipient_id});
                 my $entity_rs  = $self->result_source->schema->resultset('Entity');
 
-                 # Tratando issue como do organization_chatbot e não do politician
+                # Tratando issue como do organization_chatbot e não do politician
                 my $organization_chatbot_id = $politician->user->organization_chatbot->id;
 
                 delete $values{politician_id} and $values{organization_chatbot_id} = $organization_chatbot_id;

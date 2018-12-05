@@ -11,6 +11,10 @@ db_transaction {
         fb_page_id => fake_words(1)->()
     );
     my $politician_id = stash 'politician.id';
+	my $politician    = $schema->resultset('Politician')->find($politician_id);
+
+	api_auth_as user_id => $politician_id;
+	activate_chatbot($politician_id);
 
     my @recipient_ids = ();
     subtest 'mocking recipients' => sub {
@@ -23,8 +27,6 @@ db_transaction {
             push @recipient_ids, $recipient_id;
         }
     };
-
-    api_auth_as user_id => $politician_id;
 
     subtest 'list recipients' => sub {
 

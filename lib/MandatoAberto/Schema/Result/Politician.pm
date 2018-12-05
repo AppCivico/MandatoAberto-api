@@ -323,36 +323,6 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 politician_contacts
-
-Type: has_many
-
-Related object: L<MandatoAberto::Schema::Result::PoliticianContact>
-
-=cut
-
-__PACKAGE__->has_many(
-  "politician_contacts",
-  "MandatoAberto::Schema::Result::PoliticianContact",
-  { "foreign.politician_id" => "self.user_id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
-
-=head2 politician_private_reply_config
-
-Type: might_have
-
-Related object: L<MandatoAberto::Schema::Result::PoliticianPrivateReplyConfig>
-
-=cut
-
-__PACKAGE__->might_have(
-  "politician_private_reply_config",
-  "MandatoAberto::Schema::Result::PoliticianPrivateReplyConfig",
-  { "foreign.politician_id" => "self.user_id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
-
 =head2 politician_summary
 
 Type: might_have
@@ -379,21 +349,6 @@ Related object: L<MandatoAberto::Schema::Result::PoliticianVotolegalIntegration>
 __PACKAGE__->has_many(
   "politician_votolegal_integrations",
   "MandatoAberto::Schema::Result::PoliticianVotolegalIntegration",
-  { "foreign.politician_id" => "self.user_id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
-
-=head2 politicians_greeting
-
-Type: has_many
-
-Related object: L<MandatoAberto::Schema::Result::PoliticianGreeting>
-
-=cut
-
-__PACKAGE__->has_many(
-  "politicians_greeting",
-  "MandatoAberto::Schema::Result::PoliticianGreeting",
   { "foreign.politician_id" => "self.user_id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
@@ -428,21 +383,6 @@ __PACKAGE__->might_have(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 private_replies
-
-Type: has_many
-
-Related object: L<MandatoAberto::Schema::Result::PrivateReply>
-
-=cut
-
-__PACKAGE__->has_many(
-  "private_replies",
-  "MandatoAberto::Schema::Result::PrivateReply",
-  { "foreign.politician_id" => "self.user_id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
-
 =head2 user
 
 Type: belongs_to
@@ -459,8 +399,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-12-05 11:04:59
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:ckHJanawAM1UUXUzk4dgTQ
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-12-05 16:44:38
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Ez4dAGMGxNi1xvBsEUx6kA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
@@ -1086,11 +1026,11 @@ sub build_notification_bar {
 
 	my @relations = qw( issues );
 
-    my $issue_response_view = $self->result_source->schema->resultset('ViewAvgIssueResponseTime')->search( undef, { bind => [ $self->user_id ] } )->next;
+    my $issue_response_view = $self->result_source->schema->resultset('ViewAvgIssueResponseTime')->search( undef, { bind => [ $self->user->organization_chatbot_id ] } )->next;
     my $avg_response_time = $issue_response_view ? $issue_response_view->avg_response_time : 0;
 
 
-    my $unread_count  = $self->issues->search( { read => 0 } )->count;
+    my $unread_count  = $self->user->organization_chatbot->issues->search( { read => 0 } )->count;
     my $response_time = $avg_response_time <= 90 ? 'Bom' : 'Ruim';
 
 	return [

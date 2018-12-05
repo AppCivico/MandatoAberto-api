@@ -31,6 +31,9 @@ db_transaction {
     my $politician    = $schema->resultset("Politician")->find($politician_id);
 
     api_auth_as user_id => $politician_id;
+	activate_chatbot($politician_id);
+
+    my $organization_chatbot_id = $politician->user->organization_chatbot_id;
 
     &setup_votolegal_integration_success;
     rest_post "/api/politician/$politician_id/votolegal-integration",
@@ -40,16 +43,16 @@ db_transaction {
     ;
 
     $schema->resultset("PoliticianContact")->create({
-        politician_id => $politician_id,
-        twitter       => '@foobar',
-        url           => "https://www.google.com",
-        email         => $email
+        organization_chatbot_id => $organization_chatbot_id,
+        twitter                 => '@foobar',
+        url                     => "https://www.google.com",
+        email                   => $email
     });
 
     $schema->resultset("PoliticianGreeting")->create({
-        politician_id => $politician_id,
-        on_facebook   => 'Olá, sou assistente digital do(a) ${user.office.name} ${user.name} Seja bem-vindo a nossa Rede! Queremos um Brasil melhor e precisamos de sua ajuda.',
-        on_website    => 'Olá, sou assistente digital do(a) ${user.office.name} ${user.name} Seja bem-vindo a nossa Rede! Queremos um Brasil melhor e precisamos de sua ajuda.'
+        organization_chatbot_id => $organization_chatbot_id,
+        on_facebook             => 'Olá, sou assistente digital do(a) ${user.office.name} ${user.name} Seja bem-vindo a nossa Rede! Queremos um Brasil melhor e precisamos de sua ajuda.',
+        on_website              => 'Olá, sou assistente digital do(a) ${user.office.name} ${user.name} Seja bem-vindo a nossa Rede! Queremos um Brasil melhor e precisamos de sua ajuda.'
     });
 
     rest_put "/api/politician/$politician_id",
@@ -65,7 +68,7 @@ db_transaction {
         list  => 1,
         stash => "get_politician_data",
         [
-            fb_page_id     => "FOO",
+            fb_page_id     => "fake_page_id",
             security_token => $security_token
         ]
     ;

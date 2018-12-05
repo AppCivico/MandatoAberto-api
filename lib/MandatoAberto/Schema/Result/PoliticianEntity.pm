@@ -226,7 +226,7 @@ sub get_knowledge_bases_by_types {
 
     my $knowledge_base_rs = $self->knowledge_base_rs;
 
-    if ( !$self->politician->user->organization->is_mandatoaberto ) {
+    if ( !$self->organization_chatbot->organization->is_mandatoaberto ) {
         @available_types = qw( posicionamento );
     }
 

@@ -78,11 +78,7 @@ sub root : Chained('/api/politician/object') : PathPart('') : CaptureArgs(0) {
     }
 }
 
-sub base : Chained('root') : PathPart('issue') : CaptureArgs(0) {
-    my ($self, $c) = @_;
-
-    $c->stash->{collection} = $c->stash->{politician}->user->organization_chatbot->issues;
-}
+sub base : Chained('root') : PathPart('issue') : CaptureArgs(0) { }
 
 sub object : Chained('base') : PathPart('') : CaptureArgs(1) {
     my ($self, $c, $issue_id) = @_;
@@ -105,6 +101,8 @@ sub list_GET {
     my $filter = $c->req->params->{filter};
     die \['filter', 'missing'] unless $filter;
     die \['filter', 'invalid'] unless $filter =~ m/^(open|closed|ignored)$/;
+
+    $c->stash->{collection} = $c->stash->{politician}->user->organization_chatbot->issues;
 
     my $cond;
     if ( $filter eq 'open' ) {
@@ -281,7 +279,7 @@ sub batch_ignore : Chained('base') : PathPart('batch-ignore') : Args(0) : Action
 sub batch_ignore_PUT {
     my ($self, $c) = @_;
 
-    $c->stash->{collection} = $c->stash->{collection}->search( { politician_id => $c->stash->{politician}->id } );
+    $c->stash->{collection} = $c->stash->{collection}->search( { organization_chatbot_id => $c->stash->{politician}->user->organization_chatbot_id } );
 
     my $ids = $c->req->params->{ids};
     die \['ids', 'missing'] unless $ids;
@@ -311,7 +309,7 @@ sub batch_delete : Chained('base') : PathPart('batch-delete') : Args(0) : Action
 sub batch_delete_PUT {
     my ($self, $c) = @_;
 
-    $c->stash->{collection} = $c->stash->{collection}->search( { politician_id => $c->stash->{politician}->id } );
+    $c->stash->{collection} = $c->stash->{collection}->search( { organization_chatbot_id => $c->stash->{politician}->user->organization_chatbot_id } );
 
     my $ids = $c->req->params->{ids};
     die \['ids', 'missing'] unless $ids;

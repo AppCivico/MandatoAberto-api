@@ -231,10 +231,10 @@ sub action_specs {
             my @entities = @{ $self->entities };
             my $active_knowledge_base_entry = $self->result_source->schema->resultset('PoliticianKnowledgeBase')->search(
                 {
-                    politician_id => $self->politician->id,
-                    entities      => "{@entities}",
-                    active        => 1,
-                    type          => $values{type}
+                    organization_chatbot_id => $self->organization_chatbot->id,
+                    entities                => "{@entities}",
+                    active                  => 1,
+                    type                    => $values{type}
                 }
             )->next;
 
@@ -253,7 +253,7 @@ sub action_specs {
 sub issue_rs {
     my ($self) = @_;
 
-    return $self->politician->issues->search(
+    return $self->organization_chatbot->issues->search(
         {
             'me.id' => { 'in' => $self->issues ? $self->issues : 0 },
         }
@@ -263,7 +263,7 @@ sub issue_rs {
 sub entity_rs {
     my ($self) = @_;
 
-    return $self->politician->politician_entities->search(
+    return $self->organization_chatbot->politician_entities->search(
         {
             'me.id' => { 'in' => $self->entities ? $self->entities : 0 },
         }

@@ -11,12 +11,12 @@ db_transaction {
     my $recipient_rs  = $schema->resultset('Recipient');
     my $politician_rs = $schema->resultset('Politician');
 
-    my $politician = create_politician(
-        fb_page_id           => fake_words(1)->(),
-        fb_page_access_token => fake_words(1)->()
-    );
+    my $politician    = create_politician();
     my $politician_id = $politician->{id};
     $politician       = $politician_rs->find($politician_id);
+
+	api_auth_as user_id => $politician_id;
+	activate_chatbot($politician_id);
 
     my $recipient_id = create_recipient( politician_id => $politician_id );
     my $recipient    = $recipient_rs->find($recipient_id);
@@ -27,8 +27,6 @@ db_transaction {
     );
     my $issue_id = $issue->{id};
     $issue       = $issue_rs->find($issue_id);
-
-    api_auth_as user_id => $politician_id;
 
     rest_get "/api/politician/$politician_id/issue",
         name  => 'get open issues',

@@ -26,7 +26,7 @@ sub list_GET {
 
     my ( $page_id, $page_id_param );
     if ( $platform eq 'facebook' ) {
-        $page_id_param = 'organization_chatbot_facebook_config.access_token';
+        $page_id_param = 'organization_chatbot_facebook_config.page_id';
         $page_id       = $c->req->params->{fb_page_id};
         die \["fb_page_id", "missing"] unless $page_id;
     }

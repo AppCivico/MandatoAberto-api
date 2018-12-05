@@ -11,11 +11,12 @@ db_transaction {
     my $politician_id = $politician->{id};
     $politician       = $schema->resultset('Politician')->find($politician_id);
 
+    api_auth_as user_id => $politician_id;
+	activate_chatbot($politician_id);
+
     $politician->user->update( { approved => 1 } );
 
     create_recipient( politician_id => $politician_id );
-
-    api_auth_as user_id => $politician_id;
 
     $politician->poll_self_propagation_config->update( { active => 1 } );
 

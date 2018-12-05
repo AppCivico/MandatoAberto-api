@@ -9,13 +9,16 @@ my $schema = MandatoAberto->model("DB");
 db_transaction {
     my $security_token = $ENV{CHATBOT_SECURITY_TOKEN};
 
-    my $page_id = fake_words(1)->();
+    my $page_id = 'fake_page_id';
     create_politician(
         fb_page_id           => $page_id,
         fb_page_access_token => 'foo'
     );
     my $politician_id = stash "politician.id";
     my $politician    = $schema->resultset("Politician")->find($politician_id);
+
+	api_auth_as user_id => $politician_id;
+	activate_chatbot($politician_id);
 
     $politician->user->update( { approved => 1 } );
 
