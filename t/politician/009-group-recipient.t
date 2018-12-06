@@ -42,7 +42,7 @@ db_transaction {
         list  => 1,
         stash => 'get_poll',
         [
-            fb_page_id     => 'long_lived_fake_access_token',
+            fb_page_id     => 'fake_page_id',
             security_token => $security_token
         ]
     ;

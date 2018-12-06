@@ -17,6 +17,11 @@ db_transaction {
 
     my $politician_id = $politician->id;
 
+	api_auth_as user_id => $politician_id;
+	activate_chatbot($politician_id);
+
+	my $organization_chatbot_id = $politician->user->organization_chatbot_id;
+
     my ( $recipient, $entity );
     subtest 'Chatbot | Create recipient and issue' => sub {
 
@@ -30,7 +35,7 @@ db_transaction {
         );
 
         my $entity_rs = $schema->resultset('PoliticianEntity');
-        $entity       = $entity_rs->search( { politician_id => $politician_id } )->next;
+        $entity       = $entity_rs->search( { organization_chatbot_id => $organization_chatbot_id } )->next;
 
         is ( $entity_rs->count, 1, 'one entity created' );
     };

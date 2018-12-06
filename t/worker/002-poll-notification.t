@@ -21,9 +21,11 @@ db_transaction {
 
     $politician->user->update( { approved => 1 } );
 
-    $politician->poll_self_propagation_config->update( { active => 1 } );
-
     api_auth_as user_id => $politician_id;
+	activate_chatbot($politician_id);
+
+    $politician->user->organization_chatbot->poll_self_propagation_config->update( { active => 1 } );
+
 
     my @recipient_ids = ();
     subtest 'mocking recipients' => sub {

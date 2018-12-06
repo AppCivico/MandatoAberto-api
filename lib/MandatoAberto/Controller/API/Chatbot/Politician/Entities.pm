@@ -10,7 +10,7 @@ sub root : Chained('/api/chatbot/politician/object') : PathPart('') : CaptureArg
 sub base : Chained('root') : PathPart('intents') : CaptureArgs(0) {
     my ($self, $c) = @_;
 
-    $c->stash->{collection} = $c->model('DB::PoliticianEntity')->search( { politician_id => $c->stash->{politician}->id } );
+    $c->stash->{collection} = $c->model('DB::PoliticianEntity')->search( { organization_chatbot_id => $c->stash->{politician}->user->organization_chatbot_id } );
 }
 
 sub object : Chained('base') : PathPart('') : CaptureArgs(1) {
@@ -51,7 +51,7 @@ sub list_GET {
                     }
                 } $c->stash->{collection}->search(
                     undef,
-                    { bind => [ $politician->user_id, $politician->user_id ] }
+                    { bind => [ $politician->user->organization_chatbot_id, $politician->user->organization_chatbot_id ] }
                   )->all()
             ]
         }
@@ -89,7 +89,7 @@ sub list_available_GET {
                 } $c->stash->{collection}->search(
                     undef,
                     {
-                        bind => [ $politician->user_id, $politician->user_id ],
+                        bind => [ $politician->user->organization_chatbot_id, $politician->user->organization_chatbot_id ],
                         page => $page,
                         rows => $results
                     }

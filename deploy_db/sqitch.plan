@@ -146,3 +146,4 @@
 0142-add-project_id [0141-add-picture-chatbot] 2018-11-30T12:36:18Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the 'project_id' column for the dialogflow config
 0143-answers-conversion [0142-add-project_id] 2018-12-02T18:42:15Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Converting answers to organization_chatbot
 0144-adding-read-issue [0143-answers-conversion] 2018-12-04T10:52:24Z Lucas Ansei,,, <lucas@lucas-G750JX> # Adding the 'read' column to the 'issue' table
+0145-organization [0144-adding-read-issue] 2018-12-06T12:30:15Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Converting to organization model

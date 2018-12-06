@@ -30,6 +30,15 @@ db_transaction {
 	my $politician      = $schema->resultset("Politician")->find($politician_id);
 	my $politician_user = $schema->resultset("User")->find($politician_id);
 
+    rest_get "/api/politician/$politician_id",
+        name    => "get when logged off --fail",
+        is_fail => 1,
+        code    => 403,
+    ;
+
+	api_auth_as user_id => $politician_id;
+	activate_chatbot($politician_id);
+
     $politician_user->update( { approved => 1 } );
 
     $politician->update(
@@ -41,15 +50,6 @@ db_transaction {
 
     is($schema->resultset('PoliticianPrivateReplyConfig')->count, 1, 'one private_reply config created');
     is($schema->resultset('PollSelfPropagationConfig')->count,    1, 'one poll_self_propagation config created');
-
-    rest_get "/api/politician/$politician_id",
-        name    => "get when logged off --fail",
-        is_fail => 1,
-        code    => 403,
-    ;
-
-    api_auth_as user_id => $politician_id;
-
 
     rest_post "/api/politician/$politician_id/contact",
         name                => "politician contact",

@@ -74,7 +74,7 @@ sub exec_item {
     $self->logger->info("Enviando enquete para recipient com id: $recipient_id") if $self->logger;
 
     my %opts = (
-        access_token => $item->poll->politician->fb_page_access_token,
+        access_token => $item->poll->organization_chatbot->fb_config->access_token,
         content      => $item->poll->build_content_object( $recipient )
     );
 

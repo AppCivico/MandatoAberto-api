@@ -191,7 +191,7 @@ db_transaction {
     ;
 
     ok ( $politician = $politician->discard_changes, 'discard changes' );
-    is ( $politician->politician_private_reply_config->active, 0, 'private replies deactivated' );
+    is ( $politician->user->organization_chatbot->politician_private_reply_config->active, 0, 'private replies deactivated' );
 
     # Private reply foi criada no entanto não foi enviada
     rest_post "/api/chatbot/private-reply",
@@ -218,7 +218,7 @@ db_transaction {
     ;
 
     ok ( $politician = $politician->discard_changes, 'discard changes' );
-    is ( $politician->politician_private_reply_config->active, 1, 'private replies activated' );
+    is ( $politician->user->organization_chatbot->politician_private_reply_config->active, 1, 'private replies activated' );
 
     # Private reply foi criada no entanto não foi enviada por estar dentro do delay
     rest_post "/api/chatbot/private-reply",

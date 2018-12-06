@@ -368,21 +368,6 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 poll_self_propagation_config
-
-Type: might_have
-
-Related object: L<MandatoAberto::Schema::Result::PollSelfPropagationConfig>
-
-=cut
-
-__PACKAGE__->might_have(
-  "poll_self_propagation_config",
-  "MandatoAberto::Schema::Result::PollSelfPropagationConfig",
-  { "foreign.politician_id" => "self.user_id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
-
 =head2 user
 
 Type: belongs_to
@@ -399,8 +384,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-12-05 16:44:38
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Ez4dAGMGxNi1xvBsEUx6kA
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-12-06 09:23:52
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:EGqs5f3d9mnSo/ODO1yMxg
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
@@ -659,7 +644,7 @@ sub action_specs {
                 if ( exists $values{private_reply_activated} ) {
                     my $private_reply_activated = delete $values{private_reply_activated};
 
-                    $self->politician_private_reply_config->update( { active => $private_reply_activated } );
+                    $self->user->organization_chatbot->politician_private_reply_config->update( { active => $private_reply_activated } );
                 }
 
                 # Tratando possibilidade de retirar partido e cargo
@@ -1018,7 +1003,7 @@ sub get_activated_poll {
 sub poll_self_propagation_active {
     my ($self) = @_;
 
-    return $self->poll_self_propagation_config->active;
+    return $self->user->organization_chatbot->poll_self_propagation_config->active;
 }
 
 sub build_notification_bar {

@@ -57,8 +57,8 @@ sub sync_dialogflow {
                 for my $entity_name (@entities_names) {
                     $self->find_or_create(
                         {
-                            politician_id => $politician->id,
-                            name          => $entity_name
+                            organization_chatbot_id => $politician->user->organization_chatbot_id,
+                            name                    => $entity_name
                         }
                     );
                 }

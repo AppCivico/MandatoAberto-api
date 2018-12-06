@@ -144,7 +144,7 @@ sub action_specs {
                         die \['field_id', 'invalid'] unless $field;
                     }
                     elsif ( $action->name eq 'ASKED_ABOUT_ENTITY' ) {
-                        $rs = $self->resultset('PoliticianEntity')->search( { politician_id => $politician_id } );
+                        $rs = $self->resultset('PoliticianEntity')->search( { organization_chatbot_id => $organization_chatbot_id } );
 
                         my @required = qw( field_id );
                         defined $values{$_} or die \["$_", 'missing'] for @required;

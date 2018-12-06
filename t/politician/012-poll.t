@@ -18,7 +18,7 @@ db_transaction {
 
     create_recipient( politician_id => $politician_id );
 
-    $politician->poll_self_propagation_config->update( { active => 1 } );
+    $politician->user->organization_chatbot->poll_self_propagation_config->update( { active => 1 } );
 
     # Mantendo o jeito antigo de cadastrar enquetes
     # até a mudança ser feita no front-end

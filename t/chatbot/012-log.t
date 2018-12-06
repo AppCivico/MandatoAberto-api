@@ -18,6 +18,11 @@ db_transaction {
     my $politician    = $schema->resultset('Politician')->find(stash 'politician.id');
     my $politician_id = $politician->id;
 
+	api_auth_as user_id => $politician_id;
+	activate_chatbot($politician_id);
+
+	my $organization_chatbot_id = $politician->user->organization_chatbot_id;
+
     create_recipient( politician_id => $politician_id );
     my $recipient = $schema->resultset('Recipient')->find(stash 'recipient.id');
 
@@ -167,9 +172,9 @@ db_transaction {
         ok(
             my $poll = $schema->resultset('Poll')->create(
                 {
-                    name          => 'foobar',
-                    politician_id => $politician_id,
-                    status_id     => 1,
+                    name                    => 'foobar',
+                    organization_chatbot_id => $organization_chatbot_id,
+                    status_id               => 1,
                 },
             ),
             'add poll',
@@ -324,7 +329,7 @@ db_transaction {
             ],
         ;
 
-        ok ( my $entity = $politician->politician_entities->search(undef)->next, 'entity' );
+        ok ( my $entity = $politician->user->organization_chatbot->politician_entities->search(undef)->next, 'entity' );
 
         rest_post '/api/chatbot/log',
             name    => 'Create log with invalid field_id',

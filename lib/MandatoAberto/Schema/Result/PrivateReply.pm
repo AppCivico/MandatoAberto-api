@@ -182,14 +182,14 @@ sub send {
 
     # Valido se o político está com as private replies ativas
     # e também se não está dentro da janela de 'delay'
-	my $politician           = $self->politician;
+	# my $politician           = $self->politician;
 	my $organization_chatbot = $self->organization_chatbot;
 	my $private_reply_config = $organization_chatbot->politician_private_reply_config;
 
-    if ( $private_reply_config->active && $politician->fb_page_access_token ) {
+    if ( $private_reply_config->active && $organization_chatbot->fb_config->access_token ) {
 
         my $private_reply_rs        = $self->result_source->schema->resultset("PrivateReply");
-        my $last_sent_private_reply = $private_reply_rs->get_last_sent_private_reply( $self->politician_id, $self->fb_user_id );
+        my $last_sent_private_reply = $private_reply_rs->get_last_sent_private_reply( $self->organization_chatbot_id, $self->fb_user_id );
 
         if ( $last_sent_private_reply ) {
             my $ts  = DateTime::Format::DateParse->parse_datetime( $last_sent_private_reply->created_at );
@@ -203,11 +203,11 @@ sub send {
             return 1 unless $flag == 1;
         }
 
-        my $access_token = $politician->fb_page_access_token;
+        my $access_token = $organization_chatbot->fb_config->access_token;
 
-        my $politician_name = $politician->name;
-        my $office_name     = $politician->office->name;
-        my $article         = $politician->gender eq 'F' ? 'da' : 'do';
+        my $politician_name = $organization_chatbot->name;
+        my $office_name     = $organization_chatbot->organization->users->next->name;
+        my $article         = $organization_chatbot->organization->users->next->gender eq 'F' ? 'da' : 'do';
 
         my $item_id = $self->comment_id ? $self->comment_id : $self->post_id;
 

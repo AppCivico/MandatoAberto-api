@@ -36,7 +36,7 @@ sub verifiers_specs {
 
                         my $politician_entity = $self->result_source->schema->resultset('PoliticianEntity')->find($politician_entity_id);
 
-                        die \['recipient_fb_id', 'invalid'] unless $politician_entity->politician->id == $recipient->politician_id;
+                        die \['recipient_fb_id', 'invalid'] unless $politician_entity->organization_chatbot_id == $recipient->organization_chatbot_id;
 
                         return 1;
                     }
