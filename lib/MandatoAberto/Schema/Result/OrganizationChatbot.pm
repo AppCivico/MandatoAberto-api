@@ -314,16 +314,16 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 politician_private_reply_config
+=head2 politician_private_reply_configs
 
-Type: might_have
+Type: has_many
 
 Related object: L<MandatoAberto::Schema::Result::PoliticianPrivateReplyConfig>
 
 =cut
 
-__PACKAGE__->might_have(
-  "politician_private_reply_config",
+__PACKAGE__->has_many(
+  "politician_private_reply_configs",
   "MandatoAberto::Schema::Result::PoliticianPrivateReplyConfig",
   { "foreign.organization_chatbot_id" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
@@ -344,16 +344,16 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 poll_self_propagation_config
+=head2 poll_self_propagation_configs
 
-Type: might_have
+Type: has_many
 
 Related object: L<MandatoAberto::Schema::Result::PollSelfPropagationConfig>
 
 =cut
 
-__PACKAGE__->might_have(
-  "poll_self_propagation_config",
+__PACKAGE__->has_many(
+  "poll_self_propagation_configs",
   "MandatoAberto::Schema::Result::PollSelfPropagationConfig",
   { "foreign.organization_chatbot_id" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
@@ -405,8 +405,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-12-06 09:23:51
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:/b/yMsuhVmG6i/83fee4vA
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-12-06 14:32:08
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:v72JcRbC/EpZfNlUABfnsQ
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
@@ -427,6 +427,18 @@ sub fb_config {
     my ($self) = @_;
 
     return $self->organization_chatbot_facebook_config;
+}
+
+sub politician_private_reply_config {
+    my ($self) = @_;
+
+    return $self->politician_private_reply_configs->next;
+}
+
+sub poll_self_propagation_config {
+	my ($self) = @_;
+
+	return $self->poll_self_propagation_configs->next;
 }
 
 __PACKAGE__->meta->make_immutable;

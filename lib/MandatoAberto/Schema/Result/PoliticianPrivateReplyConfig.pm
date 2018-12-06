@@ -104,23 +104,6 @@ __PACKAGE__->add_columns(
 
 __PACKAGE__->set_primary_key("id");
 
-=head1 UNIQUE CONSTRAINTS
-
-=head2 C<politician_private_reply_config_organization_chatbot_id_key>
-
-=over 4
-
-=item * L</organization_chatbot_id>
-
-=back
-
-=cut
-
-__PACKAGE__->add_unique_constraint(
-  "politician_private_reply_config_organization_chatbot_id_key",
-  ["organization_chatbot_id"],
-);
-
 =head1 RELATIONS
 
 =head2 organization_chatbot
@@ -139,8 +122,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-12-05 16:46:30
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:nUwsjaBL4PgqyHOKBM/Ghg
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-12-06 14:32:08
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:wFrL8/WEsj8sCc9PItKnGA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

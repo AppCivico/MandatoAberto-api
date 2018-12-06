@@ -189,7 +189,7 @@ UPDATE private_reply me SET organization_chatbot_id = politician.organization_ch
 ALTER TABLE private_reply ALTER COLUMN organization_chatbot_id SET NOT NULL, DROP COLUMN politician_id;
 
 --- Converting politician_private_reply_config table
-ALTER TABLE politician_private_reply_config ADD COLUMN organization_chatbot_id INTEGER REFERENCES organization_chatbot(id) UNIQUE;
+ALTER TABLE politician_private_reply_config ADD COLUMN organization_chatbot_id INTEGER REFERENCES organization_chatbot(id);
 WITH politician AS (
     SELECT
         u.id  AS id,
@@ -209,7 +209,7 @@ UPDATE politician_private_reply_config me SET organization_chatbot_id = politici
 ALTER TABLE politician_private_reply_config ALTER COLUMN organization_chatbot_id SET NOT NULL, DROP COLUMN politician_id;
 
 --- Converting politician_private_reply_config table
-ALTER TABLE poll_self_propagation_config ADD COLUMN organization_chatbot_id INTEGER REFERENCES organization_chatbot(id) UNIQUE;
+ALTER TABLE poll_self_propagation_config ADD COLUMN organization_chatbot_id INTEGER REFERENCES organization_chatbot(id);
 WITH politician AS (
     SELECT
         u.id  AS id,
