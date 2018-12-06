@@ -198,10 +198,13 @@ WITH politician AS (
         politician p,
         "user" u,
         organization o,
-        organization_chatbot oc
+        organization_chatbot oc,
+        politician_private_reply_config pc
     WHERE p.user_id = u.id
     AND u.organization_id = o.id
     AND o.id = oc.organization_id
+    AND p.id = pc.politician_id
+    AND p.id NOT IN (SELECT politician_id FROM politician_private_reply_config)
 )
 UPDATE politician_private_reply_config me SET organization_chatbot_id = politician.organization_chatbot_id FROM politician WHERE me.politician_id = politician.id;
 ALTER TABLE politician_private_reply_config ALTER COLUMN organization_chatbot_id SET NOT NULL, DROP COLUMN politician_id;
