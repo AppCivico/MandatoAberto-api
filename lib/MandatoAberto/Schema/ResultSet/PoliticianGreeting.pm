@@ -48,9 +48,13 @@ sub action_specs {
 
             my $greeting;
             $self->result_source->schema->txn_do(sub {
-                my $politician = $self->result_source->schema->resultset('Politician')->find( $values{politician_id} );
+                my $politician              = $self->result_source->schema->resultset('Politician')->find( $values{politician_id} );
+                my $organization_chatbot_id = $politician->user->organization_chatbot_id;
 
-                my $existent_politician_greeting = $self->search( { politician_id => $politician->id } )->next;
+				# Tratando greetings como do organization_chatbot e não do politician
+				delete $values{politician_id} and $values{organization_chatbot_id} = $organization_chatbot_id;
+
+                my $existent_politician_greeting = $self->search( { organization_chatbot_id => $organization_chatbot_id } )->next;
 
                 if (!defined $existent_politician_greeting) {
                     $greeting = $self->create(\%values);

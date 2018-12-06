@@ -117,6 +117,7 @@ sub list_GET {
     my ($self, $c) = @_;
 
     my $politician_id = $c->stash->{politician}->id;
+    my $politician    = $c->model('DB::Politician')->find($politician_id);
 
     my $page    = $c->req->params->{page}    || 1;
     my $results = $c->req->params->{results} || 20;
@@ -148,7 +149,7 @@ sub list_GET {
                         ]
                     }
                 } $c->stash->{collection}->search(
-                    { 'campaign.politician_id' => $politician_id },
+                    { 'campaign.organization_chatbot_id' => $politician->user->organization_chatbot_id },
                     {
                         prefetch => { 'campaign' => 'status' },
                         page     => $page,
@@ -158,7 +159,7 @@ sub list_GET {
                 )->all()
             ],
             itens_count => $c->stash->{collection}->search(
-                { 'campaign.politician_id' => $politician_id },
+                { 'campaign.organization_chatbot_id' => $politician->user->organization_chatbot_id },
                 { prefetch => 'campaign' }
             )->count
         }

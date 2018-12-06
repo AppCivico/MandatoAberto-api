@@ -39,15 +39,15 @@ sub list_GET {
 
     my $politician = $c->stash->{politician};
 
-    my $recipients = $politician->recipients;
+    my $recipients = $politician->user->organization_chatbot->recipients;
 
-    my $ever_had_poll = $politician->polls->count > 0 ? 1 : 0;
+    my $ever_had_poll = $politician->user->organization_chatbot->polls->count > 0 ? 1 : 0;
 
-    my $active_poll = $politician->polls->get_active_politician_poll_with_data;
+    my $active_poll = $politician->user->organization_chatbot->polls->get_active_politician_poll_with_data;
 
     my $last_active_poll;
     if ($ever_had_poll && !$active_poll) {
-        $last_active_poll = $politician->polls->search(
+        $last_active_poll = $politician->user->organization_chatbot->polls->search(
             { status_id => 3 },
             {
                 order_by => { -desc => qw/updated_at/ },
@@ -56,8 +56,8 @@ sub list_GET {
         )->next;
     }
 
-    my $has_greeting      = $politician->politicians_greeting->count;
-    my $has_contacts      = $politician->politician_contacts->count;
+    my $has_greeting      = $politician->user->organization_chatbot->politicians_greeting->count;
+    my $has_contacts      = $politician->user->organization_chatbot->politician_contacts->count;
     my $has_dialogs       = $politician->user->chatbot->answers->count > 0 ? 1 : 0;
     my $has_facebook_auth = $politician->fb_page_access_token ? 1 : 0;
 
@@ -84,16 +84,16 @@ sub list_GET {
     #     $citizen_interaction = $politician->get_citizen_interaction($range);
     # }
 
-    my $issues       = $politician->issues;
-    my $campaigns    = $politician->campaigns;
-    my $groups       = $politician->groups->search( { deleted => 0 } );
-    my $polls        = $politician->polls;
+    my $issues       = $politician->user->organization_chatbot->issues;
+    my $campaigns    = $politician->user->organization_chatbot->campaigns;
+    my $groups       = $politician->user->organization_chatbot->groups->search( { deleted => 0 } );
+    my $polls        = $politician->user->organization_chatbot->polls;
     my $poll_results = $recipients->get_recipients_poll_results;
 
-    my $issue_response_view = $c->model('DB::ViewAvgIssueResponseTime')->search( undef, { bind => [ $politician->user_id ] } )->next;
+    my $issue_response_view = $c->model('DB::ViewAvgIssueResponseTime')->search( undef, { bind => [ $politician->user->organization_chatbot_id ] } )->next;
 
     # Condição para puxar dados dos últimos 7 dias
-    my $last_week_issue_response_view = $c->model('DB::ViewAvgIssueResponseTimeLastWeek')->search( undef, { bind => [ $politician->user_id ] } )->next;
+    my $last_week_issue_response_view = $c->model('DB::ViewAvgIssueResponseTimeLastWeek')->search( undef, { bind => [ $politician->user->organization_chatbot_id ] } )->next;
     my $last_week_cond = { created_at => { '>=' => \"NOW() - interval '7 days'" } };
 
     my $last_week_issues     = $issues->search( $last_week_cond );
@@ -147,13 +147,13 @@ sub list_GET {
                 avg_response_time        => $issue_response_view ? $issue_response_view->avg_response_time : 0,
             },
             campaigns => {
-                count                => $politician->campaigns->count,
-                count_direct_message => $politician->campaigns->search( { type_id => 1 } )->count,
-                count_poll_propagate => $politician->campaigns->search( { type_id => 2 } )->count,
+                count                => $politician->user->organization_chatbot->campaigns->count,
+                count_direct_message => $politician->user->organization_chatbot->campaigns->search( { type_id => 1 } )->count,
+                count_poll_propagate => $politician->user->organization_chatbot->campaigns->search( { type_id => 2 } )->count,
 
-                reach                => $politician->campaigns->get_politician_campaign_reach_count(),
-                reach_direct_message => $politician->campaigns->get_politician_campaign_reach_dm_count(),
-                reach_poll_propagate => $politician->campaigns->get_politician_campaign_reach_poll_propagate_count(),
+                reach                => $politician->user->organization_chatbot->campaigns->get_politician_campaign_reach_count(),
+                reach_direct_message => $politician->user->organization_chatbot->campaigns->get_politician_campaign_reach_dm_count(),
+                reach_poll_propagate => $politician->user->organization_chatbot->campaigns->get_politician_campaign_reach_poll_propagate_count(),
             },
             groups => {
                 count                => $groups->count,
@@ -206,7 +206,7 @@ sub list_new_GET {
 
     my @relations = qw( issues campaigns groups recipients politician_entities );
 
-    my $recipients = $politician->recipients;
+    my $recipients = $politician->user->organization_chatbot->recipients;
 
     my $has_facebook_auth = $politician->fb_page_access_token ? 1 : 0;
 
@@ -228,7 +228,7 @@ sub list_new_GET {
 				map {
 					my $r = $_;
 
-					my $metrics = $politician->$r->extract_metrics(range => $range, politician_id => $politician->user_id);
+					my $metrics = $politician->user->organization_chatbot->$r->extract_metrics(range => $range, politician_id => $politician->user_id);
 
 					+{
 						name => get_metric_name_for_dashboard($_),

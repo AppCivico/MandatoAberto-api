@@ -9,6 +9,7 @@ my $schema = MandatoAberto->model("DB");
 db_transaction {
     create_politician;
     my $politician_id = stash "politician.id";
+	my $politician    = $schema->resultset('Politician')->find($politician_id);
 
     api_auth_as user_id => 1;
 
@@ -19,6 +20,7 @@ db_transaction {
     ;
 
     api_auth_as user_id => $politician_id;
+	activate_chatbot($politician_id);
 
     rest_post "/api/politician/$politician_id/greeting",
         name    => 'politician greeting without greeting_id',

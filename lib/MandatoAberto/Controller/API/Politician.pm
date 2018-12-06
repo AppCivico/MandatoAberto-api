@@ -77,7 +77,8 @@ sub result_GET {
 
     my $has_movement = $c->stash->{politician}->movement ? 1 : 0;
 
-    my $chatbot = $c->stash->{politician}->user->organization->organization_chatbots->next;
+    my $chatbot    = $c->stash->{politician}->user->organization->organization_chatbots->next;
+    my $chatbot_id = $chatbot->id;
 
     return $self->status_ok(
         $c,
@@ -116,7 +117,7 @@ sub result_GET {
                         email     => $c->get_column('email'),
                         cellphone => $c->get_column('cellphone'),
                         url       => $c->get_column('url'),
-                    } $c->model("DB::PoliticianContact")->search( { politician_id => $c->user->id } )
+                    } $c->model("DB::PoliticianContact")->search( { organization_chatbot_id => $chatbot_id } )
                 }
             ),
 
@@ -129,7 +130,7 @@ sub result_GET {
                         on_facebook => $g->get_column('on_facebook'),
                         on_website  => $g->get_column('on_website')
                     } $c->model("DB::PoliticianGreeting")->search(
-                        { politician_id => $c->user->id },
+                        { organization_chatbot_id => $chatbot_id },
                         { prefetch => 'greeting' }
                     )
                 }

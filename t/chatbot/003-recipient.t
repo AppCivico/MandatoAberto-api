@@ -13,6 +13,9 @@ db_transaction {
     my $politician_id = $politician->{id};
     $politician       = $schema->resultset('Politician')->find($politician_id);
 
+	api_auth_as user_id => $politician_id;
+	activate_chatbot($politician_id);
+
     rest_post "/api/chatbot/recipient",
         name    => "create recipient without fb_id",
         is_fail => 1,

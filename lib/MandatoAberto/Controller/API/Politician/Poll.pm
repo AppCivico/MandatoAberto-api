@@ -68,7 +68,7 @@ sub list_GET {
                         ]
                     }
                 } $c->stash->{collection}->search(
-                    { 'me.politician_id' => $c->stash->{politician}->id },
+                    { 'me.organization_chatbot_id' => $c->stash->{politician}->user->organization_chatbot_id },
                     { prefetch => 'poll_questions' }
                 )->all()
             ]

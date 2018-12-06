@@ -34,8 +34,8 @@ sub list_POST {
     for my $group_id (@groups) {
         my $group = $c->model("DB::Group")->search(
             {
-               'me.id'            => $group_id,
-               'me.politician_id' => $politician->id,
+               'me.id'                      => $group_id,
+               'me.organization_chatbot_id' => $politician->user->organization_chatbot_id,
             }
         )->next;
 

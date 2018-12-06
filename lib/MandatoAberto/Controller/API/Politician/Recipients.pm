@@ -54,7 +54,7 @@ sub root : Chained('/api/politician/object') : PathPart('') : CaptureArgs(0) { }
 sub base : Chained('root') : PathPart('recipients') : CaptureArgs(0) {
     my ($self, $c) = @_;
 
-    $c->stash->{collection} = $c->stash->{politician}->recipients;
+    $c->stash->{collection} = $c->stash->{politician}->user->organization_chatbot->recipients;
 }
 
 sub object : Chained('base') : PathPart('') : CaptureArgs(1) { }
@@ -81,15 +81,13 @@ sub list_GET {
     my $page    = $c->req->params->{page}    || 1;
     my $results = $c->req->params->{results} || 20;
 
-    my $has_active_page = $politician->fb_page_id ? 1 : 0;
+    my $has_active_page = $politician->user->organization_chatbot->fb_config->access_token ? 1 : 0;
 
     $c->stash->{collection} = $c->stash->{collection}->search(
         {
-            politician_id => $politician->user_id,
-
             # Caso o político não tenha nenhuma página ativa no momento
             # mostro todos os recipients, independente da página de origem
-            ( $has_active_page ? ( page_id => $politician->fb_page_id ) : () )
+            ( $has_active_page ? ( page_id => $politician->user->organization_chatbot->fb_config->page_id ) : () )
         },
     );
 

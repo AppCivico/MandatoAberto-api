@@ -49,12 +49,6 @@ __PACKAGE__->table("recipient");
   is_nullable: 0
   sequence: 'citizen_id_seq'
 
-=head2 politician_id
-
-  data_type: 'integer'
-  is_foreign_key: 1
-  is_nullable: 0
-
 =head2 name
 
   data_type: 'text'
@@ -152,6 +146,12 @@ __PACKAGE__->table("recipient");
   default_value: '{}'::integer[]
   is_nullable: 0
 
+=head2 organization_chatbot_id
+
+  data_type: 'integer'
+  is_foreign_key: 1
+  is_nullable: 0
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -162,8 +162,6 @@ __PACKAGE__->add_columns(
     is_nullable       => 0,
     sequence          => "citizen_id_seq",
   },
-  "politician_id",
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "name",
   { data_type => "text", is_nullable => 0 },
   "fb_id",
@@ -214,6 +212,8 @@ __PACKAGE__->add_columns(
     default_value => \"'{}'::integer[]",
     is_nullable   => 0,
   },
+  "organization_chatbot_id",
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
 );
 
 =head1 PRIMARY KEY
@@ -275,18 +275,18 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 politician
+=head2 organization_chatbot
 
 Type: belongs_to
 
-Related object: L<MandatoAberto::Schema::Result::Politician>
+Related object: L<MandatoAberto::Schema::Result::OrganizationChatbot>
 
 =cut
 
 __PACKAGE__->belongs_to(
-  "politician",
-  "MandatoAberto::Schema::Result::Politician",
-  { user_id => "politician_id" },
+  "organization_chatbot",
+  "MandatoAberto::Schema::Result::OrganizationChatbot",
+  { id => "organization_chatbot_id" },
   { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
 );
 
@@ -366,8 +366,8 @@ __PACKAGE__->might_have(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-10-19 15:05:15
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:gu4E3XwDgVdbsP1WZSQfZg
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-12-03 11:33:12
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:uhELbeOllAtSjU52T15HRQ
 
 __PACKAGE__->load_components("InflateColumn::Serializer", "Core");
 __PACKAGE__->remove_column('groups');
@@ -426,7 +426,7 @@ sub add_to_group {
     my $ret;
     $self->result_source->schema->txn_do(sub {
         # Verificando se este recipient já estava no grupo.
-        my $recipients_rs = $self->politician->recipients;
+        my $recipients_rs = $self->organization_chatbot->recipients;
 
         my $already_in_this_group = $recipients_rs->search(
             {
@@ -442,7 +442,7 @@ sub add_to_group {
 
         return if $already_in_this_group;
 
-        $self->politician->groups
+        $self->organization_chatbot->groups
         ->search( { 'me.id' => $group_id } )
         ->update(
             {
@@ -458,7 +458,7 @@ sub add_to_group {
 sub groups_rs {
     my ($self) = @_;
 
-    return $self->politician->groups->search(
+    return $self->organization_chatbot->groups->search(
         {
             'me.id' => { 'in' => [ keys %{ $self->groups || {} } ] },
             deleted => 0
@@ -469,7 +469,7 @@ sub groups_rs {
 sub entity_rs {
     my ($self) = @_;
 
-    return $self->politician->politician_entities->search(
+    return $self->organization_chatbot->politician_entities->search(
         {
             'me.id' => { 'in' => $self->entities ? $self->entities : 0 },
         }
@@ -483,7 +483,7 @@ sub add_to_politician_entity {
     $self->result_source->schema->txn_do(
         sub {
             # Verificando se este recipient já estava na entidade.
-            my $recipients_rs = $self->politician->recipients;
+            my $recipients_rs = $self->organization_chatbot->recipients;
 
             my $already_in_this_group = $recipients_rs->search(
                 {
@@ -499,7 +499,7 @@ sub add_to_politician_entity {
 
             $ret = $self->update( { entities => \[ "array_append(entities, ?)", $politician_entity_id ] } );
 
-            $self->politician->politician_entities->search( { 'me.id' => $politician_entity_id } )->update(
+            $self->organization_chatbot->politician_entities->search( { 'me.id' => $politician_entity_id } )->update(
                 {
                     recipient_count => \'recipient_count + 1',
                     updated_at      => \'NOW()',

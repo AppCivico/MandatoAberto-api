@@ -145,7 +145,7 @@ use JSON::MaybeXS;
 sub groups_rs {
     my ($self) = @_;
 
-    return $self->campaign->politician->groups->search(
+    return $self->campaign->organization_chatbot->groups->search(
         { 'me.id' => { 'in' => $self->campaign->groups || [] } }
     );
 }

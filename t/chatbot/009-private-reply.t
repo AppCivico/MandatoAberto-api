@@ -9,13 +9,16 @@ my $schema = MandatoAberto->model("DB");
 db_transaction {
     my $security_token = $ENV{CHATBOT_SECURITY_TOKEN};
 
-    my $page_id = fake_words(1)->();
+    my $page_id = 'fake_page_id';
     create_politician(
         fb_page_id           => $page_id,
         fb_page_access_token => 'foo'
     );
     my $politician_id = stash "politician.id";
     my $politician    = $schema->resultset("Politician")->find($politician_id);
+
+	api_auth_as user_id => $politician_id;
+	activate_chatbot($politician_id);
 
     $politician->user->update( { approved => 1 } );
 
@@ -188,7 +191,7 @@ db_transaction {
     ;
 
     ok ( $politician = $politician->discard_changes, 'discard changes' );
-    is ( $politician->politician_private_reply_config->active, 0, 'private replies deactivated' );
+    is ( $politician->user->organization_chatbot->politician_private_reply_config->active, 0, 'private replies deactivated' );
 
     # Private reply foi criada no entanto não foi enviada
     rest_post "/api/chatbot/private-reply",
@@ -215,7 +218,7 @@ db_transaction {
     ;
 
     ok ( $politician = $politician->discard_changes, 'discard changes' );
-    is ( $politician->politician_private_reply_config->active, 1, 'private replies activated' );
+    is ( $politician->user->organization_chatbot->politician_private_reply_config->active, 1, 'private replies activated' );
 
     # Private reply foi criada no entanto não foi enviada por estar dentro do delay
     rest_post "/api/chatbot/private-reply",

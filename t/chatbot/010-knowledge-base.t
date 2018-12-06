@@ -16,6 +16,9 @@ db_transaction {
     $politician       = $schema->resultset('Politician')->find( $politician->{id} );
     my $politician_id = $politician->id;
 
+	api_auth_as user_id => $politician_id;
+	activate_chatbot($politician_id);
+
     create_recipient( politician_id => $politician_id );
     my $recipient = $schema->resultset('Recipient')->find(stash 'recipient.id');
 

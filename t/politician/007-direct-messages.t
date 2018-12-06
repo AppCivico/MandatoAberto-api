@@ -19,6 +19,15 @@ db_transaction {
     );
     my $politician_id = stash "politician.id";
 
+	api_auth_as user_id => $politician_id;
+	activate_chatbot($politician_id);
+
+	my $politician              = $schema->resultset('Politician')->find($politician_id);
+	my $organization_chatbot_id = $politician->user->organization_chatbot_id;
+
+	api_auth_as user_id => $politician_id;
+	activate_chatbot($politician_id);
+
     rest_post "/api/chatbot/recipient",
         name                => "Create first recipient",
         automatic_load_item => 0,
@@ -110,19 +119,19 @@ db_transaction {
     # Criando grupos
     my $first_group_id = $schema->resultset("Group")->create(
         {
-            politician_id => $politician_id,
-            name          => 'foobar',
-            filter        => '{}',
-            status        => 'ready',
+            organization_chatbot_id => $organization_chatbot_id,
+            name                    => 'foobar',
+            filter                  => '{}',
+            status                  => 'ready',
         }
     )->id;
 
     my $second_group_id = $schema->resultset("Group")->create(
         {
-            politician_id => $politician_id,
-            name          => fake_words(1)->(),
-            filter        => '{}',
-            status        => 'ready',
+            organization_chatbot_id => $organization_chatbot_id,
+            name                    => fake_words(1)->(),
+            filter                  => '{}',
+            status                  => 'ready',
         }
     )->id;
 
@@ -211,9 +220,9 @@ db_transaction {
     subtest 'some group is not ready' => sub {
         my $third_group = $schema->resultset("Group")->create(
             {
-                politician_id => $politician_id,
-                name          => 'foobar',
-                filter        => '{}',
+                organization_chatbot_id => $organization_chatbot_id,
+                name                    => 'foobar',
+                filter                  => '{}',
             }
         );
 

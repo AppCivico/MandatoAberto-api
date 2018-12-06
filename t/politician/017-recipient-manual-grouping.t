@@ -17,6 +17,12 @@ db_transaction {
         fb_page_access_token => fake_words(1)->()
     );
     my $politician_id = stash "politician.id";
+	my $politician    = $schema->resultset('Politician')->find($politician_id);
+
+	api_auth_as "user_id" => $politician_id;
+	activate_chatbot($politician_id);
+
+	my $organization_chatbot_id = $politician->user->organization_chatbot_id;
 
     create_recipient(
         politician_id => $politician_id
@@ -24,15 +30,13 @@ db_transaction {
     my $recipient_id = stash "recipient.id";
     my $recipient    = $schema->resultset("Recipient")->find($recipient_id);
 
-    api_auth_as "user_id" => $politician_id;
-
     my $group = $schema->resultset("Group")->create(
         {
-            politician_id    => $politician_id,
-            name             => 'foobar',
-            filter           => '{}',
-            status           => 'ready',
-            recipients_count => 0
+            organization_chatbot_id => $organization_chatbot_id,
+            name                    => 'foobar',
+            filter                  => '{}',
+            status                  => 'ready',
+            recipients_count        => 0
         }
     );
     my $group_id = $group->id;

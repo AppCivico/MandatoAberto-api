@@ -28,8 +28,8 @@ sub list_GET {
 
     $c->stash->{collection} = $c->stash->{collection}->search(
         {
-            'me.politician_id' => $politician_id,
-            'me.active'        => 1
+            'me.organization_chatbot_id' => $politician->user->organization_chatbot_id,
+            'me.active'                  => 1
         }
     );
 
@@ -42,7 +42,7 @@ sub list_GET {
 
     if ($@) {
 
-        if ( $politician->politician_entities->entity_exists($entities) ) {
+        if ( $politician->user->organization_chatbot->politician_entities->entity_exists($entities) ) {
             $entities = lc $entities;
             push @entities_names, $entities;
         }

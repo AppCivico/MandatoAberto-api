@@ -134,6 +134,21 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 campaigns
+
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::Campaign>
+
+=cut
+
+__PACKAGE__->has_many(
+  "campaigns",
+  "MandatoAberto::Schema::Result::Campaign",
+  { "foreign.organization_chatbot_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 chatbot_platform
 
 Type: belongs_to
@@ -147,6 +162,36 @@ __PACKAGE__->belongs_to(
   "MandatoAberto::Schema::Result::ChatbotPlatform",
   { id => "chatbot_platform_id" },
   { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
+);
+
+=head2 groups
+
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::Group>
+
+=cut
+
+__PACKAGE__->has_many(
+  "groups",
+  "MandatoAberto::Schema::Result::Group",
+  { "foreign.organization_chatbot_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+=head2 issues
+
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::Issue>
+
+=cut
+
+__PACKAGE__->has_many(
+  "issues",
+  "MandatoAberto::Schema::Result::Issue",
+  { "foreign.organization_chatbot_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
 );
 
 =head2 organization
@@ -224,9 +269,144 @@ __PACKAGE__->might_have(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 politician_contacts
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-12-02 16:07:54
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:jK8RWTt5p0ewxE1JU/agSg
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::PoliticianContact>
+
+=cut
+
+__PACKAGE__->has_many(
+  "politician_contacts",
+  "MandatoAberto::Schema::Result::PoliticianContact",
+  { "foreign.organization_chatbot_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+=head2 politician_entities
+
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::PoliticianEntity>
+
+=cut
+
+__PACKAGE__->has_many(
+  "politician_entities",
+  "MandatoAberto::Schema::Result::PoliticianEntity",
+  { "foreign.organization_chatbot_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+=head2 politician_knowledge_bases
+
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::PoliticianKnowledgeBase>
+
+=cut
+
+__PACKAGE__->has_many(
+  "politician_knowledge_bases",
+  "MandatoAberto::Schema::Result::PoliticianKnowledgeBase",
+  { "foreign.organization_chatbot_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+=head2 politician_private_reply_config
+
+Type: might_have
+
+Related object: L<MandatoAberto::Schema::Result::PoliticianPrivateReplyConfig>
+
+=cut
+
+__PACKAGE__->might_have(
+  "politician_private_reply_config",
+  "MandatoAberto::Schema::Result::PoliticianPrivateReplyConfig",
+  { "foreign.organization_chatbot_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+=head2 politicians_greeting
+
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::PoliticianGreeting>
+
+=cut
+
+__PACKAGE__->has_many(
+  "politicians_greeting",
+  "MandatoAberto::Schema::Result::PoliticianGreeting",
+  { "foreign.organization_chatbot_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+=head2 poll_self_propagation_config
+
+Type: might_have
+
+Related object: L<MandatoAberto::Schema::Result::PollSelfPropagationConfig>
+
+=cut
+
+__PACKAGE__->might_have(
+  "poll_self_propagation_config",
+  "MandatoAberto::Schema::Result::PollSelfPropagationConfig",
+  { "foreign.organization_chatbot_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+=head2 polls
+
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::Poll>
+
+=cut
+
+__PACKAGE__->has_many(
+  "polls",
+  "MandatoAberto::Schema::Result::Poll",
+  { "foreign.organization_chatbot_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+=head2 private_replies
+
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::PrivateReply>
+
+=cut
+
+__PACKAGE__->has_many(
+  "private_replies",
+  "MandatoAberto::Schema::Result::PrivateReply",
+  { "foreign.organization_chatbot_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+=head2 recipients
+
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::Recipient>
+
+=cut
+
+__PACKAGE__->has_many(
+  "recipients",
+  "MandatoAberto::Schema::Result::Recipient",
+  { "foreign.organization_chatbot_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-12-06 09:23:51
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:/b/yMsuhVmG6i/83fee4vA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
@@ -241,6 +421,12 @@ sub general_config {
     my ($self) = @_;
 
     return $self->organization_chatbot_general_config;
+}
+
+sub fb_config {
+    my ($self) = @_;
+
+    return $self->organization_chatbot_facebook_config;
 }
 
 __PACKAGE__->meta->make_immutable;

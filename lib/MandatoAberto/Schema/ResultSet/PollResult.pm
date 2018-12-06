@@ -79,8 +79,8 @@ sub action_specs {
             my $poll_result = $self->create(\%values);
 
             my $recipient     = $poll_result->recipient;
-            my $group_rs      = $recipient->politician->groups;
-            my $recipients_rs = $recipient->politician->recipients;
+            my $group_rs      = $recipient->organization_chatbot->groups;
+            my $recipients_rs = $recipient->organization_chatbot->recipients;
 
             while (my $group = $group_rs->next()) {
                 my $filter = $group->filter;

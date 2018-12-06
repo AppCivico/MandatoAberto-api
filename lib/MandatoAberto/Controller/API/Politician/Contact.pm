@@ -79,7 +79,7 @@ sub list_GET {
                     cellphone => $c->get_column('cellphone'),
                     url       => $c->get_column('url'),
                     instagram => $c->get_column('instagram')
-                } $politician->politician_contacts->all()
+                } $politician->user->organization_chatbot->politician_contacts->all()
             }
         }
     );

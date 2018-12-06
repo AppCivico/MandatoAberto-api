@@ -12,10 +12,14 @@ my $worker = new_ok('MandatoAberto::Worker::Segmenter', [ schema => $schema ]);
 db_transaction {
     my $security_token = $ENV{CHATBOT_SECURITY_TOKEN};
 
-    create_politician(
-        fb_page_id => fake_words(1)->()
-    );
-    my $politician_id = stash "politician.id";
+    my $politician    = create_politician();
+    my $politician_id = $politician->{id};
+    $politician       = $schema->resultset('Politician')->find($politician_id);
+
+	api_auth_as user_id => $politician_id;
+	activate_chatbot($politician_id);
+
+    my $organization_chatbot_id = $politician->user->organization_chatbot_id;
 
     my @recipient_ids = ();
     subtest 'mocking recipients' => sub {
@@ -37,9 +41,9 @@ db_transaction {
         ok(
             $poll = $schema->resultset('Poll')->create(
                 {
-                    name          => 'Pizza',
-                    politician_id => $politician_id,
-                    status_id     => 1,
+                    name                    => 'Pizza',
+                    organization_chatbot_id => $organization_chatbot_id,
+                    status_id               => 1,
                 },
             ),
             'add poll',
@@ -362,6 +366,8 @@ db_transaction {
 
     api_auth_as user_id => $politician_id;
 
+	activate_chatbot($politician_id);
+
     create_recipient(
         politician_id => $politician_id,
         gender        => 'F'
@@ -452,6 +458,7 @@ db_transaction {
     my $politician_id = stash "politician.id";
 
     api_auth_as user_id => $politician_id;
+	activate_chatbot($politician_id);
 
     create_recipient(
         politician_id => $politician_id,
@@ -510,10 +517,13 @@ db_transaction {
         ],
     ;
 
+    my $politician              = $schema->resultset('Politician')->find($politician_id);
+    my $organization_chatbot_id = $politician->user->organization_chatbot_id;
+
     my $entity = $schema->resultset('PoliticianEntity')->search(
         {
-            politician_id => $politician_id,
-            name          => 'direitos_animais'
+            organization_chatbot_id => $organization_chatbot_id,
+            name                    => 'direitos_animais'
         }
     )->next;
 

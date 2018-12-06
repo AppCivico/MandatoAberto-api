@@ -49,12 +49,6 @@ __PACKAGE__->table("issue");
   is_nullable: 0
   sequence: 'issue_id_seq'
 
-=head2 politician_id
-
-  data_type: 'integer'
-  is_foreign_key: 1
-  is_nullable: 0
-
 =head2 recipient_id
 
   data_type: 'integer'
@@ -116,6 +110,12 @@ __PACKAGE__->table("issue");
   default_value: false
   is_nullable: 0
 
+=head2 organization_chatbot_id
+
+  data_type: 'integer'
+  is_foreign_key: 1
+  is_nullable: 0
+
 =head2 read
 
   data_type: 'boolean'
@@ -132,8 +132,6 @@ __PACKAGE__->add_columns(
     is_nullable       => 0,
     sequence          => "issue_id_seq",
   },
-  "politician_id",
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "recipient_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "message",
@@ -161,6 +159,8 @@ __PACKAGE__->add_columns(
   { data_type => "text", is_nullable => 1 },
   "deleted",
   { data_type => "boolean", default_value => \"false", is_nullable => 0 },
+  "organization_chatbot_id",
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "read",
   { data_type => "boolean", default_value => \"false", is_nullable => 0 },
 );
@@ -179,18 +179,18 @@ __PACKAGE__->set_primary_key("id");
 
 =head1 RELATIONS
 
-=head2 politician
+=head2 organization_chatbot
 
 Type: belongs_to
 
-Related object: L<MandatoAberto::Schema::Result::Politician>
+Related object: L<MandatoAberto::Schema::Result::OrganizationChatbot>
 
 =cut
 
 __PACKAGE__->belongs_to(
-  "politician",
-  "MandatoAberto::Schema::Result::Politician",
-  { user_id => "politician_id" },
+  "organization_chatbot",
+  "MandatoAberto::Schema::Result::OrganizationChatbot",
+  { id => "organization_chatbot_id" },
   { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
 );
 
@@ -210,8 +210,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-12-04 08:42:59
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:oIT7UfoiOzG4Mpv88v6MQg
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-12-05 11:23:59
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:jeuiDq+Yr2iCgfq2ILlEWA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
@@ -263,15 +263,15 @@ sub verifiers_specs {
                     required   => 0,
                     type       => "ArrayRef[Int]",
                     post_check => sub {
-                        my $groups = $_[0]->get_value('groups');
+                        my $groups     = $_[0]->get_value('groups');
 
                         for (my $i = 0; $i < @{ $groups }; $i++) {
                             my $group_id = $groups->[$i];
 
                             my $group = $self->result_source->schema->resultset("Group")->search(
                                 {
-                                   'me.id'            => $group_id,
-                                   'me.politician_id' => $self->politician_id,
+                                   'me.id'                      => $group_id,
+                                   'me.organization_chatbot_id' => $self->organization_chatbot_id,
                                 }
                             )->next;
 
@@ -327,7 +327,7 @@ sub action_specs {
 
             delete $values{ignore};
 
-            my $access_token = $self->politician->fb_page_access_token;
+            my $access_token = $self->organization_chatbot->fb_config->access_token;
             my $recipient    = $self->recipient;
 
             # Adicionando recipient à um grupo
@@ -448,7 +448,7 @@ sub action_specs {
 sub entity_rs {
     my ($self) = @_;
 
-    return $self->politician->politician_entities->search(
+    return $self->organization_chatbot->politician_entities->search(
         {
             'me.id' => { 'in' => $self->entities ? $self->entities : 0 },
         }

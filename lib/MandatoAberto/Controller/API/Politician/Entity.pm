@@ -95,6 +95,8 @@ sub list_GET {
     my $filter = $c->req->params->{filter} || 'all';
     die \['filter', 'invalid'] unless $filter =~ m/(all|active)/;
 
+    my $organization_chatbot_id = $c->stash->{politician}->user->organization_chatbot_id;
+
     return $self->status_ok(
         $c,
         entity => {
@@ -126,7 +128,7 @@ sub list_GET {
                     }
 
                 } $c->stash->{collection}->search(
-                    { politician_id => $c->stash->{politician}->id },
+                    { organization_chatbot_id => $organization_chatbot_id },
                     { order_by => 'name' }
                   )->all
             ]
@@ -139,6 +141,8 @@ sub pending : Chained('base') : PathPart('pending') : Args(0) : ActionClass('RES
 
 sub pending_GET {
     my ($self, $c) = @_;
+
+    my $organization_chatbot_id = $c->stash->{politician}->user->organization_chatbot_id;
 
     return $self->status_ok(
         $c,
@@ -172,7 +176,7 @@ sub pending_GET {
                     }
                     else {  }
                 } $c->stash->{collection}->search(
-                    { politician_id => $c->stash->{politician}->id },
+                    { organization_chatbot_id => $organization_chatbot_id },
                     { order_by => 'name' }
                   )->all
             ]

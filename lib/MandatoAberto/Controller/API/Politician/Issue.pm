@@ -102,10 +102,11 @@ sub list_GET {
     die \['filter', 'missing'] unless $filter;
     die \['filter', 'invalid'] unless $filter =~ m/^(open|closed|ignored)$/;
 
+    $c->stash->{collection} = $c->stash->{politician}->user->organization_chatbot->issues;
+
     my $cond;
     if ( $filter eq 'open' ) {
         $cond = {
-            'me.politician_id' => $politician_id,
             open               => 1,
             'me.message'       => { '!=' => 'Participar' },
             deleted            => 0
@@ -113,7 +114,6 @@ sub list_GET {
     }
     elsif ( $filter eq 'ignored' ) {
         $cond = {
-            'me.politician_id' => $politician_id,
             open               => 0,
             reply              => \'IS NULL',
             'me.message'       => { '!=' => 'Participar' },
@@ -122,7 +122,6 @@ sub list_GET {
     }
     else {
         $cond = {
-            'me.politician_id' => $politician_id,
             open               => 0,
             reply              => \'IS NOT NULL',
             'me.message'       => { '!=' => 'Participar' },
@@ -280,7 +279,7 @@ sub batch_ignore : Chained('base') : PathPart('batch-ignore') : Args(0) : Action
 sub batch_ignore_PUT {
     my ($self, $c) = @_;
 
-    $c->stash->{collection} = $c->stash->{collection}->search( { politician_id => $c->stash->{politician}->id } );
+    $c->stash->{collection} = $c->stash->{collection}->search( { organization_chatbot_id => $c->stash->{politician}->user->organization_chatbot_id } );
 
     my $ids = $c->req->params->{ids};
     die \['ids', 'missing'] unless $ids;
@@ -310,7 +309,7 @@ sub batch_delete : Chained('base') : PathPart('batch-delete') : Args(0) : Action
 sub batch_delete_PUT {
     my ($self, $c) = @_;
 
-    $c->stash->{collection} = $c->stash->{collection}->search( { politician_id => $c->stash->{politician}->id } );
+    $c->stash->{collection} = $c->stash->{collection}->search( { organization_chatbot_id => $c->stash->{politician}->user->organization_chatbot_id } );
 
     my $ids = $c->req->params->{ids};
     die \['ids', 'missing'] unless $ids;

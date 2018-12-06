@@ -53,7 +53,8 @@ sub list_GET {
 
         $cond = 'twitter_id';
     }
-    my $politician_greeting = $politician->politicians_greeting->next;
+
+    my $politician_greeting = $politician->user->organization_chatbot->politicians_greeting->next;
 
     return $self->status_ok(
         $c,
@@ -136,14 +137,14 @@ sub list_GET {
                             facebook  => $c->get_column('facebook'),
                             url       => $c->get_column('url'),
                             twitter   => $c->get_column('twitter'),
-                        } $p->politician_contacts->search( { 'me.active' => 1 } )->all()
+                        } $p->user->organization_chatbot->politician_contacts->search( { 'me.active' => 1 } )->all()
                     },
                     greeting => $politician_greeting ? $politician_greeting->on_facebook : undef
                 }
 
             } $c->stash->{collection}->search(
                 { "$cond" => $page_id },
-                { prefetch => [ qw/politician_contacts party office /, { 'politicians_greeting' => 'greeting' } ] }
+                { prefetch => [ qw/party office / ] }
             )
     )
 }

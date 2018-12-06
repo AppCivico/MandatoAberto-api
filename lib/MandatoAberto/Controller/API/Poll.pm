@@ -44,7 +44,10 @@ sub object : Chained('base') : PathPart('') : CaptureArgs(1) {
     my $poll = $c->stash->{collection}->find($poll_id);
     $c->detach("/error_404") unless ref $poll;
 
-    $c->stash->{is_me} = int($c->user->id == $poll->politician_id);
+	my $politician = $c->model('DB::Politician')->find($c->user->id);
+	$c->detach("/error_404") unless ref $politician;
+
+    $c->stash->{is_me} = int($politician->user->organization_chatbot_id == $poll->organization_chatbot_id);
     $c->stash->{poll}  = $poll;
 
     $c->detach("/api/forbidden") unless $c->stash->{is_me};
@@ -56,6 +59,9 @@ sub list_GET {
     my ($self, $c) = @_;
 
     my $politician_id = $c->user->id;
+    my $politician    = $c->model('DB::Politician')->find($politician_id);
+
+    my $organization_chatbot_id = $politician->user->organization_chatbot_id;
 
     my $now = DateTime->now;
 
@@ -98,7 +104,7 @@ sub list_GET {
                         ]
                     }
                 } $c->stash->{collection}->search(
-                    { 'me.politician_id' => $politician_id },
+                    { 'me.organization_chatbot_id' => $organization_chatbot_id },
                     { prefetch => [ 'poll_questions' , { 'poll_questions' => { "poll_question_options" => 'poll_results' } } ] }
                 )->all()
             ],

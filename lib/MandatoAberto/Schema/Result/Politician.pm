@@ -233,51 +233,6 @@ __PACKAGE__->belongs_to(
   { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
 );
 
-=head2 campaigns
-
-Type: has_many
-
-Related object: L<MandatoAberto::Schema::Result::Campaign>
-
-=cut
-
-__PACKAGE__->has_many(
-  "campaigns",
-  "MandatoAberto::Schema::Result::Campaign",
-  { "foreign.politician_id" => "self.user_id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
-
-=head2 groups
-
-Type: has_many
-
-Related object: L<MandatoAberto::Schema::Result::Group>
-
-=cut
-
-__PACKAGE__->has_many(
-  "groups",
-  "MandatoAberto::Schema::Result::Group",
-  { "foreign.politician_id" => "self.user_id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
-
-=head2 issues
-
-Type: has_many
-
-Related object: L<MandatoAberto::Schema::Result::Issue>
-
-=cut
-
-__PACKAGE__->has_many(
-  "issues",
-  "MandatoAberto::Schema::Result::Issue",
-  { "foreign.politician_id" => "self.user_id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
-
 =head2 logs
 
 Type: has_many
@@ -368,66 +323,6 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 politician_contacts
-
-Type: has_many
-
-Related object: L<MandatoAberto::Schema::Result::PoliticianContact>
-
-=cut
-
-__PACKAGE__->has_many(
-  "politician_contacts",
-  "MandatoAberto::Schema::Result::PoliticianContact",
-  { "foreign.politician_id" => "self.user_id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
-
-=head2 politician_entities
-
-Type: has_many
-
-Related object: L<MandatoAberto::Schema::Result::PoliticianEntity>
-
-=cut
-
-__PACKAGE__->has_many(
-  "politician_entities",
-  "MandatoAberto::Schema::Result::PoliticianEntity",
-  { "foreign.politician_id" => "self.user_id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
-
-=head2 politician_knowledge_bases
-
-Type: has_many
-
-Related object: L<MandatoAberto::Schema::Result::PoliticianKnowledgeBase>
-
-=cut
-
-__PACKAGE__->has_many(
-  "politician_knowledge_bases",
-  "MandatoAberto::Schema::Result::PoliticianKnowledgeBase",
-  { "foreign.politician_id" => "self.user_id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
-
-=head2 politician_private_reply_config
-
-Type: might_have
-
-Related object: L<MandatoAberto::Schema::Result::PoliticianPrivateReplyConfig>
-
-=cut
-
-__PACKAGE__->might_have(
-  "politician_private_reply_config",
-  "MandatoAberto::Schema::Result::PoliticianPrivateReplyConfig",
-  { "foreign.politician_id" => "self.user_id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
-
 =head2 politician_summary
 
 Type: might_have
@@ -458,21 +353,6 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 politicians_greeting
-
-Type: has_many
-
-Related object: L<MandatoAberto::Schema::Result::PoliticianGreeting>
-
-=cut
-
-__PACKAGE__->has_many(
-  "politicians_greeting",
-  "MandatoAberto::Schema::Result::PoliticianGreeting",
-  { "foreign.politician_id" => "self.user_id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
-
 =head2 poll_propagates
 
 Type: has_many
@@ -484,66 +364,6 @@ Related object: L<MandatoAberto::Schema::Result::PollPropagate>
 __PACKAGE__->has_many(
   "poll_propagates",
   "MandatoAberto::Schema::Result::PollPropagate",
-  { "foreign.politician_id" => "self.user_id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
-
-=head2 poll_self_propagation_config
-
-Type: might_have
-
-Related object: L<MandatoAberto::Schema::Result::PollSelfPropagationConfig>
-
-=cut
-
-__PACKAGE__->might_have(
-  "poll_self_propagation_config",
-  "MandatoAberto::Schema::Result::PollSelfPropagationConfig",
-  { "foreign.politician_id" => "self.user_id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
-
-=head2 polls
-
-Type: has_many
-
-Related object: L<MandatoAberto::Schema::Result::Poll>
-
-=cut
-
-__PACKAGE__->has_many(
-  "polls",
-  "MandatoAberto::Schema::Result::Poll",
-  { "foreign.politician_id" => "self.user_id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
-
-=head2 private_replies
-
-Type: has_many
-
-Related object: L<MandatoAberto::Schema::Result::PrivateReply>
-
-=cut
-
-__PACKAGE__->has_many(
-  "private_replies",
-  "MandatoAberto::Schema::Result::PrivateReply",
-  { "foreign.politician_id" => "self.user_id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
-
-=head2 recipients
-
-Type: has_many
-
-Related object: L<MandatoAberto::Schema::Result::Recipient>
-
-=cut
-
-__PACKAGE__->has_many(
-  "recipients",
-  "MandatoAberto::Schema::Result::Recipient",
   { "foreign.politician_id" => "self.user_id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
@@ -564,8 +384,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-12-02 16:07:54
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Xce9Gs1uqv9LR8vFDOSyWw
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-12-06 09:23:52
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:EGqs5f3d9mnSo/ODO1yMxg
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
@@ -794,7 +614,7 @@ sub action_specs {
                     die \["new_password", "must have at least 6 characters"];
                 }
 
-                if ($values{fb_page_access_token}) {
+                if (defined $values{fb_page_access_token}) {
                     # O access token gerado pela primeira vez é o de vida curta
                     # portanto devo pegar o mesmo e gerar um novo token de vida longa
                     # API do Facebook: https://developers.facebook.com/docs/facebook-login/access-tokens/expiration-and-extension
@@ -824,7 +644,7 @@ sub action_specs {
                 if ( exists $values{private_reply_activated} ) {
                     my $private_reply_activated = delete $values{private_reply_activated};
 
-                    $self->politician_private_reply_config->update( { active => $private_reply_activated } );
+                    $self->user->organization_chatbot->politician_private_reply_config->update( { active => $private_reply_activated } );
                 }
 
                 # Tratando possibilidade de retirar partido e cargo
@@ -875,7 +695,7 @@ sub get_long_lived_access_token {
     my $short_lived_token = $_[1];
 
     if (is_test()) {
-        return 1;
+        return 'long_lived_fake_access_token';
     }
 
     my $furl = Furl->new();
@@ -1183,7 +1003,7 @@ sub get_activated_poll {
 sub poll_self_propagation_active {
     my ($self) = @_;
 
-    return $self->poll_self_propagation_config->active;
+    return $self->user->organization_chatbot->poll_self_propagation_config->active;
 }
 
 sub build_notification_bar {
@@ -1191,11 +1011,11 @@ sub build_notification_bar {
 
 	my @relations = qw( issues );
 
-    my $issue_response_view = $self->result_source->schema->resultset('ViewAvgIssueResponseTime')->search( undef, { bind => [ $self->user_id ] } )->next;
+    my $issue_response_view = $self->result_source->schema->resultset('ViewAvgIssueResponseTime')->search( undef, { bind => [ $self->user->organization_chatbot_id ] } )->next;
     my $avg_response_time = $issue_response_view ? $issue_response_view->avg_response_time : 0;
 
 
-    my $unread_count  = $self->issues->search( { read => 0 } )->count;
+    my $unread_count  = $self->user->organization_chatbot->issues->search( { read => 0 } )->count;
     my $response_time = $avg_response_time <= 90 ? 'Bom' : 'Ruim';
 
 	return [

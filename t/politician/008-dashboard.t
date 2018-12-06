@@ -38,6 +38,8 @@ db_transaction {
 	api_auth_as user_id => $politician_id;
 	activate_chatbot($politician_id);
 
+    my $organization_chatbot_id = $politician->user->organization_chatbot_id;
+
     rest_post "/api/chatbot/recipient",
         name                => "Create recipient",
         automatic_load_item => 0,
@@ -289,10 +291,10 @@ db_transaction {
     # Criando grupo
     $schema->resultset("Group")->create(
         {
-            politician_id    => $politician_id,
-            name             => 'foobar',
-            filter           => '{}',
-            recipients_count => 1
+            organization_chatbot_id => $organization_chatbot_id,
+            name                    => 'foobar',
+            filter                  => '{}',
+            recipients_count        => 1
         }
     );
 
