@@ -93,8 +93,8 @@ sub list_GET {
                                             }
                                         } $c->model("DB::Answer")->search(
                                             {
-                                                politician_id => $politician_id,
-                                                question_id   => $q->get_column('id'),
+                                                organization_chatbot_id => $politician->user->organization_chatbot_id,
+                                                question_id             => $q->get_column('id'),
                                             }
                                           )->all()
 
