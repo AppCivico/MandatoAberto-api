@@ -271,8 +271,8 @@ sub action_specs {
             if ($values{status_id} == 1) {
                 my $active_poll = $self->schema->resultset('Poll')->search(
                     {
-                        status_id     => 1,
-                        politician_id => $self->politician_id
+                        status_id               => 1,
+                        organization_chatbot_id => $self->organization_chatbot_id
                     }
                 )->next;
 
