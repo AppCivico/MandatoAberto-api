@@ -81,6 +81,18 @@ sub list_GET {
     my $page    = $c->req->params->{page}    || 1;
     my $results = $c->req->params->{results} || 20;
 
+    if ( !$politician->user->organization_chatbot ) {
+        # TODO pensar numa solução melhor
+        return $self->status_ok(
+        $c,
+        entity => {
+            recipients => [
+            ],
+            itens_count => 0
+        },
+    );
+    }
+
     my $has_active_page = $politician->user->organization_chatbot->fb_config->access_token ? 1 : 0;
 
     $c->stash->{collection} = $c->stash->{collection}->search(
