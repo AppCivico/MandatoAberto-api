@@ -226,13 +226,20 @@ sub list_new_GET {
 				map {
 					my $r = $_;
 
-					my $metrics = $politician->user->organization_chatbot->$r->extract_metrics(range => $range, politician_id => $politician->user_id);
+                    my $chatbot = $politician->user->organization_chatbot;
 
-					+{
-						name => get_metric_name_for_dashboard($_),
-						text => get_metric_text_for_dashboard($_),
-						%$metrics,
-					}
+                    if ( $chatbot ) {
+						my $metrics = $chatbot->$r->extract_metrics(range => $range, politician_id => $politician->user_id);
+
+						+{
+							name => get_metric_name_for_dashboard($_),
+							text => get_metric_text_for_dashboard($_),
+							%$metrics,
+						}
+                    }
+                    else {
+                        +{ }
+                    }
 				} @relations
 			]
         }

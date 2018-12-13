@@ -1014,8 +1014,9 @@ sub build_notification_bar {
     my $issue_response_view = $self->result_source->schema->resultset('ViewAvgIssueResponseTime')->search( undef, { bind => [ $self->user->organization_chatbot_id ] } )->next;
     my $avg_response_time = $issue_response_view ? $issue_response_view->avg_response_time : 0;
 
+    my $chatbot = $self->user->organization_chatbot;
 
-    my $unread_count  = $self->user->organization_chatbot->issues->search( { read => 0 } )->count;
+    my $unread_count  = $chatbot ? $chatbot->issues->search( { read => 0 } )->count : 0;
     my $response_time = $avg_response_time <= 90 ? 'Bom' : 'Ruim';
 
 	return [
