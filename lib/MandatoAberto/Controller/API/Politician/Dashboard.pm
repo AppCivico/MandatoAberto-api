@@ -238,7 +238,7 @@ sub list_new_GET {
 						}
                     }
                     else {
-                        +{ }
+                        ()
                     }
 				} @relations
 			]
