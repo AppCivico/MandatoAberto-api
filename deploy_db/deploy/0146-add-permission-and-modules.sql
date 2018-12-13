@@ -76,7 +76,7 @@ CREATE TABLE organization_module (
     created_at      TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT NOW()
 );
 
-DELETE FROM user_role WHERE id = 3;
+DELETE FROM user_role WHERE role_id = 3;
 UPDATE role SET name = 'organization_admin' WHERE id = 3;
 
 INSERT INTO
