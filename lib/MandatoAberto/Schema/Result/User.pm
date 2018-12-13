@@ -735,7 +735,7 @@ sub organization_chatbot {
 sub organization_chatbot_id {
     my ($self) = @_;
 
-    return $self->organization_chatbot->id;
+    return $self->organization_chatbot ? $self->organization_chatbot->id : undef;
 }
 
 sub chatbot {
