@@ -206,8 +206,6 @@ sub list_new_GET {
 
     my @relations = qw( issues campaigns groups recipients politician_entities );
 
-    my $recipients = $politician->user->organization_chatbot->recipients;
-
     my $has_facebook_auth = $politician->fb_page_access_token ? 1 : 0;
 
     my $first_access = $politician->user->user_sessions->count > 1 ? 0 : 1;

@@ -78,7 +78,7 @@ sub result_GET {
     my $has_movement = $c->stash->{politician}->movement ? 1 : 0;
 
     my $chatbot    = $c->stash->{politician}->user->organization->organization_chatbots->next;
-    my $chatbot_id = $chatbot->id;
+    my $chatbot_id = $chatbot ? $chatbot->id : undef;
 
     return $self->status_ok(
         $c,
