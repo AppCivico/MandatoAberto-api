@@ -206,8 +206,8 @@ sub send {
         my $access_token = $organization_chatbot->fb_config->access_token;
 
         my $politician_name = $organization_chatbot->name;
-        my $office_name     = $organization_chatbot->organization->users->next->name;
-        my $article         = $organization_chatbot->organization->users->next->gender eq 'F' ? 'da' : 'do';
+        my $office_name     = $organization_chatbot->organization->user->name;
+        my $article         = $organization_chatbot->organization->user->gender eq 'F' ? 'da' : 'do';
 
         my $item_id = $self->comment_id ? $self->comment_id : $self->post_id;
 

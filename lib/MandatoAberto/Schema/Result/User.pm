@@ -94,12 +94,6 @@ __PACKAGE__->table("user");
   is_foreign_key: 1
   is_nullable: 1
 
-=head2 organization_id
-
-  data_type: 'integer'
-  is_foreign_key: 1
-  is_nullable: 1
-
 =head2 party_id
 
   data_type: 'integer'
@@ -175,8 +169,6 @@ __PACKAGE__->add_columns(
   "confirmed_at",
   { data_type => "timestamp", is_nullable => 1 },
   "approved_by_admin_id",
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
-  "organization_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
   "party_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
@@ -354,26 +346,6 @@ __PACKAGE__->belongs_to(
   },
 );
 
-=head2 organization
-
-Type: belongs_to
-
-Related object: L<MandatoAberto::Schema::Result::Organization>
-
-=cut
-
-__PACKAGE__->belongs_to(
-  "organization",
-  "MandatoAberto::Schema::Result::Organization",
-  { id => "organization_id" },
-  {
-    is_deferrable => 0,
-    join_type     => "LEFT",
-    on_delete     => "NO ACTION",
-    on_update     => "NO ACTION",
-  },
-);
-
 =head2 party
 
 Type: belongs_to
@@ -484,6 +456,21 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 user_organizations
+
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::UserOrganization>
+
+=cut
+
+__PACKAGE__->has_many(
+  "user_organizations",
+  "MandatoAberto::Schema::Result::UserOrganization",
+  { "foreign.user_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 user_roles
 
 Type: has_many
@@ -540,8 +527,8 @@ Composing rels: L</user_roles> -> role
 __PACKAGE__->many_to_many("roles", "user_roles", "role");
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-11-26 15:00:25
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:cczdF+6iRVG27Co7WTk88A
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-12-13 10:28:50
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:R0FxYh/0xmZoM4l8Ieaigg
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
@@ -755,6 +742,49 @@ sub chatbot {
     my ($self) = @_;
 
     return $self->organization_chatbot;
+}
+
+sub organizations {
+    my ($self) = @_;
+
+    return $self->user_organizations;
+}
+
+sub organization {
+    my ($self) = @_;
+
+    my $user_organization_relation = $self->user_organizations->next;
+
+    return $user_organization_relation->organization;
+}
+
+sub add_to_organization {
+    my ($self, %opts) = @_;
+
+    my $organization = $self->result_source->schema->resultset('Organization')->find( $opts{organization_id} );
+    die \['organization_id', 'invalid'] unless $organization;
+
+    return $self->user_organizations->find_or_create(
+        {
+            organization_id => $opts{organization_id},
+            # TODO implementar outras roles na organização
+            # por enquanto todos serão admins da organização
+            organization_role_id => 1
+        }
+    );
+}
+
+sub add_all_permissions {
+    my ($self, %opts) = @_;
+    use DDP;
+
+	my @permissions_ids = qw( 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49);
+
+    for my $id (@permissions_ids) {
+        $self->add_to_roles( { id => $id } );
+    }
+
+    return 1;
 }
 
 __PACKAGE__->meta->make_immutable;

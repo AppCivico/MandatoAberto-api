@@ -70,9 +70,9 @@ sub list_GET {
                         organization_chatbot_id => $p->organization_chatbot_id
                     }
                 } $c->stash->{collection}->search(
-                    { 'users.id' => $c->stash->{politician}->user_id },
+                    { 'user.id' => $c->stash->{politician}->user_id },
                     {
-                        prefetch => { 'organization_chatbot' => { 'organization' => 'users' } },
+                        prefetch => { 'organization_chatbot' => { 'organization' => { 'user_organizations' => 'user' } } },
                         page     => $page,
                         rows     => $results,
                     }

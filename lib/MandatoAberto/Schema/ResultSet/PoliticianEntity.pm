@@ -37,7 +37,7 @@ sub sync_dialogflow {
             while ( my $politician = $politician_rs->next() ) {
                 my $organization_chatbot = $politician->user->organization->organization_chatbots->next;
 				my $chatbot_config       = $organization_chatbot->organization_chatbot_general_config if $organization_chatbot;
-                use DDP; p $chatbot_config;
+
                 if ( $chatbot_config && $chatbot_config->dialogflow_project_id ) {
                     $project_id = $chatbot_config->dialogflow_project_id;
                 }
@@ -47,7 +47,7 @@ sub sync_dialogflow {
 
 				for my $entity ( @{ $res->{intents} } ) {
 					my $name = $entity->{displayName};
-                    use DDP; p $entity;
+
 					if ( $self->skip_intent($name) == 0 ) {
 						$name = lc $name;
 						push @entities_names, $name;

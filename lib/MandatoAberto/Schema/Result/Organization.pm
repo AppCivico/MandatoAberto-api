@@ -163,24 +163,39 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 users
+=head2 organization_modules
 
 Type: has_many
 
-Related object: L<MandatoAberto::Schema::Result::User>
+Related object: L<MandatoAberto::Schema::Result::OrganizationModule>
 
 =cut
 
 __PACKAGE__->has_many(
-  "users",
-  "MandatoAberto::Schema::Result::User",
+  "organization_modules",
+  "MandatoAberto::Schema::Result::OrganizationModule",
+  { "foreign.organization_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+=head2 user_organizations
+
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::UserOrganization>
+
+=cut
+
+__PACKAGE__->has_many(
+  "user_organizations",
+  "MandatoAberto::Schema::Result::UserOrganization",
   { "foreign.organization_id" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-11-26 15:00:24
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Hp9Ynfcm7t80gVaDhJ4HNA
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-12-13 10:46:26
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:aKekCTmucTEFWEHcIWR1qg
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
@@ -189,6 +204,18 @@ sub chatbot {
     my ($self) = @_;
 
     return $self->organization_chatbots->next;
+}
+
+sub users {
+    my ($self) = @_;
+
+    return $self->user_organizations;
+}
+
+sub user {
+    my ($self) = @_;
+
+    return $self->users->next->user;
 }
 
 __PACKAGE__->meta->make_immutable;

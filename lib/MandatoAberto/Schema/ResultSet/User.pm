@@ -139,7 +139,6 @@ sub action_specs {
 							  office_id gender movement_id
 							  ),
 						),
-                        organization_id => $organization->id,
 						politician => {(
 							map { $_ => $values{$_} }
 							  qw(
@@ -148,21 +147,20 @@ sub action_specs {
 							  movement_id
 							  )
 						)},
-
+                        user_organizations => [{
+                            organization_id => $organization->id
+                        }]
 					}
 				);
 
                 $user->add_to_roles( { id => 2 } );
 
+                # Por enquanto usuarios são criados com todos as permissões
+                $user->add_all_permissions();
+
                 $user->send_greetings_email();
                 $user->send_new_register_email();
                 $user->send_email_confirmation();
-
-
-
-                #use DDP; p $politician;
-                # my $entity_rs = $self->result_source->schema->resultset('PoliticianEntity');
-                # $entity_rs->sync_dialogflow_one_politician($politician->id);
             });
 
 			return $user;
