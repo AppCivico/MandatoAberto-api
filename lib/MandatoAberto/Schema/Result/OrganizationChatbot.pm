@@ -52,6 +52,7 @@ __PACKAGE__->table("organization_chatbot");
 =head2 chatbot_platform_id
 
   data_type: 'integer'
+  default_value: 1
   is_foreign_key: 1
   is_nullable: 0
 
@@ -89,7 +90,12 @@ __PACKAGE__->add_columns(
     sequence          => "organization_chatbot_id_seq",
   },
   "chatbot_platform_id",
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
+  {
+    data_type      => "integer",
+    default_value  => 1,
+    is_foreign_key => 1,
+    is_nullable    => 0,
+  },
   "organization_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "created_at",
@@ -405,8 +411,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-12-06 14:32:08
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:v72JcRbC/EpZfNlUABfnsQ
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-12-13 15:27:22
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:CCC8jA1IabYglEVCCVjz8g
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

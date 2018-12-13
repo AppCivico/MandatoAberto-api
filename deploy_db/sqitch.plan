@@ -148,3 +148,4 @@
 0144-adding-read-issue [0143-answers-conversion] 2018-12-04T10:52:24Z Lucas Ansei,,, <lucas@lucas-G750JX> # Adding the 'read' column to the 'issue' table
 0145-organization [0144-adding-read-issue] 2018-12-06T12:30:15Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Converting to organization model
 0146-add-permission-and-modules [0145-organization] 2018-12-11T16:14:56Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding needed structure to support modules and its permissions
+0147-add-chatbot [0146-add-permission-and-modules] 2018-12-13T17:27:29Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding a standard chatbot

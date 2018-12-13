@@ -128,7 +128,20 @@ sub action_specs {
                     die \["gender", "must be F or M"];
                 }
 
-                my $organization = $self->result_source->schema->resultset('Organization')->create( { name => $values{name} } );
+                my $organization = $self->result_source->schema->resultset('Organization')->create(
+                    {
+                        name                  => $values{name},
+                        organization_chatbots => [
+                            {
+                                organization_chatbot_general_config => {
+									is_active      => 0,
+									issue_active   => 1,
+									use_dialogflow => 1,
+								},
+                            }
+                        ]
+                    }
+                );
 
 				$user = $self->create(
 					{
@@ -148,7 +161,7 @@ sub action_specs {
 							  )
 						)},
                         user_organizations => [{
-                            organization_id => $organization->id
+                            organization_id => $organization->id,
                         }]
 					}
 				);

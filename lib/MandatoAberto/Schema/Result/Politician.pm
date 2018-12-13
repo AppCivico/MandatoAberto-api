@@ -624,21 +624,33 @@ sub action_specs {
                     # Setando o botão get started
                     $self->set_get_started_button_and_persistent_menu($values{fb_page_access_token});
 
-                    # Criando entrada na tabela organization_chatbot
-                    $self->user->organization->organization_chatbots->create(
-                        {
-                            chatbot_platform_id => 1,
-                            organization_chatbot_general_config => {
-                                is_active      => 1,
-                                issue_active   => 1,
-                                use_dialogflow => 1,
-                            },
-                            organization_chatbot_facebook_config => {
-                                page_id      => $values{fb_page_id},
-                                access_token => $values{fb_page_access_token}
-                            }
-                        }
-                    );
+                    # Criando ou atualizando entrada na tabela organization_chatbot
+                    my $chatbot = $self->user->organization->organization_chatbots->next;
+
+                    if ( $chatbot ) {
+						$self->result_source->schema->resultset('OrganizationChatbotFacebookConfig')->update_or_create(
+							{
+                                organization_chatbot_id => $chatbot->id,
+                                page_id                 => $values{fb_page_id},
+                                access_token            => $values{fb_page_access_token}
+							},
+						);
+                    } else {
+						$self->user->organization->organization_chatbots->update_or_create(
+							{
+								chatbot_platform_id => 1,
+								organization_chatbot_general_config => {
+									is_active      => 1,
+									issue_active   => 1,
+									use_dialogflow => 1,
+								},
+								organization_chatbot_facebook_config => {
+									page_id      => $values{fb_page_id},
+									access_token => $values{fb_page_access_token}
+								}
+							},
+						);
+                    }
                 }
 
                 if ( exists $values{private_reply_activated} ) {
