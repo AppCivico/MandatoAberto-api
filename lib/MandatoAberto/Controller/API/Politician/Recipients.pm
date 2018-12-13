@@ -81,7 +81,7 @@ sub list_GET {
     my $page    = $c->req->params->{page}    || 1;
     my $results = $c->req->params->{results} || 20;
 
-    if ( !$politician->user->organization_chatbot ) {
+    if ( !$politician->user->organization_chatbot->fb_config ) {
         # TODO pensar numa solução melhor
         return $self->status_ok(
         $c,
