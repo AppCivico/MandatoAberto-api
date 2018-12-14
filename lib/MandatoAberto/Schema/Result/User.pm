@@ -787,6 +787,40 @@ sub add_all_permissions {
     return 1;
 }
 
+sub parse_permissions {
+    my ($self, %opts) = @_;
+
+    my $cond;
+    $cond = { 'role.name' => { -ilike => "%$opts{name}%" } } if defined $opts{name};
+
+    my @module_names         = $self->result_source->schema->resultset('Module')->get_column('name')->all();
+    my @possible_permissions = qw( create read update delete );
+
+    my ($ret, $key_p, $i);
+    map {
+
+		my ($key)   = $_ =~ /.+?(?=_)/gm;
+		my ($value) = $_ =~ /[a-z]+\Z/gm;
+
+        if ( !$i || ( $key_p && $key ne $key_p )  ) {
+            $i = 0;
+        }
+
+        $ret->{"$key"}->{"$value"} = 1;
+
+        $key_p = $key;
+        $i++;
+    } grep { /_/ } map { $_->role->name } $self->user_roles->search( $cond, { prefetch => 'role' } )->all();
+
+    for my $module (@module_names) {
+        for my $permission (@possible_permissions) {
+            $ret->{"$module"}->{"$permission"} = 0 if !$ret->{"$module"}->{"$permission"}
+        }
+    }
+
+    return $ret;
+}
+
 __PACKAGE__->meta->make_immutable;
 1;
 

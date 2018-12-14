@@ -54,7 +54,36 @@ sub login_POST {
             ip => $ipAddr,
         );
 
-        return $self->status_ok($c, entity => $session);
+		my $ret = {
+            organizations => [
+                map {
+                    my $o = $_->organization;
+
+                    +{
+                        id      => $o->id,
+                        name    => $o->name,
+                        picture => $o->picture,
+                        modules => [
+                            map {
+                                my $m    = $_->module;
+                                my $name = $m->name;
+
+                                my $p = $user->parse_permissions( name => $m->name );
+
+                                +{
+                                    id          => $m->id,
+                                    name        => $name,
+                                    permissions => $p->{$name},
+                                }
+                            } $o->organization_modules
+                        ]
+                    }
+                } $user->organizations->all()
+		    ],
+            %$session
+        };
+
+        return $self->status_ok( $c, entity => $ret );
     }
 
     return $self->status_bad_request($c, message => 'Bad email or password.');
