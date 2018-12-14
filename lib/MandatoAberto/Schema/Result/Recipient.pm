@@ -366,8 +366,8 @@ __PACKAGE__->might_have(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-12-03 11:33:12
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:uhELbeOllAtSjU52T15HRQ
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-12-14 15:10:05
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:iy6t+DlbOuzk5nG/YpQTIw
 
 __PACKAGE__->load_components("InflateColumn::Serializer", "Core");
 __PACKAGE__->remove_column('groups');

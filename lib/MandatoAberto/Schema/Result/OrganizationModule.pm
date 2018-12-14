@@ -103,6 +103,25 @@ __PACKAGE__->add_columns(
 
 __PACKAGE__->set_primary_key("id");
 
+=head1 UNIQUE CONSTRAINTS
+
+=head2 C<organization_module_organization_id_module_id_uniq>
+
+=over 4
+
+=item * L</organization_id>
+
+=item * L</module_id>
+
+=back
+
+=cut
+
+__PACKAGE__->add_unique_constraint(
+  "organization_module_organization_id_module_id_uniq",
+  ["organization_id", "module_id"],
+);
+
 =head1 RELATIONS
 
 =head2 module
@@ -136,8 +155,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-12-13 10:45:58
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:OA4gaK7WEUkCvKF6jiP5nQ
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-12-14 14:53:34
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:AJZJeA8RnqOPYVWUrfYbiw
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

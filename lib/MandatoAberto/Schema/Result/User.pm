@@ -778,13 +778,35 @@ sub add_all_permissions {
     my ($self, %opts) = @_;
     use DDP;
 
-	my @permissions_ids = qw( 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49);
+	my @permissions_ids     = qw( 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49);
+    my @current_permissions = $self->user_roles->search( { role_id => { 'not in' => [qw( 1 2 3 4 )] } } )->get_column('role_id')->all();
+
+	my %hash;
+	$hash{$_} = undef foreach (@current_permissions);
+	@permissions_ids = grep { not exists $hash{$_} } @permissions_ids;
 
     for my $id (@permissions_ids) {
         $self->add_to_roles( { id => $id } );
     }
 
     return 1;
+}
+
+sub add_basic_permissions {
+    my ($self) = @_;
+	my @permissions_ids = qw( 6 7 8 9 18 19 20 21 22 23 24 25 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49);
+
+	my @current_permissions = $self->user_roles->search( { role_id => { 'not in' => [qw( 1 2 3 4 )] } } )->get_column('role_id')->all();
+
+	my %hash;
+	$hash{$_} = undef foreach (@current_permissions);
+	@permissions_ids = grep { not exists $hash{$_} } @permissions_ids;
+
+	for my $id (@permissions_ids) {
+		$self->add_to_roles( { id => $id } );
+	}
+
+	return 1;
 }
 
 sub parse_permissions {

@@ -142,7 +142,7 @@ sub action_specs {
                         ]
                     }
                 );
-                $organization->organization_modules->create_mandatoaberto_modules;
+                $organization->organization_modules->create_mandatoaberto_modules($organization->id);
 
 				$user = $self->create(
 					{

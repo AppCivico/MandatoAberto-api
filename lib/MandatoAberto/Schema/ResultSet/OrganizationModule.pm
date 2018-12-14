@@ -4,33 +4,30 @@ use Moose;
 use namespace::autoclean;
 extends "DBIx::Class::ResultSet";
 
+use DDP;
+
 sub create_mandatoaberto_modules {
-    my ($self) = @_;
+    my ($self, $organization_id) = @_;
 
     my @module_ids = $self->result_source->schema->resultset('Module')->get_column('id')->all();
-    my @organization_modules;
-    for my $id ( @module_ids ) {
-        my $module = { module_id => $id };
 
-        push @organization_modules, $module;
+    for my $id ( @module_ids ) {
+        my $module = $self->find_or_create( { organization_id => $organization_id, module_id => $id } );
     }
 
-    return $self->populate(\@organization_modules);
+    return 1;
 }
 
 sub create_modules {
-	my ($self) = @_;
+	my ($self, $organization_id) = @_;
 
 	my @module_ids = qw( 1 4 6 7 8 9 10 );
 
-	my @organization_modules;
 	for my $id (@module_ids) {
-		my $module = { module_id => $id };
-
-		push @organization_modules, $module;
+		my $module = $self->find_or_create( { organization_id => $organization_id, module_id => $id } );
 	}
 
-	return $self->populate(\@organization_modules);
+	return 1;
 }
 
 1;
