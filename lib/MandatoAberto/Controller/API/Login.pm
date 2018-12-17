@@ -71,9 +71,10 @@ sub login_POST {
                                 my $p = $user->parse_permissions( name => $m->name );
 
                                 +{
-                                    id          => $m->id,
-                                    name        => $name,
-                                    permissions => $p->{$name},
+                                    "$name" => {
+                                        id          => $m->id,
+                                        permissions => $p->{$name},
+                                    }
                                 }
                             } $o->organization_modules
                         ]
