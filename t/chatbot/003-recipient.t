@@ -228,6 +228,25 @@ db_transaction {
                 security_token => $security_token
             ]
         ;
+    };
+
+    subtest 'Chatbot | Get all recipients' => sub {
+
+        rest_get "/api/chatbot/recipient/all",
+            name  => 'get recipients',
+            stash => 'r1',
+            [
+                organization_chatbot_id => $politician->user->organization_chatbot_id,
+                security_token          => $security_token
+            ]
+        ;
+
+        stash_test 'r1' => sub {
+            my $res = shift;
+
+			ok( ref $res->{recipients} eq 'ARRAY', 'recipients is an array' );
+			is( scalar @{$res->{recipients}}, 2,   'recipients has two itens' );
+        }
     }
 };
 

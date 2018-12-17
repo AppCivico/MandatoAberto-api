@@ -74,6 +74,8 @@ sub list_GET {
                     use_dialogflow => $p->get_column('use_dialogflow'),
                     issue_active   => $p->get_column('issue_active'),
 
+                    organization_chatbot_id => $p->user->organization_chatbot_id,
+
                     share => {
                         url  => $p->get_column('share_url'),
                         text => $p->get_column('share_text')

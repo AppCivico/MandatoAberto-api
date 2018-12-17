@@ -89,6 +89,36 @@ sub list_GET {
     )
 }
 
+sub list_all : Chained('base') : PathPart('all') : Args(0) : ActionClass('REST') { }
+
+sub list_all_GET {
+    my ($self, $c) = @_;
+
+    my $organization_chatbot_id = $c->req->params->{organization_chatbot_id};
+    die \['organization_chatbot_id', 'missing'] unless $organization_chatbot_id;
+
+    return $self->status_ok(
+        $c,
+        entity => {
+            recipients => [
+                map {
+                    my $r = $_;
+
+                    +{
+                        id                 => $r->get_column('id'),
+                        gender             => $r->get_column('gender'),
+                        email              => $r->get_column('email'),
+                        cellphone          => $r->get_column('cellphone'),
+                        session            => $r->session,
+                        session_updated_at => $r->session_updated_at,
+                        created_at         => $r->created_at
+                    }
+                } $c->stash->{collection}->search( { organization_chatbot_id => $organization_chatbot_id } )->all()
+            ]
+        }
+    )
+}
+
 __PACKAGE__->meta->make_immutable;
 
 1;
