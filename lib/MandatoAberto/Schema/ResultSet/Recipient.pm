@@ -392,7 +392,7 @@ sub extract_metrics {
 			{
 				alert             => '',
 				alert_is_positive => 0,
-				link              => '/seguidores?page=1',
+				link              => '',
 				link_text         => 'Ver seguidores'
 			},
 		],

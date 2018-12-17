@@ -240,7 +240,7 @@ sub extract_metrics {
             {
                 alert             => 'Tempo médio de respostas: ' . $avg_response_time,
                 alert_is_positive => $avg_response_time <= 90 ? 1 : 0,
-                link              => '/mensagens',
+                link              => '',
                 link_text         => 'Ver mensagens'
             }
         ],

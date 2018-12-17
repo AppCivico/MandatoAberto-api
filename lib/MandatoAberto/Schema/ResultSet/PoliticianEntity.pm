@@ -583,7 +583,7 @@ sub extract_metrics {
 			{
 				alert             => '',
 				alert_is_positive => 0,
-				link              => '/temas',
+				link              => '',
 				link_text         => 'Ver temas'
 			},
 		],

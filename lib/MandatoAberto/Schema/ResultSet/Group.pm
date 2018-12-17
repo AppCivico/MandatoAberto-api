@@ -140,7 +140,7 @@ sub extract_metrics {
             {
                 alert             => '',
                 alert_is_positive => 0,
-                link              => '/grupos?page=1',
+                link              => '',
                 link_text         => 'Ver grupos'
             },
         ],
