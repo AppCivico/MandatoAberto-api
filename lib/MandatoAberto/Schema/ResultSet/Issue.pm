@@ -236,6 +236,7 @@ sub extract_metrics {
 
     return {
         count             => $self->count,
+        fallback_text     => 'Aqui você poderá métricas sobre as mensagens que o assistente digital não conseguiu responder.',
         suggested_actions => [
             {
                 alert             => 'Tempo médio de respostas: ' . $avg_response_time,

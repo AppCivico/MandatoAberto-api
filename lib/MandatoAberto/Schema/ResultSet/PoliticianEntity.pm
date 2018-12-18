@@ -579,6 +579,7 @@ sub extract_metrics {
     return {
         # Contagem total de temas
 		count             => $self->count,
+		fallback_text     => 'Aqui você verá as métricas sobre seus temas.',
 		suggested_actions => [
 			{
 				alert             => '',

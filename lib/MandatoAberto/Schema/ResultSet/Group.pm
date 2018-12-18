@@ -136,6 +136,7 @@ sub extract_metrics {
 
     return {
         count             => $self->count,
+		fallback_text     => 'Aqui você poderá ver as métricas sobre os grupos que você criou.',
         suggested_actions => [
             {
                 alert             => '',
