@@ -94,7 +94,8 @@ sub register {
     $chatbot->get()->to('chatbot#get');
 
     # Chatbot::Recipient.
-    $chatbot->post('/recipient')->to('chatbot-recipient#post');
+	$chatbot->post('/recipient')->to('chatbot-recipient#post');
+	$chatbot->get('/recipient')->to('chatbot-recipient#get');
 
     # Chatbot::Issue.
     $chatbot->post('/issue')->to('chatbot-issue#post');

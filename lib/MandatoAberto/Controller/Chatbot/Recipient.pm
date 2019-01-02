@@ -49,4 +49,26 @@ sub post {
 	);
 }
 
+sub get {
+    my $c = shift;
+
+	my $fb_id = $c->req->params->to_hash->{fb_id};
+	die \['fb_id', 'missing'] unless $fb_id;
+
+	return $c->render(
+		status => 200,
+		json   => map {
+			my $c = $_;
+
+            +{
+                id                     => $c->get_column('id'),
+                gender                 => $c->get_column('gender'),
+                email                  => $c->get_column('email'),
+                cellphone              => $c->get_column('cellphone'),
+                poll_notification_sent => $c->poll_notification ? $c->poll_notification->sent : 0,
+            }
+		} $c->schema->resultset('Recipient')->search( { fb_id => $fb_id } )->next
+    );
+}
+
 1;

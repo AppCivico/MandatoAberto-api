@@ -2,213 +2,170 @@ use common::sense;
 use FindBin qw($Bin);
 use lib "$Bin/../lib";
 
-use MandatoAberto::Test::Further;
+use MandatoAberto::Test;
 
-my $schema = MandatoAberto->model("DB");
+my $t      = test_instance;
+my $schema = $t->app->schema;
 
 db_transaction {
     my $security_token = $ENV{CHATBOT_SECURITY_TOKEN};
 
-    create_politician(
+    my $politician = create_politician(
         fb_page_id => 'foo',
     );
-    my $politician_id = stash "politician.id";
-    my $politician    = $schema->resultset('Politician')->find($politician_id);
+    my $politician_id = $politician->{id};
+    $politician       = $schema->resultset('Politician')->find($politician_id);
 
-    rest_post "/api/chatbot/recipient",
-        name    => "create recipient without fb_id",
-        is_fail => 1,
-        [
-            politician_id  => $politician_id,
-            origin_dialog  => fake_words(1)->(),
-            name           => fake_name()->(),
-            security_token => $security_token
-        ]
-    ;
+    subtest 'Chatbot | Create invalid recipient' => sub {
+        # Create recipient without fb_id
+        $t->post_ok(
+            '/api/chatbot/recipient',
+            form => {
+                politician_id  => $politician_id,
+                origin_dialog  => fake_words(1)->(),
+                name           => fake_name()->(),
+                security_token => $security_token
+            }
+        )
+        ->status_is(400);
 
-    rest_post "/api/chatbot/recipient",
-        name    => "create recipient without name",
-        is_fail => 1,
-        [
-            origin_dialog => fake_words(1)->(),
-            fb_id         => "foobar",
-            politician_id => $politician_id,
-            security_token => $security_token
-        ]
-    ;
+        # Create recipient without name
+        $t->post_ok(
+            '/api/chatbot/recipient',
+            form => {
+                politician_id  => $politician_id,
+                origin_dialog  => fake_words(1)->(),
+                security_token => $security_token,
+                fb_id          => "foobar",
+            }
+        )
+        ->status_is(400);
 
-    rest_post "/api/chatbot/recipient",
-        name    => "email is not required but must be valid",
-        is_fail => 1,
-        [
-            origin_dialog => fake_words(1)->(),
-            name          => fake_name()->(),
-            politician_id => $politician_id,
-            fb_id         => "foobar",
-            email         => "foobar",
-            security_token => $security_token
-        ]
-    ;
+        # Email is not required but must be valid
+        $t->post_ok(
+            '/api/chatbot/recipient',
+            form => {
+                origin_dialog => fake_words(1)->(),
+                name          => fake_name()->(),
+                politician_id => $politician_id,
+                fb_id         => "foobar",
+                email         => "foobar",
+                security_token => $security_token
+            }
+        )
+        ->status_is(400);
 
-    rest_post "/api/chatbot/recipient",
-        name    => "cellphone is not required but must be valid",
-        is_fail => 1,
-        [
-            origin_dialog => fake_words(1)->(),
-            name          => fake_name()->(),
-            politician_id => $politician_id,
-            fb_id         => "foobar",
-            cellphone     => "foobar",
-            security_token => $security_token
-        ]
-    ;
+        # Cellphone is not required but must be valid
+        $t->post_ok(
+            '/api/chatbot/recipient',
+            form => {
+                origin_dialog => fake_words(1)->(),
+                name          => fake_name()->(),
+                politician_id => $politician_id,
+                fb_id         => "foobar",
+                cellphone     => "foobar",
+                security_token => $security_token
+            }
+        )
+        ->status_is(400);
 
-    rest_post "/api/chatbot/recipient",
-        name    => "gender is not required but must be valid",
-        is_fail => 1,
-        [
-            origin_dialog => fake_words(1)->(),
-            name          => fake_name()->(),
-            politician_id => $politician_id,
-            fb_id         => "foobar",
-            gender        => "foobar",
-            security_token => $security_token
-        ]
-    ;
+        # Gender is not required but must be valid
+        $t->post_ok(
+            '/api/chatbot/recipient',
+            form => {
+                origin_dialog => fake_words(1)->(),
+                name          => fake_name()->(),
+                politician_id => $politician_id,
+                fb_id         => "foobar",
+                gender        => "foobar",
+                security_token => $security_token
+            }
+        )
+        ->status_is(400);
+    };
 
     my $fb_id     = fake_words(1)->();
     my $cellphone = fake_digits("+551198#######")->();
     my $email     = fake_email()->();
     my $gender    = fake_pick( qw/F M/ )->();
 
-    rest_post "/api/chatbot/recipient",
-        name                => "create recipient",
-        automatic_load_item => 0,
-        stash               => 'c1',
-        [
-            origin_dialog => fake_words(1)->(),
-            politician_id => $politician_id,
-            name          => fake_name()->(),
-            fb_id         => $fb_id,
-            email         => $email,
-            cellphone     => $cellphone,
-            gender        => $gender,
-            security_token => $security_token
-        ]
-    ;
-    my $citizen_id = stash "c1.id";
+    my $recipient_id;
 
-    rest_get "/api/chatbot/recipient",
-        name    => "search with missing fb_id",
-        is_fail => 1,
-        code    => 400,
-        [ security_token => $security_token ]
-    ;
+    subtest 'Chatbot | Create recipient' => sub {
+        $t->post_ok(
+            '/api/chatbot/recipient',
+            form => {
+                origin_dialog => fake_words(1)->(),
+                politician_id => $politician_id,
+                name          => fake_name()->(),
+                fb_id         => $fb_id,
+                email         => $email,
+                cellphone     => $cellphone,
+                gender        => $gender,
+                security_token => $security_token
+            }
+        )
+        ->status_is(201)
+        ->json_has('/id');
 
-    rest_get "/api/chatbot/recipient",
-        name  => "get recipient",
-        list  => 1,
-        stash => "get_citizen",
-        [
-            fb_id          => $fb_id,
-            security_token => $security_token
-        ]
-    ;
+        $recipient_id = $t->tx->res->json->{id};
+    };
 
-    stash_test "get_citizen" => sub {
-        my $res = shift;
+    subtest 'Chatbot | GET recipient' => sub {
+        # Search with missing fb_id
+        $t->get_ok(
+            '/api/chatbot/recipient',
+            form => { security_token => $security_token }
+        )
+        ->status_is(400);
 
-        is($res->{id}, $citizen_id, 'id');
-        is($res->{email}, $email, 'email');
-        is($res->{cellphone}, $cellphone, 'cellphone');
-        is($res->{gender}, $gender, 'gender');
-        is($res->{poll_notification_sent}, 0, 'poll notification not sent');
+
+        $t->get_ok(
+            '/api/chatbot/recipient',
+            form => {
+                security_token => $security_token,
+                fb_id          => $fb_id,
+            }
+        )
+        ->status_is(200)
+        ->json_has('/id')
+        ->json_has('/email')
+        ->json_has('/cellphone')
+        ->json_has('/gender')
+        ->json_has('/poll_notification_sent')
+        ->json_is('/id',        $recipient_id,  'recipient id')
+        ->json_is('/email',     $email,         'recipient email')
+        ->json_is('/cellphone', $cellphone,     'recipient cellphone')
+        ->json_is('/gender',    $gender,        'recipient gender')
+        ->json_is('/poll_notification_sent', 0, 'poll notification not sent');
     };
 
     my $new_email = fake_email()->();
-    rest_post "/api/chatbot/recipient/",
-        name => "change recipient data",
-        [
-            fb_id          => $fb_id,
-            politician_id  => $politician_id,
-            email          => $new_email,
-            security_token => $security_token
-        ]
-    ;
 
-    rest_reload_list "get_citizen";
+    subtest 'Chatbot | Update recipient data' => sub {
+        # Search with missing fb_id
+        $t->post_ok(
+            '/api/chatbot/recipient',
+            form => {
+                fb_id          => $fb_id,
+                politician_id  => $politician_id,
+                email          => $new_email,
+                security_token => $security_token
+            }
+        )
+        ->status_is(201);
 
-    stash_test "get_citizen.list" => sub {
-        my $res = shift;
-
-        is($res->{id}, $citizen_id, 'id');
-        is($res->{email}, $new_email, 'email');
+        $t->get_ok(
+            '/api/chatbot/recipient',
+            form => {
+                security_token => $security_token,
+                fb_id          => $fb_id,
+            }
+        )
+        ->status_is(200)
+        ->json_is('/id',        $recipient_id,  'recipient id')
+        ->json_is('/email',     $new_email,     'recipient updated email');
     };
-
-    $politician->update( { twitter_id => '123456' } );
-
-    rest_post "/api/chatbot/recipient/",
-        name    => "Creating twitter recipient with invalid platform",
-        is_fail => 1,
-        code    => 400,
-        [
-            platform       => 'foobar',
-            twitter_id     => 'foobar',
-            politician_id  => $politician_id,
-            email          => $new_email,
-            security_token => $security_token
-        ]
-    ;
-
-    rest_post "/api/chatbot/recipient/",
-        name    => "Creating twitter recipient without twitter_id",
-        is_fail => 1,
-        code    => 400,
-        [
-            platform       => 'twitter',
-            politician_id  => $politician_id,
-            email          => $new_email,
-            security_token => $security_token
-        ]
-    ;
-
-    rest_post "/api/chatbot/recipient/",
-        name    => "Creating twitter recipient without name",
-        is_fail => 1,
-        code    => 400,
-        [
-            platform          => 'twitter',
-            twitter_id        => 'foobar',
-            politician_id     => $politician_id,
-            email             => $new_email,
-            security_token    => $security_token
-        ]
-    ;
-
-    rest_post "/api/chatbot/recipient/",
-        name    => "Creating twitter recipient without name",
-        is_fail => 1,
-        code    => 400,
-        [
-            platform          => 'twitter',
-            twitter_id        => 'foobar',
-            politician_id     => $politician_id,
-            email             => $new_email,
-            security_token    => $security_token
-        ]
-    ;
-
-    rest_post "/api/chatbot/recipient/",
-        name => "Creating twitter recipient",
-        [
-            platform          => 'twitter',
-            twitter_id        => 'foobar',
-            name              => 'foobar',
-            politician_id     => $politician_id,
-            email             => $new_email,
-            security_token    => $security_token
-        ]
-    ;
 };
 
 done_testing();
