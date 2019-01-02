@@ -100,7 +100,7 @@ sub register {
     $chatbot->post('/issue')->to('chatbot-issue#post');
 
     # Chatbot::Poll
-    $chatbot->post('/issue')->to('chatbot-poll#get');
+    $chatbot->get('/poll')->to('chatbot-poll#get');
 
     # Chatbot::Politician
     my $chatbot_politician        = $chatbot->route('/politician')->under->to('chatbot-politician#stasher');
