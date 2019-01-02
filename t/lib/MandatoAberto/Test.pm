@@ -6,6 +6,9 @@ use Data::Fake qw/ Core Company Dates Internet Names Text /;
 use Data::Printer;
 use MandatoAberto::Utils;
 
+our $votolegal_response;
+our $dialogflow_response;
+
 sub import {
     strict->import;
     warnings->import;
@@ -142,6 +145,111 @@ sub create_recipient {
     );
     return $t->tx->res->json->{id};
 }
+
+sub answer_question {
+	my (%opts) = @_;
+
+	my $politician_id = delete $opts{politician_id};
+	my $question_id   = delete $opts{question_id};
+
+	api_auth_as user_id => $politician_id;
+
+	$t->post_ok(
+		"/api/politician/$politician_id/answers",
+		form => {
+			"question[$question_id][answer]" => fake_words(1)->(),
+            %opts
+        }
+	);
+
+    return $t->tx->res->json->{id};
+}
+
+sub create_issue {
+	my (%opts) = @_;
+
+	my $security_token = env('CHATBOT_SECURITY_TOKEN');
+
+	my $fake_entity = encode_json(
+		{
+			id        => 'a8736300-e5b3-4ab8-a29e-c379ef7f61de',
+			timestamp => '2018-09-19T21 => 39 => 43.452Z',
+			lang      => 'pt-br',
+			result    => {
+				source           => 'agent',
+				resolvedQuery    => 'O que você já fez pelos direitos animais??',
+				action           => '',
+				actionIncomplete => 0,
+				parameters       => {},
+				contexts         => [],
+				metadata         => {
+					intentId                  => '4c3f7241-6990-4c92-8332-cfb8d437e3d1',
+					webhookUsed               => 0,
+					webhookForSlotFillingUsed => 0,
+					isFallbackIntent          => 0,
+					intentName                => 'direitos_animais'
+				},
+				fulfillment => { speech =>  '', messages =>  [] },
+				score       => 1
+			},
+			status    => { code =>  200, errorType =>  'success' },
+			sessionId => '1938538852857638'
+		}
+	);
+
+	$t->post_ok(
+		'/api/chatbot/issue',
+		form => {
+			message        => fake_words(4)->(),
+			security_token => $security_token,
+			entities       => $fake_entity,
+			%opts,
+		}
+	);
+
+    return $t->tx->res->json->{id};
+}
+
+
+sub create_knowledge_base {
+	my (%opts) = @_;
+
+	my $politician_id = $opts{politician_id};
+
+	$t->post_ok(
+		"/api/politician/$politician_id/knowledge-base",
+		form => {
+			answer => fake_words(3)->(),
+			type   => fake_pick(qw( posicionamento histórico proposta ))->(),
+			%opts,
+		}
+	);
+
+	return $t->tx->res->json->{id};
+}
+
+
+sub setup_votolegal_integration_success {
+	$votolegal_response = {
+		id       => fake_int(1, 100)->(),
+		username => 'fake_username'
+	};
+}
+
+
+sub setup_votolegal_integration_success_with_custom_url {
+	$votolegal_response = {
+		id         => fake_int(1, 100)->(),
+		username   => 'fake_username',
+		custom_url => 'https://www.foobar.com.br'
+	};
+}
+
+
+sub setup_votolegal_integration_fail {
+	$votolegal_response = {votolegal_email => 'non existent on voto legal'};
+}
+
 
 1;
 

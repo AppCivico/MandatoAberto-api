@@ -184,7 +184,7 @@ sub update_votolegal_integration {
 
     my $res;
     if ( is_test() ) {
-        $res = $MandatoAberto::Test::Further::votolegal_response;
+        $res = $MandatoAberto::Test::votolegal_response;
     }
     else {
         $res = $furl->post(
