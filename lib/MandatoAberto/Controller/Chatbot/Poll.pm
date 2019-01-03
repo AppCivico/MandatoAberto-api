@@ -3,7 +3,6 @@ use Mojo::Base 'MandatoAberto::Controller';
 
 sub get {
 	my $c = shift;
-    use DDP;
 
     my $fb_page_id = $c->req->params->to_hash->{fb_page_id};
     die \['fb_page_id', 'missing'] unless $fb_page_id;

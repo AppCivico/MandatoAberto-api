@@ -100,6 +100,9 @@ sub register {
     # Chatbot::Issue.
     $chatbot->post('/issue')->to('chatbot-issue#post');
 
+    # Chatbot::Dialog
+    $chatbot->get('/dialog')->to('chatbot-dialog#get');
+
     # Chatbot::Poll
     $chatbot->get('/poll')->to('chatbot-poll#get');
 
