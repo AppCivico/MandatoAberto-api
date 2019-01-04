@@ -2,7 +2,7 @@ package MandatoAberto::Controller::API::Politician::Dashboard;
 use Moose;
 use namespace::autoclean;
 
-use MandatoAberto::Utils qw( get_metric_name_for_dashboard get_metric_text_for_dashboard );
+use MandatoAberto::Utils qw( get_metric_name_for_dashboard get_metric_text_for_dashboard empty_metric );
 with "CatalystX::Eta::Controller::TypesValidation";
 
 use utf8;
@@ -24,7 +24,7 @@ sub root : Chained('/api/politician/object') : PathPart('') : CaptureArgs(0) {
 
     $c->detach("/api/forbidden") unless $c->stash->{is_me};
 
-    eval { $c->assert_user_roles(qw/politician/) };
+    eval { $c->assert_user_roles(qw/politician metrics_read/) };
     if ($@) {
         $c->forward("/api/forbidden");
     }
@@ -238,7 +238,7 @@ sub list_new_GET {
 						}
                     }
                     else {
-                        ()
+                        empty_metric($r)
                     }
 				} @relations
 			]

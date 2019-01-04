@@ -11,6 +11,7 @@ use vars qw(@ISA @EXPORT);
     get_mandatoaberto_api_url_for get_mandatoaberto_httpcb_url_for
     get_metric_name_for_dashboard get_metric_text_for_dashboard
 	get_notification_name_for_bar get_notification_text_for_bar
+    empty_metric
 );
 
 sub is_test {
@@ -154,6 +155,75 @@ sub get_notification_text_for_bar {
     }
 
     return $text;
+}
+
+sub empty_metric {
+    my ($metric) = @_;
+
+    my $ret;
+    if ( $metric eq 'issues' ) {
+        $ret = {
+            name              => get_metric_name_for_dashboard($metric),
+            text              => get_metric_text_for_dashboard($metric),
+            count             => 0,
+            fallback_text     => 'Aqui você poderá métricas sobre as mensagens que o assistente digital não conseguiu responder.',
+            suggested_actions => [],
+            sub_metrics       => []
+        };
+    }
+    elsif ( $metric eq 'campaigns' ) {
+        $ret = {
+            name              => get_metric_name_for_dashboard($metric),
+            text              => get_metric_text_for_dashboard($metric),
+            count             => 0,
+            fallback_text     => 'Aqui ficam as métricas sobre as campanhas enviadas.',
+            suggested_actions => [],
+            sub_metrics       => []
+        };
+    }
+    elsif ( $metric eq 'groups' ) {
+        $ret = {
+            name              => get_metric_name_for_dashboard($metric),
+            text              => get_metric_text_for_dashboard($metric),
+            count             => 0,
+            fallback_text     => 'Aqui você poderá ver as métricas sobre os grupos que você criou.',
+            suggested_actions => [],
+            sub_metrics       => []
+        };
+    }
+    elsif ( $metric eq 'polls' ) {
+        $ret = {
+            name              => get_metric_name_for_dashboard($metric),
+            text              => get_metric_text_for_dashboard($metric),
+            count             => 0,
+            fallback_text     => 'Aqui será onde você poderá ver o desempenho de suas consultas',
+            suggested_actions => [],
+            sub_metrics       => []
+        };
+    }
+    elsif ( $metric eq 'recipients' ) {
+        $ret = {
+            name              => get_metric_name_for_dashboard($metric),
+            text              => get_metric_text_for_dashboard($metric),
+            count             => 0,
+            fallback_text     => 'Aqui você vê as métricas sobre seus seguidores.',
+            suggested_actions => [],
+            sub_metrics       => []
+        };
+    }
+    elsif ( $metric eq 'politician_entities' ) {
+        $ret = {
+            name              => get_metric_name_for_dashboard($metric),
+            text              => get_metric_text_for_dashboard($metric),
+            count             => 0,
+            fallback_text     => 'Aqui você verá as métricas sobre seus temas.',
+            suggested_actions => [],
+            sub_metrics       => []
+        };
+    }
+    else {
+        die 'missing metric name on MandatoAberto::Utils on empty_metric'
+    }
 }
 
 1;
