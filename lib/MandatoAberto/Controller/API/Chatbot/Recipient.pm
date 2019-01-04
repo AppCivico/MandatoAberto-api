@@ -106,6 +106,7 @@ sub list_all_GET {
 
                     +{
                         id                 => $r->get_column('id'),
+                        fb_id              => $r->get_column('fb_id'),
                         gender             => $r->get_column('gender'),
                         email              => $r->get_column('email'),
                         cellphone          => $r->get_column('cellphone'),
