@@ -998,6 +998,8 @@ sub get_votolegal_integration {
 sub deactivate_chatbot {
     my ($self) = @_;
 
+    $self->user->organization_chatbot->fb_config->delete;
+
     return $self->update(
         {
             fb_page_id           => undef,
