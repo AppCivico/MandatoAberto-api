@@ -241,6 +241,7 @@ sub result_GET {
             id         => $issue->id,
             reply      => $issue->reply,
             open       => $issue->open,
+            read       => $issue->read,
             message    => $issue->message,
             created_at => $issue->created_at,
             ignored    => $ignored_flag,
