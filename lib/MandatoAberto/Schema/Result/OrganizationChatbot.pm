@@ -450,7 +450,17 @@ sub poll_self_propagation_config {
 sub has_access_token {
     my ($self) = @_;
 
-    return $self->fb_config->access_token ? 1 : 0;
+    my $has_config = $self->fb_config ? 1 : 0;
+
+    my $ret;
+    if ( $has_config && $self->fb_config->access_token ) {
+        $ret = 1;
+    }
+    else {
+        $ret = 0;
+    }
+
+    return $ret;
 }
 
 __PACKAGE__->meta->make_immutable;
