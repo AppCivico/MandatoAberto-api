@@ -34,11 +34,10 @@ sub object : Chained('base') : PathPart('') : CaptureArgs(1) {
     my $poll = $c->stash->{collection}->find($poll_id);
     $c->detach("/error_404") unless ref $poll;
 
-    # TODO: mudar essa verificação para procurar no banco se o id está na user_organization
-    $c->stash->{is_me} = int($c->user->id == $poll->organization_chatbot->organization->user);
+    $c->stash->{is_me} = $poll->organization_chatbot->organization->user_organizations->search( { user_id => $c->user->id } )->count;
     $c->stash->{poll}  = $poll;
 
-    $c->detach("/api/forbidden") unless $c->stash->{is_me};
+    $c->detach("/api/forbidden") unless $c->stash->{is_me} == 1;
 }
 
 sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }

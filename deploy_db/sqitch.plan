@@ -150,3 +150,4 @@
 0146-add-permission-and-modules [0145-organization] 2018-12-11T16:14:56Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding needed structure to support modules and its permissions
 0147-add-chatbot [0146-add-permission-and-modules] 2018-12-13T17:27:29Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding a standard chatbot
 0148-add-unique-module [0147-add-chatbot] 2018-12-14T16:53:46Z Lucas Ansei,,, <lucas@lucas-G750JX> # Adding unique module constraint
+0149-add-uniq-constraint [0148-add-unique-module] 2019-01-09T16:24:52Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding unique constraint on the 'user_organization' table. 
