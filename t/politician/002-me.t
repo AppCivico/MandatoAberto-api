@@ -116,6 +116,30 @@ db_transaction {
         );
     };
 
+    # Testando role para módulo de perfil
+    db_transaction{
+        db_transaction{
+            $schema->resultset('UserRole')->search(
+                {
+                    user_id => $politician_id,
+                    role_id => { -in => [ 11, 12 ] }
+                }
+            )->delete;
+
+            rest_put "/api/politician/$politician_id",
+                name    => "updating profile without roles",
+                is_fail => 1,
+                code    => 403,
+                [ name => 'foobar' ]
+            ;
+        };
+
+		rest_put "/api/politician/$politician_id",
+            name => "updating name",
+            [ name => 'foobar' ]
+        ;
+    };
+
     # Caso apenas a cidade seja editada, deve bater com o estado corrente
     rest_put "/api/politician/$politician_id",
         name    => "invalid address_city_id",

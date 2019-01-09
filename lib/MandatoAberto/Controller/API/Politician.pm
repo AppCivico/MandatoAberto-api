@@ -63,6 +63,12 @@ sub result : Chained('object') : PathPart('') : Args(0) : ActionClass('REST') {
     my ($self, $c) = @_;
 
     $c->detach("/api/forbidden") unless $c->stash->{is_me};
+
+	# Asserting user role for module
+	eval { $c->assert_user_roles(qw/profile_read profile_update/) };
+	if ($@) {
+		$c->forward("/api/forbidden");
+	}
 }
 
 sub result_GET {

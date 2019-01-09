@@ -168,6 +168,7 @@ sub extract_metrics {
 
 	return {
 		count             => $self->count,
+        fallback_text     => 'Aqui será onde você poderá ver o desempenho de suas consultas',
 		suggested_actions => [
 			{
 				alert             => 'Melhore o seu engajamento',

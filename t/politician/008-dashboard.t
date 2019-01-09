@@ -145,6 +145,28 @@ db_transaction {
     #     [ range => 16 ]
     # ;
 
+    # Testando role para módulo de métricas
+    db_transaction{
+        db_transaction{
+            $schema->resultset('UserRole')->search(
+                {
+                    user_id => $politician_id,
+                    role_id => 7
+                }
+            )->delete;
+
+			rest_get "/api/politician/$politician_id/dashboard",
+                name    => "politician dashboard without role",
+                is_fail => 1,
+                code    => 403
+            ;
+        };
+
+		rest_get "/api/politician/$politician_id/dashboard",
+            name => "politician dashboard with role",
+        ;
+    };
+
     rest_get "/api/politician/$politician_id/dashboard",
         name  => "politician dashboard",
         list  => 1,
