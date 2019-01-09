@@ -447,5 +447,11 @@ sub poll_self_propagation_config {
 	return $self->poll_self_propagation_configs->next;
 }
 
+sub has_access_token {
+    my ($self) = @_;
+
+    return $self->fb_config->access_token ? 1 : 0;
+}
+
 __PACKAGE__->meta->make_immutable;
 1;
