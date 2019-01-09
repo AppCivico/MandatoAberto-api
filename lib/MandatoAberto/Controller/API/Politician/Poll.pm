@@ -34,7 +34,8 @@ sub object : Chained('base') : PathPart('') : CaptureArgs(1) {
     my $poll = $c->stash->{collection}->find($poll_id);
     $c->detach("/error_404") unless ref $poll;
 
-    $c->stash->{is_me} = int($c->user->id == $poll->politician_id);
+    # TODO: mudar essa verificação para procurar no banco se o id está na user_organization
+    $c->stash->{is_me} = int($c->user->id == $poll->organization_chatbot->organization->user);
     $c->stash->{poll}  = $poll;
 
     $c->detach("/api/forbidden") unless $c->stash->{is_me};
