@@ -23,7 +23,7 @@ sub sync_dialogflow {
 		$politician_rs = $self->result_source->schema->resultset('Politician');
     }
     else {
-		$politician_rs = $self->result_source->schema->resultset('Politician')->search({ 'user.email' => { '!=' => 'appcivicotest@email.com'} },{ prefetch => 'user' });
+		$politician_rs = $self->result_source->schema->resultset('Politician')->search({ 'user.email' => 'prep_dev@email.com' },{ prefetch => 'user' });
     }
 
     my $project_id      = 'mandato-aberto-copy';
