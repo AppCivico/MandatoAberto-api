@@ -42,7 +42,7 @@ sub sync_dialogflow {
                     $project_id = $chatbot_config->dialogflow_project_id;
                 }
 
-                $res             = $self->_dialogflow->get_intents( dialogflow_project_id => $project_id ) if $last_project_id ne $project_id;
+                $res             = $self->_dialogflow->get_intents( dialogflow_project_id => 'mandato-aberto-copy' ) if $last_project_id ne $project_id;
                 $last_project_id = $project_id;
 
 				for my $entity ( @{ $res->{intents} } ) {
