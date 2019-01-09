@@ -314,7 +314,7 @@ sub action_specs {
             not defined $values{$_} and delete $values{$_} for keys %values;
 
             # Tratando caso de apenas abrir e ler a mensagem
-            if ( $values{read} ) {
+            if ( defined $values{read} ) {
 
                 return $self->update( { read => $values{read} } );
             }
