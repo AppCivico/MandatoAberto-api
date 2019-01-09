@@ -316,7 +316,7 @@ sub action_specs {
             # Tratando caso de apenas abrir e ler a mensagem
             if ( $values{read} ) {
 
-                return $self->update( { read => $values{read} } );;
+                return $self->update( { read => $values{read} } );
             }
 
             if ($values{ignore} == 1 && $values{reply}) {
@@ -327,6 +327,7 @@ sub action_specs {
 
             delete $values{ignore};
 
+            die \['organization_chatbot_id', 'Não há um chatbot ativo para responder essa mensagem'] unless $self->organization_chatbot->has_access_token;
             my $access_token = $self->organization_chatbot->fb_config->access_token;
             my $recipient    = $self->recipient;
 
