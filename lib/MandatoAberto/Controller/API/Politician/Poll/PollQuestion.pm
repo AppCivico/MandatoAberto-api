@@ -23,7 +23,7 @@ sub object : Chained('base') : PathPart('') : CaptureArgs(1) {
     my $poll_question = $c->stash->{collection}->find($poll_question_id);
     $c->detach("/error_404") unless ref $poll_question;
 
-    $c->stash->{is_me} = $poll->organization_chatbot->organization->user_organizations->search( { user_id => $c->user->id } )->count;
+    $c->stash->{is_me} = $poll_question->poll->organization_chatbot->organization->user_organizations->search( { user_id => $c->user->id } )->count;
     $c->stash->{poll_question}  = $poll_question;
 
     $c->detach("/api/forbidden") unless $c->stash->{is_me} == 1;
