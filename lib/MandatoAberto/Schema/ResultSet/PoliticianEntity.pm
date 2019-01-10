@@ -58,7 +58,8 @@ sub sync_dialogflow {
                     $self->find_or_create(
                         {
                             organization_chatbot_id => $politician->user->organization_chatbot_id,
-                            name                    => $entity_name
+                            name                    => $entity_name,
+                            human_name              => $entity_name
                         }
                     );
                 }
