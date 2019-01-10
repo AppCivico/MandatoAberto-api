@@ -71,7 +71,7 @@ sub list_GET {
                     address_state  => $p->get_column('address_state_id'),
                     picframe_url   => $p->get_column('share_url'),
                     picframe_text  => $p->get_column('share_text'),
-                    use_dialogflow => $p->get_column('use_dialogflow'),
+                    use_dialogflow => $p->user->organization->chatbot->general_config->use_dialogflow,
                     issue_active   => $p->get_column('issue_active'),
 
                     organization_chatbot_id => $p->user->organization_chatbot_id,
