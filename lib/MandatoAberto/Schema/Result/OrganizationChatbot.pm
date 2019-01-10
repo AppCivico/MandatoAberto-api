@@ -260,6 +260,21 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 organization_chatbot_status
+
+Type: might_have
+
+Related object: L<MandatoAberto::Schema::Result::OrganizationChatbotStatus>
+
+=cut
+
+__PACKAGE__->might_have(
+  "organization_chatbot_status",
+  "MandatoAberto::Schema::Result::OrganizationChatbotStatus",
+  { "foreign.organization_chatbot_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 organization_chatbot_twitter_config
 
 Type: might_have
@@ -411,8 +426,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-12-13 15:27:22
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:CCC8jA1IabYglEVCCVjz8g
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-01-10 10:21:04
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:E8bxFyRvQzL5UY6Cbf2nLA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
