@@ -59,7 +59,7 @@ sub extract_metrics {
 		fallback_text     => 'Aqui ficam as métricas sobre as campanhas enviadas.',
         suggested_actions => [
             {
-                alert             => 'Melhore o engajamento das suas campanhas',
+                alert             => '',
                 alert_is_positive => 0,
                 link              => '',
                 link_text         => 'Ver campanhas'
@@ -67,10 +67,15 @@ sub extract_metrics {
         ],
 		sub_metrics => [
             # Métrica: alcance das campanhas
-			{
-				text              => $self->get_column('count')->sum ? $self->get_column('count')->sum . ' pessoas alcançadas' : undef,
-				suggested_actions => []
-			},
+            (
+                $self->count > 0 ?
+                (
+                    {
+                        text              => $self->get_column('count')->sum ? $self->get_column('count')->sum . ' pessoas alcançadas' : undef,
+                        suggested_actions => []
+                    },
+                ) : ( )
+            )
 		]
     }
 }

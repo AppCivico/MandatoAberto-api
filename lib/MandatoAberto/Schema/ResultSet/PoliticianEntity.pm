@@ -590,10 +590,15 @@ sub extract_metrics {
 		],
 		sub_metrics => [
 			# Métrica: o tema mais popular
-			{
-				text              => $most_significative_entity ? $most_significative_entity->name . ' é o seu tema mais popular' : undef,
-				suggested_actions => []
-			},
+            (
+                $self->count > 0 ?
+                (
+                    {
+                        text              => $most_significative_entity ? $most_significative_entity->name . ' é o seu tema mais popular' : undef,
+                        suggested_actions => []
+                    },
+                ) : ( )
+            )
 		]
 	}
 }
