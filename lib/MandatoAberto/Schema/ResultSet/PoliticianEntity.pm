@@ -23,7 +23,7 @@ sub sync_dialogflow {
 		$politician_rs = $self->result_source->schema->resultset('Politician');
     }
     else {
-		$politician_rs = $self->result_source->schema->resultset('Politician')->search({ 'user.email' => 'prep_dev@email.com' },{ prefetch => 'user' });
+		$politician_rs = $self->result_source->schema->resultset('Politician')->search({ 'user.email' => { -ilike => '%prep%' } },{ prefetch => 'user' });
     }
 
     my $project_id      = 'mandato-aberto-copy';
@@ -42,7 +42,7 @@ sub sync_dialogflow {
                     $project_id = $chatbot_config->dialogflow_project_id;
                 }
 
-                $res             = $self->_dialogflow->get_intents( dialogflow_project_id => 'mandato-aberto-copy' ) if $last_project_id ne $project_id;
+                $res             = $self->_dialogflow->get_intents( dialogflow_project_id => 'prep-chatbot' ) if $last_project_id ne $project_id;
                 $last_project_id = $project_id;
 
 				for my $entity ( @{ $res->{intents} } ) {
