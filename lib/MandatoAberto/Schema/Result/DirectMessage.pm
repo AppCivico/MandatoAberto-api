@@ -278,7 +278,7 @@ sub build_headers {
     if ( $message_type eq 'text_and_attachment' ) {
 
         my $attachment_req = encode_json {
-            url     => $ENV{FB_API_URL} . '/me/messages?access_token=' . $self->campaign->politician->fb_page_access_token,
+            url     => $ENV{FB_API_URL} . '/me/messages?access_token=' . $self->campaign->organization_chatbot->fb_config->access_token,
             method  => "post",
             headers => 'Content-Type: application/json',
             body    => {
@@ -304,10 +304,10 @@ sub build_headers {
             }
         };
 
-        $ret = "Content-Type: application/json\nnext_req: $attachment_req";
+        $ret = "Content-Type: application/json;charset=UTF-8;\nnext_req: $attachment_req";
     }
     else {
-        $ret = 'Content-Type: application/json'
+        $ret = 'Content-Type: application/json;charset=UTF-8;'
     }
 
     return $ret;
