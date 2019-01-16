@@ -62,12 +62,6 @@ __PACKAGE__->table("campaign");
   is_nullable: 0
   original: {default_value => \"now()"}
 
-=head2 politician_id
-
-  data_type: 'integer'
-  is_foreign_key: 1
-  is_nullable: 0
-
 =head2 status_id
 
   data_type: 'integer'
@@ -95,6 +89,12 @@ __PACKAGE__->table("campaign");
   data_type: 'text'
   is_nullable: 1
 
+=head2 organization_chatbot_id
+
+  data_type: 'integer'
+  is_foreign_key: 1
+  is_nullable: 0
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -114,8 +114,6 @@ __PACKAGE__->add_columns(
     is_nullable   => 0,
     original      => { default_value => \"now()" },
   },
-  "politician_id",
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "status_id",
   {
     data_type      => "integer",
@@ -131,6 +129,8 @@ __PACKAGE__->add_columns(
   { data_type => "integer[]", is_nullable => 1 },
   "err_reason",
   { data_type => "text", is_nullable => 1 },
+  "organization_chatbot_id",
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
 );
 
 =head1 PRIMARY KEY
@@ -162,18 +162,18 @@ __PACKAGE__->might_have(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 politician
+=head2 organization_chatbot
 
 Type: belongs_to
 
-Related object: L<MandatoAberto::Schema::Result::Politician>
+Related object: L<MandatoAberto::Schema::Result::OrganizationChatbot>
 
 =cut
 
 __PACKAGE__->belongs_to(
-  "politician",
-  "MandatoAberto::Schema::Result::Politician",
-  { user_id => "politician_id" },
+  "organization_chatbot",
+  "MandatoAberto::Schema::Result::OrganizationChatbot",
+  { id => "organization_chatbot_id" },
   { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
 );
 
@@ -223,8 +223,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-10-24 15:51:22
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:UjK6zBi5/+M+gZxAQRQOnw
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-12-02 16:57:14
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:444Z5+BDrSbdKrFtTrK83g
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
@@ -234,9 +234,9 @@ use WebService::HttpCallback::Async;
 use JSON;
 
 has _httpcb => (
-	is         => "ro",
-	isa        => "WebService::HttpCallback::Async",
-	lazy_build => 1,
+    is         => "ro",
+    isa        => "WebService::HttpCallback::Async",
+    lazy_build => 1,
 );
 
 sub process_and_send {
@@ -244,12 +244,12 @@ sub process_and_send {
 
     my @group_ids = @{ $self->groups || [] };
 
-    my $recipient_rs = $self->politician->recipients->only_opt_in->search_by_group_ids(@group_ids)->search(
-    	{},
-    	{
-    		'+select' => [ \"COUNT(1) OVER(PARTITION BY 1)" ],
-    		'+as'     => ['total'],
-    	}
+    my $recipient_rs = $self->organization_chatbot->recipients->only_opt_in->search_by_group_ids(@group_ids)->search(
+        {},
+        {
+            '+select' => [ \"COUNT(1) OVER(PARTITION BY 1)" ],
+            '+as'     => ['total'],
+        }
     );
 
     $logger->info(sprintf("Número de contatos que receberão a campanha: '%d'.", $recipient_rs->count)) if $logger;
@@ -269,7 +269,6 @@ sub send_dm_facebook {
     my ($self, $recipient_rs, $logger) = @_;
 
     my $message = $self->direct_message->build_message_object();
-
     $logger->info("Message object:" . to_json $message) if $logger;
 
     my $count = 0;
@@ -278,7 +277,7 @@ sub send_dm_facebook {
 
         # Mando para o httpcallback
         $self->_httpcb->add(
-            url     => $ENV{FB_API_URL} . '/me/messages?access_token=' . $self->politician->fb_page_access_token,
+            url     => $ENV{FB_API_URL} . '/me/messages?access_token=' . $self->organization_chatbot->fb_config->access_token,
             method  => "post",
             headers => $headers,
             body    => to_json {
