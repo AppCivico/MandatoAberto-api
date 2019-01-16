@@ -113,7 +113,7 @@ db_transaction {
         ]
     ;
 
-    my $content = fake_words(2)->();
+    my $content = 'é um teste súpôm';
     my $name    = fake_words(1)->();
 
     # Criando grupos
