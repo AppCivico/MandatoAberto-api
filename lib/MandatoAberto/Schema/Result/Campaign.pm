@@ -231,7 +231,7 @@ __PACKAGE__->belongs_to(
 
 use WebService::HttpCallback::Async;
 
-use JSON::MaybeXS;
+use JSON;
 
 has _httpcb => (
 	is         => "ro",
@@ -270,7 +270,7 @@ sub send_dm_facebook {
 
     my $message = $self->direct_message->build_message_object();
 
-    $logger->info("Message object:" . encode_json $message) if $logger;
+    $logger->info("Message object:" . to_json $message) if $logger;
 
     my $count = 0;
     while (my $recipient = $recipient_rs->next()) {
@@ -281,7 +281,7 @@ sub send_dm_facebook {
             url     => $ENV{FB_API_URL} . '/me/messages?access_token=' . $self->politician->fb_page_access_token,
             method  => "post",
             headers => $headers,
-            body    => encode_json {
+            body    => to_json {
                 messaging_type => "UPDATE",
                 recipient => {
                     id => $recipient->fb_id
