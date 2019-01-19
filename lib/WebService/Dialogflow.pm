@@ -60,7 +60,7 @@ sub get_entities {
 sub get_intents {
     my ( $self, %opts ) = @_;
 
-    my $project = $opts{dialogflow_project_id};
+    my $project = 'prep-chatbot';
 
     my $res;
     if (is_test()) {
@@ -75,7 +75,7 @@ sub get_intents {
 
                 $res = $self->furl->get(
                     $url,
-                    [ 'Authorization', 'Bearer ' . $access_token ]
+                    [ 'Authorization', 'Bearer ya29.c.ElqWBg7wOPRneznUhUSVvTqNfeot-WmBk5hLstwlUP6_AzZ3aDh8zvHPfNk4wFY0Am2Bx-GCNwR5oPZaSauVtMNEzsjLgT0cdc1EERYDCl4TEYvZEpo5wke_UTA' ]
                 );
 
 				p $res->request;
