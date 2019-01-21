@@ -23,7 +23,7 @@ sub sync_dialogflow {
 		$politician_rs = $self->result_source->schema->resultset('Politician');
     }
     else {
-		$politician_rs = $self->result_source->schema->resultset('Politician')->search({ 'user.email' => 'prep_homol@email.com' },{ prefetch => 'user' });
+		$politician_rs = $self->result_source->schema->resultset('Politician')->search({ 'user.email' => { -ilike => '%prep%' } },{ prefetch => 'user' });
     }
 
     my $project_id      = 'mandato-aberto-copy';
@@ -104,7 +104,7 @@ sub sync_dialogflow_one_politician {
 sub skip_intent {
     my ($self, $name) = @_;
 
-    my @non_theme_intents = qw( Fallback Agradecimento Contatos FaleConosco Pergunta Saudação Trajetoria Voluntário Participar Default\ Fallback\ Intent Default\ Welcome\ Intent );
+    my @non_theme_intents = qw( Fallback Agradecimento Contatos FaleConosco Pergunta Saudação Trajetoria Voluntário Participar );
 
     my $skip_intent = grep { $_ eq $name } @non_theme_intents;
 
