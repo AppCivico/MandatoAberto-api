@@ -140,7 +140,7 @@ __PACKAGE__->belongs_to(
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
 
-use JSON::MaybeXS;
+use JSON;
 
 sub groups_rs {
     my ($self) = @_;
@@ -277,7 +277,7 @@ sub build_headers {
     my $ret;
     if ( $message_type eq 'text_and_attachment' ) {
 
-        my $attachment_req = encode_json {
+        my $attachment_req = to_json {
             url     => $ENV{FB_API_URL} . '/me/messages?access_token=' . $self->campaign->organization_chatbot->fb_config->access_token,
             method  => "post",
             headers => 'Content-Type: application/json',
