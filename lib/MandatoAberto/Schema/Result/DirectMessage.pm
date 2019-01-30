@@ -296,7 +296,7 @@ sub build_headers {
                     quick_replies   => [
                         {
                             content_type => 'text',
-                            title        => "Voltar para o início",
+                            title        => "Voltar para o inicio",
                             payload      => 'greetings'
                         }
                     ]
