@@ -1017,9 +1017,9 @@ sub get_activated_poll {
 sub poll_self_propagation_active {
     my ($self) = @_;
 
-    my $chatbot = $self->user->organization_chatbot;
+    my $has_config = $self->user->organization_chatbot->poll_self_propagation_config ? 1 : 0;
 
-    return $chatbot ? $chatbot->poll_self_propagation_config->active : 0;
+    return $has_config ? $self->user->organization_chatbot->poll_self_propagation_config->active : 0;
 }
 
 sub build_notification_bar {
