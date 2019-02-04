@@ -34,6 +34,8 @@ sub sync_dialogflow {
     my @entities_names;
     my $res;
 
+    use DDP;
+
     $self->result_source->schema->txn_do(
         sub{
             while ( my $organization_chatbot = $organization_chatbot_rs->next() ) {
@@ -44,6 +46,7 @@ sub sync_dialogflow {
 
                 $res             = $self->_dialogflow->get_intents( project => $dialogflow_project ) if $last_project_id ne $project_id;
                 $last_project_id = $project_id;
+                p $project_id;
 
 				for my $entity ( @{ $res->{intents} } ) {
 					my $name = $entity->{displayName};
