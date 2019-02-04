@@ -53,6 +53,12 @@ db_transaction {
 
     ok ( $politician_entity_rs->sync_dialogflow, 'sync ok' );
     is ( $politician_entity_rs->count, 6, '6 entities created' );
+
+    rest_get "/api/politician/$politician_id/intent/sync",
+        name  => 'sync',
+        list  => 1,
+        stash => 'sync'
+    ;
 };
 
 done_testing();

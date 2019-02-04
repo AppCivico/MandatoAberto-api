@@ -463,5 +463,15 @@ sub has_access_token {
     return $ret;
 }
 
+sub sync_dialogflow {
+    my ($self, $c) = @_;
+
+    my $has_general_config = $self->general_config ? 1 : 0;
+
+    return 0 unless $self->general_config->dialogflow_config_id;
+
+    return $self->politician_entities->sync_dialogflow_one_project( $self->general_config->dialogflow_config_id );
+}
+
 __PACKAGE__->meta->make_immutable;
 1;

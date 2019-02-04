@@ -184,6 +184,24 @@ sub pending_GET {
     )
 }
 
+sub sync : Chained('base') : PathPart('sync') : Args(0) : ActionClass('REST') { }
+
+sub sync_GET {
+    my ($self, $c) = @_;
+
+    my $organization_chatbot = $c->stash->{politician}->user->organization_chatbot;
+
+    eval { $organization_chatbot->sync_dialogflow };
+    use DDP; p $@;
+
+    return $self->status_ok(
+        $c,
+        entity => {
+            success => $@ ? 0 : 1
+        }
+    );
+}
+
 
 __PACKAGE__->meta->make_immutable;
 

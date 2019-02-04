@@ -18,8 +18,6 @@ has _dialogflow => (
 sub sync_dialogflow {
     my ($self) = @_;
 
-    my $politician_rs;
-
     my $organization_chatbot_rs = $self->result_source->schema->resultset('OrganizationChatbot')->search(
         { 'organization_chatbot_general_config.dialogflow_config_id' => \'IS NOT NULL' },
         {
@@ -34,7 +32,6 @@ sub sync_dialogflow {
     my @entities_names;
     my $res;
 
-    use DDP;
 
     $self->result_source->schema->txn_do(
         sub{
@@ -46,7 +43,6 @@ sub sync_dialogflow {
 
                 $res             = $self->_dialogflow->get_intents( project => $dialogflow_project ) if $last_project_id ne $project_id;
                 $last_project_id = $project_id;
-                p $project_id;
 
 				for my $entity ( @{ $res->{intents} } ) {
 					my $name = $entity->{displayName};
@@ -73,11 +69,18 @@ sub sync_dialogflow {
     return 1;
 }
 
-sub sync_dialogflow_one_politician {
-    my ($self, $politician_id) = @_;
+sub sync_dialogflow_one_project {
+    my ($self, $project_id) = @_;
 
     my @entities_names;
-    my $res = $self->_dialogflow->get_intents;
+
+    my $chatbot_rs = $self->result_source->schema->resultset('OrganizationChatbot')->search(
+        { 'organization_chatbot_general_config.dialogflow_config_id' => $project_id },
+        { prefetch => 'organization_chatbot_general_config' }
+    );
+
+    my $project = $self->result_source->schema->resultset('DialogflowConfig')->find($project_id);
+    my $res     = $self->_dialogflow->get_intents( project => $project );
 
     for my $entity ( @{ $res->{intents} } ) {
         my $name = $entity->{displayName};
@@ -90,13 +93,16 @@ sub sync_dialogflow_one_politician {
 
     $self->result_source->schema->txn_do(
         sub{
-            for my $entity_name (@entities_names) {
-                $self->find_or_create(
-                    {
-                        politician_id => $politician_id,
-                        name          => $entity_name
-                    }
-                );
+            while ( my $chatbot = $chatbot_rs->next() ) {
+                for my $entity_name (@entities_names) {
+                    $self->find_or_create(
+                        {
+                            organization_chatbot_id => $chatbot->id,
+                            name                    => $entity_name,
+							human_name              => $entity_name
+                        }
+                    );
+                }
             }
         }
     );
