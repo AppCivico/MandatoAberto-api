@@ -19,14 +19,16 @@ sub sync_dialogflow {
     my ($self) = @_;
 
     my $politician_rs;
-    if ( is_test() ) {
-		$politician_rs = $self->result_source->schema->resultset('Politician');
-    }
-    else {
-		$politician_rs = $self->result_source->schema->resultset('Politician')->search({ 'user.email' => { -ilike => '%prep%' } },{ prefetch => 'user' });
-    }
 
-    my $project_id      = 'mandato-aberto-copy';
+    my $organization_chatbot_rs = $self->result_source->schema->resultset('OrganizationChatbot')->search(
+        { 'organization_chatbot_general_config.use_dialogflow' => 1 },
+        {
+            prefetch => { 'organization_chatbot_general_config' => 'dialogflow_config' },
+            order_by => { -asc => 'dialogflow_config.project_id' }
+        }
+    );
+
+    my $project_id      = '';
     my $last_project_id = '';
 
     my @entities_names;
@@ -34,15 +36,13 @@ sub sync_dialogflow {
 
     $self->result_source->schema->txn_do(
         sub{
-            while ( my $politician = $politician_rs->next() ) {
-                my $organization_chatbot = $politician->user->organization->organization_chatbots->next;
-				my $chatbot_config       = $organization_chatbot->organization_chatbot_general_config if $organization_chatbot;
+            while ( my $organization_chatbot = $organization_chatbot_rs->next() ) {
+				my $chatbot_config     = $organization_chatbot->general_config;
+				my $dialogflow_project = $chatbot_config->dialogflow_config;
 
-                if ( $chatbot_config && $chatbot_config->dialogflow_project_id ) {
-                    $project_id = $chatbot_config->dialogflow_project_id;
-                }
+                $project_id = $dialogflow_project->project_id;
 
-                $res             = $self->_dialogflow->get_intents( dialogflow_project_id => 'prep-chatbot' ) if $last_project_id ne $project_id;
+                $res             = $self->_dialogflow->get_intents( project => $dialogflow_project ) if $last_project_id ne $project_id;
                 $last_project_id = $project_id;
 
 				for my $entity ( @{ $res->{intents} } ) {
@@ -57,7 +57,7 @@ sub sync_dialogflow {
                 for my $entity_name (@entities_names) {
                     $self->find_or_create(
                         {
-                            organization_chatbot_id => $politician->user->organization_chatbot_id,
+                            organization_chatbot_id => $organization_chatbot->id,
                             name                    => $entity_name,
                             human_name              => $entity_name
                         }

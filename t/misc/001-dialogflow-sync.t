@@ -49,7 +49,7 @@ db_transaction {
     ;
 
     my $chatbot = $politician->user->organization->organization_chatbots->next;
-    $chatbot->general_config->update( { dialogflow_project_id => 'foobar' } );
+    $chatbot->general_config->dialogflow_config->update( { project_id => 'foobar' } );
 
     ok ( $politician_entity_rs->sync_dialogflow, 'sync ok' );
     is ( $politician_entity_rs->count, 6, '6 entities created' );

@@ -131,12 +131,15 @@ sub action_specs {
                 my $organization = $self->result_source->schema->resultset('Organization')->create(
                     {
                         name                  => $values{name},
+                        # Ao criar a organização já crio com um chatbot.
                         organization_chatbots => [
                             {
                                 organization_chatbot_general_config => {
 									is_active      => 0,
 									issue_active   => 1,
 									use_dialogflow => 1,
+                                    # Criando com a config do MA
+                                    dialogflow_config_id => 1
 								},
                             }
                         ]

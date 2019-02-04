@@ -5,6 +5,8 @@ use MooseX::Singleton;
 use JSON::MaybeXS;
 use Furl;
 use Try::Tiny::Retry;
+use File::Temp;
+
 use MandatoAberto::Utils;
 
 has 'furl' => ( is => 'rw', lazy => 1, builder => '_build_furl' );
@@ -12,12 +14,16 @@ has 'furl' => ( is => 'rw', lazy => 1, builder => '_build_furl' );
 sub _build_furl { Furl->new() }
 
 sub generate_access_token {
-    my ($self) = @_;
-    my $whoami = `whoami`;
-    print STDERR "\nwhoami: $whoami\n";
+    my ($self, %opts) = @_;
 
-    my $access_token = `export GOOGLE_APPLICATION_CREDENTIALS='$ENV{GOOGLE_APPLICATION_CREDENTIALS}' && gcloud auth application-default print-access-token`;
-    print STDERR $access_token;
+    my $project = $opts{project};
+    die 'project missing' unless $project;
+
+	my $tmp_file      = File::Temp->new( DIR => '/tmp/', SUFFIX => '.json' );
+	my $tmp_file_name = $tmp_file->filename;
+	print $tmp_file $project->credentials;
+
+    my $access_token = `GOOGLE_APPLICATION_CREDENTIALS='$tmp_file_name'; gcloud auth application-default print-access-token`;
     die 'fail generating access token for dialogflow' unless $access_token;
 
     $access_token =~ s/\s+$//;
@@ -28,18 +34,21 @@ sub generate_access_token {
 sub get_entities {
     my ( $self, %opts ) = @_;
 
-    my $project = $ENV{DIALOGFLOW_PROJECT_NAME} || 'mandato-aberto';
+    my $project = $opts{project};
+    die 'project missing' unless $project;
+
+    my $project_id = $project->project_id;
 
     my $res;
     if (is_test()) {
         $res = $MandatoAberto::Test::Further::dialogflow_response;
     }
     else {
-        my $access_token = $self->generate_access_token();
+        my $access_token = $self->generate_access_token($project);
 
         eval {
             retry {
-                my $url = $ENV{DIALOGFLOW_URL} . "/v2/projects/$project/agent/entityTypes";
+                my $url = $ENV{DIALOGFLOW_URL} . "/v2/projects/$project_id/agent/entityTypes";
                 $res = $self->furl->get(
                     $url,
                     [ 'Authorization', "Bearer $access_token" ]
@@ -60,22 +69,25 @@ sub get_entities {
 sub get_intents {
     my ( $self, %opts ) = @_;
 
-    my $project = 'prep-chatbot';
+	my $project = $opts{project};
+	die 'project missing' unless $project;
+
+	my $project_id = $project->project_id;
 
     my $res;
     if (is_test()) {
         $res = $MandatoAberto::Test::Further::dialogflow_response;
     }
     else {
-        my $access_token = $self->generate_access_token();
-        use DDP; p $access_token;
+        my $access_token = $self->generate_access_token($project);
+
         eval {
             retry {
-                my $url = $ENV{DIALOGFLOW_URL} . "/v2/projects/$project/agent/intents";
+                my $url = $ENV{DIALOGFLOW_URL} . "/v2/projects/$project_id/agent/intents";
 
                 $res = $self->furl->get(
                     $url,
-                    [ 'Authorization', 'Bearer ya29.c.ElqaBrB2MJGemklU-Q5zrb1SjZFfjRIJKzydE43JD-dRjXZ3Ye1_jfZ6udlWSqehfhNnVXuonZXCM0VkQjzQIb57b8G4nWIkDj-UcrApINFxbCUZbpAHOlX3sec' ]
+                    [ 'Authorization', "Bearer $access_token" ]
                 );
 
 				p $res->request;
@@ -96,7 +108,10 @@ sub get_intents {
 sub create_intent {
     my ( $self, %opts ) = @_;
 
-    my $project = $ENV{DIALOGFLOW_PROJECT_NAME} || 'mandato-aberto';
+	my $project = $opts{project};
+	die 'project missing' unless $project;
+
+	my $project_id = $project->project_id;
 
     my $res;
     if (is_test()) {
@@ -107,10 +122,10 @@ sub create_intent {
 
         eval {
             retry {
-                my $url = $ENV{DIALOGFLOW_URL} . "/v2/projects/$project/agent/intents?languageCode=pt-BR";
+                my $url = $ENV{DIALOGFLOW_URL} . "/v2/projects/$project_id/agent/intents?languageCode=pt-BR";
                 $res = $self->furl->post(
                     $url,
-                    [ 'Authorization', "Bearer ya29.c.ElqNBuAUmHYZNW5_rE6d1jGTu1Y43Iekmiem47hZstp42C58801sr-Q35Ah5gGYf_cmc6c9-JR2StKABLcTOrIYMOenjG0aSoKZ1YVvPoD40xwpyn8MRzQ9tIjc" ]
+                    [ 'Authorization', "Bearer $access_token" ]
                 );
 
                 die $res->decoded_content unless $res->is_success;
