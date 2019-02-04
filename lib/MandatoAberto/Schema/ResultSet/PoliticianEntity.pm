@@ -21,7 +21,7 @@ sub sync_dialogflow {
     my $politician_rs;
 
     my $organization_chatbot_rs = $self->result_source->schema->resultset('OrganizationChatbot')->search(
-        { 'organization_chatbot_general_config.use_dialogflow' => 1 },
+        { 'organization_chatbot_general_config.dialogflow_config_id' => \'IS NOT NULL' },
         {
             prefetch => { 'organization_chatbot_general_config' => 'dialogflow_config' },
             order_by => { -asc => 'dialogflow_config.project_id' }
