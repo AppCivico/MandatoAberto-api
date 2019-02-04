@@ -152,3 +152,4 @@
 0148-add-unique-module [0147-add-chatbot] 2018-12-14T16:53:46Z Lucas Ansei,,, <lucas@lucas-G750JX> # Adding unique module constraint
 0149-add-uniq-constraint [0148-add-unique-module] 2019-01-09T16:24:52Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding unique constraint on the 'user_organization' table.
 0150-add-dialogflow-config [0149-add-uniq-constraint] 2019-02-04T12:35:15Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Creating the 'dialogflow_config' table
+0151-create-view [0150-add-dialogflow-config] 2019-02-04T13:10:24Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Creating a user_organization view
