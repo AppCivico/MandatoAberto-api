@@ -79,7 +79,7 @@ sub get_intents {
         $res = $MandatoAberto::Test::Further::dialogflow_response;
     }
     else {
-        my $access_token = $self->generate_access_token($project);
+        my $access_token = $self->generate_access_token( project => $project );
 
         eval {
             retry {
