@@ -485,17 +485,16 @@ sub add_to_politician_entity {
             # Verificando se este recipient já estava na entidade.
             my $recipients_rs = $self->organization_chatbot->recipients;
 
-            my $already_in_this_group = $recipients_rs->search(
+			my $already_in_this_group = $recipients_rs->search(
                 {
-                    '-and' => [
+                    -and => [
                         'me.id' => $self->id,
-                        \[ '? =ANY(entities)', $politician_entity_id ],
-                    ],
+                        \[ "? =ANY(entities)" => $politician_entity_id ],
+                    ]
                 },
-                { select => [ \1 ] },
-            )->next;
+            );
 
-            return if $already_in_this_group;
+            return if $already_in_this_group->count > 0;
 
             $ret = $self->update( { entities => \[ "array_append(entities, ?)", $politician_entity_id ] } );
 

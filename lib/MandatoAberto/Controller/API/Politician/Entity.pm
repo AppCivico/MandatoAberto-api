@@ -192,7 +192,6 @@ sub sync_GET {
     my $organization_chatbot = $c->stash->{politician}->user->organization_chatbot;
 
     eval { $organization_chatbot->sync_dialogflow };
-    use DDP; p $@;
 
     return $self->status_ok(
         $c,

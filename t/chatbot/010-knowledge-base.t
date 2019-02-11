@@ -144,6 +144,43 @@ db_transaction {
         ]
     ;
 
+    # fb_id is required
+    rest_get '/api/chatbot/knowledge-base',
+        name    => 'get kb without fb_id',
+        is_fail => 1,
+        code    => 400,
+        [
+            security_token => $security_token,
+            politician_id  => $politician_id,
+            entities       => encode_json(
+                {
+                    id        => 'a8736300-e5b3-4ab8-a29e-c379ef7f61de',
+                    timestamp => '2018-09-19T21 => 39 => 43.452Z',
+                    lang      => 'pt-br',
+                    result    => {
+                        source           => 'agent',
+                        resolvedQuery    => 'O que você acha do aborto?',
+                        action           => '',
+                        actionIncomplete => 0,
+                        parameters       => {},
+                        contexts         => [],
+                        metadata         => {
+                            intentId                  => '4c3f7241-6990-4c92-8332-cfb8d437e3d1',
+                            webhookUsed               => 0,
+                            webhookForSlotFillingUsed => 0,
+                            isFallbackIntent          => 0,
+                            intentName                => 'Saude'
+                        },
+                        fulfillment => { speech =>  '', messages =>  [] },
+                        score       => 1
+                    },
+                    status    => { code =>  200, errorType =>  'success' },
+                    sessionId => '1938538852857638'
+                }
+            )
+        ]
+    ;
+
     rest_get '/api/chatbot/knowledge-base',
         name  => 'get knowledge base',
         stash => 'get_knowledge_base',
@@ -151,6 +188,7 @@ db_transaction {
         [
             security_token => $security_token,
             politician_id  => $politician_id,
+            fb_id          => $recipient->fb_id,
             entities       => encode_json(
                 {
                     id        => 'a8736300-e5b3-4ab8-a29e-c379ef7f61de',
@@ -199,6 +237,7 @@ db_transaction {
         [
             security_token => $security_token,
             politician_id  => $politician_id,
+            fb_id          => $recipient->fb_id,
             entities       => encode_json(
                 {
                     id        => 'a8736300-e5b3-4ab8-a29e-c379ef7f61de',
@@ -242,7 +281,8 @@ db_transaction {
         [
             security_token => $security_token,
             politician_id  => $politician_id,
-            entities       => 'Saude'
+            entities       => 'Saude',
+            fb_id          => $recipient->fb_id
         ]
     ;
 
@@ -260,7 +300,8 @@ db_transaction {
             [
                 security_token => $security_token,
                 politician_id  => $politician_id,
-                entities       => 'Saude'
+                entities       => 'Saude',
+                fb_id          => $recipient->fb_id
             ]
         ;
 
@@ -269,6 +310,34 @@ db_transaction {
 
             is ( scalar @{ $res->{knowledge_base} }, 2, '2 rows' )
         };
+    };
+
+    # Criando um novo recipient
+    # E mandando pergunta sobre um tema
+    # Para testar a vinculação pelo GET do posicionamento
+    subtest 'Chatbot | Get knowledge base' => sub {
+        create_recipient(politician_id => $politician_id);
+        $recipient = $schema->resultset('Recipient')->find(stash 'recipient.id');
+        $recipient->update( { fb_id => 'foo' } );
+
+        my $intent = $schema->resultset('PoliticianEntity')->search( { name => 'saude' } )->next;
+        is( $intent->recipient_count, 1, 'one recipient' );
+
+		rest_get '/api/chatbot/knowledge-base',
+            name  => 'get knowledge base with no knowledge base registered for that entity',
+            stash => 'get_knowledge_base',
+            list  => 1,
+            [
+                security_token => $security_token,
+                politician_id  => $politician_id,
+                entities       => 'Saude',
+                fb_id          => $recipient->fb_id
+            ]
+        ;
+
+        ok( $intent = $intent->discard_changes );
+		is( $intent->recipient_count, 2, 'one recipient' );
+
     };
 };
 
