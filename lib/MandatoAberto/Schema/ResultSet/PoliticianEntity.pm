@@ -113,7 +113,13 @@ sub sync_dialogflow_one_project {
 sub skip_intent {
     my ($self, $name) = @_;
 
-    my @non_theme_intents = qw( Fallback Agradecimento Contatos FaleConosco Pergunta Saudação Trajetoria Voluntário Participar default\ welcome\ intent default\ fallback\ intent);
+    my @non_theme_intents = qw(
+        Fallback Agradecimento Contatos FaleConosco Pergunta Saudação
+        Trajetoria Voluntário Participar default\ welcome\ intent
+        default\ fallback\ intent teste test Teste pedido\ de\ produtos
+        pedido\ de\ assistência\ -\ jurídica pedido\ de\ emprego
+        pedido\ de\ assistência\ -\ previdência pedido\ de\ assistência\ -\ saúde
+    );
 
     my $skip_intent = grep { $_ eq $name } @non_theme_intents;
 
