@@ -225,7 +225,7 @@ sub get_open_issues_created_today {
 sub extract_metrics {
     my ($self, %opts) = @_;
 
-	$self = $self->search_rs( { 'me.created_at' => { '>=' => \"NOW() - interval '$opts{range}'" } } ) if $opts{range};
+	$self = $self->search_rs( { 'me.created_at' => { '>=' => \"NOW() - interval '$opts{range} days'" } } ) if $opts{range};
 
     my $issue_response_view = $self->result_source->schema->resultset('ViewAvgIssueResponseTime')->search( undef, { bind => [ $opts{politician_id} ] } )->next;
 

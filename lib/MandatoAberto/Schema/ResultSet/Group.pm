@@ -132,7 +132,7 @@ sub get_groups_ordered_by_recipient_count {
 sub extract_metrics {
     my ($self, %opts) = @_;
 
-	$self = $self->search_rs( { 'me.created_at' => { '>=' => \"NOW() - interval '$opts{range}'" } } ) if $opts{range};
+	$self = $self->search_rs( { 'me.created_at' => { '>=' => \"NOW() - interval '$opts{range} days'" } } ) if $opts{range};
 
     return {
         count             => $self->count,

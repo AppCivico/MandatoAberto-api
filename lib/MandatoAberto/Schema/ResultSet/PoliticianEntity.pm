@@ -579,7 +579,7 @@ sub find_human_name {
 sub extract_metrics {
     my ($self, %opts) = @_;
 
-	$self = $self->search_rs( { 'me.created_at' => { '>=' => \"NOW() - interval '$opts{range}'" } } ) if $opts{range};
+	$self = $self->search_rs( { 'me.created_at' => { '>=' => \"NOW() - interval '$opts{range} days'" } } ) if $opts{range};
 
     my $most_significative_entity = $self->search(
         undef,

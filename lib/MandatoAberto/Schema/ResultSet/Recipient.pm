@@ -383,7 +383,7 @@ sub get_recipients_poll_results {
 sub extract_metrics {
     my ($self, %opts) = @_;
 
-	$self = $self->search_rs( { 'me.created_at' => { '>=' => \"NOW() - interval '$opts{range}'" } } ) if $opts{range};
+	$self = $self->search_rs( { 'me.created_at' => { '>=' => \"NOW() - interval '$opts{range} days'" } } ) if $opts{range};
 
 	return {
         # Contagem total de seguidores
