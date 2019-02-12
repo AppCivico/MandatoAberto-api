@@ -51,7 +51,7 @@ sub get_politician_campaign_reach_poll_propagate_count {
 sub extract_metrics {
     my ($self, %opts) = @_;
 
-	$self = $self->search_rs( { 'me.created_at' => { '<=' => \"NOW() - interval '$opts{range}'" } } ) if $opts{range};
+	$self = $self->search_rs( { 'me.created_at' => { '>=' => \"NOW() - interval '$opts{range}'" } } ) if $opts{range};
 
     return {
         # Contagem total de campanhas
