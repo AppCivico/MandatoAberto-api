@@ -90,7 +90,7 @@ sub get_metric_text_for_dashboard {
         $text = 'Seguidores';
     }
     elsif ( $relation eq 'politician_entities' ) {
-        $text = 'Temas';
+        $text = 'Pontos de vista';
     }
     else {
         die 'missing relation name on MandatoAberto::Utils on get_metric_text_for_dashboard'
@@ -148,7 +148,7 @@ sub get_notification_text_for_bar {
         $text = 'Seguidores';
     }
     elsif ( $relation eq 'politician_entities' ) {
-        $text = 'Temas';
+        $text = 'Pontos de vista';
     }
     else {
         die 'missing relation name on MandatoAberto::Utils on get_notification_text_for_bar'
