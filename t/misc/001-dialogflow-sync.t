@@ -32,6 +32,25 @@ db_transaction {
 
     setup_dialogflow_intents_response();
 
+    # Testando sync com get
+    db_transaction{
+		is( $politician_entity_rs->count, 0, 'no intents' );
+
+        rest_get "/api/politician/$politician_id/intent",
+            name    => 'invalid param',
+            is_fail => 1,
+            code    => 400,
+            [ sync => 'foobar' ]
+        ;
+
+        rest_get "/api/politician/$politician_id/intent",
+            name => 'get intent with sync',
+            [ sync => 1 ]
+        ;
+
+		is( $politician_entity_rs->count, 3, '3 entities created' );
+    };
+
     ok ( $politician_entity_rs->sync_dialogflow, 'sync ok' );
     is ( $politician_entity_rs->count, 3, '3 entities created' );
 
