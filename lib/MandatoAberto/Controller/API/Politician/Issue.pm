@@ -104,35 +104,40 @@ sub list_GET {
 
     $c->stash->{collection} = $c->stash->{politician}->user->organization_chatbot->issues;
 
+    my $page_id = $c->stash->{politician}->user->organization_chatbot->fb_config->page_id;
+
     my $cond;
     if ( $filter eq 'open' ) {
         $cond = {
-            open               => 1,
-            'me.message'       => { '!=' => 'Participar' },
-            deleted            => 0
+            open                => 1,
+            'me.message'        => { '!=' => 'Participar' },
+            deleted             => 0,
+            'recipient.page_id' => $page_id
         }
     }
     elsif ( $filter eq 'ignored' ) {
         $cond = {
-            open               => 0,
-            reply              => \'IS NULL',
-            'me.message'       => { '!=' => 'Participar' },
-            deleted            => 0
+            open                => 0,
+            reply               => \'IS NULL',
+            'me.message'        => { '!=' => 'Participar' },
+            deleted             => 0,
+            'recipient.page_id' => $page_id
         }
     }
     else {
         $cond = {
-            open               => 0,
-            reply              => \'IS NOT NULL',
-            'me.message'       => { '!=' => 'Participar' },
-            deleted            => 0
+            open                => 0,
+            reply               => \'IS NOT NULL',
+            'me.message'        => { '!=' => 'Participar' },
+            deleted             => 0,
+            'recipient.page_id' => $page_id
         }
     }
 
     my $page    = $c->req->params->{page}    || 1;
     my $results = $c->req->params->{results} || 20;
 
-    $c->stash->{collection} = $c->stash->{collection}->search($cond);
+    $c->stash->{collection} = $c->stash->{collection}->search($cond, { prefetch => 'recipient' });
 
     return $self->status_ok(
         $c,
