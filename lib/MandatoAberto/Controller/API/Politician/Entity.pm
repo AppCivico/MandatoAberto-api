@@ -186,7 +186,7 @@ sub pending_GET {
 
 sub sync : Chained('base') : PathPart('sync') : Args(0) : ActionClass('REST') { }
 
-sub sync_GET {
+sub sync_POST {
     my ($self, $c) = @_;
 
     my $organization_chatbot = $c->stash->{politician}->user->organization_chatbot;
