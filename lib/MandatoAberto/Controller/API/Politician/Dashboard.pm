@@ -204,7 +204,7 @@ sub list_new_GET {
 
     my $politician = $c->stash->{politician};
 
-    my @relations = qw( issues campaigns groups recipients politician_entities );
+    my @relations = qw( issues campaigns recipients politician_entities );
 
     my $has_facebook_auth = $politician->fb_page_access_token ? 1 : 0;
 
