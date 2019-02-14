@@ -99,7 +99,7 @@ sub list_GET {
     die \['sync', 'invalid'] unless $sync =~ m/^(1|0)$/;
 
 	my $organization_chatbot = $c->stash->{politician}->user->organization_chatbot;
-    eval { $organization_chatbot->sync_dialogflow };
+    eval { $organization_chatbot->sync_dialogflow if $sync == 1 };
 
     my $organization_chatbot_id = $c->stash->{politician}->user->organization_chatbot_id;
 
