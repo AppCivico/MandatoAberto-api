@@ -153,3 +153,4 @@
 0149-add-uniq-constraint [0148-add-unique-module] 2019-01-09T16:24:52Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding unique constraint on the 'user_organization' table.
 0150-add-dialogflow-config [0149-add-uniq-constraint] 2019-02-04T12:35:15Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Creating the 'dialogflow_config' table
 0151-create-view [0150-add-dialogflow-config] 2019-02-04T13:10:24Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Creating a user_organization view
+0152-add-constraint [0151-create-view] 2019-02-14T12:00:50Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding constraint to the politician_entity table

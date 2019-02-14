@@ -124,6 +124,22 @@ __PACKAGE__->add_columns(
 
 __PACKAGE__->set_primary_key("id");
 
+=head1 UNIQUE CONSTRAINTS
+
+=head2 C<chatbot_id_name>
+
+=over 4
+
+=item * L</organization_chatbot_id>
+
+=item * L</name>
+
+=back
+
+=cut
+
+__PACKAGE__->add_unique_constraint("chatbot_id_name", ["organization_chatbot_id", "name"]);
+
 =head1 RELATIONS
 
 =head2 organization_chatbot
@@ -157,8 +173,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-12-05 10:51:56
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:qKNyEnNP00Wx0Ab1/IrIEg
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-02-14 09:57:33
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:skJ+0G04wJp+XYRWudYRsg
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
