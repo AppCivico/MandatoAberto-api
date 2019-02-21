@@ -227,20 +227,32 @@ sub extract_metrics {
 
 	$self = $self->search_rs( { 'me.created_at' => { '>=' => \"NOW() - interval '$opts{range} days'" } } ) if $opts{range};
 
-    my $issue_response_view = $self->result_source->schema->resultset('ViewAvgIssueResponseTime')->search( undef, { bind => [ $opts{politician_id} ] } )->next;
+    my $politician          = $self->result_source->schema->resultset('Politician')->find($opts{politician_id});
+    my $issue_response_view = $self->result_source->schema->resultset('ViewAvgIssueResponseTime')->search( undef, { bind => [ $politician->user->organization_chatbot->id ] } )->next;
 
     my $count_open        = $self->search( { open => 1 } )->count;
     my $count_ignored     = $self->search( { open => 0, reply => \'IS NULL' } )->count;
     my $count_replied     = $self->search( { open => 0, reply => \'IS NOT NULL' } )->count;
-    my $avg_response_time = $issue_response_view ? $issue_response_view->avg_response_time : 0;
+    my $avg_response_time = $issue_response_view ? $issue_response_view->avg_response_time : undef;
+
+    # Caso nunca tenha respondido devo mostrar um texto específico
+    my $text;
+    if ( !$avg_response_time ) {
+        $text = 'Você nunca respondeu suas mensagens!';
+    }
+    else {
+        $text = 'Tempo médio de respostas: ' . $avg_response_time;
+    }
+
+    my $alert_is_positive = $avg_response_time && $avg_response_time <= 90 ? 1 : 0;
 
     return {
         count             => $self->count,
         fallback_text     => 'Aqui você poderá métricas sobre as mensagens que o assistente digital não conseguiu responder.',
         suggested_actions => [
             {
-                alert             => 'Tempo médio de respostas: ' . $avg_response_time,
-                alert_is_positive => $avg_response_time <= 90 ? 1 : 0,
+                alert             => $text,
+                alert_is_positive => $alert_is_positive,
                 link              => '',
                 link_text         => 'Ver mensagens'
             }
