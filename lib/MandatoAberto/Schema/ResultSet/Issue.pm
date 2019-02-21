@@ -241,7 +241,7 @@ sub extract_metrics {
         $text = 'Você nunca respondeu suas mensagens!';
     }
     else {
-        $text = 'Tempo médio de respostas: ' . $avg_response_time;
+        $text = 'Tempo médio de respostas: ' . $avg_response_time . ' minutos.';
     }
 
     my $alert_is_positive = $avg_response_time && $avg_response_time <= 90 ? 1 : 0;
