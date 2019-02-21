@@ -374,6 +374,13 @@ sub setup_dialogflow_entities_response {
                         ]
                     }
                 ]
+            },
+            {
+                "name" => "projects/mandato-aberto/agent/entityTypes/21ef68da-e7ff-4b71-be6e-99335cb8243b",
+                "displayName" => "default fallback intent",
+                "kind" => "KIND_MAP",
+                "autoExpansionMode" => "AUTO_EXPANSION_MODE_DEFAULT",
+                "entities" => [ ]
             }
         ]
     }
@@ -400,6 +407,171 @@ sub setup_dialogflow_intents_response {
                 "priority"     => 500000,
                 "webhookState" => "WEBHOOK_STATE_ENABLED"
             },
+			{
+				"name"         => "projects/mandato-aberto/agent/intents/1dab4a2a-db67-451a-a49b-723c39a3775f",
+				"displayName"  => "mobilidade_urbana",
+				"priority"     => 500000,
+				"webhookState" => "WEBHOOK_STATE_ENABLED"
+			},
+            {
+                "name" => "projects/prep-chatbot/agent/intents/124566b6-24eb-4663-b697-dd900417c30a",
+                "displayName" => "Default Welcome Intent",
+                "priority" => 500000,
+                "events" => [
+                    "WELCOME"
+                ],
+                "action" => "input.welcome",
+                "messages" => [
+                    {
+                        "text" => {
+                            "text" => [
+                            "Olá!",
+                            "Oi!"
+                            ]
+                        }
+                    }
+                ]
+            },
+            {
+                "name" => "projects/prep-chatbot/agent/intents/63113792-2fd4-40c6-9bd0-bf4197c60276",
+                "displayName" => "Default Fallback Intent",
+                "priority" => 500000,
+                "isFallback" => \1,
+                "action" => "input.unknown",
+                "messages" => [
+                    {
+                        "text" => {
+                            "text" => [
+                            "Lamento, mas não compreendi.",
+                            "Desculpe, mas não compreendi.",
+                            "Infelizmente, não captei o que deseja.",
+                            "Não consegui compreender, desculpe."
+                            ]
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+}
+
+sub setup_dialogflow_intents_other_project_response {
+    $dialogflow_response = {
+        "intents" => [
+            {
+                "name"         => "projects/mandato-aberto/agent/intents/09fe19c6-1dc6-417c-9e2b-a81edd8e1e31",
+                "displayName"  => "sobre x",
+                "priority"     => 500000,
+                "webhookState" => "WEBHOOK_STATE_ENABLED"
+            },
+			{
+				"name"         => "projects/mandato-aberto/agent/intents/09fe19c6-1dc6-417c-9e2b-a81edd8e1e31",
+				"displayName"  => "sobre y",
+				"priority"     => 500000,
+				"webhookState" => "WEBHOOK_STATE_ENABLED"
+			},
+            {
+                "name" => "projects/prep-chatbot/agent/intents/124566b6-24eb-4663-b697-dd900417c30a",
+                "displayName" => "Default Welcome Intent",
+                "priority" => 500000,
+                "events" => [
+                    "WELCOME"
+                ],
+                "action" => "input.welcome",
+                "messages" => [
+                    {
+                        "text" => {
+                            "text" => [
+                            "Olá!",
+                            "Oi!"
+                            ]
+                        }
+                    }
+                ]
+            },
+            {
+                "name" => "projects/prep-chatbot/agent/intents/63113792-2fd4-40c6-9bd0-bf4197c60276",
+                "displayName" => "Default Fallback Intent",
+                "priority" => 500000,
+                "isFallback" => \1,
+                "action" => "input.unknown",
+                "messages" => [
+                    {
+                        "text" => {
+                            "text" => [
+                            "Lamento, mas não compreendi.",
+                            "Desculpe, mas não compreendi.",
+                            "Infelizmente, não captei o que deseja.",
+                            "Não consegui compreender, desculpe."
+                            ]
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+}
+
+
+sub setup_dialogflow_intents_with_one_deleted_response {
+    $dialogflow_response = {
+        "intents" => [
+            {
+                "name"         => "projects/mandato-aberto/agent/intents/09fe19c6-1dc6-417c-9e2b-a81edd8e1e31",
+                "displayName"  => "saude",
+                "priority"     => 500000,
+                "webhookState" => "WEBHOOK_STATE_ENABLED"
+            },
+            {
+                "name"         => "projects/mandato-aberto/agent/intents/1dab4a2a-db67-451a-a49b-723c39a3775f",
+                "displayName"  => "mobilidade_urbana",
+                "priority"     => 500000,
+                "webhookState" => "WEBHOOK_STATE_ENABLED"
+            },
+			{
+				"name"         => "projects/mandato-aberto/agent/intents/1dab4a2a-db67-451a-a49b-723c39a3775f",
+				"displayName"  => "mobilidade_urbana",
+				"priority"     => 500000,
+				"webhookState" => "WEBHOOK_STATE_ENABLED"
+			},
+            {
+                "name" => "projects/prep-chatbot/agent/intents/124566b6-24eb-4663-b697-dd900417c30a",
+                "displayName" => "Default Welcome Intent",
+                "priority" => 500000,
+                "events" => [
+                    "WELCOME"
+                ],
+                "action" => "input.welcome",
+                "messages" => [
+                    {
+                        "text" => {
+                            "text" => [
+                            "Olá!",
+                            "Oi!"
+                            ]
+                        }
+                    }
+                ]
+            },
+            {
+                "name" => "projects/prep-chatbot/agent/intents/63113792-2fd4-40c6-9bd0-bf4197c60276",
+                "displayName" => "Default Fallback Intent",
+                "priority" => 500000,
+                "isFallback" => \1,
+                "action" => "input.unknown",
+                "messages" => [
+                    {
+                        "text" => {
+                            "text" => [
+                            "Lamento, mas não compreendi.",
+                            "Desculpe, mas não compreendi.",
+                            "Infelizmente, não captei o que deseja.",
+                            "Não consegui compreender, desculpe."
+                            ]
+                        }
+                    }
+                ]
+            }
         ]
     }
 }

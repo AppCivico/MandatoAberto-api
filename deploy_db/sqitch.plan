@@ -154,3 +154,4 @@
 0150-add-dialogflow-config [0149-add-uniq-constraint] 2019-02-04T12:35:15Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Creating the 'dialogflow_config' table
 0151-create-view [0150-add-dialogflow-config] 2019-02-04T13:10:24Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Creating a user_organization view
 0152-add-constraint [0151-create-view] 2019-02-14T12:00:50Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding constraint to the politician_entity table
+0153-fix-duplicate-intents [0152-add-constraint] 2019-02-21T14:38:17Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # deleting duplicate intents

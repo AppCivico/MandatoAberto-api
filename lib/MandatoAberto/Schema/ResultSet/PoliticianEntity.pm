@@ -32,7 +32,6 @@ sub sync_dialogflow {
     my @entities_names;
     my $res;
 
-
     $self->result_source->schema->txn_do(
         sub{
             while ( my $organization_chatbot = $organization_chatbot_rs->next() ) {
@@ -63,6 +62,20 @@ sub sync_dialogflow {
                         { key => 'chatbot_id_name' }
                     );
                 }
+
+                # Após criar as entities
+                # deleto qualquer uma que seja do chatbot
+                # mas não está com o nome na lista
+                my $intents_to_be_deleted = $self->search( { name => { -not_in => \@entities_names } } );
+
+                my $knowledge_base_rs = $self->result_source->schema->resultset('PoliticianKnowledgeBase')->search( { organization_chatbot_id => $organization_chatbot->id } );
+                while ( my $intent_to_be_deleted = $intents_to_be_deleted->next() ) {
+                    $knowledge_base_rs->search(
+                            \["? = ANY(entities)", $intent_to_be_deleted->id]
+                    )->delete;
+                }
+
+                $intents_to_be_deleted->delete();
             }
         }
     );
@@ -120,7 +133,8 @@ sub skip_intent {
         'Trajetoria', 'Voluntário', 'Participar', 'default welcome intent',
         'default fallback intent', 'teste', 'test', 'Teste', 'pedido de produtos',
         'pedido de assistência - jurídica', 'pedido de emprego',
-        'pedido de assistência - previdência', 'pedido de assistência - saúde'
+        'pedido de assistência - previdência', 'pedido de assistência - saúde',
+        'Default Welcome Intent', 'Default Fallback Intent'
     );
 
     my $skip_intent = grep { $_ eq $name } @non_theme_intents;
