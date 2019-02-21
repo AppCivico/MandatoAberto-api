@@ -116,9 +116,9 @@ db_transaction {
     ok( $chatbot->general_config->update( { dialogflow_config_id => $dialogflow_config->id } ), 'update config id' );
 
 	setup_dialogflow_intents_other_project_response();
-	ok( $politician_entity_rs->sync_dialogflow, 'sync ok' );
-	is( $politician_entity_rs->count, 6,        '6 rows' );
-	is( $chatbot->politician_entities->count, 6,        '6 rows' );
+	ok( $politician_entity_rs->sync_dialogflow,  'sync ok' );
+	is( $politician_entity_rs->count, 6,         '6 rows' );
+	is( $chatbot->politician_entities->count, 2, '2 rows' );
 };
 
 done_testing();
