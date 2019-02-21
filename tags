@@ -101,6 +101,7 @@ MandatoAberto::Schema::Result::ChatbotPlatform	./lib/MandatoAberto/Schema/Result
 MandatoAberto::Schema::Result::ChatbotStep	./lib/MandatoAberto/Schema/Result/ChatbotStep.pm	/^package MandatoAberto::Schema::Result::ChatbotStep;$/;"	p
 MandatoAberto::Schema::Result::City	./lib/MandatoAberto/Schema/Result/City.pm	/^package MandatoAberto::Schema::Result::City;$/;"	p
 MandatoAberto::Schema::Result::Dialog	./lib/MandatoAberto/Schema/Result/Dialog.pm	/^package MandatoAberto::Schema::Result::Dialog;$/;"	p
+MandatoAberto::Schema::Result::DialogflowConfig	./lib/MandatoAberto/Schema/Result/DialogflowConfig.pm	/^package MandatoAberto::Schema::Result::DialogflowConfig;$/;"	p
 MandatoAberto::Schema::Result::DirectMessage	./lib/MandatoAberto/Schema/Result/DirectMessage.pm	/^package MandatoAberto::Schema::Result::DirectMessage;$/;"	p
 MandatoAberto::Schema::Result::DirectMessageAttachment	./lib/MandatoAberto/Schema/Result/DirectMessageAttachment.pm	/^package MandatoAberto::Schema::Result::DirectMessageAttachment;$/;"	p
 MandatoAberto::Schema::Result::DirectMessageQueue	./lib/MandatoAberto/Schema/Result/DirectMessageQueue.pm	/^package MandatoAberto::Schema::Result::DirectMessageQueue;$/;"	p
@@ -156,6 +157,7 @@ MandatoAberto::Schema::Result::UserForgotPassword	./lib/MandatoAberto/Schema/Res
 MandatoAberto::Schema::Result::UserOrganization	./lib/MandatoAberto/Schema/Result/UserOrganization.pm	/^package MandatoAberto::Schema::Result::UserOrganization;$/;"	p
 MandatoAberto::Schema::Result::UserRole	./lib/MandatoAberto/Schema/Result/UserRole.pm	/^package MandatoAberto::Schema::Result::UserRole;$/;"	p
 MandatoAberto::Schema::Result::UserSession	./lib/MandatoAberto/Schema/Result/UserSession.pm	/^package MandatoAberto::Schema::Result::UserSession;$/;"	p
+MandatoAberto::Schema::Result::UserWithOrganizationData	./lib/MandatoAberto/Schema/Result/UserWithOrganizationData.pm	/^package MandatoAberto::Schema::Result::UserWithOrganizationData;$/;"	p
 MandatoAberto::Schema::Result::ViewAvailableEntities	./lib/MandatoAberto/Schema/Result/ViewAvailableEntities.pm	/^package MandatoAberto::Schema::Result::ViewAvailableEntities;$/;"	p
 MandatoAberto::Schema::Result::ViewAvgIssueResponseTime	./lib/MandatoAberto/Schema/Result/ViewAvgIssueResponseTime.pm	/^package MandatoAberto::Schema::Result::ViewAvgIssueResponseTime;$/;"	p
 MandatoAberto::Schema::Result::ViewAvgIssueResponseTimeLastWeek	./lib/MandatoAberto/Schema/Result/ViewAvgIssueResponseTimeLastWeek.pm	/^package MandatoAberto::Schema::Result::ViewAvgIssueResponseTimeLastWeek;$/;"	p
@@ -400,6 +402,7 @@ default	./lib/MandatoAberto/Controller/Root.pm	/^sub default :Path {$/;"	s
 delete_persona	./lib/WebService/Facebook.pm	/^sub delete_persona {$/;"	s
 description	./lib/MandatoAberto/Schema/Result/Log.pm	/^sub description {$/;"	s
 disapprove	./lib/MandatoAberto/Schema/Result/User.pm	/^sub disapprove {$/;"	s
+empty_metric	./lib/MandatoAberto/Utils.pm	/^sub empty_metric {$/;"	s
 entities_with_available_knowledge_bases	./lib/MandatoAberto/Schema/ResultSet/PoliticianEntity.pm	/^sub entities_with_available_knowledge_bases {$/;"	s
 entity_exists	./lib/MandatoAberto/Schema/ResultSet/PoliticianEntity.pm	/^sub entity_exists {$/;"	s
 entity_rs	./lib/MandatoAberto/Schema/Result/Issue.pm	/^sub entity_rs {$/;"	s
@@ -474,6 +477,7 @@ get_votolegal_integration	./lib/MandatoAberto/Schema/Result/Politician.pm	/^sub 
 groups_rs	./lib/MandatoAberto/Schema/Result/DirectMessage.pm	/^sub groups_rs {$/;"	s
 groups_rs	./lib/MandatoAberto/Schema/Result/PollPropagate.pm	/^sub groups_rs {$/;"	s
 groups_rs	./lib/MandatoAberto/Schema/Result/Recipient.pm	/^sub groups_rs {$/;"	s
+has_access_token	./lib/MandatoAberto/Schema/Result/OrganizationChatbot.pm	/^sub has_access_token {$/;"	s
 has_active_knowledge_base	./lib/MandatoAberto/Schema/Result/PoliticianEntity.pm	/^sub has_active_knowledge_base {$/;"	s
 has_votolegal_integration	./lib/MandatoAberto/Schema/Result/Politician.pm	/^sub has_votolegal_integration {$/;"	s
 human_name_r	./lib/MandatoAberto/Schema/Result/PoliticianEntity.pm	/^sub human_name_r {$/;"	s
@@ -807,8 +811,11 @@ set_get_started_button_and_persistent_menu	./lib/MandatoAberto/Schema/Result/Pol
 skip_intent	./lib/MandatoAberto/Schema/ResultSet/PoliticianEntity.pm	/^sub skip_intent {$/;"	s
 structure	./lib/MandatoAberto/Controller/API/Politician/Group.pm	/^sub structure : Chained('base') : PathPart('structure') : Args(0) : ActionClass('REST') { }$/;"	s
 structure_GET	./lib/MandatoAberto/Controller/API/Politician/Group.pm	/^sub structure_GET {$/;"	s
+sync	./lib/MandatoAberto/Controller/API/Politician/Entity.pm	/^sub sync : Chained('base') : PathPart('sync') : Args(0) : ActionClass('REST') { }$/;"	s
+sync_POST	./lib/MandatoAberto/Controller/API/Politician/Entity.pm	/^sub sync_POST {$/;"	s
+sync_dialogflow	./lib/MandatoAberto/Schema/Result/OrganizationChatbot.pm	/^sub sync_dialogflow {$/;"	s
 sync_dialogflow	./lib/MandatoAberto/Schema/ResultSet/PoliticianEntity.pm	/^sub sync_dialogflow {$/;"	s
-sync_dialogflow_one_politician	./lib/MandatoAberto/Schema/ResultSet/PoliticianEntity.pm	/^sub sync_dialogflow_one_politician {$/;"	s
+sync_dialogflow_one_project	./lib/MandatoAberto/Schema/ResultSet/PoliticianEntity.pm	/^sub sync_dialogflow_one_project {$/;"	s
 sync_with_dialogflow	./lib/MandatoAberto/Schema/ResultSet/Entity.pm	/^sub sync_with_dialogflow {$/;"	s
 update_recipients	./lib/MandatoAberto/Schema/Result/Group.pm	/^sub update_recipients {$/;"	s
 update_votolegal_integration	./lib/MandatoAberto/Schema/Result/PoliticianVotolegalIntegration.pm	/^sub update_votolegal_integration {$/;"	s

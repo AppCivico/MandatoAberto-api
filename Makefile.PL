@@ -74,6 +74,7 @@ my %WriteMakefileArgs = (
     "Exporter" => 0,
     "File::Basename" => 0,
     "File::MimeInfo" => 0,
+    "File::Temp" => 0,
     "FindBin" => 0,
     "Furl" => 0,
     "HTTP::Async" => 0,
@@ -130,7 +131,7 @@ my %WriteMakefileArgs = (
     "blib" => "1.01",
     "lib" => 0
   },
-  "VERSION" => 20181219,
+  "VERSION" => 20190221,
   "test" => {
     "TESTS" => "t/*.t t/admin/*.t t/chatbot/*.t t/misc/*.t t/politician/*.t t/polls/*.t t/worker/*.t"
   }
@@ -200,6 +201,7 @@ my %FallbackPrereqs = (
   "File::Basename" => 0,
   "File::MimeInfo" => 0,
   "File::Spec" => 0,
+  "File::Temp" => 0,
   "FindBin" => 0,
   "Furl" => 0,
   "HTTP::Async" => 0,
