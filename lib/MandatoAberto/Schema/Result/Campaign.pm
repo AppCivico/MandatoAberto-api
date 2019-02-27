@@ -316,13 +316,11 @@ sub send_poll_facebook {
 
     my $count = 0;
     while (my $recipient = $recipient_rs->next()) {
-        my $headers = $self->direct_message->build_headers( $recipient );
-
         # Mando para o httpcallback
         $self->_httpcb->add(
             url     => $ENV{FB_API_URL} . '/me/messages?access_token=' . $self->organization_chatbot->fb_config->access_token,
             method  => "post",
-            headers => $headers,
+            headers => 'Content-Type: application/json',
             body    => to_json {
                 messaging_type => "UPDATE",
                 recipient => {
