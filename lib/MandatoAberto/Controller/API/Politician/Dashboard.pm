@@ -175,8 +175,7 @@ sub list_GET {
             },
             polls => {
                 count                => $polls->count,
-                count_propagated     => $politician->poll_propagates->count,
-                count_non_propagated => $polls->get_non_propagated_polls( $politician->user_id )->count,
+                # count_non_propagated => $polls->get_non_propagated_polls( $politician->user_id )->count,
 
                 # reach            => $poll_results->count,
                 # reach_dialog     => $poll_results->search( { 'poll_results.origin' => 'dialog' } )->count,

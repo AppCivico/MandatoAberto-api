@@ -353,21 +353,6 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 poll_propagates
-
-Type: has_many
-
-Related object: L<MandatoAberto::Schema::Result::PollPropagate>
-
-=cut
-
-__PACKAGE__->has_many(
-  "poll_propagates",
-  "MandatoAberto::Schema::Result::PollPropagate",
-  { "foreign.politician_id" => "self.user_id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
-
 =head2 user
 
 Type: belongs_to
@@ -384,8 +369,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-12-14 15:10:05
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:70h+eWkUHcQPr2Z6SnjXtQ
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-02-27 15:44:15
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:ADqeSRrZPY6l8eRi9TjK9g
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

@@ -48,15 +48,19 @@ sub verifiers_specs {
                     required   => 0,
                     type       => "ArrayRef[Int]",
                     post_check => sub {
-                        my $groups = $_[0]->get_value('groups');
+                        my $groups        = $_[0]->get_value('groups');
+                        my $politician_id = $_[0]->get_value('politician_id');
+
+                        my $politician = $self->result_source->schema->resultset('Politician')->find($politician_id);
+                        my $organization_chatbot_id = $politician->user->organization_chatbot_id;
 
                         for (my $i = 0; $i < @{ $groups }; $i++) {
                             my $group_id = $groups->[$i];
 
                             my $group = $self->result_source->schema->resultset("Group")->search(
                                 {
-                                   'me.id'            => $group_id,
-                                   'me.politician_id' => $_[0]->get_value('politician_id'),
+                                   'me.id'                      => $group_id,
+                                   'me.organization_chatbot_id' => $organization_chatbot_id
                                 }
                             )->next;
 
@@ -82,86 +86,14 @@ sub action_specs {
             my %values = $r->valid_values;
             not defined $values{$_} and delete $values{$_} for keys %values;
 
-            # TODO colocar em uma única tx
-            my $campaign = $self->result_source->schema->resultset("Campaign")->create(
-                {
-                    politician_id => $values{politician_id},
-                    type_id       => 2
-                }
-            );
-            $values{campaign_id} = $campaign->id;
+            $self->result_source->schema->txn_do( sub {
+                my $politician_id        = delete $values{politician_id};
+                my $politician           = $self->result_source->schema->resultset('Politician')->find($politician_id);
+                my $organization_chatbot = $politician->user->organization_chatbot;
 
-            my $politician   = $self->result_source->schema->resultset("Politician")->find($values{politician_id});
-            my $access_token = $politician->fb_page_access_token;
-
-            my $poll_id                 = $values{poll_id};
-            my $poll_question_option_rs = $self->result_source->schema->resultset("PollQuestionOption");
-            my @poll_question_options   = $poll_question_option_rs->search(
-                { 'poll.id' => $poll_id },
-                { prefetch => [ 'poll_question' , { 'poll_question' => "poll" } ] }
-            )->all();
-
-            my $question      = $poll_question_options[0]->poll_question->content;
-            my $first_option  = $poll_question_options[0];
-            my $second_option = $poll_question_options[1];
-
-            # Depois de criada a messagem direta, devo adicionar uma entrada
-            # na fila para cada recipient atrelado ao rep. público
-            # levando em consideração os grupos, se adicionados
-            my @group_ids = @{ $values{groups} || [] };
-            my $recipient_rs = $politician->recipients
-                ->only_opt_in
-                ->search_by_group_ids(@group_ids)
-                ->search(
-                    {},
-                    {
-                        '+select' => [ \"COUNT(1) OVER(PARTITION BY 1)" ],
-                        '+as'     => [ 'total' ],
-                    }
-                )
-            ;
-
-            while (my $recipient = $recipient_rs->next()) {
-                # Mando para o httpcallback
-
-                if (is_test()) {
-                    next;
-                } else {
-                    $self->_httpcb->add(
-                        url     => $ENV{FB_API_URL} . '/me/messages?access_token=' . $access_token,
-                        method  => "post",
-                        headers => 'Content-Type: application/json',
-                        body    => encode_json {
-                            recipient => {
-                                id => $recipient->fb_id
-                            },
-                            message => {
-                                text          => $question,
-                                quick_replies => [
-                                    {
-                                        content_type => 'text',
-                                        title        => $first_option->content,
-                                        payload      => 'pollAnswerPropagate_' . $first_option->id
-                                    },
-                                    {
-                                        content_type => 'text',
-                                        title        => $second_option->content,
-                                        payload      => 'pollAnswerPropagate_' . $second_option->id
-                                    },
-                                ]
-                            }
-                        }
-                    );
-
-                    $values{count} //= $recipient->get_column('total');
-                }
-            }
-
-            if (!$values{count}) {
-                $values{count} = 0;
-            }
-
-            $self->_httpcb->wait_for_all_responses();
+                my $campaign         = $organization_chatbot->campaigns->create( { type_id => 2, count => 0 } );
+                $values{campaign_id} = $campaign->id;
+            });
 
             return $self->create(\%values);
         }

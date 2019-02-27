@@ -53,11 +53,6 @@ __PACKAGE__->table("poll_propagate");
   data_type: 'integer[]'
   is_nullable: 1
 
-=head2 count
-
-  data_type: 'integer'
-  is_nullable: 0
-
 =head2 created_at
 
   data_type: 'timestamp'
@@ -71,12 +66,6 @@ __PACKAGE__->table("poll_propagate");
   is_foreign_key: 1
   is_nullable: 0
 
-=head2 politician_id
-
-  data_type: 'integer'
-  is_foreign_key: 1
-  is_nullable: 0
-
 =cut
 
 __PACKAGE__->add_columns(
@@ -84,8 +73,6 @@ __PACKAGE__->add_columns(
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "groups",
   { data_type => "integer[]", is_nullable => 1 },
-  "count",
-  { data_type => "integer", is_nullable => 0 },
   "created_at",
   {
     data_type     => "timestamp",
@@ -94,8 +81,6 @@ __PACKAGE__->add_columns(
     original      => { default_value => \"now()" },
   },
   "campaign_id",
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
-  "politician_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
 );
 
@@ -128,21 +113,6 @@ __PACKAGE__->belongs_to(
   { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
 );
 
-=head2 politician
-
-Type: belongs_to
-
-Related object: L<MandatoAberto::Schema::Result::Politician>
-
-=cut
-
-__PACKAGE__->belongs_to(
-  "politician",
-  "MandatoAberto::Schema::Result::Politician",
-  { user_id => "politician_id" },
-  { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
-);
-
 =head2 poll
 
 Type: belongs_to
@@ -159,8 +129,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-02-22 14:07:18
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:uqYI25cRR9/yt+NpmrurMA
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-02-27 16:27:04
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:dMoZt13ba12jQ/Eihlcu+w
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
@@ -168,7 +138,7 @@ __PACKAGE__->belongs_to(
 sub groups_rs {
     my ($self, $c) = @_;
 
-    return $self->politician->groups->search(
+    return $self->campaign->organization_chatbot->groups->search(
         { 'me.id' => { 'in' => $self->groups || [] } }
     );
 }

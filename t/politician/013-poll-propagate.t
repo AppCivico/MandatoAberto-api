@@ -3,7 +3,6 @@ use FindBin qw($Bin);
 use lib "$Bin/../lib";
 
 use MandatoAberto::Test::Further;
-plan skip_all => 'deprecated feature';
 
 my $schema = MandatoAberto->model("DB");
 
@@ -15,6 +14,11 @@ db_transaction {
     $politician       = $schema->resultset('Politician')->find($politician_id);
 
     $politician->user->update( { approved => 1 } );
+ 
+	api_auth_as user_id => $politician_id;
+	activate_chatbot($politician_id);
+
+    my $organization_chatbot_id = $politician->user->organization_chatbot_id;
 
     create_recipient(
         politician_id  => $politician_id,
@@ -56,10 +60,10 @@ db_transaction {
 
     my $group_id = $schema->resultset("Group")->create(
         {
-            politician_id => $politician_id,
-            name          => 'foobar',
-            filter        => '{}',
-            status        => 'ready',
+            organization_chatbot_id => $organization_chatbot_id,
+            name                    => 'foobar',
+            filter                  => '{}',
+            status                  => 'ready',
         }
     )->id;
 

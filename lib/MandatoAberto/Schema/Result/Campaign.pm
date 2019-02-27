@@ -260,6 +260,9 @@ sub process_and_send {
     if ( $type_id == 1 ) {
         $self->send_dm_facebook($recipient_rs, $logger);
     }
+    elsif ( $type_id == 2 ) {
+        $self->send_poll_facebook($recipient_rs, $logger)
+    }
     else {
         die 'fail while sending campaign';
     }
@@ -286,6 +289,60 @@ sub send_dm_facebook {
                     id => $recipient->fb_id
                 },
                 message => $message
+            }
+        );
+
+        $count++;
+    }
+    $self->_httpcb->wait_for_all_responses();
+
+    $self->update( { count => $count } );
+}
+
+sub send_poll_facebook {
+    my ($self, $recipient_rs, $logger) = @_;
+
+    my $poll = $self->poll_propagate->poll or die 'no such poll object';
+
+    my $poll_question_option_rs = $self->result_source->schema->resultset("PollQuestionOption");
+    my @poll_question_options   = $poll_question_option_rs->search(
+        { 'poll.id' => $poll->id },
+        { prefetch => [ 'poll_question' , { 'poll_question' => "poll" } ] }
+    )->all();
+
+    my $question      = $poll_question_options[0]->poll_question->content;
+    my $first_option  = $poll_question_options[0];
+    my $second_option = $poll_question_options[1];
+
+    my $count = 0;
+    while (my $recipient = $recipient_rs->next()) {
+        my $headers = $self->direct_message->build_headers( $recipient );
+
+        # Mando para o httpcallback
+        $self->_httpcb->add(
+            url     => $ENV{FB_API_URL} . '/me/messages?access_token=' . $self->organization_chatbot->fb_config->access_token,
+            method  => "post",
+            headers => $headers,
+            body    => to_json {
+                messaging_type => "UPDATE",
+                recipient => {
+                    id => $recipient->fb_id
+                },
+				message => {
+					text          => $question,
+					quick_replies => [
+						{
+							content_type => 'text',
+							title        => $first_option->content,
+							payload      => 'pollAnswerPropagate_' . $first_option->id
+						},
+						{
+							content_type => 'text',
+							title        => $second_option->content,
+							payload      => 'pollAnswerPropagate_' . $second_option->id
+						},
+					]
+                }
             }
         );
 
