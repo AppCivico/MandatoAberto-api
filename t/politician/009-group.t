@@ -588,4 +588,71 @@ db_transaction {
 
 };
 
+db_transaction {
+    api_auth_as user_id => 1;
+
+    my $security_token = $ENV{CHATBOT_SECURITY_TOKEN};
+
+    create_politician(
+        fb_page_id => fake_words(1)->()
+    );
+    my $politician_id = stash "politician.id";
+
+    api_auth_as user_id => $politician_id;
+    activate_chatbot($politician_id);
+
+    create_recipient(
+        politician_id => $politician_id,
+        gender        => 'F'
+    );
+    my $first_recipient_id = stash "recipient.id";
+    my $first_recipient    = $schema->resultset('Recipient')->find($first_recipient_id);
+
+    create_recipient(
+        politician_id => $politician_id,
+        gender        => 'M'
+    );
+    my $second_recipient_id = stash "recipient.id";
+
+    create_recipient(
+        politician_id => $politician_id,
+        gender        => 'F'
+    );
+    my $third_recipient_id = stash "recipient.id";
+
+    my $politician              = $schema->resultset('Politician')->find($politician_id);
+    my $organization_chatbot_id = $politician->user->organization_chatbot_id;
+
+    # Criando grupos vazios e preenchendo manualmente
+    # estes grupos não devem ser atualizados pelo daemon
+
+    rest_post "/api/politician/$politician_id/group",
+        name                => 'add group (intent is not)',
+        stash               => 'group',
+        automatic_load_item => 0,
+        headers             => [ 'Content-Type' => 'application/json' ],
+        data                => encode_json({
+            name     => 'AppCivico',
+            filter   => {},
+        }),
+    ;
+
+    ok( $worker->run_once(), 'run once' );
+
+    my $group_id = stash 'group.id';
+
+    ok( my $group = $schema->resultset("Group")->find($group_id), 'get group' );
+
+    is ($group->discard_changes->recipients_count, 0, 'recipient count');
+    
+    rest_post "/api/politician/$politician_id/recipients/$first_recipient_id/group",
+        name => "adding recipient to group",
+        code => 200,
+        [ groups => "[$group_id]" ]
+    ;
+
+    is ($group->discard_changes->recipients_count, 1, 'recipient count'); 
+};
+
+
 done_testing();

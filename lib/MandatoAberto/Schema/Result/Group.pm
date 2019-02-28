@@ -296,14 +296,28 @@ sub update_recipients {
             ->update( { groups => \[ "DELETE(groups, ?)", $self->id ] } );
 
         my $filter = $self->filter;
-        my $recipients_with_filter_rs = $recipients_rs->search_by_filter($filter);
 
-        $count = $recipients_rs->search(
-            {
-                id => { '-in' => $recipients_with_filter_rs->get_column('id')->as_query }
+        # Caso seja um grupo sem filtro
+        # atualizo com 0 recipients
+        if ( $filter->{rules}->[0] && $filter->{rules}->[0]->{name} eq 'EMPTY' ) {
+
+            if ( defined $self->recipients_count ) {
+                $count = $self->recipients_count;
             }
-        )
-        ->update( { groups => \[ "COALESCE(groups, '') || HSTORE(?, '1')", $self->id ] } );
+            else {
+                $count = 0;
+            }
+        }
+        else {
+            my $recipients_with_filter_rs = $recipients_rs->search_by_filter($filter);
+
+            $count = $recipients_rs->search(
+                {
+                    id => { '-in' => $recipients_with_filter_rs->get_column('id')->as_query }
+                }
+            )
+            ->update( { groups => \[ "COALESCE(groups, '') || HSTORE(?, '1')", $self->id ] } );
+        }
     });
 
     return $count;
