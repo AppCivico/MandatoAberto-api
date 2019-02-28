@@ -827,8 +827,8 @@ sub get_current_facebook_page {
 
     my $furl = Furl->new();
 
-    my $page_id      = $self->fb_page_id;
-    my $access_token = $self->fb_page_access_token;
+    my $page_id      = $self->user->organization_chatbot->fb_config->page_id;
+    my $access_token = $self->user->organization_chatbot->fb_config->access_token;
 
     my $res = $furl->get(
         $ENV{FB_API_URL} . "/me?fields=id,name,picture.type(large)&access_token=$access_token",
