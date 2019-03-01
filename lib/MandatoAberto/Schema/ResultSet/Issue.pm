@@ -149,7 +149,7 @@ sub action_specs {
                     die \['intentName', 'missing'] unless $intent;
 
                     $intent = lc $intent;
-                    my $human_name = $politician->user->organization_chatbot->politician_entities->find_human_name($intent);
+                    my $human_name = $intent;
                     die \['entities', "could not find human_name for $intent"] unless $human_name;
 
                     my $upsert_entity = $politician->user->organization_chatbot->politician_entities->find_or_create(
