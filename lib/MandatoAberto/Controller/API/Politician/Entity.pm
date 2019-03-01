@@ -38,7 +38,6 @@ __PACKAGE__->config(
                         email     => $recipient->email,
                         gender    => $recipient->gender,
                         picture   => $recipient->picture,
-                        platform  => $recipient->platform,
                         cellphone => $recipient->cellphone,
                         groups    => [
                             map {
@@ -179,7 +178,6 @@ sub pending_GET {
                                         email     => $recipient->email,
                                         gender    => $recipient->gender,
                                         picture   => $recipient->picture,
-                                        platform  => $recipient->platform,
                                         cellphone => $recipient->cellphone
                                     }
                                 } $e->get_recipients->all()

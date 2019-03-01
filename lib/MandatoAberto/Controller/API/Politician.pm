@@ -83,14 +83,17 @@ sub result_GET {
 
     my $has_movement = $c->stash->{politician}->movement ? 1 : 0;
 
-    my $chatbot    = $c->stash->{politician}->user->organization->organization_chatbots->next;
-    my $chatbot_id = $chatbot ? $chatbot->id : undef;
+    my $user         = $c->stash->{politician}->user;
+    # Por enquanto um user só está em uma organização, mas posteriormente deverá ser informado o id da organização
+    my $organization = $user->organization;
+    my $chatbot      = $organization->chatbot;
+    my $chatbot_id   = $chatbot ? $chatbot->id : undef;
 
     return $self->status_ok(
         $c,
         entity => {
             ( map { $_ => $c->stash->{politician}->$_ } qw/
-                name gender premium twitter_id use_dialogflow/ ),
+                name gender/ ),
 
             picture => $c->stash->{politician}->user->picture,
 
@@ -155,11 +158,13 @@ sub result_GET {
                 ) : ()
             ),
 
+            # Novos dados
             (
                 organization => {
-                    name             => $c->stash->{politician}->user->organization->name,
-					picture          => $c->stash->{politician}->user->organization->picture,
-                    is_mandatoaberto => $c->stash->{politician}->user->organization->is_mandatoaberto,
+                    name             => $organization->name,
+                    picture          => $organization->picture,
+                    premium          => $organization->premium,
+                    is_mandatoaberto => $organization->is_mandatoaberto,
                     (
                         $chatbot ?
                         (
@@ -170,7 +175,10 @@ sub result_GET {
                         ): ( )
                     )
                 }
-            )
+            ),
+            (
+                premium => $organization->premium
+            ),
         }
     );
 }

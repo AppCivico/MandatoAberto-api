@@ -24,9 +24,7 @@ __PACKAGE__->config(
             cellphone     => $r->get_column('cellphone'),
             email         => $r->get_column('email'),
             gender        => $r->get_column('gender'),
-            origin_dialog => $r->get_column('origin_dialog'),
             created_at    => $r->get_column('created_at'),
-            platform      => $r->get_column('platform'),
             groups        => [
                 map {
                     {
@@ -118,8 +116,6 @@ sub list_GET {
                         cellphone     => $_->get_column('cellphone'),
                         email         => $_->get_column('email'),
                         gender        => $_->get_column('gender'),
-                        origin_dialog => $_->get_column('origin_dialog'),
-                        platform      => $_->get_column('platform'),
                         created_at    => $_->get_column('created_at'),
                         groups        => [
                             map {

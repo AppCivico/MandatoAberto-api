@@ -133,8 +133,6 @@ sub list_GET {
                 count                          => $recipients->count,
                 count_with_email               => $recipients->search( { email => \'IS NOT NULL' } )->count,
                 count_with_cellphone           => $recipients->search( { cellphone => \'IS NOT NULL' } )->count,
-                count_facebook                 => $recipients->search( { platform => 'facebook' } )->count,
-                count_twitter                  => $recipients->search( { platform => 'twitter' } )->count,
                 count_segmented_recipients     => $recipients->search( { groups => { '!=' => '' } } )->count,
                 count_non_segmented_recipients => $recipients->search( { groups => '' } )->count,
             },

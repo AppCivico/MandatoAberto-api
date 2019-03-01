@@ -114,37 +114,10 @@ __PACKAGE__->table("politician");
   is_foreign_key: 1
   is_nullable: 1
 
-=head2 twitter_id
-
-  data_type: 'text'
-  is_nullable: 1
-
-=head2 twitter_oauth_token
-
-  data_type: 'text'
-  is_nullable: 1
-
-=head2 twitter_token_secret
-
-  data_type: 'text'
-  is_nullable: 1
-
 =head2 share_text
 
   data_type: 'text'
   is_nullable: 1
-
-=head2 use_dialogflow
-
-  data_type: 'boolean'
-  default_value: false
-  is_nullable: 0
-
-=head2 issue_active
-
-  data_type: 'boolean'
-  default_value: true
-  is_nullable: 0
 
 =cut
 
@@ -175,18 +148,8 @@ __PACKAGE__->add_columns(
   { data_type => "text", is_nullable => 1 },
   "movement_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
-  "twitter_id",
-  { data_type => "text", is_nullable => 1 },
-  "twitter_oauth_token",
-  { data_type => "text", is_nullable => 1 },
-  "twitter_token_secret",
-  { data_type => "text", is_nullable => 1 },
   "share_text",
   { data_type => "text", is_nullable => 1 },
-  "use_dialogflow",
-  { data_type => "boolean", default_value => \"false", is_nullable => 0 },
-  "issue_active",
-  { data_type => "boolean", default_value => \"true", is_nullable => 0 },
 );
 
 =head1 PRIMARY KEY
@@ -369,8 +332,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-02-27 15:44:15
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:ADqeSRrZPY6l8eRi9TjK9g
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-03-01 15:31:50
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:jogsYEv6ZAdFeMXqCg0fHQ
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
@@ -493,42 +456,6 @@ sub verifiers_specs {
 
                         my $movement_rs = $self->result_source->schema->resultset('Movement');
                         $movement_rs->search( { id => $movement_id } )->count;
-                    }
-                },
-                twitter_id => {
-                    required   => 0,
-                    type       => Twitter_id,
-                    post_check => sub {
-                        my $twitter_id = $_[0]->get_value('twitter_id');
-
-                        my $politician_rs = $self->result_source->schema->resultset('Politician');
-                        $politician_rs->search( { twitter_id => $twitter_id } )->count and die \["twitter_id", "alredy exists"];
-
-                        return 1;
-                    }
-                },
-                twitter_oauth_token => {
-                    required   => 0,
-                    type       => 'Str',
-                    post_check => sub {
-                        my $twitter_oauth_token  = $_[0]->get_value('twitter_oauth_token');
-
-                        my $politician_rs = $self->result_source->schema->resultset('Politician');
-                        $politician_rs->search( { twitter_oauth_token => $twitter_oauth_token } )->count and die \["twitter_oauth_token", "alredy exists"];
-
-                        return 1;
-                    }
-                },
-                twitter_token_secret => {
-                    required   => 0,
-                    type       => 'Str',
-                    post_check => sub {
-                        my $twitter_token_secret = $_[0]->get_value('twitter_token_secret');
-
-                        my $politician_rs = $self->result_source->schema->resultset('Politician');
-                        $politician_rs->search( { twitter_token_secret => $twitter_token_secret } )->count and die \["twitter_token_secret", "alredy exists"];
-
-                        return 1;
                     }
                 },
                 use_dialogflow => {

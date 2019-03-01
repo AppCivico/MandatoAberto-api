@@ -142,21 +142,6 @@ __PACKAGE__->belongs_to(
   { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
 );
 
-=head2 poll_notifications
-
-Type: has_many
-
-Related object: L<MandatoAberto::Schema::Result::PollNotification>
-
-=cut
-
-__PACKAGE__->has_many(
-  "poll_notifications",
-  "MandatoAberto::Schema::Result::PollNotification",
-  { "foreign.poll_id" => "self.id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
-
 =head2 poll_propagates
 
 Type: has_many
@@ -218,8 +203,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-12-03 15:35:21
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:reEck35/DeXe/rMbN1X8Cw
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-03-01 15:05:46
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:3tlMCjM5V+PLhMc0qQBlsQ
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

@@ -59,11 +59,6 @@ __PACKAGE__->table("recipient");
   data_type: 'text'
   is_nullable: 1
 
-=head2 origin_dialog
-
-  data_type: 'text'
-  is_nullable: 1
-
 =head2 gender
 
   data_type: 'text'
@@ -120,26 +115,6 @@ __PACKAGE__->table("recipient");
   is_nullable: 1
   original: {default_value => \"now()"}
 
-=head2 twitter_id
-
-  data_type: 'text'
-  is_nullable: 1
-
-=head2 twitter_origin_id
-
-  data_type: 'text'
-  is_nullable: 1
-
-=head2 twitter_screen_name
-
-  data_type: 'text'
-  is_nullable: 1
-
-=head2 platform
-
-  data_type: 'text'
-  is_nullable: 0
-
 =head2 entities
 
   data_type: 'integer[]'
@@ -165,8 +140,6 @@ __PACKAGE__->add_columns(
   "name",
   { data_type => "text", is_nullable => 0 },
   "fb_id",
-  { data_type => "text", is_nullable => 1 },
-  "origin_dialog",
   { data_type => "text", is_nullable => 1 },
   "gender",
   { data_type => "text", is_nullable => 1 },
@@ -198,14 +171,6 @@ __PACKAGE__->add_columns(
     is_nullable   => 1,
     original      => { default_value => \"now()" },
   },
-  "twitter_id",
-  { data_type => "text", is_nullable => 1 },
-  "twitter_origin_id",
-  { data_type => "text", is_nullable => 1 },
-  "twitter_screen_name",
-  { data_type => "text", is_nullable => 1 },
-  "platform",
-  { data_type => "text", is_nullable => 0 },
   "entities",
   {
     data_type     => "integer[]",
@@ -305,21 +270,6 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 poll_notification
-
-Type: might_have
-
-Related object: L<MandatoAberto::Schema::Result::PollNotification>
-
-=cut
-
-__PACKAGE__->might_have(
-  "poll_notification",
-  "MandatoAberto::Schema::Result::PollNotification",
-  { "foreign.recipient_id" => "self.id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
-
 =head2 poll_results
 
 Type: has_many
@@ -350,24 +300,9 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 recipient_network
 
-Type: might_have
-
-Related object: L<MandatoAberto::Schema::Result::RecipientNetwork>
-
-=cut
-
-__PACKAGE__->might_have(
-  "recipient_network",
-  "MandatoAberto::Schema::Result::RecipientNetwork",
-  { "foreign.recipient_id" => "self.id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
-
-
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-12-14 15:10:05
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:iy6t+DlbOuzk5nG/YpQTIw
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-03-01 15:05:46
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:B9oVNITDjiYwCmEqGB1gbA
 
 __PACKAGE__->load_components("InflateColumn::Serializer", "Core");
 __PACKAGE__->remove_column('groups');

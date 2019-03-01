@@ -132,11 +132,11 @@ sub get_groups_ordered_by_recipient_count {
 sub extract_metrics {
     my ($self, %opts) = @_;
 
-	$self = $self->search_rs( { 'me.created_at' => { '>=' => \"NOW() - interval '$opts{range} days'" } } ) if $opts{range};
+    $self = $self->search_rs( { 'me.created_at' => { '>=' => \"NOW() - interval '$opts{range} days'" } } ) if $opts{range};
 
     return {
         count             => $self->count,
-		fallback_text     => 'Aqui você poderá ver as métricas sobre os grupos que você criou.',
+        fallback_text     => 'Aqui você poderá ver as métricas sobre os grupos que você criou.',
         suggested_actions => [
             {
                 alert             => '',
@@ -145,18 +145,18 @@ sub extract_metrics {
                 link_text         => 'Ver grupos'
             },
         ],
-		sub_metrics => [
-			# Métrica: grupo com seguidores
+        sub_metrics => [
+            # Métrica: grupo com seguidores
             {
-				text              => $self->search( { recipients_count => { '!=' => 0 } } )->count . ' grupos com seguidores',
-				suggested_actions => []
-			},
+                text              => $self->search( { recipients_count => { '!=' => 0 } } )->count . ' grupos com seguidores',
+                suggested_actions => []
+            },
             # Métrica: grupo sem seguidores
             {
-				text              => $self->search( { recipients_count => 0 } )->count . ' grupos sem seguidores',
-				suggested_actions => []
-			},
-		]
+                text              => $self->search( { recipients_count => 0 } )->count . ' grupos sem seguidores',
+                suggested_actions => []
+            },
+        ]
     }
 }
 

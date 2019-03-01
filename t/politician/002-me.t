@@ -283,64 +283,6 @@ db_transaction {
     };
 
     rest_put "/api/politician/$politician_id",
-        name    => "Adding twitter data without oauth",
-        is_fail => 1,
-        code    => 400,
-        [
-            twitter_id           => '707977922439733248',
-            twitter_token_secret => 'foobar'
-        ]
-    ;
-
-    rest_put "/api/politician/$politician_id",
-        name    => "Adding twitter data without twitter_token_secret",
-        is_fail => 1,
-        code    => 400,
-        [
-            twitter_id           => '707977922439733248',
-            twitter_oauth_token  => 'foobar'
-        ]
-    ;
-
-    rest_put "/api/politician/$politician_id",
-        name    => "Adding twitter data without twitter_id",
-        is_fail => 1,
-        code    => 400,
-        [
-            twitter_oauth_token  => 'foobar',
-            twitter_token_secret => 'foobar'
-        ]
-    ;
-
-    rest_put "/api/politician/$politician_id",
-        name    => "Adding twitter data with invalid twitter_id",
-        is_fail => 1,
-        code    => 400,
-        [
-            twitter_id           => 'this is a text',
-            twitter_oauth_token  => 'foobar',
-            twitter_token_secret => 'foobar'
-        ]
-    ;
-
-    rest_put "/api/politician/$politician_id",
-        name    => "Adding twitter data",
-        [
-            twitter_id           => '707977922439733248',
-            twitter_oauth_token  => 'foobar',
-            twitter_token_secret => 'foobar'
-        ]
-    ;
-
-    rest_reload_list "get_politician";
-
-    stash_test "get_politician.list" => sub {
-        my $res = shift;
-
-        is ($res->{twitter_id}, '707977922439733248', 'twitter id');
-    };
-
-    rest_put "/api/politician/$politician_id",
         name => "Removing party and office",
         [
             office_id => 0,
@@ -353,7 +295,8 @@ db_transaction {
     stash_test "get_politician.list" => sub {
         my $res = shift;
 
-        # is ($res->{party}->id, '707977922439733248', 'twitter id');
+        is ($res->{party}, undef, 'no party');
+        is ($res->{office}, undef, 'no office');
     };
 
     create_politician;

@@ -13,8 +13,8 @@ db_transaction {
     my $politician_id = $politician->{id};
     $politician       = $schema->resultset('Politician')->find($politician_id);
 
-	api_auth_as user_id => $politician_id;
-	activate_chatbot($politician_id);
+    api_auth_as user_id => $politician_id;
+    activate_chatbot($politician_id);
 
     rest_post "/api/chatbot/recipient",
         name    => "create recipient without fb_id",
@@ -123,7 +123,6 @@ db_transaction {
         is($res->{email}, $email, 'email');
         is($res->{cellphone}, $cellphone, 'cellphone');
         is($res->{gender}, $gender, 'gender');
-        is($res->{poll_notification_sent}, 0, 'poll notification not sent');
     };
 
     my $new_email = fake_email()->();
@@ -146,71 +145,6 @@ db_transaction {
         is($res->{email}, $new_email, 'email');
     };
 
-    $politician->update( { twitter_id => '123456' } );
-
-    rest_post "/api/chatbot/recipient/",
-        name    => "Creating twitter recipient with invalid platform",
-        is_fail => 1,
-        code    => 400,
-        [
-            platform       => 'foobar',
-            twitter_id     => 'foobar',
-            politician_id  => $politician_id,
-            email          => $new_email,
-            security_token => $security_token
-        ]
-    ;
-
-    rest_post "/api/chatbot/recipient/",
-        name    => "Creating twitter recipient without twitter_id",
-        is_fail => 1,
-        code    => 400,
-        [
-            platform       => 'twitter',
-            politician_id  => $politician_id,
-            email          => $new_email,
-            security_token => $security_token
-        ]
-    ;
-
-    rest_post "/api/chatbot/recipient/",
-        name    => "Creating twitter recipient without name",
-        is_fail => 1,
-        code    => 400,
-        [
-            platform          => 'twitter',
-            twitter_id        => 'foobar',
-            politician_id     => $politician_id,
-            email             => $new_email,
-            security_token    => $security_token
-        ]
-    ;
-
-    rest_post "/api/chatbot/recipient/",
-        name    => "Creating twitter recipient without name",
-        is_fail => 1,
-        code    => 400,
-        [
-            platform          => 'twitter',
-            twitter_id        => 'foobar',
-            politician_id     => $politician_id,
-            email             => $new_email,
-            security_token    => $security_token
-        ]
-    ;
-
-    rest_post "/api/chatbot/recipient/",
-        name => "Creating twitter recipient",
-        [
-            platform          => 'twitter',
-            twitter_id        => 'foobar',
-            name              => 'foobar',
-            politician_id     => $politician_id,
-            email             => $new_email,
-            security_token    => $security_token
-        ]
-    ;
-
     subtest 'Politician | Create recipient (new model)' => sub {
 
         rest_post "/api/chatbot/politician/$politician_id/recipient",
@@ -218,13 +152,12 @@ db_transaction {
             automatic_load_item => 0,
             stash               => 'c10',
             [
-                origin_dialog => fake_words(1)->(),
-                politician_id => $politician_id,
-                name          => fake_name()->(),
-                fb_id         => $fb_id,
-                email         => $email,
-                cellphone     => $cellphone,
-                gender        => $gender,
+                politician_id  => $politician_id,
+                name           => fake_name()->(),
+                fb_id          => 'fake_fb_id',
+                email          => 'fake_email@email.com',
+                cellphone      => fake_digits("+551198#######")->(),
+                gender         => $gender,
                 security_token => $security_token
             ]
         ;
@@ -244,8 +177,8 @@ db_transaction {
         stash_test 'r1' => sub {
             my $res = shift;
 
-			ok( ref $res->{recipients} eq 'ARRAY', 'recipients is an array' );
-			is( scalar @{$res->{recipients}}, 2,   'recipients has two itens' );
+            ok( ref $res->{recipients} eq 'ARRAY', 'recipients is an array' );
+            is( scalar @{$res->{recipients}}, 2,   'recipients has two itens' );
         }
     }
 };

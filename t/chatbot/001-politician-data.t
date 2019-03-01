@@ -114,31 +114,6 @@ db_transaction {
         ]
     ;
 
-    $politician->update(
-        {
-            twitter_id           => 'foobar',
-            twitter_oauth_token  => 'bar',
-            twitter_token_secret => 'baz'
-        }
-    );
-
-    rest_get '/api/chatbot/politician',
-        name  => 'get politician data with non existent twitter_id',
-        list  => 1,
-        stash => 'politician_data_twitter',
-        [
-            platform       => 'twitter',
-            twitter_id     => 'foobar',
-            security_token => $security_token
-        ]
-    ;
-
-    stash_test "politician_data_twitter" => sub {
-        my $res = shift;
-
-        is ($res->{twitter_oauth_token},  'bar', 'twitter_oauth_token');
-        is ($res->{twitter_token_secret}, 'baz', 'twitter_token_secret');
-    };
 };
 
 done_testing();

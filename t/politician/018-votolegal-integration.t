@@ -3,7 +3,7 @@ use FindBin qw($Bin);
 use lib "$Bin/../lib";
 
 use MandatoAberto::Test::Further;
-
+plan skip_all => "deprecated feature";
 my $schema = MandatoAberto->model("DB");
 
 db_transaction {
@@ -13,7 +13,7 @@ db_transaction {
     my $politician_id = stash "politician.id";
 
     api_auth_as "user_id" => $politician_id;
-	activate_chatbot($politician_id);
+    activate_chatbot($politician_id);
 
     setup_votolegal_integration_success();
 
