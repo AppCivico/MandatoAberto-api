@@ -135,6 +135,7 @@ sub action_specs {
                 my $politician = $self->result_source->schema->resultset('Politician')->find( $values{politician_id} );
                 my $recipient  = $politician->user->organization_chatbot->recipients->find($values{recipient_id});
                 my $entity_rs  = $self->result_source->schema->resultset('Entity');
+                my $politician_entity = $self->result_source->schema->resultset('PoliticianEntity');
 
                 # Tratando issue como do organization_chatbot e não do politician
                 my $organization_chatbot_id = $politician->user->organization_chatbot->id;
@@ -149,18 +150,24 @@ sub action_specs {
                     die \['intentName', 'missing'] unless $intent;
 
                     $intent = lc $intent;
-                    my $human_name = $intent;
-                    die \['entities', "could not find human_name for $intent"] unless $human_name;
 
-                    my $upsert_entity = $politician->user->organization_chatbot->politician_entities->find_or_create(
-                        {
-                            name       => $intent,
-                            human_name => $human_name
-                        }
-                    );
 
-                    $recipient->add_to_politician_entity( $upsert_entity->id );
-                    push @entities_id, $upsert_entity->id;
+                    if ( $politician_entity->skip_intent($intent) == 0 ) {
+                        my $human_name = $intent;
+                        die \['entities', "could not find human_name for $intent"] unless $human_name;
+
+                        my $upsert_entity = $politician->user->organization_chatbot->politician_entities->find_or_create(
+                            {
+                                name       => $intent,
+                                human_name => $human_name
+                            }
+                        );
+
+                        $recipient->add_to_politician_entity( $upsert_entity->id );
+                        push @entities_id, $upsert_entity->id;
+
+                    }
+
                 }
 
                 $issue = $self->create(
