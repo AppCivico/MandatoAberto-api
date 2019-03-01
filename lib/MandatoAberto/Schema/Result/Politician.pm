@@ -660,7 +660,6 @@ sub action_specs {
                 delete $values{deactivate_chatbot};
 
                 $self->user->update( { password => $values{new_password} } ) and delete $values{new_password} if $values{new_password};
-                use DDP;
 
 				$self->user->update( { picture => $values{picture} } ) and delete $values{picture} if $values{picture};
 				$self->user->update( { name => $values{name} } ) if $values{name};

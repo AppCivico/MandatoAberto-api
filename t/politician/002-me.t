@@ -27,8 +27,8 @@ db_transaction {
     );
 
     my $politician_id   = stash "politician.id";
-	my $politician      = $schema->resultset("Politician")->find($politician_id);
-	my $politician_user = $schema->resultset("User")->find($politician_id);
+    my $politician      = $schema->resultset("Politician")->find($politician_id);
+    my $politician_user = $schema->resultset("User")->find($politician_id);
 
     rest_get "/api/politician/$politician_id",
         name    => "get when logged off --fail",
@@ -36,17 +36,10 @@ db_transaction {
         code    => 403,
     ;
 
-	api_auth_as user_id => $politician_id;
-	activate_chatbot($politician_id);
+    api_auth_as user_id => $politician_id;
+    activate_chatbot($politician_id);
 
     $politician_user->update( { approved => 1 } );
-
-    $politician->update(
-        {
-			fb_page_id           => "FOO",
-			fb_page_access_token => "FOOBAR",
-		}
-    );
 
     is($schema->resultset('PoliticianPrivateReplyConfig')->count, 1, 'one private_reply config created');
     is($schema->resultset('PollSelfPropagationConfig')->count,    1, 'one poll_self_propagation config created');
@@ -97,7 +90,7 @@ db_transaction {
         is ($res->{city}->{name},            "São Paulo",                       'city');
         is ($res->{party}->{id},             $party,                            'party');
         is ($res->{office}->{id},            $office,                           'office');
-        is ($res->{fb_page_id},              "FOO",                             'fb_page_id');
+        is ($res->{fb_page_id},              "fake_page_id",                    'fb_page_id');
         is ($res->{gender},                  $gender,                           'gender');
         is ($res->{premium},                 0,                                 'politician is not premium');
         is ($res->{contact}->{id},           $contact_id,                       'contact id');

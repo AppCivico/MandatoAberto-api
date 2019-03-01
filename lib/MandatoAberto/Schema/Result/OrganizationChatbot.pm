@@ -417,12 +417,6 @@ __PACKAGE__->has_many(
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
 
-sub create_persona {
-    my ($self, %opts) = @_;
-
-
-}
-
 sub general_config {
     my ($self) = @_;
 
@@ -442,9 +436,9 @@ sub politician_private_reply_config {
 }
 
 sub poll_self_propagation_config {
-	my ($self) = @_;
+    my ($self) = @_;
 
-	return $self->poll_self_propagation_configs->next;
+    return $self->poll_self_propagation_configs->next;
 }
 
 sub has_access_token {

@@ -32,14 +32,18 @@ sub list_GET {
     my $platform = $c->req->params->{platform} || 'fb';
     die \['platform', 'invalid'] unless $platform =~ m/^(fb|twitter)$/;
 
-    my ($politician, $page_id, $cond);
+    my ($organization_chatbot, $politician, $page_id, $cond);
     if ( $platform eq 'fb' ) {
 
         $page_id = $c->req->params->{fb_page_id};
         die \["fb_page_id", "missing"] unless $page_id;
 
-        $politician = $c->model("DB::Politician")->search( { fb_page_id => $page_id } )->next;
-        die \['fb_page_id', 'could not find politician with that fb_page_id'] unless $politician;
+        my $chatbot_config = $c->model('DB::OrganizationChatbotFacebookConfig')->search( { page_id => $page_id } )->next
+          or die \['fb_page_id', 'could not find politician with that fb_page_id'];
+
+        $organization_chatbot = $chatbot_config->organization_chatbot;
+        my $user = $organization_chatbot->organization->users->next;
+        $politician = $user->user->politician;
 
         $cond = 'fb_page_id';
     }
