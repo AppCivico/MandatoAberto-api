@@ -586,8 +586,8 @@ sub send_email_forgot_password {
 
     my $subject        = $is_mandatoaberto ? 'Mandato Aberto - Recuperação de senha' : 'AppCívico Chatbot - Recuperação de senha';
     my $project_name   = $is_mandatoaberto ? 'Mandato Aberto' : 'AppCívico Chatbots';
-	my $url            = $is_mandatoaberto ? $ENV{MANDATOABERTO_URL} . 'reset-password/' : 'http://v4.app.mandatoaberto.com.br/reset-password';
-	my $home_url       = $is_mandatoaberto ? $ENV{MANDATOABERTO_URL}: 'http://v4.app.mandatoaberto.com.br/';
+    my $url            = $is_mandatoaberto ? $ENV{MANDATOABERTO_URL} . 'reset-password/' : 'http://v4.app.mandatoaberto.com.br/reset-password';
+    my $home_url       = $is_mandatoaberto ? $ENV{MANDATOABERTO_URL}: 'http://v4.app.mandatoaberto.com.br/';
     my $header_picture = $is_mandatoaberto ?
         'https://gallery.mailchimp.com/3db402cdd48dbf45ea97bd7da/images/940adc5a-6e89-468e-9a03-2a4769245c79.png' :
         'https://gallery.mailchimp.com/3db402cdd48dbf45ea97bd7da/images/ed7d692f-fa0e-4b93-8dd7-5f7e4165517e.png';
@@ -675,16 +675,16 @@ sub disapprove {
 }
 
 sub send_greetings_email {
-	my ($self) = @_;
+    my ($self) = @_;
 
-	my $email = MandatoAberto::Mailer::Template->new(
-		to       => $self->email,
-		from     => 'no-reply@mandatoaberto.com.br',
-		subject  => "Mandato Aberto - Como o Mandato Aberto trabalha a seu favor?",
-		template => get_data_section('greetings.tt'),
-	)->build_email();
+    my $email = MandatoAberto::Mailer::Template->new(
+        to       => $self->email,
+        from     => 'no-reply@mandatoaberto.com.br',
+        subject  => "Mandato Aberto - Como o Mandato Aberto trabalha a seu favor?",
+        template => get_data_section('greetings.tt'),
+    )->build_email();
 
-	return $self->result_source->schema->resultset('EmailQueue')->create({ body => $email->as_string });
+    return $self->result_source->schema->resultset('EmailQueue')->create({ body => $email->as_string });
 }
 
 sub send_new_register_email {
@@ -778,12 +778,12 @@ sub add_all_permissions {
     my ($self, %opts) = @_;
     use DDP;
 
-	my @permissions_ids     = qw( 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49);
+    my @permissions_ids     = qw( 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49);
     my @current_permissions = $self->user_roles->search( { role_id => { 'not in' => [qw( 1 2 3 4 )] } } )->get_column('role_id')->all();
 
-	my %hash;
-	$hash{$_} = undef foreach (@current_permissions);
-	@permissions_ids = grep { not exists $hash{$_} } @permissions_ids;
+    my %hash;
+    $hash{$_} = undef foreach (@current_permissions);
+    @permissions_ids = grep { not exists $hash{$_} } @permissions_ids;
 
     for my $id (@permissions_ids) {
         $self->add_to_roles( { id => $id } );
@@ -794,19 +794,19 @@ sub add_all_permissions {
 
 sub add_basic_permissions {
     my ($self) = @_;
-	my @permissions_ids = qw( 6 7 8 9 18 19 20 21 22 23 24 25 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49);
+    my @permissions_ids = qw( 6 7 8 9 18 19 20 21 22 23 24 25 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49);
 
-	my @current_permissions = $self->user_roles->search( { role_id => { 'not in' => [qw( 1 2 3 4 )] } } )->get_column('role_id')->all();
+    my @current_permissions = $self->user_roles->search( { role_id => { 'not in' => [qw( 1 2 3 4 )] } } )->get_column('role_id')->all();
 
-	my %hash;
-	$hash{$_} = undef foreach (@current_permissions);
-	@permissions_ids = grep { not exists $hash{$_} } @permissions_ids;
+    my %hash;
+    $hash{$_} = undef foreach (@current_permissions);
+    @permissions_ids = grep { not exists $hash{$_} } @permissions_ids;
 
-	for my $id (@permissions_ids) {
-		$self->add_to_roles( { id => $id } );
-	}
+    for my $id (@permissions_ids) {
+        $self->add_to_roles( { id => $id } );
+    }
 
-	return 1;
+    return 1;
 }
 
 sub parse_permissions {
@@ -821,8 +821,8 @@ sub parse_permissions {
     my ($ret, $key_p, $i);
     map {
 
-		my ($key)   = $_ =~ /.+?(?=_)/gm;
-		my ($value) = $_ =~ /[a-z]+\Z/gm;
+        my ($key)   = $_ =~ /.+?(?=_)/gm;
+        my ($value) = $_ =~ /[a-z]+\Z/gm;
 
         if ( !$i || ( $key_p && $key ne $key_p )  ) {
             $i = 0;
@@ -841,6 +841,14 @@ sub parse_permissions {
     }
 
     return $ret;
+}
+
+sub build_result_get {
+    my ($self) = @_;
+
+    return {
+        ( map { $_ => $self->$_ } qw( id email name ) ),
+    }
 }
 
 __PACKAGE__->meta->make_immutable;

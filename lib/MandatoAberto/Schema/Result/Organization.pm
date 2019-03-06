@@ -99,6 +99,13 @@ __PACKAGE__->table("organization");
   data_type: 'text'
   is_nullable: 1
 
+=head2 invite_token
+
+  data_type: 'uuid'
+  default_value: uuid_generate_v4()
+  is_nullable: 0
+  size: 16
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -132,6 +139,13 @@ __PACKAGE__->add_columns(
   { data_type => "boolean", default_value => \"true", is_nullable => 0 },
   "picture",
   { data_type => "text", is_nullable => 1 },
+  "invite_token",
+  {
+    data_type => "uuid",
+    default_value => \"uuid_generate_v4()",
+    is_nullable => 0,
+    size => 16,
+  },
 );
 
 =head1 PRIMARY KEY
@@ -194,8 +208,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-12-13 10:46:26
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:aKekCTmucTEFWEHcIWR1qg
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-03-06 08:12:19
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:pbkQ7xPgNPv2UpmkFgFI4Q
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
