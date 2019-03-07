@@ -464,7 +464,7 @@ sub sync_dialogflow {
 
     return 0 unless $self->general_config->dialogflow_config_id;
 
-    return $self->politician_entities->sync_dialogflow_one_project( $self->general_config->dialogflow_config_id );
+    return $self->politician_entities->sync_dialogflow_one_chatbot( $self->id );
 }
 
 __PACKAGE__->meta->make_immutable;

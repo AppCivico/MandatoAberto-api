@@ -109,7 +109,6 @@ sub sync_dialogflow_one_project {
         sub{
             while ( my $chatbot = $chatbot_rs->next() ) {
                 for my $entity_name (@entities_names) {
-                    print STDERR "\n\nnome: $entity_name";
                     my $v = $self->find_or_create(
                         {
                             organization_chatbot_id => $chatbot->id,
@@ -124,6 +123,48 @@ sub sync_dialogflow_one_project {
 					print STDERR "\nid: $id";
 					print STDERR "\nnome: $name\n\n";
                 }
+            }
+        }
+    );
+
+    return 1;
+}
+
+sub sync_dialogflow_one_chatbot {
+    my ($self, $organization_chatbot_id) = @_;
+
+    my @entities_names;
+
+    my $chatbot = $self->result_source->schema->resultset('OrganizationChatbot')->find($organization_chatbot_id);
+
+    my $project = $chatbot->general_config->dialogflow_config;
+    my $res     = $self->_dialogflow->get_intents( project => $project );
+
+    for my $entity ( @{ $res->{intents} } ) {
+        my $name = $entity->{displayName};
+
+        if ( $self->skip_intent($name) == 0 ) {
+            $name = lc $name;
+            push @entities_names, $name;
+        }
+    }
+
+    $self->result_source->schema->txn_do(
+        sub{
+            for my $entity_name (@entities_names) {
+                my $v = $self->find_or_create(
+                    {
+                        organization_chatbot_id => $chatbot->id,
+                        name                    => $entity_name,
+                        human_name              => $entity_name
+                    },
+                    { key => 'chatbot_id_name' }
+                );
+
+                my $name = $v->name;
+                my $id = $v->id;
+                print STDERR "\nid: $id";
+                print STDERR "\nnome: $name\n\n";
             }
         }
     );
