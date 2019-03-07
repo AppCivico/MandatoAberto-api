@@ -109,7 +109,8 @@ sub sync_dialogflow_one_project {
         sub{
             while ( my $chatbot = $chatbot_rs->next() ) {
                 for my $entity_name (@entities_names) {
-                    $self->find_or_create(
+                    print STDERR "\n\nnome: $entity_name";
+                    my $v = $self->find_or_create(
                         {
                             organization_chatbot_id => $chatbot->id,
                             name                    => $entity_name,
@@ -117,6 +118,11 @@ sub sync_dialogflow_one_project {
                         },
                         { key => 'chatbot_id_name' }
                     );
+
+                    my $name = $v->name;
+                    my $id = $v->id;
+					print STDERR "\nid: $id";
+					print STDERR "\nnome: $name\n\n";
                 }
             }
         }
