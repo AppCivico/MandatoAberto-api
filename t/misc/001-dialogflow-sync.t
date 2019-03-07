@@ -119,6 +119,28 @@ db_transaction {
 	ok( $politician_entity_rs->sync_dialogflow,  'sync ok' );
 	is( $politician_entity_rs->count, 6,         '6 rows' );
 	is( $chatbot->politician_entities->count, 2, '2 rows' );
+
+	$politician    = create_politician;
+	$politician_id = $politician->{id};
+	$politician    = $schema->resultset('Politician')->find($politician_id);
+
+    api_auth_as user_id => $politician_id;
+    rest_put "/api/politician/$politician_id",
+        name => 'activate chatbot',
+        [
+            fb_page_access_token => 'fake_access_token_2',
+            fb_page_id           => 'fake_page_id_2'
+        ]
+    ;
+
+    $chatbot = $politician->user->organization->organization_chatbots->next;
+
+    ok( $chatbot->general_config->update( { dialogflow_config_id => $dialogflow_config->id } ), 'update config id' );
+
+	setup_dialogflow_intents_other_project_response();
+	ok( $politician_entity_rs->sync_dialogflow,  'sync ok' );
+	is( $politician_entity_rs->count, 8,         '8 rows' );
+	is( $chatbot->politician_entities->count, 2, '2 rows' );
 };
 
 done_testing();

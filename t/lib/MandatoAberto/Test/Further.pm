@@ -616,5 +616,25 @@ sub activate_chatbot {
     );
 }
 
+sub create_user {
+    my (%opts) = @_;
+
+    my %params = (
+        email       => fake_email()->(),
+        password    => 'foobarpass',
+        name        => fake_name()->(),
+        movement_id => fake_int(1, 7)->(),
+        %opts
+    );
+
+    return $obj->rest_post(
+        '/api/register',
+        name                => 'create user',
+        automatic_load_item => 0,
+        stash               => 'user',
+        [ %params ],
+    );
+};
+
 1;
 

@@ -153,7 +153,7 @@ sub pending_GET {
 	die \['sync', 'invalid'] unless $sync == 1 || $sync == 0;
 
 	my $organization_chatbot = $c->stash->{politician}->user->organization_chatbot;
-	eval { $organization_chatbot->sync_dialogflow if $sync == 1 };
+	$organization_chatbot->sync_dialogflow if $sync == 1;
 
     return $self->status_ok(
         $c,
