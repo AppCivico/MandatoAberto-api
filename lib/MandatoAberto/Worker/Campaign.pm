@@ -88,7 +88,7 @@ sub exec_item {
         # status_id 3 é 'sent'
         $campaign->update(
             {
-				status_id  => 2,
+                status_id  => 2,
                 updated_at => \'NOW()',
             }
         );

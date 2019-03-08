@@ -24,14 +24,20 @@ sub list_GET {
     my $politician_id = $c->req->params->{politician_id};
     die \["politician_id", "missing"] unless $politician_id;
 
+	my $fb_id = $c->req->params->{fb_id};
+	die \["fb_id", "missing"] unless $fb_id;
+
     my $politician = $c->model('DB::Politician')->find($politician_id);
 
     $c->stash->{collection} = $c->stash->{collection}->search(
         {
-            'me.politician_id' => $politician_id,
-            'me.active'        => 1
+            'me.organization_chatbot_id' => $politician->user->organization_chatbot_id,
+            'me.active'                  => 1
         }
     );
+
+    my $recipient = $politician->user->chatbot->recipients->search( { fb_id => $fb_id } )->next
+      or die \['fb_id', 'invalid'];
 
     my $entities = $c->req->params->{entities};
     die \['entities', 'missing'] unless $entities;
@@ -42,7 +48,7 @@ sub list_GET {
 
     if ($@) {
 
-        if ( $politician->politician_entities->entity_exists($entities) ) {
+        if ( $politician->user->organization_chatbot->politician_entities->entity_exists($entities) ) {
             $entities = lc $entities;
             push @entities_names, $entities;
         }
@@ -79,6 +85,8 @@ sub list_GET {
                         entities => [
                             map {
                                 my $e = $_;
+
+                                $recipient->add_to_politician_entity( $e->id );
 
                                 +{
                                     id  => $e->id,

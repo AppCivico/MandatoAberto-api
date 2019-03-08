@@ -19,7 +19,12 @@ db_transaction {
         fb_page_id => fake_words(1)->()
     );
     my $politician_id = stash "politician.id";
+	my $politician    = $schema->resultset('Politician')->find(stash 'politician.id');
+
     api_auth_as user_id => $politician_id;
+	activate_chatbot($politician_id);
+
+	my $organization_chatbot_id = $politician->user->organization_chatbot_id;
 
     my @recipient_ids = ();
     subtest 'mocking recipients' => sub {
@@ -41,9 +46,9 @@ db_transaction {
         ok(
             $poll = $schema->resultset('Poll')->create(
                 {
-                    name          => 'Pizza',
-                    politician_id => $politician_id,
-                    status_id     => 1,
+                    name                    => 'Pizza',
+                    organization_chatbot_id => $organization_chatbot_id,
+                    status_id               => 1,
                 },
             ),
             'add poll',
@@ -236,9 +241,9 @@ db_transaction {
         ok(
             my $group = $schema->resultset('Group')->create(
                 {
-                    name          => fake_name->(),
-                    politician_id => $politician_id,
-                    filter => {
+                    name                    => fake_name->(),
+                    organization_chatbot_id => $organization_chatbot_id,
+                    filter                  => {
                         this => [ 'is' ],
                         an   => { invalid => 'filter' },
                     },

@@ -15,6 +15,9 @@ db_transaction {
     my $politician_id = stash "politician.id";
     my $politician    = $schema->resultset('Politician')->find($politician_id);
 
+	api_auth_as user_id => $politician_id;
+	activate_chatbot($politician_id);
+
     my $recipient_fb_id = 'foobar';
     rest_post "/api/chatbot/recipient",
         name                => "create recipient",
@@ -129,8 +132,8 @@ db_transaction {
 
     my $issue = $schema->resultset("Issue")->find(stash "i1.id");
 
-    is ( $politician->politician_entities->count, 1, 'one politician entity' );
-    ok ( my $politician_entity = $politician->politician_entities->next, 'politician entity' );
+    is ( $politician->user->organization_chatbot->politician_entities->count, 1, 'one politician entity' );
+    ok ( my $politician_entity = $politician->user->organization_chatbot->politician_entities->next, 'politician entity' );
     is ( $politician_entity->recipient_count, 1,           'recipient count' );
 
     ok ($issue->open eq '1', 'Issue is created as open');

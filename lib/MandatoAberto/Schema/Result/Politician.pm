@@ -114,37 +114,10 @@ __PACKAGE__->table("politician");
   is_foreign_key: 1
   is_nullable: 1
 
-=head2 twitter_id
-
-  data_type: 'text'
-  is_nullable: 1
-
-=head2 twitter_oauth_token
-
-  data_type: 'text'
-  is_nullable: 1
-
-=head2 twitter_token_secret
-
-  data_type: 'text'
-  is_nullable: 1
-
 =head2 share_text
 
   data_type: 'text'
   is_nullable: 1
-
-=head2 use_dialogflow
-
-  data_type: 'boolean'
-  default_value: false
-  is_nullable: 0
-
-=head2 issue_active
-
-  data_type: 'boolean'
-  default_value: true
-  is_nullable: 0
 
 =cut
 
@@ -175,18 +148,8 @@ __PACKAGE__->add_columns(
   { data_type => "text", is_nullable => 1 },
   "movement_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
-  "twitter_id",
-  { data_type => "text", is_nullable => 1 },
-  "twitter_oauth_token",
-  { data_type => "text", is_nullable => 1 },
-  "twitter_token_secret",
-  { data_type => "text", is_nullable => 1 },
   "share_text",
   { data_type => "text", is_nullable => 1 },
-  "use_dialogflow",
-  { data_type => "boolean", default_value => \"false", is_nullable => 0 },
-  "issue_active",
-  { data_type => "boolean", default_value => \"true", is_nullable => 0 },
 );
 
 =head1 PRIMARY KEY
@@ -231,66 +194,6 @@ __PACKAGE__->belongs_to(
   "MandatoAberto::Schema::Result::State",
   { id => "address_state_id" },
   { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
-);
-
-=head2 answers
-
-Type: has_many
-
-Related object: L<MandatoAberto::Schema::Result::Answer>
-
-=cut
-
-__PACKAGE__->has_many(
-  "answers",
-  "MandatoAberto::Schema::Result::Answer",
-  { "foreign.politician_id" => "self.user_id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
-
-=head2 campaigns
-
-Type: has_many
-
-Related object: L<MandatoAberto::Schema::Result::Campaign>
-
-=cut
-
-__PACKAGE__->has_many(
-  "campaigns",
-  "MandatoAberto::Schema::Result::Campaign",
-  { "foreign.politician_id" => "self.user_id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
-
-=head2 groups
-
-Type: has_many
-
-Related object: L<MandatoAberto::Schema::Result::Group>
-
-=cut
-
-__PACKAGE__->has_many(
-  "groups",
-  "MandatoAberto::Schema::Result::Group",
-  { "foreign.politician_id" => "self.user_id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
-
-=head2 issues
-
-Type: has_many
-
-Related object: L<MandatoAberto::Schema::Result::Issue>
-
-=cut
-
-__PACKAGE__->has_many(
-  "issues",
-  "MandatoAberto::Schema::Result::Issue",
-  { "foreign.politician_id" => "self.user_id" },
-  { cascade_copy => 0, cascade_delete => 0 },
 );
 
 =head2 logs
@@ -383,66 +286,6 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 politician_contacts
-
-Type: has_many
-
-Related object: L<MandatoAberto::Schema::Result::PoliticianContact>
-
-=cut
-
-__PACKAGE__->has_many(
-  "politician_contacts",
-  "MandatoAberto::Schema::Result::PoliticianContact",
-  { "foreign.politician_id" => "self.user_id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
-
-=head2 politician_entities
-
-Type: has_many
-
-Related object: L<MandatoAberto::Schema::Result::PoliticianEntity>
-
-=cut
-
-__PACKAGE__->has_many(
-  "politician_entities",
-  "MandatoAberto::Schema::Result::PoliticianEntity",
-  { "foreign.politician_id" => "self.user_id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
-
-=head2 politician_knowledge_bases
-
-Type: has_many
-
-Related object: L<MandatoAberto::Schema::Result::PoliticianKnowledgeBase>
-
-=cut
-
-__PACKAGE__->has_many(
-  "politician_knowledge_bases",
-  "MandatoAberto::Schema::Result::PoliticianKnowledgeBase",
-  { "foreign.politician_id" => "self.user_id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
-
-=head2 politician_private_reply_config
-
-Type: might_have
-
-Related object: L<MandatoAberto::Schema::Result::PoliticianPrivateReplyConfig>
-
-=cut
-
-__PACKAGE__->might_have(
-  "politician_private_reply_config",
-  "MandatoAberto::Schema::Result::PoliticianPrivateReplyConfig",
-  { "foreign.politician_id" => "self.user_id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
-
 =head2 politician_summary
 
 Type: might_have
@@ -473,96 +316,6 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 politicians_greeting
-
-Type: has_many
-
-Related object: L<MandatoAberto::Schema::Result::PoliticianGreeting>
-
-=cut
-
-__PACKAGE__->has_many(
-  "politicians_greeting",
-  "MandatoAberto::Schema::Result::PoliticianGreeting",
-  { "foreign.politician_id" => "self.user_id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
-
-=head2 poll_propagates
-
-Type: has_many
-
-Related object: L<MandatoAberto::Schema::Result::PollPropagate>
-
-=cut
-
-__PACKAGE__->has_many(
-  "poll_propagates",
-  "MandatoAberto::Schema::Result::PollPropagate",
-  { "foreign.politician_id" => "self.user_id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
-
-=head2 poll_self_propagation_config
-
-Type: might_have
-
-Related object: L<MandatoAberto::Schema::Result::PollSelfPropagationConfig>
-
-=cut
-
-__PACKAGE__->might_have(
-  "poll_self_propagation_config",
-  "MandatoAberto::Schema::Result::PollSelfPropagationConfig",
-  { "foreign.politician_id" => "self.user_id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
-
-=head2 polls
-
-Type: has_many
-
-Related object: L<MandatoAberto::Schema::Result::Poll>
-
-=cut
-
-__PACKAGE__->has_many(
-  "polls",
-  "MandatoAberto::Schema::Result::Poll",
-  { "foreign.politician_id" => "self.user_id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
-
-=head2 private_replies
-
-Type: has_many
-
-Related object: L<MandatoAberto::Schema::Result::PrivateReply>
-
-=cut
-
-__PACKAGE__->has_many(
-  "private_replies",
-  "MandatoAberto::Schema::Result::PrivateReply",
-  { "foreign.politician_id" => "self.user_id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
-
-=head2 recipients
-
-Type: has_many
-
-Related object: L<MandatoAberto::Schema::Result::Recipient>
-
-=cut
-
-__PACKAGE__->has_many(
-  "recipients",
-  "MandatoAberto::Schema::Result::Recipient",
-  { "foreign.politician_id" => "self.user_id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
-
 =head2 user
 
 Type: belongs_to
@@ -579,8 +332,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-10-31 16:23:53
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:SaJQjnnOojLCBrX5pERxBQ
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-03-01 15:31:50
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:jogsYEv6ZAdFeMXqCg0fHQ
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
@@ -705,45 +458,25 @@ sub verifiers_specs {
                         $movement_rs->search( { id => $movement_id } )->count;
                     }
                 },
-                twitter_id => {
-                    required   => 0,
-                    type       => Twitter_id,
-                    post_check => sub {
-                        my $twitter_id = $_[0]->get_value('twitter_id');
-
-                        my $politician_rs = $self->result_source->schema->resultset('Politician');
-                        $politician_rs->search( { twitter_id => $twitter_id } )->count and die \["twitter_id", "alredy exists"];
-
-                        return 1;
-                    }
-                },
-                twitter_oauth_token => {
-                    required   => 0,
-                    type       => 'Str',
-                    post_check => sub {
-                        my $twitter_oauth_token  = $_[0]->get_value('twitter_oauth_token');
-
-                        my $politician_rs = $self->result_source->schema->resultset('Politician');
-                        $politician_rs->search( { twitter_oauth_token => $twitter_oauth_token } )->count and die \["twitter_oauth_token", "alredy exists"];
-
-                        return 1;
-                    }
-                },
-                twitter_token_secret => {
-                    required   => 0,
-                    type       => 'Str',
-                    post_check => sub {
-                        my $twitter_token_secret = $_[0]->get_value('twitter_token_secret');
-
-                        my $politician_rs = $self->result_source->schema->resultset('Politician');
-                        $politician_rs->search( { twitter_token_secret => $twitter_token_secret } )->count and die \["twitter_token_secret", "alredy exists"];
-
-                        return 1;
-                    }
-                },
                 use_dialogflow => {
                     required => 0,
                     type     => 'Bool'
+                },
+                organization_name => {
+                    required => 0,
+                    type     => 'Str'
+                },
+                organization_picture => {
+                    required => 0,
+                    type     => 'Str'
+                },
+                organization_chatbot_name => {
+                    required => 0,
+                    type     => 'Str'
+                },
+                organization_chatbot_picture => {
+                    required => 0,
+                    type     => 'Str'
                 }
             }
         ),
@@ -793,7 +526,7 @@ sub action_specs {
                     die \["new_password", "must have at least 6 characters"];
                 }
 
-                if ($values{fb_page_access_token}) {
+                if (defined $values{fb_page_access_token}) {
                     # O access token gerado pela primeira vez é o de vida curta
                     # portanto devo pegar o mesmo e gerar um novo token de vida longa
                     # API do Facebook: https://developers.facebook.com/docs/facebook-login/access-tokens/expiration-and-extension
@@ -802,17 +535,45 @@ sub action_specs {
 
                     # Setando o botão get started
                     $self->set_get_started_button_and_persistent_menu($values{fb_page_access_token});
+
+                    # Criando ou atualizando entrada na tabela organization_chatbot
+                    my $chatbot = $self->user->organization->organization_chatbots->next;
+
+                    if ( $chatbot ) {
+						$self->result_source->schema->resultset('OrganizationChatbotFacebookConfig')->update_or_create(
+							{
+                                organization_chatbot_id => $chatbot->id,
+                                page_id                 => $values{fb_page_id},
+                                access_token            => $values{fb_page_access_token}
+							},
+						);
+                    } else {
+						$self->user->organization->organization_chatbots->update_or_create(
+							{
+								chatbot_platform_id => 1,
+								organization_chatbot_general_config => {
+									is_active      => 1,
+									issue_active   => 1,
+									use_dialogflow => 1,
+								},
+								organization_chatbot_facebook_config => {
+									page_id      => $values{fb_page_id},
+									access_token => $values{fb_page_access_token}
+								}
+							},
+						);
+                    }
                 }
 
                 if ( exists $values{private_reply_activated} ) {
                     my $private_reply_activated = delete $values{private_reply_activated};
 
-                    $self->politician_private_reply_config->update( { active => $private_reply_activated } );
+                    $self->user->organization_chatbot->politician_private_reply_config->update( { active => $private_reply_activated } );
                 }
 
                 # Tratando possibilidade de retirar partido e cargo
-				$values{party_id}  = undef if defined $values{party_id}  && $values{party_id} == 0;
-				$values{office_id} = undef if defined $values{office_id} && $values{office_id} == 0;
+                $values{party_id}  = undef if defined $values{party_id}  && $values{party_id} == 0;
+                $values{office_id} = undef if defined $values{office_id} && $values{office_id} == 0;
 
                 # Caso ocorra mudança no fb_page_id e o político possuir integração do voto legal
                 # devo avisar o novo page_id ao voto legal
@@ -826,6 +587,16 @@ sub action_specs {
                 delete $values{deactivate_chatbot};
 
                 $self->user->update( { password => $values{new_password} } ) and delete $values{new_password} if $values{new_password};
+
+				$self->user->update( { picture => $values{picture} } ) and delete $values{picture} if $values{picture};
+				$self->user->update( { name => $values{name} } ) if $values{name};
+                $self->user->organization->update( { picture => $values{organization_picture} } ) and delete $values{organization_picture} if $values{organization_picture};
+				$self->user->organization->update( { picture => $values{organization_name} } ) and delete $values{organization_name} if $values{organization_name};
+
+                # p \%values;
+                # my @organization_fields = qw( organization_name organization_picture organization_chatbot_name organization_chatbot_picture );
+                # @organization_fields = grep { my $p = $_; grep { $p eq $_ and delete $values{$_} } @organization_fields } keys %values;
+                # p \@organization_fields;
 
                 $politician = $self->update(\%values);
 
@@ -847,7 +618,7 @@ sub get_long_lived_access_token {
     my $short_lived_token = $_[1];
 
     if (is_test()) {
-        return 1;
+        return 'long_lived_fake_access_token';
     }
 
     my $furl = Furl->new();
@@ -982,8 +753,8 @@ sub get_current_facebook_page {
 
     my $furl = Furl->new();
 
-    my $page_id      = $self->fb_page_id;
-    my $access_token = $self->fb_page_access_token;
+    my $page_id      = $self->user->organization_chatbot->fb_config->page_id;
+    my $access_token = $self->user->organization_chatbot->fb_config->access_token;
 
     my $res = $furl->get(
         $ENV{FB_API_URL} . "/me?fields=id,name,picture.type(large)&access_token=$access_token",
@@ -1138,6 +909,8 @@ sub get_votolegal_integration {
 sub deactivate_chatbot {
     my ($self) = @_;
 
+    $self->user->organization_chatbot->fb_config->delete;
+
     return $self->update(
         {
             fb_page_id           => undef,
@@ -1155,7 +928,44 @@ sub get_activated_poll {
 sub poll_self_propagation_active {
     my ($self) = @_;
 
-    return $self->poll_self_propagation_config->active;
+    my $has_config = $self->user->organization_chatbot->poll_self_propagation_config ? 1 : 0;
+
+    return $has_config ? $self->user->organization_chatbot->poll_self_propagation_config->active : 0;
+}
+
+sub build_notification_bar {
+    my ($self) = @_;
+
+	my @relations = qw( issues );
+
+    my $issue_response_view = $self->result_source->schema->resultset('ViewAvgIssueResponseTime')->search( undef, { bind => [ $self->user->organization_chatbot_id ] } )->next;
+    my $avg_response_time = $issue_response_view ? $issue_response_view->avg_response_time : 0;
+
+    my $chatbot = $self->user->organization_chatbot;
+
+    my $unread_count  = $chatbot ? $chatbot->issues->search( { read => 0 } )->count : 0;
+    my $response_time = $avg_response_time <= 90 ? 'Bom' : 'Ruim';
+
+	return [
+		{
+            name     => 'issue_response_time',
+            text     => 'Tempo de resposta',
+            is_count => 0,
+            count    => undef,
+            message  => $response_time,
+            icon     => '/assets/images/issue_response_time.svg',
+            link     => '/mensagens'
+        },
+        {
+            name     => 'issue',
+            text     => 'Caixa de Entrada',
+            is_count => 1,
+            count    => $unread_count,
+            message  => undef,
+            icon     => '/assets/images/issue.svg',
+            link     => '/mensagens'
+        }
+	];
 }
 
 __PACKAGE__->meta->make_immutable;

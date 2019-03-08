@@ -49,23 +49,12 @@ __PACKAGE__->table("recipient");
   is_nullable: 0
   sequence: 'citizen_id_seq'
 
-=head2 politician_id
-
-  data_type: 'integer'
-  is_foreign_key: 1
-  is_nullable: 0
-
 =head2 name
 
   data_type: 'text'
   is_nullable: 0
 
 =head2 fb_id
-
-  data_type: 'text'
-  is_nullable: 1
-
-=head2 origin_dialog
 
   data_type: 'text'
   is_nullable: 1
@@ -126,30 +115,16 @@ __PACKAGE__->table("recipient");
   is_nullable: 1
   original: {default_value => \"now()"}
 
-=head2 twitter_id
-
-  data_type: 'text'
-  is_nullable: 1
-
-=head2 twitter_origin_id
-
-  data_type: 'text'
-  is_nullable: 1
-
-=head2 twitter_screen_name
-
-  data_type: 'text'
-  is_nullable: 1
-
-=head2 platform
-
-  data_type: 'text'
-  is_nullable: 0
-
 =head2 entities
 
   data_type: 'integer[]'
   default_value: '{}'::integer[]
+  is_nullable: 0
+
+=head2 organization_chatbot_id
+
+  data_type: 'integer'
+  is_foreign_key: 1
   is_nullable: 0
 
 =cut
@@ -162,13 +137,9 @@ __PACKAGE__->add_columns(
     is_nullable       => 0,
     sequence          => "citizen_id_seq",
   },
-  "politician_id",
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "name",
   { data_type => "text", is_nullable => 0 },
   "fb_id",
-  { data_type => "text", is_nullable => 1 },
-  "origin_dialog",
   { data_type => "text", is_nullable => 1 },
   "gender",
   { data_type => "text", is_nullable => 1 },
@@ -200,20 +171,14 @@ __PACKAGE__->add_columns(
     is_nullable   => 1,
     original      => { default_value => \"now()" },
   },
-  "twitter_id",
-  { data_type => "text", is_nullable => 1 },
-  "twitter_origin_id",
-  { data_type => "text", is_nullable => 1 },
-  "twitter_screen_name",
-  { data_type => "text", is_nullable => 1 },
-  "platform",
-  { data_type => "text", is_nullable => 0 },
   "entities",
   {
     data_type     => "integer[]",
     default_value => \"'{}'::integer[]",
     is_nullable   => 0,
   },
+  "organization_chatbot_id",
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
 );
 
 =head1 PRIMARY KEY
@@ -275,18 +240,18 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 politician
+=head2 organization_chatbot
 
 Type: belongs_to
 
-Related object: L<MandatoAberto::Schema::Result::Politician>
+Related object: L<MandatoAberto::Schema::Result::OrganizationChatbot>
 
 =cut
 
 __PACKAGE__->belongs_to(
-  "politician",
-  "MandatoAberto::Schema::Result::Politician",
-  { user_id => "politician_id" },
+  "organization_chatbot",
+  "MandatoAberto::Schema::Result::OrganizationChatbot",
+  { id => "organization_chatbot_id" },
   { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
 );
 
@@ -301,21 +266,6 @@ Related object: L<MandatoAberto::Schema::Result::PoliticianEntityStat>
 __PACKAGE__->has_many(
   "politician_entity_stats",
   "MandatoAberto::Schema::Result::PoliticianEntityStat",
-  { "foreign.recipient_id" => "self.id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
-
-=head2 poll_notification
-
-Type: might_have
-
-Related object: L<MandatoAberto::Schema::Result::PollNotification>
-
-=cut
-
-__PACKAGE__->might_have(
-  "poll_notification",
-  "MandatoAberto::Schema::Result::PollNotification",
   { "foreign.recipient_id" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
@@ -350,24 +300,9 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 recipient_network
 
-Type: might_have
-
-Related object: L<MandatoAberto::Schema::Result::RecipientNetwork>
-
-=cut
-
-__PACKAGE__->might_have(
-  "recipient_network",
-  "MandatoAberto::Schema::Result::RecipientNetwork",
-  { "foreign.recipient_id" => "self.id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
-
-
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-10-19 15:05:15
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:gu4E3XwDgVdbsP1WZSQfZg
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-03-01 15:05:46
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:B9oVNITDjiYwCmEqGB1gbA
 
 __PACKAGE__->load_components("InflateColumn::Serializer", "Core");
 __PACKAGE__->remove_column('groups');
@@ -426,7 +361,7 @@ sub add_to_group {
     my $ret;
     $self->result_source->schema->txn_do(sub {
         # Verificando se este recipient já estava no grupo.
-        my $recipients_rs = $self->politician->recipients;
+        my $recipients_rs = $self->organization_chatbot->recipients;
 
         my $already_in_this_group = $recipients_rs->search(
             {
@@ -442,7 +377,7 @@ sub add_to_group {
 
         return if $already_in_this_group;
 
-        $self->politician->groups
+        $self->organization_chatbot->groups
         ->search( { 'me.id' => $group_id } )
         ->update(
             {
@@ -458,7 +393,7 @@ sub add_to_group {
 sub groups_rs {
     my ($self) = @_;
 
-    return $self->politician->groups->search(
+    return $self->organization_chatbot->groups->search(
         {
             'me.id' => { 'in' => [ keys %{ $self->groups || {} } ] },
             deleted => 0
@@ -469,7 +404,7 @@ sub groups_rs {
 sub entity_rs {
     my ($self) = @_;
 
-    return $self->politician->politician_entities->search(
+    return $self->organization_chatbot->politician_entities->search(
         {
             'me.id' => { 'in' => $self->entities ? $self->entities : 0 },
         }
@@ -483,23 +418,22 @@ sub add_to_politician_entity {
     $self->result_source->schema->txn_do(
         sub {
             # Verificando se este recipient já estava na entidade.
-            my $recipients_rs = $self->politician->recipients;
+            my $recipients_rs = $self->organization_chatbot->recipients;
 
-            my $already_in_this_group = $recipients_rs->search(
+			my $already_in_this_group = $recipients_rs->search(
                 {
-                    '-and' => [
+                    -and => [
                         'me.id' => $self->id,
-                        \[ '? =ANY(entities)', $politician_entity_id ],
-                    ],
+                        \[ "? =ANY(entities)" => $politician_entity_id ],
+                    ]
                 },
-                { select => [ \1 ] },
-            )->next;
+            );
 
-            return if $already_in_this_group;
+            return if $already_in_this_group->count > 0;
 
             $ret = $self->update( { entities => \[ "array_append(entities, ?)", $politician_entity_id ] } );
 
-            $self->politician->politician_entities->search( { 'me.id' => $politician_entity_id } )->update(
+            $self->organization_chatbot->politician_entities->search( { 'me.id' => $politician_entity_id } )->update(
                 {
                     recipient_count => \'recipient_count + 1',
                     updated_at      => \'NOW()',

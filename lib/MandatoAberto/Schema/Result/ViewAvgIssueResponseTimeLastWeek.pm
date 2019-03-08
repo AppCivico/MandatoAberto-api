@@ -14,9 +14,9 @@ __PACKAGE__->add_columns( qw( avg_response_time ) );
 __PACKAGE__->result_source_instance->is_virtual(1);
 
 __PACKAGE__->result_source_instance->view_definition(<<'SQL_QUERY');
-SELECT politician_id, round(avg( extract(epoch FROM ( updated_at - created_at ) ) / 60 )) as avg_response_time
+SELECT organization_chatbot_id, round(avg( extract(epoch FROM ( updated_at - created_at ) ) / 60 )) as avg_response_time
     FROM issue
-    WHERE reply IS NOT NULL AND politician_id = ? AND created_at >= NOW() - interval '7 days'
-    GROUP BY politician_id
+    WHERE reply IS NOT NULL AND organization_chatbot_id = ? AND created_at >= NOW() - interval '7 days'
+    GROUP BY organization_chatbot_id
 SQL_QUERY
 1;

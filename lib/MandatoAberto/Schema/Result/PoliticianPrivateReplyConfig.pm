@@ -49,12 +49,6 @@ __PACKAGE__->table("politician_private_reply_config");
   is_nullable: 0
   sequence: 'politician_private_reply_config_id_seq'
 
-=head2 politician_id
-
-  data_type: 'integer'
-  is_foreign_key: 1
-  is_nullable: 0
-
 =head2 active
 
   data_type: 'boolean'
@@ -72,6 +66,12 @@ __PACKAGE__->table("politician_private_reply_config");
   data_type: 'timestamp'
   is_nullable: 1
 
+=head2 organization_chatbot_id
+
+  data_type: 'integer'
+  is_foreign_key: 1
+  is_nullable: 0
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -82,14 +82,14 @@ __PACKAGE__->add_columns(
     is_nullable       => 0,
     sequence          => "politician_private_reply_config_id_seq",
   },
-  "politician_id",
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "active",
   { data_type => "boolean", default_value => \"true", is_nullable => 0 },
   "delay_between_private_replies",
   { data_type => "interval", default_value => "01:00:00", is_nullable => 0 },
   "updated_at",
   { data_type => "timestamp", is_nullable => 1 },
+  "organization_chatbot_id",
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
 );
 
 =head1 PRIMARY KEY
@@ -104,43 +104,26 @@ __PACKAGE__->add_columns(
 
 __PACKAGE__->set_primary_key("id");
 
-=head1 UNIQUE CONSTRAINTS
-
-=head2 C<politician_private_reply_config_politician_id_key>
-
-=over 4
-
-=item * L</politician_id>
-
-=back
-
-=cut
-
-__PACKAGE__->add_unique_constraint(
-  "politician_private_reply_config_politician_id_key",
-  ["politician_id"],
-);
-
 =head1 RELATIONS
 
-=head2 politician
+=head2 organization_chatbot
 
 Type: belongs_to
 
-Related object: L<MandatoAberto::Schema::Result::Politician>
+Related object: L<MandatoAberto::Schema::Result::OrganizationChatbot>
 
 =cut
 
 __PACKAGE__->belongs_to(
-  "politician",
-  "MandatoAberto::Schema::Result::Politician",
-  { user_id => "politician_id" },
+  "organization_chatbot",
+  "MandatoAberto::Schema::Result::OrganizationChatbot",
+  { id => "organization_chatbot_id" },
   { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-06-13 17:08:49
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:PP0bx1xFinvPfYZdXS5e7w
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-12-06 14:32:08
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:wFrL8/WEsj8sCc9PItKnGA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

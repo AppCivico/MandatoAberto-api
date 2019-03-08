@@ -16,6 +16,7 @@ db_transaction {
     $politician->user->update( { approved => 1 } );
 
     api_auth_as user_id => $politician_id;
+    activate_chatbot($politician_id);
 
     my $poll_name = fake_words(1)->();
     rest_post "/api/register/poll",
@@ -55,7 +56,7 @@ db_transaction {
         list  => 1,
         stash => "get_poll",
         [
-            fb_page_id     => 'foobar',
+            fb_page_id     => 'fake_page_id',
             security_token => $security_token
         ]
     ;

@@ -39,15 +39,16 @@ sub verifiers_specs {
                     required   => 1,
                     type       => 'ArrayRef[Int]',
                     post_check => sub {
-                        my $entity = $_[0]->get_value('entities');
+                        my $entity     = $_[0]->get_value('entities');
+                        my $politician = $self->result_source->schema->resultset('Politician')->find($_[0]->get_value('politician_id'));
 
                         for (my $i = 0; $i < @{ $entity }; $i++) {
                             my $entity_id = $entity->[$i];
 
                             my $count = $self->result_source->schema->resultset('PoliticianEntity')->search(
                                 {
-                                    id            => $entity_id,
-                                    politician_id => $_[0]->get_value('politician_id'),
+                                    id                      => $entity_id,
+                                    organization_chatbot_id => $politician->user->organization_chatbot_id,
                                 }
                             )->count;
                             die \['entities', "could not find entity with id $entity_id"] if $count == 0;
@@ -90,15 +91,21 @@ sub action_specs {
 
                 my $politician = $self->result_source->schema->resultset('Politician')->find($values{politician_id});
 
+                # Tratando knowledge_base como do organization_chatbot e não do politician
+                my $organization_chatbot_id = $politician->user->organization_chatbot->id;
+
+                delete $values{politician_id} and $values{organization_chatbot_id} = $organization_chatbot_id;
+
+
                 if ( $values{saved_attachment_id} ) {
                     die \['saved_attachment_type', 'missing'] unless $values{saved_attachment_type};
                 }
 
                 my $active_knowledge_base_entry = $self->search(
                     {
-                        politician_id => $values{politician_id},
-                        entities      => "{@entities}",
-                        type          => $values{type}
+                        organization_chatbot_id => $values{organization_chatbot_id},
+                        entities                => "{@entities}",
+                        type                    => $values{type}
                     }
                 )->next;
 
@@ -163,7 +170,7 @@ sub get_knowledge_base_by_entity_name {
                     } @ids
                 ],
             },
-            { prefetch => { 'politician' => 'politician_entities' } }
+            { prefetch => { 'organization_chatbot' => 'politician_entities' } }
         );
     }
 

@@ -18,10 +18,10 @@ sub object : Chained('base') : PathPart('') : CaptureArgs(1) {
 
     $c->stash->{collection} = $c->stash->{collection}->search( { user_id => $politician_id } );
 
-	my $politician = $c->stash->{collection}->find($politician_id);
-	$c->detach("/error_404") unless ref $politician;
+    my $politician = $c->stash->{collection}->find($politician_id);
+    $c->detach("/error_404") unless ref $politician;
 
-	$c->stash->{politician} = $politician;
+    $c->stash->{politician} = $politician;
 }
 
 sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }
@@ -29,31 +29,17 @@ sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }
 sub list_GET {
     my ($self, $c) = @_;
 
-    my $platform = $c->req->params->{platform} || 'fb';
-    die \['platform', 'invalid'] unless $platform =~ m/^(fb|twitter)$/;
+    my $page_id = $c->req->params->{fb_page_id};
+    die \["fb_page_id", "missing"] unless $page_id;
 
-    my ($politician, $page_id, $cond);
-    if ( $platform eq 'fb' ) {
+    my $chatbot_config = $c->model('DB::OrganizationChatbotFacebookConfig')->search( { page_id => $page_id } )->next
+    or die \['fb_page_id', 'could not find politician with that fb_page_id'];
 
-        $page_id = $c->req->params->{fb_page_id};
-        die \["fb_page_id", "missing"] unless $page_id;
+    my $organization_chatbot = $chatbot_config->organization_chatbot;
+    my $user                 = $organization_chatbot->organization->users->next;
+    my $politician           = $user->user->politician;
 
-        $politician = $c->model("DB::Politician")->search( { fb_page_id => $page_id } )->next;
-        die \['fb_page_id', 'could not find politician with that fb_page_id'] unless $politician;
-
-        $cond = 'fb_page_id';
-    }
-    else {
-
-        $page_id = $c->req->params->{twitter_id};
-        die \['twitter_id', 'missing'] unless $page_id;
-
-        $politician = $c->model("DB::Politician")->search( { twitter_id => $page_id } )->next;
-        die \['twitter_id', 'could not find politician with that twitter_id'] unless $politician;
-
-        $cond = 'twitter_id';
-    }
-    my $politician_greeting = $politician->politicians_greeting->next;
+    my $politician_greeting = $politician->user->organization_chatbot->politicians_greeting->next;
 
     return $self->status_ok(
         $c,
@@ -70,8 +56,10 @@ sub list_GET {
                     address_state  => $p->get_column('address_state_id'),
                     picframe_url   => $p->get_column('share_url'),
                     picframe_text  => $p->get_column('share_text'),
-                    use_dialogflow => $p->get_column('use_dialogflow'),
-                    issue_active   => $p->get_column('issue_active'),
+                    use_dialogflow => $p->user->organization->chatbot->general_config->use_dialogflow,
+                    issue_active   => $p->user->chatbot->general_config->issue_active,
+
+                    organization_chatbot_id => $p->user->organization_chatbot_id,
 
                     share => {
                         url  => $p->get_column('share_url'),
@@ -79,14 +67,7 @@ sub list_GET {
                     },
 
                     (
-                        $platform eq 'fb' ?
-                        (
-                            fb_access_token => $p->get_column('fb_page_access_token')
-                        ) :
-                        (
-                            twitter_oauth_token  => $p->get_column('twitter_oauth_token'),
-                            twitter_token_secret => $p->get_column('twitter_token_secret')
-                        )
+                        fb_access_token => $p->get_column('fb_page_access_token')
                     ),
 
                     ( $politician->has_votolegal_integration ?
@@ -110,13 +91,23 @@ sub list_GET {
                     ) : ()
                     ),
 
-                    party => {
-                        name    => $p->party->get_column('name'),
-                        acronym => $p->party->get_column('acronym'),
-                    },
-                    office => {
-                        name => $p->office->get_column('name'),
-                    },
+                    (
+                        $p->party ?
+                        (
+                            party => {
+                                name    => $p->party->get_column('name'),
+                                acronym => $p->party->get_column('acronym'),
+                            },
+                        ) : ( )
+                    ),
+                    (
+                        $p->office ?
+                        (
+                            office => {
+                                name => $p->office->get_column('name'),
+                            },
+                        ) : ( )
+                    ),
                     contact => {
                         map {
                             my $c = $_;
@@ -126,14 +117,14 @@ sub list_GET {
                             facebook  => $c->get_column('facebook'),
                             url       => $c->get_column('url'),
                             twitter   => $c->get_column('twitter'),
-                        } $p->politician_contacts->search( { 'me.active' => 1 } )->all()
+                        } $p->user->organization_chatbot->politician_contacts->search( { 'me.active' => 1 } )->all()
                     },
                     greeting => $politician_greeting ? $politician_greeting->on_facebook : undef
                 }
 
             } $c->stash->{collection}->search(
-                { "$cond" => $page_id },
-                { prefetch => [ qw/politician_contacts party office /, { 'politicians_greeting' => 'greeting' } ] }
+                { fb_page_id => $page_id },
+                { prefetch => [ qw/party office / ] }
             )
     )
 }

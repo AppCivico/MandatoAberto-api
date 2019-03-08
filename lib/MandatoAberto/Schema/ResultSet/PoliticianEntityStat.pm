@@ -28,7 +28,7 @@ sub verifiers_specs {
                     required   => 1,
                     type       => 'Str',
                     post_check => sub {
-						my $recipient_fb_id      = $_[0]->get_value('recipient_fb_id');
+                        my $recipient_fb_id      = $_[0]->get_value('recipient_fb_id');
                         my $politician_entity_id = $_[0]->get_value('politician_entity_id');
 
                         my $recipient_rs = $self->result_source->schema->resultset('Recipient');
@@ -36,7 +36,7 @@ sub verifiers_specs {
 
                         my $politician_entity = $self->result_source->schema->resultset('PoliticianEntity')->find($politician_entity_id);
 
-                        die \['recipient_fb_id', 'invalid'] unless $politician_entity->politician->id == $recipient->politician_id;
+                        die \['recipient_fb_id', 'invalid'] unless $politician_entity->organization_chatbot_id == $recipient->organization_chatbot_id;
 
                         return 1;
                     }

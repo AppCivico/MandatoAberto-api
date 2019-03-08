@@ -35,6 +35,9 @@ db_transaction {
     create_politician();
     my $politician_id = stash "politician.id";
 
+	api_auth_as user_id => $politician_id;
+	activate_chatbot($politician_id);
+
     rest_get "/api/politician/$politician_id/available-dialogs",
         name  => 'get available dialogs',
         list  => 1,

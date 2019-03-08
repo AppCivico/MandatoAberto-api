@@ -138,3 +138,23 @@
 0134-remove-type [0133-add-politician_entity_stats] 2018-10-24T13:55:06Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Removing the 'type' column from the 'direct_message' table
 0135-add-err_reason [0134-remove-type] 2018-10-24T18:49:57Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the 'err_reason' on the 'campaign' table
 0136-allow-null-party-and-office [0135-add-err_reason] 2018-10-31T19:37:10Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Allowing null party_id and office_id on politician
+0137-add-organization [0136-allow-null-party-and-office] 2018-11-22T02:40:15Z Lucas Ansei,,, <lucas@lucas-G750JX> # Adding nedded tables for organization
+0138-add-is_mandatoaberto [0137-add-organization] 2018-11-26T12:43:02Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the 'is_mandatoaberto' column on the 'organization' table
+0139-add-persona [0138-add-is_mandatoaberto] 2018-11-26T16:47:21Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the persona table
+0140-add-picture [0139-add-persona] 2018-11-28T13:13:44Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding picture to some tables
+0141-add-picture-chatbot [0140-add-picture] 2018-11-28T14:04:12Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding picture on the chatbot table
+0142-add-project_id [0141-add-picture-chatbot] 2018-11-30T12:36:18Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the 'project_id' column for the dialogflow config
+0143-answers-conversion [0142-add-project_id] 2018-12-02T18:42:15Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Converting answers to organization_chatbot
+0144-adding-read-issue [0143-answers-conversion] 2018-12-04T10:52:24Z Lucas Ansei,,, <lucas@lucas-G750JX> # Adding the 'read' column to the 'issue' table
+0145-organization [0144-adding-read-issue] 2018-12-06T12:30:15Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Converting to organization model
+0146-add-permission-and-modules [0145-organization] 2018-12-11T16:14:56Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding needed structure to support modules and its permissions
+0147-add-chatbot [0146-add-permission-and-modules] 2018-12-13T17:27:29Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding a standard chatbot
+0148-add-unique-module [0147-add-chatbot] 2018-12-14T16:53:46Z Lucas Ansei,,, <lucas@lucas-G750JX> # Adding unique module constraint
+0149-add-uniq-constraint [0148-add-unique-module] 2019-01-09T16:24:52Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding unique constraint on the 'user_organization' table.
+0150-add-dialogflow-config [0149-add-uniq-constraint] 2019-02-04T12:35:15Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Creating the 'dialogflow_config' table
+0151-create-view [0150-add-dialogflow-config] 2019-02-04T13:10:24Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Creating a user_organization view
+0152-add-constraint [0151-create-view] 2019-02-14T12:00:50Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding constraint to the politician_entity table
+0153-fix-duplicate-intents [0152-add-constraint] 2019-02-21T14:38:17Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # deleting duplicate intents
+0154-poll_propagate [0153-fix-duplicate-intents] 2019-02-27T19:31:15Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Updating poll_propagate
+0155-improving-organization-structure [0154-poll_propagate] 2019-03-01T20:38:56Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Making improvements
+0156-add-invite-token [0155-improving-organization-structure] 2019-03-06T11:18:33Z Lucas Ansei,,, <lucas@lucas-G750JX> # Adding the 'invite_token' to the 'organization' table

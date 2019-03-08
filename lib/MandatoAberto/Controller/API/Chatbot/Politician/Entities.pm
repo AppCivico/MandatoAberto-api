@@ -10,18 +10,18 @@ sub root : Chained('/api/chatbot/politician/object') : PathPart('') : CaptureArg
 sub base : Chained('root') : PathPart('intents') : CaptureArgs(0) {
     my ($self, $c) = @_;
 
-    $c->stash->{collection} = $c->model('DB::PoliticianEntity')->search( { politician_id => $c->stash->{politician}->id } );
+    $c->stash->{collection} = $c->model('DB::PoliticianEntity')->search( { organization_chatbot_id => $c->stash->{politician}->user->organization_chatbot_id } );
 }
 
 sub object : Chained('base') : PathPart('') : CaptureArgs(1) {
-	my ($self, $c, $entity_id) = @_;
+    my ($self, $c, $entity_id) = @_;
 
-	$c->stash->{collection} = $c->stash->{collection}->search( { id => $entity_id } );
+    $c->stash->{collection} = $c->stash->{collection}->search( { id => $entity_id } );
 
-	my $entity = $c->stash->{collection}->find($entity_id);
-	$c->detach("/error_404") unless ref $entity;
+    my $entity = $c->stash->{collection}->find($entity_id);
+    $c->detach("/error_404") unless ref $entity;
 
-	$c->stash->{entity} = $entity;
+    $c->stash->{entity} = $entity;
 }
 
 sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }
@@ -31,11 +31,11 @@ sub list_GET {
 
     $c->stash->{collection} = $c->model('DB::ViewAvailableEntities');
 
-	my $page_id = $c->req->params->{fb_page_id};
-	die \["fb_page_id", "missing"] unless $page_id;
+    my $page_id = $c->req->params->{fb_page_id};
+    die \["fb_page_id", "missing"] unless $page_id;
 
-	my $politician = $c->model("DB::Politician")->search( { fb_page_id => $page_id } )->next;
-	die \['fb_page_id', 'could not find politician with that fb_page_id'] unless $politician;
+    my $politician = $c->model("DB::Politician")->search( { fb_page_id => $page_id } )->next;
+    die \['fb_page_id', 'could not find politician with that fb_page_id'] unless $politician;
 
     return $self->status_ok(
         $c,
@@ -51,7 +51,7 @@ sub list_GET {
                     }
                 } $c->stash->{collection}->search(
                     undef,
-                    { bind => [ $politician->user_id, $politician->user_id ] }
+                    { bind => [ $politician->user->organization_chatbot_id, $politician->user->organization_chatbot_id ] }
                   )->all()
             ]
         }
@@ -63,7 +63,7 @@ sub list_available : Chained('base') : PathPart('available') : Args(0) : ActionC
 sub list_available_GET {
     my ($self, $c) = @_;
 
-	$c->stash->{collection} = $c->model('DB::ViewAvailableEntities');
+    $c->stash->{collection} = $c->model('DB::ViewAvailableEntities');
 
     my $page_id = $c->req->params->{fb_page_id};
     die \["fb_page_id", "missing"] unless $page_id;
@@ -89,7 +89,7 @@ sub list_available_GET {
                 } $c->stash->{collection}->search(
                     undef,
                     {
-                        bind => [ $politician->user_id, $politician->user_id ],
+                        bind => [ $politician->user->organization_chatbot_id, $politician->user->organization_chatbot_id ],
                         page => $page,
                         rows => $results
                     }

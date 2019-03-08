@@ -58,11 +58,14 @@ sub verifiers_specs {
                     post_check => sub {
                         my $ids = $_[0]->get_value('ids');
 
+						my $politician_id = $_[0]->get_value('politician_id');
+						my $politician    = $self->result_source->schema->resultset('Politician')->find($politician_id);
+
                         for my $id ( @{ $ids } ) {
                             my $issue = $self->search(
                                 {
-                                    id            => $id,
-                                    politician_id => $_[0]->get_value('politician_id'),
+                                    id                      => $id,
+                                    organization_chatbot_id => $politician->user->organization_chatbot_id,
                                 }
                             )->next;
 
@@ -92,11 +95,14 @@ sub verifiers_specs {
                     post_check => sub {
                         my $ids = $_[0]->get_value('ids');
 
+						my $politician_id = $_[0]->get_value('politician_id');
+						my $politician    = $self->result_source->schema->resultset('Politician')->find($politician_id);
+
                         for my $id ( @{$ids} ) {
                             my $issue = $self->search(
                                 {
-                                    id            => $id,
-                                    politician_id => $_[0]->get_value('politician_id'),
+                                    id                      => $id,
+                                    organization_chatbot_id => $politician->user->organization_chatbot_id,
                                 }
                             )->next;
 
@@ -127,8 +133,14 @@ sub action_specs {
                 $values{open} = 1;
 
                 my $politician = $self->result_source->schema->resultset('Politician')->find( $values{politician_id} );
-                my $recipient  = $politician->recipients->find($values{recipient_id});
+                my $recipient  = $politician->user->organization_chatbot->recipients->find($values{recipient_id});
                 my $entity_rs  = $self->result_source->schema->resultset('Entity');
+                my $politician_entity = $self->result_source->schema->resultset('PoliticianEntity');
+
+                # Tratando issue como do organization_chatbot e não do politician
+                my $organization_chatbot_id = $politician->user->organization_chatbot->id;
+
+                delete $values{politician_id} and $values{organization_chatbot_id} = $organization_chatbot_id;
 
                 my @entities_id;
                 if ( $values{entities} ) {
@@ -138,18 +150,24 @@ sub action_specs {
                     die \['intentName', 'missing'] unless $intent;
 
                     $intent = lc $intent;
-                    my $human_name = $politician->politician_entities->find_human_name($intent);
-                    die \['entities', "could not find human_name for $intent"] unless $human_name;
 
-                    my $upsert_entity = $politician->politician_entities->find_or_create(
-                        {
-                            name       => $intent,
-                            human_name => $human_name
-                        }
-                    );
 
-                    $recipient->add_to_politician_entity( $upsert_entity->id );
-                    push @entities_id, $upsert_entity->id;
+                    if ( $politician_entity->skip_intent($intent) == 0 ) {
+                        my $human_name = $intent;
+                        die \['entities', "could not find human_name for $intent"] unless $human_name;
+
+                        my $upsert_entity = $politician->user->organization_chatbot->politician_entities->find_or_create(
+                            {
+                                name       => $intent,
+                                human_name => $human_name
+                            }
+                        );
+
+                        $recipient->add_to_politician_entity( $upsert_entity->id );
+                        push @entities_id, $upsert_entity->id;
+
+                    }
+
                 }
 
                 $issue = $self->create(
@@ -209,6 +227,54 @@ sub get_open_issues_created_today {
             created_at => { '>=' => "yesterday()" }
         }
     );
+}
+
+sub extract_metrics {
+    my ($self, %opts) = @_;
+
+	$self = $self->search_rs( { 'me.created_at' => { '>=' => \"NOW() - interval '$opts{range} days'" } } ) if $opts{range};
+
+    my $politician          = $self->result_source->schema->resultset('Politician')->find($opts{politician_id});
+    my $issue_response_view = $self->result_source->schema->resultset('ViewAvgIssueResponseTime')->search( undef, { bind => [ $politician->user->organization_chatbot->id ] } )->next;
+
+    my $count_open        = $self->search( { open => 1 } )->count;
+    my $count_ignored     = $self->search( { open => 0, reply => \'IS NULL' } )->count;
+    my $count_replied     = $self->search( { open => 0, reply => \'IS NOT NULL' } )->count;
+    my $avg_response_time = $issue_response_view ? $issue_response_view->avg_response_time : undef;
+
+    # Caso nunca tenha respondido devo mostrar um texto específico
+    my $text;
+    if ( !$avg_response_time ) {
+        $text = 'Você nunca respondeu suas mensagens!';
+    }
+    else {
+        $text = 'Tempo médio de respostas: ' . $avg_response_time . ' minutos.';
+    }
+
+    my $alert_is_positive = $avg_response_time && $avg_response_time <= 90 ? 1 : 0;
+
+    return {
+        count             => $self->count,
+        fallback_text     => 'Aqui você poderá métricas sobre as mensagens que o assistente digital não conseguiu responder.',
+        suggested_actions => [
+            {
+                alert             => $text,
+                alert_is_positive => $alert_is_positive,
+                link              => '',
+                link_text         => 'Ver mensagens'
+            }
+        ],
+        sub_metrics => [
+            {
+                text              => $count_open . ' mensagens em aberto',
+                suggested_actions => []
+            },
+            {
+				text              => $count_replied . ' mensagens respondidas',
+				suggested_actions => []
+            }
+        ]
+    }
 }
 
 1;

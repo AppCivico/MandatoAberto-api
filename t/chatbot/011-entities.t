@@ -16,6 +16,11 @@ db_transaction {
     $politician       = $schema->resultset('Politician')->find( $politician->{id} );
     my $politician_id = $politician->id;
 
+	api_auth_as user_id => $politician_id;
+	activate_chatbot($politician_id);
+
+    my $organization_chatbot_id = $politician->user->organization_chatbot_id;
+
     create_recipient( politician_id => $politician_id );
     my $recipient = $schema->resultset('Recipient')->find(stash 'recipient.id');
 
@@ -26,7 +31,7 @@ db_transaction {
     );
 
     my $entity_rs = $schema->resultset('PoliticianEntity');
-    my $entity = $entity_rs->search( { politician_id => $politician_id } )->next;
+    my $entity = $entity_rs->search( { organization_chatbot_id => $organization_chatbot_id } )->next;
 
     is ( $entity_rs->count, 1, 'one entity created' );
 
@@ -37,7 +42,7 @@ db_transaction {
         list  => 1,
         [
             security_token => $security_token,
-            fb_page_id     => $politician->fb_page_id
+            fb_page_id     => 'fake_page_id'
         ]
     ;
 
@@ -67,7 +72,7 @@ db_transaction {
             list  => 1,
             [
                 security_token => $security_token,
-                fb_page_id     => $politician->fb_page_id
+                fb_page_id     => 'fake_page_id'
             ]
         ;
 
@@ -83,7 +88,7 @@ db_transaction {
             list  => 1,
             [
                 security_token => $security_token,
-                fb_page_id     => $politician->fb_page_id
+                fb_page_id     => 'fake_page_id'
             ]
         ;
     };

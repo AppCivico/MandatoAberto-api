@@ -10,6 +10,9 @@ db_transaction {
     create_politician;
     my $politician_id = stash "politician.id";
 
+    api_auth_as user_id => $politician_id;
+    activate_chatbot($politician_id);
+
     api_auth_as user_id => 1;
 
     create_dialog;
@@ -61,7 +64,7 @@ db_transaction {
     my $answer    = stash "a1";
     my $answer_id = $answer->{answers}->[0]->{id};
 
-    is ($schema->resultset('Answer')->search( { politician_id => $politician_id } )->count, "1", "1 answer created");
+    is ($schema->resultset('Answer')->search( undef )->count, "1", "1 answer created");
 
     rest_get "/api/politician/$politician_id/answers",
         name  => "GET politician answers",

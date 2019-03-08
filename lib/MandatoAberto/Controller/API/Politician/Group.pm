@@ -30,10 +30,12 @@ sub root : Chained('/api/politician/object') : PathPart('') : CaptureArgs(0) { }
 sub base : Chained('root') : PathPart('group') : CaptureArgs(0) {
     my ($self, $c) = @_;
 
+    my $politician = $c->model('DB::Politician')->find($c->user->id);
+
     $c->stash->{collection} = $c->model('DB::Group')->search(
         {
-            'me.politician_id' => $c->user->id,
-            'me.deleted'       => 'false',
+            'me.organization_chatbot_id' => $politician->user->organization_chatbot_id,
+            'me.deleted'                 => 'false',
         }
     );
 }
@@ -51,7 +53,7 @@ sub result_GET {
 
     my $group = $c->stash->{group};
 
-    my $recipients_rs = $group->politician->recipients->search(
+    my $recipients_rs = $group->organization_chatbot->recipients->search(
         {},
         {
             page => $page,
@@ -73,17 +75,20 @@ sub result_GET {
         }
     }
 
+
+
     return $self->status_ok(
         $c,
         entity => {
-            id               => $group->id,
-            filter           => $filter,
-            name             => $group->get_column('name'),
-            status           => $group->get_column('status'),
-            updated_at       => $group->get_column('updated_at'),
-            created_at       => $group->get_column('created_at'),
-            politician_id    => $group->get_column('politician_id'),
-            recipients_count => $group->get_column('recipients_count'),
+            id                      => $group->id,
+            filter                  => $filter,
+            name                    => $group->get_column('name'),
+            status                  => $group->get_column('status'),
+            updated_at              => $group->get_column('updated_at'),
+            created_at              => $group->get_column('created_at'),
+            politician_id           => $c->stash->{politician}->id,
+            organization_chatbot_id => $group->get_column('organization_chatbot_id'),
+            recipients_count        => $group->get_column('recipients_count'),
 
             recipients => [
                 map {
@@ -129,21 +134,22 @@ sub list_GET {
 
     my $total = $c->stash->{collection}->count;
 
-    $c->stash->{collection} = $c->stash->{collection}->search( {}, { page => $page, rows => $results } );
+    $c->stash->{collection} = $c->stash->{collection}->search( {}, { page => $page, rows => $results, order_by => { -desc => 'me.created_at' } } );
 
     my $func = $self->config->{build_list_row} || $self->config->{build_row};
 
     my @rows;
     while ( my $r = $c->stash->{collection}->next() ) {
         push @rows, {
-            id               => $r->id,
-            filter           => $r->filter,
-            name             => $r->get_column('name'),
-            status           => $r->get_column('status'),
-            updated_at       => $r->get_column('updated_at'),
-            created_at       => $r->get_column('created_at'),
-            politician_id    => $r->get_column('politician_id'),
-            recipients_count => $r->get_column('recipients_count'),
+            id                      => $r->id,
+            filter                  => $r->filter,
+            name                    => $r->get_column('name'),
+            status                  => $r->get_column('status'),
+            updated_at              => $r->get_column('updated_at'),
+            created_at              => $r->get_column('created_at'),
+            politician_id           => $c->stash->{politician}->id,
+            organization_chatbot_id => $r->get_column('organization_chatbot_id'),
+            recipients_count        => $r->get_column('recipients_count'),
         };
     }
 
@@ -169,7 +175,7 @@ sub count_POST {
     return $self->status_ok(
         $c,
         entity => {
-            count => $c->stash->{politician}->recipients->search_by_filter($filter)->count,
+            count => $c->stash->{politician}->user->organization_chatbot->recipients->search_by_filter($filter)->count,
         },
     );
 }

@@ -63,13 +63,19 @@ sub result : Chained('object') : PathPart('') : Args(0) : ActionClass('REST') {
     my ($self, $c) = @_;
 
     $c->detach("/api/forbidden") unless $c->stash->{is_me};
+
+    # Asserting user role for module
+    eval { $c->assert_user_roles(qw/profile_read profile_update/) };
+    if ($@) {
+        $c->forward("/api/forbidden");
+    }
 }
 
 sub result_GET {
     my ($self, $c) = @_;
 
-    my $facebook_active_page = {};
-    if ($c->stash->{politician}->fb_page_id) {
+    my $facebook_active_page;
+    if ($c->stash->{politician}->user->organization_chatbot->fb_config) {
         $facebook_active_page = $c->stash->{politician}->get_current_facebook_page();
     }
 
@@ -77,22 +83,31 @@ sub result_GET {
 
     my $has_movement = $c->stash->{politician}->movement ? 1 : 0;
 
+    my $user         = $c->stash->{politician}->user;
+    # Por enquanto um user só está em uma organização, mas posteriormente deverá ser informado o id da organização
+    my $organization = $user->organization;
+    my $chatbot      = $organization->chatbot;
+    my $chatbot_id   = $chatbot ? $chatbot->id : undef;
+
     return $self->status_ok(
         $c,
         entity => {
             ( map { $_ => $c->stash->{politician}->$_ } qw/
-                name gender premium twitter_id use_dialogflow/ ),
+                name gender/ ),
+
+            picture => $c->stash->{politician}->user->picture,
 
             picframe_url  => $c->stash->{politician}->share_url,
             picframe_text => $c->stash->{politician}->share_text,
             share_url     => $c->stash->{politician}->share_url,
             share_text    => $c->stash->{politician}->share_text,
 
-            fb_page_id => $facebook_active_page ? $c->stash->{politician}->fb_page_id : undef,
+            fb_page_id           => $facebook_active_page ? $c->stash->{politician}->user->organization_chatbot->fb_config->page_id      : undef,
+            fb_page_access_token => $facebook_active_page ? $c->stash->{politician}->user->organization_chatbot->fb_config->access_token : undef,
 
             ( $has_movement ? ( movement => { map { $_ => $c->stash->{politician}->movement->$_ } qw/name id/  } ) : () ),
 
-            ( state => { map { $_ => $c->stash->{politician}->address_state->$_ } qw/name code/  } ),
+            ( state => { map { $_ => $c->stash->{politician}->address_state->$_ } qw/name code id/  } ),
 
             ( city => {map { $_ => $c->stash->{politician}->address_city->$_ } qw/name id/}  ),
 
@@ -111,7 +126,7 @@ sub result_GET {
                         email     => $c->get_column('email'),
                         cellphone => $c->get_column('cellphone'),
                         url       => $c->get_column('url'),
-                    } $c->model("DB::PoliticianContact")->search( { politician_id => $c->user->id } )
+                    } $c->model("DB::PoliticianContact")->search( { organization_chatbot_id => $chatbot_id } )
                 }
             ),
 
@@ -124,7 +139,7 @@ sub result_GET {
                         on_facebook => $g->get_column('on_facebook'),
                         on_website  => $g->get_column('on_website')
                     } $c->model("DB::PoliticianGreeting")->search(
-                        { politician_id => $c->user->id },
+                        { organization_chatbot_id => $chatbot_id },
                         { prefetch => 'greeting' }
                     )
                 }
@@ -141,7 +156,29 @@ sub result_GET {
                         greeting        => $votolegal_integration->greeting
                     }
                 ) : ()
-            )
+            ),
+
+            # Novos dados
+            (
+                organization => {
+                    name             => $organization->name,
+                    picture          => $organization->picture,
+                    premium          => $organization->premium,
+                    is_mandatoaberto => $organization->is_mandatoaberto,
+                    (
+                        $chatbot ?
+                        (
+                            chatbot => {
+                                name    => $chatbot->name,
+                                picture => $chatbot->picture
+                            }
+                        ): ( )
+                    )
+                }
+            ),
+            (
+                premium => $organization->premium
+            ),
         }
     );
 }

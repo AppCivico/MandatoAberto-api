@@ -13,6 +13,12 @@ db_transaction {
         fb_page_id => 'foo'
     );
     my $politician_id = stash "politician.id";
+	my $politician    = $schema->resultset('Politician')->find($politician_id);
+
+	api_auth_as user_id => $politician_id;
+	activate_chatbot($politician_id);
+
+	my $organization_chatbot_id = $politician->user->organization_chatbot_id;
 
     my @recipient_ids = ();
     subtest 'mocking recipients' => sub {
@@ -34,9 +40,9 @@ db_transaction {
         ok(
             $poll = $schema->resultset('Poll')->create(
                 {
-                    name          => 'Pizza',
-                    politician_id => $politician_id,
-                    status_id     => 1,
+                    name                    => 'Pizza',
+                    organization_chatbot_id => $organization_chatbot_id,
+                    status_id               => 1,
                 },
             ),
             'add poll',
@@ -494,7 +500,7 @@ db_transaction {
             is( $res->{total}, 25, 'total=25' );
             is_deeply(
                 [ sort map { $_->{name} } @{ $res->{groups } } ],
-                [ 'AppCivico 4', 'AppCivico 5', 'AppCivico 6' ],
+                [ 'AppCivico 1', 'AppCivico 5', 'AppCivico 6' ],
             );
         };
     };

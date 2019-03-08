@@ -49,12 +49,6 @@ __PACKAGE__->table("politician_contact");
   is_nullable: 0
   sequence: 'politician_contact_id_seq'
 
-=head2 politician_id
-
-  data_type: 'integer'
-  is_foreign_key: 1
-  is_nullable: 0
-
 =head2 twitter
 
   data_type: 'text'
@@ -91,6 +85,12 @@ __PACKAGE__->table("politician_contact");
   default_value: true
   is_nullable: 0
 
+=head2 organization_chatbot_id
+
+  data_type: 'integer'
+  is_foreign_key: 1
+  is_nullable: 0
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -101,8 +101,6 @@ __PACKAGE__->add_columns(
     is_nullable       => 0,
     sequence          => "politician_contact_id_seq",
   },
-  "politician_id",
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "twitter",
   { data_type => "text", is_nullable => 1 },
   "facebook",
@@ -117,6 +115,8 @@ __PACKAGE__->add_columns(
   { data_type => "text", is_nullable => 1 },
   "active",
   { data_type => "boolean", default_value => \"true", is_nullable => 0 },
+  "organization_chatbot_id",
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
 );
 
 =head1 PRIMARY KEY
@@ -133,24 +133,24 @@ __PACKAGE__->set_primary_key("id");
 
 =head1 RELATIONS
 
-=head2 politician
+=head2 organization_chatbot
 
 Type: belongs_to
 
-Related object: L<MandatoAberto::Schema::Result::Politician>
+Related object: L<MandatoAberto::Schema::Result::OrganizationChatbot>
 
 =cut
 
 __PACKAGE__->belongs_to(
-  "politician",
-  "MandatoAberto::Schema::Result::Politician",
-  { user_id => "politician_id" },
+  "organization_chatbot",
+  "MandatoAberto::Schema::Result::OrganizationChatbot",
+  { id => "organization_chatbot_id" },
   { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-10-08 18:55:54
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:kwYAu3+Vsb6cpRcnDkPEeQ
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-12-05 11:37:57
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:CKdwVA+0t/alF6JGkB6sdA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

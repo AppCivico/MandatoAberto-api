@@ -8,3 +8,4 @@ envfile.sh
 pm_to_blib
 *_local*
 .vstags
+tags

@@ -77,6 +77,12 @@ sub action_specs {
             my %values = $r->valid_values;
             not defined $values{$_} and delete $values{$_} for keys %values;
 
+            # Tratando private_reply como do organization_chatbot e não do politician
+            my $politician = $self->result_source->schema->resultset('Politician')->find( $values{politician_id} );
+            my $organization_chatbot_id = $politician->user->organization_chatbot->id;
+
+            delete $values{politician_id} and $values{organization_chatbot_id} = $organization_chatbot_id;
+
             my $item = $values{item};
 
             if ($item eq 'comment' && !$values{comment_id}) {
@@ -111,13 +117,13 @@ sub action_specs {
 }
 
 sub get_last_sent_private_reply {
-    my ($self, $politician_id, $fb_user_id) = @_;
+    my ($self, $organization_chatbot_id, $fb_user_id) = @_;
 
     my $last_sent_private_reply = $self->result_source->schema->resultset("PrivateReply")->search(
         {
-            reply_sent    => 1,
-            fb_user_id    => $fb_user_id,
-            politician_id => $politician_id
+            reply_sent              => 1,
+            fb_user_id              => $fb_user_id,
+            organization_chatbot_id => $organization_chatbot_id
         },
         { order_by => { -desc => 'created_at' } }
     )->first;

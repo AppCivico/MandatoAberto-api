@@ -27,13 +27,15 @@ sub verifiers_specs {
                     post_check => sub {
                         my $name          = $_[0]->get_value("name");
                         my $politician_id = $_[0]->get_value('politician_id');
+                        my $politician    = $self->result_source->schema->resultset('Politician')->find($politician_id);
 
                         my $count = $self->result_source->schema->resultset("Poll")->search(
                             {
-                                name          => $name,
-                                politician_id => $politician_id
+                                name                    => $name,
+                                organization_chatbot_id => $politician->user->organization_chatbot_id
                             }
                         )->count;
+
                         die \["name", 'alredy exists'] unless $count == 0;
                     }
                 },
@@ -64,6 +66,11 @@ sub action_specs {
             my %values = $r->valid_values;
             not defined $values{$_} and delete $values{$_} for keys %values;
 
+			my $politician_id = delete $values{politician_id};
+			my $politician    = $self->result_source->schema->resultset('Politician')->find($politician_id);
+
+            $values{organization_chatbot_id} = $politician->user->organization_chatbot_id;
+
             my $poll;
             $self->result_source->schema->txn_do(sub{
 
@@ -72,8 +79,8 @@ sub action_specs {
                 if ($values{status_id} == 1) {
                     my $active_poll = $self->result_source->schema->resultset("Poll")->search(
                         {
-                            politician_id => $values{politician_id},
-                            status_id     => 1
+                            organization_chatbot_id => $values{organization_chatbot_id},
+                            status_id               => 1
                         }
                     );
 
@@ -92,11 +99,9 @@ sub action_specs {
 
                 $poll = $self->create(\%values);
 
-                my $politician = $self->result_source->schema->resultset('Politician')->find($values{politician_id});
-
                 if ( $politician->poll_self_propagation_active ) {
                     my $poll_self_propagation_rs = $self->result_source->schema->resultset('PollSelfPropagationQueue');
-                    my @ids = $politician->recipients->search( { page_id => $politician->fb_page_id } )->only_opt_in->get_column('id')->all;
+                    my @ids = $politician->user->organization_chatbot->recipients->search( { page_id => $politician->fb_page_id } )->only_opt_in->get_column('id')->all;
 
                     my @queue;
                     for my $id (@ids) {
@@ -156,6 +161,24 @@ sub non_self_propagated {
             ]
         }
     );
+}
+
+sub extract_metrics {
+    my ($self) = @_;
+
+	return {
+		count             => $self->count,
+        fallback_text     => 'Aqui será onde você poderá ver o desempenho de suas consultas',
+		suggested_actions => [
+			{
+				alert             => 'Melhore o seu engajamento',
+				alert_is_positive => 0,
+				link              => '',
+				link_text         => ''
+			},
+		],
+		sub_metrics => [ ]
+	}
 }
 
 1;

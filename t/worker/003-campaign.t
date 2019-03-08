@@ -24,6 +24,7 @@ db_transaction {
     $politician       = $schema->resultset('Politician')->find($politician_id);
 
     api_auth_as user_id => $politician_id;
+	activate_chatbot($politician_id);
 
     my @recipient_ids = ();
     subtest 'Chatbot | Mocking recipients' => sub {
@@ -55,14 +56,14 @@ db_transaction {
         my $dm_id = $dm->{id};
         $dm       = $schema->resultset('DirectMessage')->find($dm_id);
 
-		is( $dm->campaign->status_id, 1, 'message is processing' );
-		is( $dm->campaign->count,     0, 'no recipients for now' );
+        is( $dm->campaign->status_id, 1, 'message is processing' );
+        is( $dm->campaign->count,     0, 'no recipients for now' );
 
-		ok( $worker->run_once(), 'run once' );
+        ok( $worker->run_once(), 'run once' );
 
         ok( $dm = $dm->discard_changes, 'discard changes' );
-		is( $dm->campaign->status_id, 2, 'message has been sent' );
-		is( $dm->campaign->count,     4, '4 recipients received it' );
+        is( $dm->campaign->status_id, 2, 'message has been sent' );
+        is( $dm->campaign->count,     4, '4 recipients received it' );
     };
 };
 

@@ -9,15 +9,24 @@ my $schema = MandatoAberto->model("DB");
 db_transaction {
     my $security_token = $ENV{CHATBOT_SECURITY_TOKEN};
 
-	use_ok 'MandatoAberto::Worker::Campaign';
+    use_ok 'MandatoAberto::Worker::Campaign';
 
-	my $worker = new_ok('MandatoAberto::Worker::Campaign', [ schema => $schema ]);
-	ok( $worker->does('MandatoAberto::Worker'), 'worker does MandatoAberto::Worker' );
+    my $worker = new_ok('MandatoAberto::Worker::Campaign', [ schema => $schema ]);
+    ok( $worker->does('MandatoAberto::Worker'), 'worker does MandatoAberto::Worker' );
 
     create_politician(
         fb_page_id => 'foo'
     );
     my $politician_id = stash "politician.id";
+
+	api_auth_as user_id => $politician_id;
+	activate_chatbot($politician_id);
+
+	my $politician              = $schema->resultset('Politician')->find($politician_id);
+	my $organization_chatbot_id = $politician->user->organization_chatbot_id;
+
+	api_auth_as user_id => $politician_id;
+	activate_chatbot($politician_id);
 
     rest_post "/api/chatbot/recipient",
         name                => "Create first recipient",
@@ -104,25 +113,25 @@ db_transaction {
         ]
     ;
 
-    my $content = fake_words(2)->();
+    my $content = 'é um teste súpôm';
     my $name    = fake_words(1)->();
 
     # Criando grupos
     my $first_group_id = $schema->resultset("Group")->create(
         {
-            politician_id => $politician_id,
-            name          => 'foobar',
-            filter        => '{}',
-            status        => 'ready',
+            organization_chatbot_id => $organization_chatbot_id,
+            name                    => 'foobar',
+            filter                  => '{}',
+            status                  => 'ready',
         }
     )->id;
 
     my $second_group_id = $schema->resultset("Group")->create(
         {
-            politician_id => $politician_id,
-            name          => fake_words(1)->(),
-            filter        => '{}',
-            status        => 'ready',
+            organization_chatbot_id => $organization_chatbot_id,
+            name                    => fake_words(1)->(),
+            filter                  => '{}',
+            status                  => 'ready',
         }
     )->id;
 
@@ -162,8 +171,8 @@ db_transaction {
         is ($res->{direct_messages}->[0]->{count}, 1, 'dm count');
         is ($res->{direct_messages}->[0]->{groups}->[0]->{name}, 'foobar', 'group name');
 
-		ok(defined $res->{direct_messages}->[0]->{created_at}, 'created_at is defined');
-		ok(defined $res->{direct_messages}->[0]->{status},     'status is defined');
+        ok(defined $res->{direct_messages}->[0]->{created_at}, 'created_at is defined');
+        ok(defined $res->{direct_messages}->[0]->{status},     'status is defined');
     };
 
     rest_post "/api/politician/$politician_id/direct-message",
@@ -211,9 +220,9 @@ db_transaction {
     subtest 'some group is not ready' => sub {
         my $third_group = $schema->resultset("Group")->create(
             {
-                politician_id => $politician_id,
-                name          => 'foobar',
-                filter        => '{}',
+                organization_chatbot_id => $organization_chatbot_id,
+                name                    => 'foobar',
+                filter                  => '{}',
             }
         );
 
@@ -243,7 +252,7 @@ db_transaction {
             files => { file => "$Bin/picture.jpg" }
         ;
 
-		ok( $worker->run_once(), 'run once' );
+        ok( $worker->run_once(), 'run once' );
 
         rest_post "/api/politician/$politician_id/direct-message",
             name    => 'POST without attachment url',
@@ -255,7 +264,7 @@ db_transaction {
             files => { file => "$Bin/picture.jpg", },
         ;
 
-		ok( $worker->run_once(), 'run once' );
+        ok( $worker->run_once(), 'run once' );
     };
 
     subtest 'direct message without any required param' => sub {

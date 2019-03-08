@@ -34,10 +34,10 @@ sub object : Chained('base') : PathPart('') : CaptureArgs(1) {
     my $poll = $c->stash->{collection}->find($poll_id);
     $c->detach("/error_404") unless ref $poll;
 
-    $c->stash->{is_me} = int($c->user->id == $poll->politician_id);
+    $c->stash->{is_me} = $poll->organization_chatbot->organization->user_organizations->search( { user_id => $c->user->id } )->count;
     $c->stash->{poll}  = $poll;
 
-    $c->detach("/api/forbidden") unless $c->stash->{is_me};
+    $c->detach("/api/forbidden") unless $c->stash->{is_me} == 1;
 }
 
 sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }
@@ -68,7 +68,7 @@ sub list_GET {
                         ]
                     }
                 } $c->stash->{collection}->search(
-                    { 'me.politician_id' => $c->stash->{politician}->id },
+                    { 'me.organization_chatbot_id' => $c->stash->{politician}->user->organization_chatbot_id },
                     { prefetch => 'poll_questions' }
                 )->all()
             ]
@@ -190,7 +190,7 @@ sub propagate_list : Chained('base') : PathPart('propagate') : Args(0) : ActionC
 sub propagate_list_GET {
     my ($self, $c) = @_;
 
-    my $politician_id = $c->stash->{politician}->id;
+    my $organization_chatbot_id = $c->stash->{politician}->user->organization_chatbot_id;
 
     return $self->status_ok(
         $c,
@@ -201,7 +201,7 @@ sub propagate_list_GET {
 
                     +{
                         id              => $pp->get_column('campaign_id'),
-                        recipient_count => $pp->get_column('count'),
+                        recipient_count => $pp->campaign->count,
                         groups          => [
                             map {
                                 my $g = $_;
@@ -246,8 +246,8 @@ sub propagate_list_GET {
                         }
                     }
                 } $c->model("DB::PollPropagate")->search(
-                    { 'me.politician_id'    => $politician_id },
-                    { prefetch => [ 'poll', { 'poll' => { 'poll_questions' => { 'poll_question_options' => 'poll_results' } } } ] }
+                    { 'campaign.organization_chatbot_id' => $organization_chatbot_id },
+                    { prefetch => [ 'campaign','poll', { 'poll' => { 'poll_questions' => { 'poll_question_options' => 'poll_results' } } } ] }
                 )->all()
             ],
         }

@@ -99,12 +99,17 @@ sub action_specs {
                 }
             }
 
+            # Tratando group como do organization_chatbot e não do politician
+            my $politician    = $self->result_source->schema->resultset('Politician')->find($values{politician_id});
+
+            $values{organization_chatbot_id} = $politician->user->organization_chatbot_id;
+
             return $self->create(
                 {
-                    name          => $values{name},
-                    politician_id => $values{politician_id},
-                    filter        => $values{filter},
-                    status        => 'processing',
+                    name                    => $values{name},
+                    organization_chatbot_id => $values{organization_chatbot_id},
+                    filter                  => $values{filter},
+                    status                  => 'processing',
                 }
             );
         },
@@ -122,6 +127,37 @@ sub get_groups_ordered_by_recipient_count {
             rows     => 3
         }
     );
+}
+
+sub extract_metrics {
+    my ($self, %opts) = @_;
+
+    $self = $self->search_rs( { 'me.created_at' => { '>=' => \"NOW() - interval '$opts{range} days'" } } ) if $opts{range};
+
+    return {
+        count             => $self->count,
+        fallback_text     => 'Aqui você poderá ver as métricas sobre os grupos que você criou.',
+        suggested_actions => [
+            {
+                alert             => '',
+                alert_is_positive => 0,
+                link              => '',
+                link_text         => 'Ver grupos'
+            },
+        ],
+        sub_metrics => [
+            # Métrica: grupo com seguidores
+            {
+                text              => $self->search( { recipients_count => { '!=' => 0 } } )->count . ' grupos com seguidores',
+                suggested_actions => []
+            },
+            # Métrica: grupo sem seguidores
+            {
+                text              => $self->search( { recipients_count => 0 } )->count . ' grupos sem seguidores',
+                suggested_actions => []
+            },
+        ]
+    }
 }
 
 1;

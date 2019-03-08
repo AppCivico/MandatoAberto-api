@@ -11,6 +11,10 @@ db_transaction {
         fb_page_id => fake_words(1)->()
     );
     my $politician_id = stash 'politician.id';
+    my $politician    = $schema->resultset('Politician')->find($politician_id);
+
+    api_auth_as user_id => $politician_id;
+    activate_chatbot($politician_id);
 
     my @recipient_ids = ();
     subtest 'mocking recipients' => sub {
@@ -23,8 +27,6 @@ db_transaction {
             push @recipient_ids, $recipient_id;
         }
     };
-
-    api_auth_as user_id => $politician_id;
 
     subtest 'list recipients' => sub {
 
@@ -39,12 +41,12 @@ db_transaction {
             is( ref($res->{recipients}), 'ARRAY', 'recipients=arrayref' );
             is( scalar(@{ $res->{recipients} }), '4', 'count=4' );
 
-			ok( defined $res->{itens_count}, 'itens_count is defined' );
-			is( $res->{itens_count},         4,'4 itens' );
+            ok( defined $res->{itens_count}, 'itens_count is defined' );
+            is( $res->{itens_count},         4,'4 itens' );
 
             is_deeply(
                 [ sort keys %{ $res->{recipients}->[0] } ],
-                [ sort qw/ id name cellphone email origin_dialog created_at gender platform groups intents/ ],
+                [ sort qw/ id name cellphone email created_at gender groups intents/ ],
             );
         };
     };
@@ -87,7 +89,7 @@ db_transaction {
 
             is_deeply(
                 [ sort keys %{ $res } ],
-                [ sort qw/ cellphone created_at email gender groups id intents name origin_dialog platform / ],
+                [ sort qw/ cellphone created_at email gender groups id intents name / ],
             );
 
             is( ref($res->{groups}), 'ARRAY' );
@@ -108,13 +110,12 @@ db_transaction {
 
             is_deeply(
                 [ sort keys %{ $res } ],
-                [ sort qw/ cellphone created_at email gender groups id intents name origin_dialog platform / ],
+                [ sort qw/ cellphone created_at email gender groups id intents name / ],
             );
 
             is( ref($res->{groups}), 'ARRAY' );
             is( $res->{groups}->[0]->{id},   $group_id,    'group_id' );
             is( $res->{groups}->[0]->{name}, 'Fake Group', 'name=Fake Group' );
-            is( $res->{platform},            'facebook',   'platform is facebook' );
         }
     };
 };

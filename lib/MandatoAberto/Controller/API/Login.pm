@@ -17,10 +17,6 @@ sub login : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }
 sub login_POST {
     my ($self, $c) = @_;
 
-    if (length $c->req->params->{email} < 1) {
-        die \['email', 'missing'] unless $c->req->params->{email};
-    }
-
     $c->req->params->{email} = lc $c->req->params->{email};
 
     $self->validate_request_params(
@@ -36,26 +32,65 @@ sub login_POST {
     );
 
     my $user = $c->model("DB::User")->search( { email => $c->req->params->{email} } )->next;
-    die \['email', 'email does not exists'] unless $user;
 
-    if ($user) {
-        $user->approved == 1 ? () : die \['approved', 'user not approved']
-    }
 
     my $authenticate = $c->authenticate({
         ( map { $_ => $c->req->params->{$_} } qw(email password) ),
-        approved => 1
     });
 
     if ($authenticate) {
+        # A organização deve estar aprovada.
+        # $user->organization->approved == 1 or die \['email', 'invalid'];
+
         my $ipAddr = $c->req->header("CF-Connecting-IP") || $c->req->header("X-Forwarded-For") || $c->req->address;
 
+        # Validar como tratar melhor o retorno das roles
         my $session = $c->user->obj->new_session(
             %{$c->req->params},
             ip => $ipAddr,
         );
 
-        return $self->status_ok($c, entity => $session);
+        my $ret = {
+            organizations => [
+                map {
+                    my $o = $_->organization;
+
+                    +{
+                        id      => $o->id,
+                        name    => $o->name,
+                        picture => $o->picture,
+                        modules => [
+                            map {
+                                my $m    = $_->module;
+                                my $name = $m->name;
+
+                                my $p = $user->parse_permissions( name => $m->name );
+
+                                +{
+                                    id          => $m->id,
+                                    name        => $name,
+                                    permissions => $p->{$name},
+                                }
+                            } $o->organization_modules
+                        ],
+                        chatbots => [
+                            map {
+                                my $oc = $_;
+
+                                +{
+                                    id      => $oc->id,
+                                    name    => $oc->name,
+                                    picture => $oc->picture
+                                }
+                            } $o->organization_chatbots->all()
+                        ]
+                    }
+                } $user->organizations->all()
+            ],
+            %$session
+        };
+
+        return $self->status_ok( $c, entity => $ret );
     }
 
     return $self->status_bad_request($c, message => 'Bad email or password.');

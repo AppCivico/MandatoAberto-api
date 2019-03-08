@@ -68,11 +68,21 @@ sub list_GET {
 
     my $politician_id = $c->user->id;
 
+    my $organization = $c->stash->{politician}->user->organization;
+
+    my ($greeting, $greeting_fb, $greeting_website);
+    if ( $organization->chatbot->politicians_greeting->count > 0 ) {
+        $greeting = $organization->chatbot->politicians_greeting->next;
+
+		$greeting_fb      = $greeting->on_facebook;
+		$greeting_website = $greeting->on_website;
+    }
+
     return $self->status_ok(
         $c,
         entity => {
-            on_facebook => $c->stash->{politician}->politicians_greeting->next->on_facebook,
-            on_website  => $c->stash->{politician}->politicians_greeting->next->on_website
+            on_facebook => $organization->is_mandatoaberto ? $greeting_fb : undef,
+            on_website  => $organization->is_mandatoaberto ? $greeting_website : undef
         }
     );
 }

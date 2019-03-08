@@ -41,7 +41,9 @@ sub object : Chained('base') : PathPart('') : CaptureArgs(1) {
     my $answer = $c->stash->{collection}->find($answer_id);
     $c->detach("/error_404") unless ref $answer;
 
-    $c->stash->{is_me}  = int($c->user->id == $answer->politician_id);
+    my $user = $c->stash->{politician}->user;
+
+    $c->stash->{is_me}  = int($user->organization_chatbot_id == $answer->organization_chatbot_id);
     $c->stash->{answer} = $answer;
 }
 
@@ -64,7 +66,7 @@ sub list_GET {
                         dialog_id   => $a->question->get_column('dialog_id')
                     }
                 } $c->stash->{collection}->search(
-                    { politician_id => $c->stash->{politician}->user_id },
+                    { organization_chatbot_id => $c->stash->{politician}->user->organization_chatbot_id },
                     { prefetch => [ qw / question / ] }
                 )->all()
             ]

@@ -27,6 +27,8 @@ sub list_GET {
     my $dialog_name = $c->req->params->{dialog_name};
     die \["dialog_name", "missing"] unless $dialog_name;
 
+    my $politician = $c->model('DB::Politician')->find($politician_id);
+
     return $self->status_ok(
         $c,
         entity => {
@@ -54,7 +56,7 @@ sub list_GET {
                                         }
                                     } $c->model("DB::Answer")->search(
                                         {
-                                            politician_id => $politician_id,
+                                            organization_chatbot_id => $politician->user->organization_chatbot_id,
                                             question_id   => $q->get_column('id'),
                                         }
                                       )->all()

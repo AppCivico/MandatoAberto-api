@@ -17,14 +17,14 @@ sub base : Chained('root') : PathPart('knowledge-base') : CaptureArgs(0) {
 }
 
 sub object : Chained('base') : PathPart('') : CaptureArgs(1) {
-	my ($self, $c, $knowledge_base_id) = @_;
+    my ($self, $c, $knowledge_base_id) = @_;
 
-	$c->stash->{collection} = $c->stash->{collection}->search( { id => $knowledge_base_id } );
+    $c->stash->{collection} = $c->stash->{collection}->search( { id => $knowledge_base_id } );
 
-	my $knowledge_base = $c->stash->{collection}->find($knowledge_base_id);
-	$c->detach("/error_404") unless ref $knowledge_base;
+    my $knowledge_base = $c->stash->{collection}->find($knowledge_base_id);
+    $c->detach("/error_404") unless ref $knowledge_base;
 
-	$c->stash->{knowledge_base} = $knowledge_base;
+    $c->stash->{knowledge_base} = $knowledge_base;
 }
 
 sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }
@@ -37,10 +37,16 @@ sub list_GET {
 
     my $politician = $c->model('DB::Politician')->find($politician_id);
 
+	my $fb_id = $c->req->params->{fb_id};
+	die \["fb_id", "missing"] unless $fb_id;
+
+	my $recipient = $politician->user->chatbot->recipients->search( { fb_id => $fb_id } )->next
+	  or die \['fb_id', 'invalid'];
+
     $c->stash->{collection} = $c->stash->{collection}->search(
         {
-            'me.politician_id' => $politician_id,
-            'me.active'        => 1
+			'me.organization_chatbot_id' => $politician->user->organization_chatbot_id,
+			'me.active'                  => 1
         }
     );
 
@@ -53,7 +59,7 @@ sub list_GET {
 
     if ($@) {
 
-        if ( $politician->politician_entities->entity_exists($entities) ) {
+        if ( $politician->user->organization_chatbot->politician_entities->entity_exists($entities) ) {
             $entities = lc $entities;
             push @entities_names, $entities;
         }
@@ -90,6 +96,8 @@ sub list_GET {
                         entities => [
                             map {
                                 my $e = $_;
+
+								$recipient->add_to_politician_entity( $e->id );
 
                                 +{
                                     id  => $e->id,

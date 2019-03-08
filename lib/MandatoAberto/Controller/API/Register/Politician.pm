@@ -7,13 +7,6 @@ use MandatoAberto::Utils qw/ is_test /;
 
 BEGIN { extends "CatalystX::Eta::Controller::REST" }
 
-__PACKAGE__->config(
-    result  => "DB::Politician",
-    no_user => 1,
-);
-
-with "CatalystX::Eta::Controller::AutoBase";
-
 sub root : Chained('/api/register/base') : PathPart('') : CaptureArgs(0) { }
 
 sub base : Chained('root') : PathPart('politician') : CaptureArgs(0) { }
@@ -23,7 +16,7 @@ sub create : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }
 sub create_POST {
     my ($self, $c) = @_;
 
-    my $user = $c->stash->{collection}->execute(
+    my $user = $c->model('DB::User')->execute(
         $c,
         for  => "create",
         with => $c->req->params,

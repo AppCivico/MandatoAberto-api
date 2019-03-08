@@ -25,35 +25,10 @@ __PACKAGE__->config(
     prepare_params_for_create => sub {
         my ($self, $c, $params) = @_;
 
-        my $platform = $c->req->params->{platform} || 'facebook';
-        die \['platform', 'invalid'] unless $platform =~ m/^(facebook|twitter)$/;
-
-        my ( $id_param, $recipient_id );
-        if ( $platform eq 'facebook' ) {
-            $recipient_id = $c->req->params->{fb_id};
-            die \["fb_id", "missing"] unless $recipient_id;
-
-            $id_param = 'fb_id';
-        }
-        else {
-            $recipient_id = $c->req->params->{twitter_id};
-            die \["twitter_id", "missing"] unless $recipient_id;
-
-            $id_param = 'twitter_id';
-        }
-
-        # TODO não aceitar politician_id
-        my $politician_id = $c->req->params->{politician_id};
-        die \["politician_id", "missing"] unless $politician_id;
-
-        my $politician = $c->model("DB::Politician")->find($politician_id);
+        my $politician = $c->model("DB::Politician")->find($c->req->params->{politician_id});
         die \["politician_id", 'could not find politician with that id'] unless $politician;
 
-        $params->{platform}          = $platform;
-        $params->{politician_id}     = $politician_id;
-        $params->{"$id_param"}       = $recipient_id;
-        $params->{page_id}           = $platform eq 'facebook' ? $politician->fb_page_id : $politician->twitter_id;
-        $params->{twitter_origin_id} = $platform eq 'twitter' ? $politician->twitter_id : ();
+        $params->{page_id} = $politician->user->chatbot->fb_config->page_id;
 
         return $params;
     },
@@ -83,8 +58,38 @@ sub list_GET {
                 gender                 => $c->get_column('gender'),
                 email                  => $c->get_column('email'),
                 cellphone              => $c->get_column('cellphone'),
-                poll_notification_sent => $c->poll_notification ? $c->poll_notification->sent : 0,
             } $c->stash->{collection}->search( { fb_id => $fb_id } )->next
+        }
+    )
+}
+
+sub list_all : Chained('base') : PathPart('all') : Args(0) : ActionClass('REST') { }
+
+sub list_all_GET {
+    my ($self, $c) = @_;
+
+    my $organization_chatbot_id = $c->req->params->{organization_chatbot_id};
+    die \['organization_chatbot_id', 'missing'] unless $organization_chatbot_id;
+
+    return $self->status_ok(
+        $c,
+        entity => {
+            recipients => [
+                map {
+                    my $r = $_;
+
+                    +{
+                        id                 => $r->get_column('id'),
+                        fb_id              => $r->get_column('fb_id'),
+                        gender             => $r->get_column('gender'),
+                        email              => $r->get_column('email'),
+                        cellphone          => $r->get_column('cellphone'),
+                        session            => $r->session,
+                        session_updated_at => $r->session_updated_at,
+                        created_at         => $r->created_at
+                    }
+                } $c->stash->{collection}->search( { organization_chatbot_id => $organization_chatbot_id } )->all()
+            ]
         }
     )
 }

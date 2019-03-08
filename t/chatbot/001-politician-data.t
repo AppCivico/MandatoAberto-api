@@ -31,6 +31,9 @@ db_transaction {
     my $politician    = $schema->resultset("Politician")->find($politician_id);
 
     api_auth_as user_id => $politician_id;
+	activate_chatbot($politician_id);
+
+    my $organization_chatbot_id = $politician->user->organization_chatbot_id;
 
     &setup_votolegal_integration_success;
     rest_post "/api/politician/$politician_id/votolegal-integration",
@@ -40,16 +43,16 @@ db_transaction {
     ;
 
     $schema->resultset("PoliticianContact")->create({
-        politician_id => $politician_id,
-        twitter       => '@foobar',
-        url           => "https://www.google.com",
-        email         => $email
+        organization_chatbot_id => $organization_chatbot_id,
+        twitter                 => '@foobar',
+        url                     => "https://www.google.com",
+        email                   => $email
     });
 
     $schema->resultset("PoliticianGreeting")->create({
-        politician_id => $politician_id,
-        on_facebook   => 'Olá, sou assistente digital do(a) ${user.office.name} ${user.name} Seja bem-vindo a nossa Rede! Queremos um Brasil melhor e precisamos de sua ajuda.',
-        on_website    => 'Olá, sou assistente digital do(a) ${user.office.name} ${user.name} Seja bem-vindo a nossa Rede! Queremos um Brasil melhor e precisamos de sua ajuda.'
+        organization_chatbot_id => $organization_chatbot_id,
+        on_facebook             => 'Olá, sou assistente digital do(a) ${user.office.name} ${user.name} Seja bem-vindo a nossa Rede! Queremos um Brasil melhor e precisamos de sua ajuda.',
+        on_website              => 'Olá, sou assistente digital do(a) ${user.office.name} ${user.name} Seja bem-vindo a nossa Rede! Queremos um Brasil melhor e precisamos de sua ajuda.'
     });
 
     rest_put "/api/politician/$politician_id",
@@ -65,7 +68,7 @@ db_transaction {
         list  => 1,
         stash => "get_politician_data",
         [
-            fb_page_id     => "FOO",
+            fb_page_id     => "fake_page_id",
             security_token => $security_token
         ]
     ;
@@ -111,31 +114,6 @@ db_transaction {
         ]
     ;
 
-    $politician->update(
-        {
-            twitter_id           => 'foobar',
-            twitter_oauth_token  => 'bar',
-            twitter_token_secret => 'baz'
-        }
-    );
-
-    rest_get '/api/chatbot/politician',
-        name  => 'get politician data with non existent twitter_id',
-        list  => 1,
-        stash => 'politician_data_twitter',
-        [
-            platform       => 'twitter',
-            twitter_id     => 'foobar',
-            security_token => $security_token
-        ]
-    ;
-
-    stash_test "politician_data_twitter" => sub {
-        my $res = shift;
-
-        is ($res->{twitter_oauth_token},  'bar', 'twitter_oauth_token');
-        is ($res->{twitter_token_secret}, 'baz', 'twitter_token_secret');
-    };
 };
 
 done_testing();

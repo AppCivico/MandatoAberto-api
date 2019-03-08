@@ -27,6 +27,8 @@ sub list_GET {
     my $question_name = $c->req->params->{question_name};
     die \["question_name", "missing"] unless $question_name;
 
+	my $politician = $c->model('DB::Politician')->find($politician_id);
+
     return $self->status_ok(
         $c,
         entity => {
@@ -36,9 +38,9 @@ sub list_GET {
                 content => $a->get_column('content');
             } $c->stash->{collection}->search(
                 {
-                    politician_id   => $politician_id,
-                    'question.name' => $question_name,
-                    'me.active'     => 1
+                    organization_chatbot_id => $politician->user->organization_chatbot_id,
+                    'question.name'         => $question_name,
+                    'me.active'             => 1
                 },
                 { prefetch => 'question' }
             )->all

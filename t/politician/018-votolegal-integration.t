@@ -3,18 +3,17 @@ use FindBin qw($Bin);
 use lib "$Bin/../lib";
 
 use MandatoAberto::Test::Further;
-
+plan skip_all => "deprecated feature";
 my $schema = MandatoAberto->model("DB");
 
 db_transaction {
     my $chatbot_security_token = $ENV{CHATBOT_SECURITY_TOKEN};
 
-    create_politician(
-        fb_page_id => "foo"
-    );
+    create_politician();
     my $politician_id = stash "politician.id";
 
     api_auth_as "user_id" => $politician_id;
+    activate_chatbot($politician_id);
 
     setup_votolegal_integration_success();
 
@@ -55,7 +54,7 @@ db_transaction {
         stash => 'get_politician_data',
         [
             security_token => $chatbot_security_token,
-            fb_page_id     => 'foo'
+            fb_page_id     => 'fake_page_id'
         ]
     ;
 
@@ -105,7 +104,7 @@ db_transaction {
         stash => 'get_politician_chatbot_data',
         [
             security_token => $chatbot_security_token,
-            fb_page_id     => 'foo'
+            fb_page_id     => 'fake_page_id'
         ]
     ;
 

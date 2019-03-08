@@ -140,12 +140,12 @@ __PACKAGE__->belongs_to(
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
 
-use JSON::MaybeXS;
+use JSON;
 
 sub groups_rs {
     my ($self) = @_;
 
-    return $self->campaign->politician->groups->search(
+    return $self->campaign->organization_chatbot->groups->search(
         { 'me.id' => { 'in' => $self->campaign->groups || [] } }
     );
 }
@@ -205,21 +205,42 @@ sub build_message_object {
         # Obs: quando há o saved_attachment_id significa que recebemos o arquivo
         # e o enviamos para o Facebook hospedar.
         if ( $self->attachment_type ne 'template' ) {
-            $ret = {
-                attachment => {
-                    type    => $self->attachment_type,
-                    payload => {
-                        attachment_id => $self->saved_attachment_id
-                    }
-                },
-                quick_replies   => [
-                    {
-                        content_type => 'text',
-                        title        => "Voltar para o início",
-                        payload      => 'greetings'
-                    }
-                ]
-            };
+
+            if ( $self->saved_attachment_id ) {
+				$ret = {
+					attachment => {
+						type    => $self->attachment_type,
+						payload => {
+							attachment_id => $self->saved_attachment_id
+						}
+					},
+					quick_replies   => [
+						{
+							content_type => 'text',
+							title        => "Voltar para o início",
+							payload      => 'greetings'
+						}
+					]
+				};
+            }
+            else {
+				$ret = {
+					attachment => {
+						type    => $self->attachment_type,
+						payload => {
+							url => $self->attachment_url
+						}
+					},
+					quick_replies   => [
+						{
+							content_type => 'text',
+							title        => "Voltar para o início",
+							payload      => 'greetings'
+						}
+					]
+				};
+            }
+
         }
         else {
 
@@ -251,13 +272,13 @@ sub build_message_object {
 sub build_headers {
     my ($self, $recipient) = @_;
 
-	my $message_type = $self->message_type;
+    my $message_type = $self->message_type;
 
     my $ret;
     if ( $message_type eq 'text_and_attachment' ) {
 
-        my $attachment_req = encode_json {
-            url     => $ENV{FB_API_URL} . '/me/messages?access_token=' . $self->campaign->politician->fb_page_access_token,
+        my $attachment_req = to_json {
+            url     => $ENV{FB_API_URL} . '/me/messages?access_token=' . $self->campaign->organization_chatbot->fb_config->access_token,
             method  => "post",
             headers => 'Content-Type: application/json',
             body    => {
@@ -275,7 +296,7 @@ sub build_headers {
                     quick_replies   => [
                         {
                             content_type => 'text',
-                            title        => "Voltar para o início",
+                            title        => "Voltar para o inicio",
                             payload      => 'greetings'
                         }
                     ]
@@ -283,10 +304,10 @@ sub build_headers {
             }
         };
 
-        $ret = "Content-Type: application/json\nnext_req: $attachment_req";
+        $ret = "Content-Type: application/json;charset=UTF-8;\nnext_req: $attachment_req";
     }
     else {
-        $ret = 'Content-Type: application/json'
+        $ret = 'Content-Type: application/json;charset=UTF-8;'
     }
 
     return $ret;

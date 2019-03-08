@@ -54,13 +54,16 @@ sub verifiers_specs {
                     post_check => sub {
                         my $groups = $_[0]->get_value('groups');
 
+                        my $politician_id = $_[0]->get_value('politician_id');
+                        my $politician    = $self->result_source->schema->resultset('Politician')->find($politician_id);
+
                         for (my $i = 0; $i < @{ $groups }; $i++) {
                             my $group_id = $groups->[$i];
 
                             my $group = $self->result_source->schema->resultset("Group")->search(
                                 {
-                                   'me.id'            => $group_id,
-                                   'me.politician_id' => $_[0]->get_value('politician_id'),
+                                   'me.id'                      => $group_id,
+                                   'me.organization_chatbot_id' => $politician->user->organization_chatbot_id,
                                 }
                             )->next;
 
@@ -127,13 +130,17 @@ sub action_specs {
                     die \['content', 'must have at least one param.'];
                 }
 
+                if ( $values{saved_attachment_id} && $values{attachment_url} ) {
+                    die \['saved_attachment_id', 'must have only that or only attachment_url'];
+                }
+
                 my $politician_id = delete $values{politician_id};
                 my $politician    = $self->result_source->schema->resultset('Politician')->find($politician_id);
 
                 my $access_token = $politician->fb_page_access_token;
                 die \['politician_id', 'politician does not have active Facebook page access_token'] unless $access_token;
 
-                my $campaign = $politician->campaigns->create(
+                my $campaign = $politician->user->chatbot->campaigns->create(
                     {
                         type_id => 1,
                         count   => 0,

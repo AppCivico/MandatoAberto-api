@@ -24,9 +24,7 @@ __PACKAGE__->config(
             cellphone     => $r->get_column('cellphone'),
             email         => $r->get_column('email'),
             gender        => $r->get_column('gender'),
-            origin_dialog => $r->get_column('origin_dialog'),
             created_at    => $r->get_column('created_at'),
-            platform      => $r->get_column('platform'),
             groups        => [
                 map {
                     {
@@ -54,7 +52,7 @@ sub root : Chained('/api/politician/object') : PathPart('') : CaptureArgs(0) { }
 sub base : Chained('root') : PathPart('recipients') : CaptureArgs(0) {
     my ($self, $c) = @_;
 
-    $c->stash->{collection} = $c->stash->{politician}->recipients;
+    $c->stash->{collection} = $c->stash->{politician}->user->organization_chatbot->recipients;
 }
 
 sub object : Chained('base') : PathPart('') : CaptureArgs(1) { }
@@ -66,30 +64,40 @@ sub list_GET {
 
     my $politician = $c->stash->{politician};
 
-	$self->validate_request_params(
-		$c,
-		page => {
-			required   => 0,
-			type       => 'Int'
-		},
-		results => {
-			required => 0,
-			type     => 'Int',
-		},
-	);
+    $self->validate_request_params(
+        $c,
+        page => {
+            required   => 0,
+            type       => 'Int'
+        },
+        results => {
+            required => 0,
+            type     => 'Int',
+        },
+    );
 
     my $page    = $c->req->params->{page}    || 1;
     my $results = $c->req->params->{results} || 20;
 
-    my $has_active_page = $politician->fb_page_id ? 1 : 0;
+    if ( !$politician->user->organization_chatbot->fb_config ) {
+        # TODO pensar numa solução melhor
+        return $self->status_ok(
+        $c,
+        entity => {
+            recipients => [
+            ],
+            itens_count => 0
+        },
+    );
+    }
+
+    my $has_active_page = $politician->user->organization_chatbot->fb_config->access_token ? 1 : 0;
 
     $c->stash->{collection} = $c->stash->{collection}->search(
         {
-            politician_id => $politician->user_id,
-
             # Caso o político não tenha nenhuma página ativa no momento
             # mostro todos os recipients, independente da página de origem
-            ( $has_active_page ? ( page_id => $politician->fb_page_id ) : () )
+            ( $has_active_page ? ( page_id => $politician->user->organization_chatbot->fb_config->page_id ) : () )
         },
     );
 
@@ -108,8 +116,6 @@ sub list_GET {
                         cellphone     => $_->get_column('cellphone'),
                         email         => $_->get_column('email'),
                         gender        => $_->get_column('gender'),
-                        origin_dialog => $_->get_column('origin_dialog'),
-                        platform      => $_->get_column('platform'),
                         created_at    => $_->get_column('created_at'),
                         groups        => [
                             map {

@@ -35,6 +35,11 @@ db_transaction {
 
     $politician->user->update( { approved => 1 } );
 
+    api_auth_as user_id => $politician_id;
+    activate_chatbot($politician_id);
+
+    my $organization_chatbot_id = $politician->user->organization_chatbot_id;
+
     rest_post "/api/chatbot/recipient",
         name                => "Create recipient",
         automatic_load_item => 0,
@@ -139,6 +144,28 @@ db_transaction {
     #     name    => "valid data range",
     #     [ range => 16 ]
     # ;
+
+    # Testando role para módulo de métricas
+    db_transaction{
+        db_transaction{
+            $schema->resultset('UserRole')->search(
+                {
+                    user_id => $politician_id,
+                    role_id => 7
+                }
+            )->delete;
+
+			rest_get "/api/politician/$politician_id/dashboard",
+                name    => "politician dashboard without role",
+                is_fail => 1,
+                code    => 403
+            ;
+        };
+
+		rest_get "/api/politician/$politician_id/dashboard",
+            name => "politician dashboard with role",
+        ;
+    };
 
     rest_get "/api/politician/$politician_id/dashboard",
         name  => "politician dashboard",
@@ -286,10 +313,10 @@ db_transaction {
     # Criando grupo
     $schema->resultset("Group")->create(
         {
-            politician_id    => $politician_id,
-            name             => 'foobar',
-            filter           => '{}',
-            recipients_count => 1
+            organization_chatbot_id => $organization_chatbot_id,
+            name                    => 'foobar',
+            filter                  => '{}',
+            recipients_count        => 1
         }
     );
 
@@ -325,6 +352,25 @@ db_transaction {
 
         is ( $res->{issues}->{avg_response_time}, '60', '60 minutes avg response time' );
     };
+
+    subtest 'Politician | Dashboard (new)' => sub {
+        rest_get "/api/politician/$politician_id/dashboard/new",
+            name  => 'get new dashboard',
+            stash => 'd2',
+            list  => 1,
+            [ range => 7 ]
+        ;
+
+        stash_test 'd2' => sub {
+            my $res = shift;
+
+            is( ref $res->{metrics},                     'ARRAY', 'metrics is an array' );
+			is( ref $res->{metrics}->[0]->{sub_metrics}, 'ARRAY', 'sub_metrics is an array' );
+			ok( defined $res->{metrics}->[0]->{count}, 'count is defined' );
+			ok( defined $res->{metrics}->[0]->{text}, 'text is defined' );
+			ok( defined $res->{metrics}->[0]->{name}, 'name is defined' );
+        }
+    }
 };
 
 done_testing();

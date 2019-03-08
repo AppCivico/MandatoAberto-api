@@ -49,6 +49,16 @@ sub list_GET {
 
     my $politician_id = $c->user->id;
 
+    my $politician = $c->model('DB::Politician')->find($politician_id);
+    if ( !$politician->user->organization->is_mandatoaberto ) {
+        return $self->status_ok(
+            $c,
+            entity => {
+                dialogs => []
+            }
+        );
+    }
+
     my $show_question_name = $ENV{SHOW_QUESTION_NAME};
 
     return $self->status_ok(
@@ -83,8 +93,8 @@ sub list_GET {
                                             }
                                         } $c->model("DB::Answer")->search(
                                             {
-                                                politician_id => $politician_id,
-                                                question_id   => $q->get_column('id'),
+                                                organization_chatbot_id => $politician->user->organization_chatbot_id,
+                                                question_id             => $q->get_column('id'),
                                             }
                                           )->all()
 
@@ -92,7 +102,13 @@ sub list_GET {
                             } $d->questions->search( { 'me.active' => 1 } )->all()
                         ],
                     }
-                } $c->stash->{collection}->search( { 'me.active' => 1 }, { prefetch => [ 'questions', { 'questions' => 'answers' } ] })->all()
+                } $c->stash->{collection}->search(
+                    {
+                        'me.active'                     => 1,
+                        'organization.is_mandatoaberto' => 1
+                    },
+                    { prefetch => [ 'questions', { 'questions' => { 'answers' => { 'organization_chatbot' => 'organization' } } } ] }
+                  )->all()
             ],
         }
     );

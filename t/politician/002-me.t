@@ -22,18 +22,13 @@ db_transaction {
         address_city_id      => 9508,
         party_id             => $party,
         office_id            => $office,
-        fb_page_id           => "FOO",
-        fb_page_access_token => "FOOBAR",
         gender               => $gender,
         movement_id          => $movement_id
     );
 
-    my $politician_id = stash "politician.id";
-
-    $schema->resultset("User")->find($politician_id)->update({ approved => 1 });
-
-    is($schema->resultset('PoliticianPrivateReplyConfig')->count, 1, 'one private_reply config created');
-    is($schema->resultset('PollSelfPropagationConfig')->count,    1, 'one poll_self_propagation config created');
+    my $politician_id   = stash "politician.id";
+    my $politician      = $schema->resultset("Politician")->find($politician_id);
+    my $politician_user = $schema->resultset("User")->find($politician_id);
 
     rest_get "/api/politician/$politician_id",
         name    => "get when logged off --fail",
@@ -42,7 +37,12 @@ db_transaction {
     ;
 
     api_auth_as user_id => $politician_id;
+    activate_chatbot($politician_id);
 
+    $politician_user->update( { approved => 1 } );
+
+    is($schema->resultset('PoliticianPrivateReplyConfig')->count, 1, 'one private_reply config created');
+    is($schema->resultset('PollSelfPropagationConfig')->count,    1, 'one poll_self_propagation config created');
 
     rest_post "/api/politician/$politician_id/contact",
         name                => "politician contact",
@@ -90,7 +90,7 @@ db_transaction {
         is ($res->{city}->{name},            "São Paulo",                       'city');
         is ($res->{party}->{id},             $party,                            'party');
         is ($res->{office}->{id},            $office,                           'office');
-        is ($res->{fb_page_id},              "FOO",                             'fb_page_id');
+        is ($res->{fb_page_id},              "fake_page_id",                    'fb_page_id');
         is ($res->{gender},                  $gender,                           'gender');
         is ($res->{premium},                 0,                                 'politician is not premium');
         is ($res->{contact}->{id},           $contact_id,                       'contact id');
@@ -107,6 +107,30 @@ db_transaction {
             'Olá, sou assistente digital do(a) ${user.office.name} ${user.name} Seja bem-vindo a nossa Rede! Queremos um Brasil melhor e precisamos de sua ajuda.',
             'greeting content'
         );
+    };
+
+    # Testando role para módulo de perfil
+    db_transaction{
+        db_transaction{
+            $schema->resultset('UserRole')->search(
+                {
+                    user_id => $politician_id,
+                    role_id => { -in => [ 11, 12 ] }
+                }
+            )->delete;
+
+            rest_put "/api/politician/$politician_id",
+                name    => "updating profile without roles",
+                is_fail => 1,
+                code    => 403,
+                [ name => 'foobar' ]
+            ;
+        };
+
+		rest_put "/api/politician/$politician_id",
+            name => "updating name",
+            [ name => 'foobar' ]
+        ;
     };
 
     # Caso apenas a cidade seja editada, deve bater com o estado corrente
@@ -259,64 +283,6 @@ db_transaction {
     };
 
     rest_put "/api/politician/$politician_id",
-        name    => "Adding twitter data without oauth",
-        is_fail => 1,
-        code    => 400,
-        [
-            twitter_id           => '707977922439733248',
-            twitter_token_secret => 'foobar'
-        ]
-    ;
-
-    rest_put "/api/politician/$politician_id",
-        name    => "Adding twitter data without twitter_token_secret",
-        is_fail => 1,
-        code    => 400,
-        [
-            twitter_id           => '707977922439733248',
-            twitter_oauth_token  => 'foobar'
-        ]
-    ;
-
-    rest_put "/api/politician/$politician_id",
-        name    => "Adding twitter data without twitter_id",
-        is_fail => 1,
-        code    => 400,
-        [
-            twitter_oauth_token  => 'foobar',
-            twitter_token_secret => 'foobar'
-        ]
-    ;
-
-    rest_put "/api/politician/$politician_id",
-        name    => "Adding twitter data with invalid twitter_id",
-        is_fail => 1,
-        code    => 400,
-        [
-            twitter_id           => 'this is a text',
-            twitter_oauth_token  => 'foobar',
-            twitter_token_secret => 'foobar'
-        ]
-    ;
-
-    rest_put "/api/politician/$politician_id",
-        name    => "Adding twitter data",
-        [
-            twitter_id           => '707977922439733248',
-            twitter_oauth_token  => 'foobar',
-            twitter_token_secret => 'foobar'
-        ]
-    ;
-
-    rest_reload_list "get_politician";
-
-    stash_test "get_politician.list" => sub {
-        my $res = shift;
-
-        is ($res->{twitter_id}, '707977922439733248', 'twitter id');
-    };
-
-    rest_put "/api/politician/$politician_id",
         name => "Removing party and office",
         [
             office_id => 0,
@@ -329,7 +295,8 @@ db_transaction {
     stash_test "get_politician.list" => sub {
         my $res = shift;
 
-        # is ($res->{party}->id, '707977922439733248', 'twitter id');
+        is ($res->{party}, undef, 'no party');
+        is ($res->{office}, undef, 'no office');
     };
 
     create_politician;

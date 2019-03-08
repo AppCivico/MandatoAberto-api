@@ -19,6 +19,18 @@ db_transaction {
         fb_page_access_token => fake_words(1)->()
     );
     my $politician_id = stash "politician.id";
+    my $politician    = $schema->resultset('Politician')->find($politician_id);
+
+    rest_get "/api/politician/$politician_id/issue",
+        name    => "get issues without login",
+        is_fail => 1,
+        code    => 403
+    ;
+
+	api_auth_as user_id => $politician_id;
+	activate_chatbot($politician_id);
+
+    my $organization_chatbot_id = $politician->user->organization_chatbot_id;
 
     rest_post "/api/chatbot/recipient",
         name                => "create recipient",
@@ -78,13 +90,12 @@ db_transaction {
     my $first_issue_id = stash "i1.id";
     my $first_issue    = $issue_rs->find($first_issue_id);
 
-    rest_get "/api/politician/$politician_id/issue",
-        name    => "get issues without login",
-        is_fail => 1,
-        code    => 403
-    ;
-
     api_auth_as "user_id" => $politician_id;
+
+    rest_put "/api/politician/$politician_id/issue/$first_issue_id",
+        name => "reading an issue",
+        [ read => 1 ]
+    ;
 
     rest_get "/api/politician/$politician_id/issue",
         name  => "get issues",
@@ -104,6 +115,7 @@ db_transaction {
         is ($res->{issues}->[0]->{updated_at}, undef, 'issue updated timestamp');
         is ($res->{issues}->[0]->{ignored}, 0, 'issue is not ignored');
         is ($res->{issues}->[0]->{replied}, 0, 'issue is not replied');
+        is ($res->{issues}->[0]->{read}, 1, 'issue was read');
     };
 
     rest_put "/api/politician/$politician_id/issue/$first_issue_id",
@@ -280,11 +292,11 @@ db_transaction {
     # no fechamento da segunda issue
     my $group = $schema->resultset("Group")->create(
         {
-            politician_id    => $politician_id,
-            name             => 'foobar',
-            filter           => '{}',
-            status           => 'ready',
-            recipients_count => 0
+            organization_chatbot_id => $organization_chatbot_id,
+            name                    => 'foobar',
+            filter                  => '{}',
+            status                  => 'ready',
+            recipients_count        => 0
         }
     );
 

@@ -135,16 +135,18 @@ sub list_GET {
     my $filter = $c->req->params->{filter} || 'active';
     die \['filter', 'invalid'] unless $filter =~ /(active|inactive)/;
 
+    my $organization_chatbot_id = $c->stash->{politician}->user->organization_chatbot_id;
+
     my $cond;
     if ( $filter eq 'active' ) {
         $cond = {
-            politician_id => $c->stash->{politician}->id,
-            active        => 1
+            organization_chatbot_id => $organization_chatbot_id,
+            active                  => 1
         };
     }
     elsif ( $filter eq 'inactive' ) {
         $cond = {
-            politician_id => $c->stash->{politician}->id,
+            organization_chatbot_id => $organization_chatbot_id,
             active        => 0
         };
     }

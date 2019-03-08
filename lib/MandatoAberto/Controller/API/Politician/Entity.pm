@@ -38,7 +38,6 @@ __PACKAGE__->config(
                         email     => $recipient->email,
                         gender    => $recipient->gender,
                         picture   => $recipient->picture,
-                        platform  => $recipient->platform,
                         cellphone => $recipient->cellphone,
                         groups    => [
                             map {
@@ -95,6 +94,14 @@ sub list_GET {
     my $filter = $c->req->params->{filter} || 'all';
     die \['filter', 'invalid'] unless $filter =~ m/(all|active)/;
 
+    my $sync = $c->req->params->{sync} || 0;
+    die \['sync', 'invalid'] unless $sync =~ m/^(1|0)$/;
+
+	my $organization_chatbot = $c->stash->{politician}->user->organization_chatbot;
+    eval { $organization_chatbot->sync_dialogflow if $sync == 1 };
+
+    my $organization_chatbot_id = $c->stash->{politician}->user->organization_chatbot_id;
+
     return $self->status_ok(
         $c,
         entity => {
@@ -126,7 +133,7 @@ sub list_GET {
                     }
 
                 } $c->stash->{collection}->search(
-                    { politician_id => $c->stash->{politician}->id },
+                    { organization_chatbot_id => $organization_chatbot_id },
                     { order_by => 'name' }
                   )->all
             ]
@@ -139,6 +146,14 @@ sub pending : Chained('base') : PathPart('pending') : Args(0) : ActionClass('RES
 
 sub pending_GET {
     my ($self, $c) = @_;
+
+    my $organization_chatbot_id = $c->stash->{politician}->user->organization_chatbot_id;
+
+	my $sync = $c->req->params->{sync} || 0;
+	die \['sync', 'invalid'] unless $sync == 1 || $sync == 0;
+
+	my $organization_chatbot = $c->stash->{politician}->user->organization_chatbot;
+	$organization_chatbot->sync_dialogflow if $sync == 1;
 
     return $self->status_ok(
         $c,
@@ -163,7 +178,6 @@ sub pending_GET {
                                         email     => $recipient->email,
                                         gender    => $recipient->gender,
                                         picture   => $recipient->picture,
-                                        platform  => $recipient->platform,
                                         cellphone => $recipient->cellphone
                                     }
                                 } $e->get_recipients->all()
@@ -172,12 +186,29 @@ sub pending_GET {
                     }
                     else {  }
                 } $c->stash->{collection}->search(
-                    { politician_id => $c->stash->{politician}->id },
+                    { organization_chatbot_id => $organization_chatbot_id },
                     { order_by => 'name' }
                   )->all
             ]
         }
     )
+}
+
+sub sync : Chained('base') : PathPart('sync') : Args(0) : ActionClass('REST') { }
+
+sub sync_POST {
+    my ($self, $c) = @_;
+
+    my $organization_chatbot = $c->stash->{politician}->user->organization_chatbot;
+
+    eval { $organization_chatbot->sync_dialogflow };
+
+    return $self->status_ok(
+        $c,
+        entity => {
+            success => $@ ? 0 : 1
+        }
+    );
 }
 
 

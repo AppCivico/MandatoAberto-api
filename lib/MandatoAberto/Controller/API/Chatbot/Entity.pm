@@ -45,7 +45,7 @@ sub list_available_GET {
                 } $c->stash->{collection}->search(
                     undef,
                     {
-                        bind => [ $politician->user_id, $politician->user_id ],
+                        bind => [ $politician->user->organization_chatbot_id, $politician->user->organization_chatbot_id ],
                         page => $page,
                         rows => $results
                     }

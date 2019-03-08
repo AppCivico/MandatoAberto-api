@@ -104,9 +104,24 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 users
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2017-12-07 15:30:24
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:mCq3I9GkrnrrDRL4bGA+Fg
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::User>
+
+=cut
+
+__PACKAGE__->has_many(
+  "users",
+  "MandatoAberto::Schema::Result::User",
+  { "foreign.office_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-11-20 19:17:02
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:HsQxPee48RaIPYiDIbo0/A
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

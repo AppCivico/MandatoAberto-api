@@ -50,7 +50,6 @@ db_transaction {
 
     is ($schema->resultset('EmailQueue')->count, "3", "all emails queued");
 
-    $schema->resultset("User")->find($politician_id)->update({ approved => 1 });
 
     rest_post "/api/login",
         name  => "login",
@@ -74,14 +73,13 @@ db_transaction {
     );
 
     # A resposta foi a esperada?
-    is_deeply(
-        stash "l1",
-        {
-            api_key => $user_session->api_key,
-            roles   => ["politician"],
-            user_id => $user_session->user->id,
-        },
-    );
+    stash_test 'l1' => sub {
+        my $res = shift;
+
+		is( $res->{api_key},    $user_session->api_key,  'api_key ok' );
+		is( $res->{user_id},    $user_session->user->id, 'user_id ok' );
+		is( $res->{roles}->[0], 'politician', 'first role ok' );
+    }
 };
 
 done_testing();
