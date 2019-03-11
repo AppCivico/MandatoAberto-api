@@ -264,6 +264,11 @@ sub action_specs {
                     }
                 );
 
+                # Adicionando role de 'politician'
+                # Por agora, essa permissão é necessária.
+                # Pois as controllers ainda não foram atualizadas
+                $user->user_roles->create( { role_id => 2 } );
+
                 # Criando módulos da organização
                 $organization->organization_modules->create_modules($organization->id);
 
