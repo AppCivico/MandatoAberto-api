@@ -22,8 +22,7 @@ sub generate_access_token {
 	my $tmp_file      = File::Temp->new( DIR => '/tmp/', SUFFIX => '.json' );
 	my $tmp_file_name = $tmp_file->filename;
 	print $tmp_file $project->credentials;
-	print STDERR $tmp_file_name;
-	print STDOUT $tmp_file_name;
+
     my $access_token = `GOOGLE_APPLICATION_CREDENTIALS='$tmp_file_name'; gcloud auth application-default print-access-token`;
     die 'fail generating access token for dialogflow' unless $access_token;
 
