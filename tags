@@ -825,6 +825,7 @@ sync	./lib/MandatoAberto/Controller/API/Politician/Entity.pm	/^sub sync : Chaine
 sync_POST	./lib/MandatoAberto/Controller/API/Politician/Entity.pm	/^sub sync_POST {$/;"	s
 sync_dialogflow	./lib/MandatoAberto/Schema/Result/OrganizationChatbot.pm	/^sub sync_dialogflow {$/;"	s
 sync_dialogflow	./lib/MandatoAberto/Schema/ResultSet/PoliticianEntity.pm	/^sub sync_dialogflow {$/;"	s
+sync_dialogflow_one_chatbot	./lib/MandatoAberto/Schema/ResultSet/PoliticianEntity.pm	/^sub sync_dialogflow_one_chatbot {$/;"	s
 sync_dialogflow_one_project	./lib/MandatoAberto/Schema/ResultSet/PoliticianEntity.pm	/^sub sync_dialogflow_one_project {$/;"	s
 sync_with_dialogflow	./lib/MandatoAberto/Schema/ResultSet/Entity.pm	/^sub sync_with_dialogflow {$/;"	s
 update_recipients	./lib/MandatoAberto/Schema/Result/Group.pm	/^sub update_recipients {$/;"	s
