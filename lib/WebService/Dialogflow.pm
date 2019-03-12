@@ -22,9 +22,22 @@ sub generate_access_token {
 	my $tmp_file      = File::Temp->new( DIR => '/tmp/', SUFFIX => '.json' );
 	my $tmp_file_name = $tmp_file->filename;
 	print $tmp_file $project->credentials;
-	print STDERR $tmp_file_name;
-	print STDOUT $tmp_file_name;
+    my $v = $project->credentials;
+	print STDERR "\nfile_name: $tmp_file_name\n";
+	print STDOUT "\nfile_name: $tmp_file_name\n";
+	print STDOUT "\ncredentials: $v\n";
+	print STDERR "\ncredentials: $v\n";
     my $access_token = `GOOGLE_APPLICATION_CREDENTIALS='$tmp_file_name'; gcloud auth application-default print-access-token`;
+
+    my $foo = `cat $tmp_file_name`;
+
+	print STDOUT "\ncontent: $foo\n";
+	print STDERR "\ncontent: $foo\n";
+
+
+	print STDOUT "\ntoken: $access_token\n";
+	print STDERR "\ntoken: $access_token\n";
+
     die 'fail generating access token for dialogflow' unless $access_token;
 
     $access_token =~ s/\s+$//;
