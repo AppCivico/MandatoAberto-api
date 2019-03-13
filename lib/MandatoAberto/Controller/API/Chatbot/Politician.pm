@@ -56,10 +56,7 @@ sub list_GET {
 
                     organization_chatbot_id => $p->user->organization_chatbot_id,
 
-                    (
-                        fb_access_token => $p->get_column('fb_page_access_token')
-                    ),
-
+                    fb_access_token => $organization_chatbot->fb_config->access_token
                 }
 
             } $c->stash->{collection}->search(
