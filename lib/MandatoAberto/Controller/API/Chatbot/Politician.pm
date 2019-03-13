@@ -39,30 +39,17 @@ sub list_GET {
     my $user                 = $organization_chatbot->organization->users->next;
     my $politician           = $user->user->politician;
 
-    my $politician_greeting = $politician->user->organization_chatbot->politicians_greeting->next;
-
     return $self->status_ok(
         $c,
-        entity =>
-            map {
-                my $p = $_;
-
-                +{
-                    user_id        => $p->get_column('user_id'),
-                    id             => $p->get_column('user_id'),
-                    name           => $p->get_column('name'),
-                    use_dialogflow => $p->user->organization->chatbot->general_config->use_dialogflow,
-                    issue_active   => $p->user->chatbot->general_config->issue_active,
-
-                    organization_chatbot_id => $p->user->organization_chatbot_id,
-
-                    fb_access_token => $organization_chatbot->fb_config->access_token
-                }
-
-            } $c->stash->{collection}->search(
-                { fb_page_id => $page_id },
-            )
-    )
+        entity => {
+            user_id => $user->user->id,
+            id      => $user->user->id,
+            name    => $user->user->name,
+            issue_active => $organization_chatbot->general_config->issue_active,
+            organization_chatbot_id => $organization_chatbot->id,
+            fb_access_token         => $organization_chatbot->fb_config->access_token
+        }
+    );
 }
 
 __PACKAGE__->meta->make_immutable;
