@@ -51,80 +51,19 @@ sub list_GET {
                     user_id        => $p->get_column('user_id'),
                     id             => $p->get_column('user_id'),
                     name           => $p->get_column('name'),
-                    gender         => $p->get_column('gender'),
-                    address_city   => $p->get_column('address_city_id'),
-                    address_state  => $p->get_column('address_state_id'),
-                    picframe_url   => $p->get_column('share_url'),
-                    picframe_text  => $p->get_column('share_text'),
                     use_dialogflow => $p->user->organization->chatbot->general_config->use_dialogflow,
                     issue_active   => $p->user->chatbot->general_config->issue_active,
 
                     organization_chatbot_id => $p->user->organization_chatbot_id,
 
-                    share => {
-                        url  => $p->get_column('share_url'),
-                        text => $p->get_column('share_text')
-                    },
-
                     (
                         fb_access_token => $p->get_column('fb_page_access_token')
                     ),
 
-                    ( $politician->has_votolegal_integration ?
-                    (
-                        votolegal_integration => {
-                            map {
-                                my $vl = $_;
-
-                                my $url;
-                                if ( $vl->custom_url ) {
-                                    $url = $vl->custom_url
-                                }
-                                else {
-                                    $url = $vl->website_url;
-                                }
-
-                                votolegal_username => $vl->get_column("username"),
-                                votolegal_url      => $url . '?ref=mandatoaberto#doar',
-                            } $p->politician_votolegal_integrations->all()
-                        }
-                    ) : ()
-                    ),
-
-                    (
-                        $p->party ?
-                        (
-                            party => {
-                                name    => $p->party->get_column('name'),
-                                acronym => $p->party->get_column('acronym'),
-                            },
-                        ) : ( )
-                    ),
-                    (
-                        $p->office ?
-                        (
-                            office => {
-                                name => $p->office->get_column('name'),
-                            },
-                        ) : ( )
-                    ),
-                    contact => {
-                        map {
-                            my $c = $_;
-
-                            cellphone => $c->get_column('cellphone'),
-                            email     => $c->get_column('email'),
-                            facebook  => $c->get_column('facebook'),
-                            url       => $c->get_column('url'),
-                            twitter   => $c->get_column('twitter'),
-                        } $p->user->organization_chatbot->politician_contacts->search( { 'me.active' => 1 } )->all()
-                    },
-                    greeting => $politician_greeting ? $politician_greeting->on_facebook : undef
                 }
 
             } $c->stash->{collection}->search(
                 { fb_page_id => $page_id },
-                { prefetch => [ qw/party office / ] }
             )
     )
 }
