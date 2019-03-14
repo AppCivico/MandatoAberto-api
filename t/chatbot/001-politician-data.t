@@ -31,37 +31,9 @@ db_transaction {
     my $politician    = $schema->resultset("Politician")->find($politician_id);
 
     api_auth_as user_id => $politician_id;
-	activate_chatbot($politician_id);
+    activate_chatbot($politician_id);
 
     my $organization_chatbot_id = $politician->user->organization_chatbot_id;
-
-    &setup_votolegal_integration_success;
-    rest_post "/api/politician/$politician_id/votolegal-integration",
-        name                => "Creating Voto Legal integration",
-        automatic_load_item => 0,
-        [ votolegal_email  => 'foobar@email.com' ]
-    ;
-
-    $schema->resultset("PoliticianContact")->create({
-        organization_chatbot_id => $organization_chatbot_id,
-        twitter                 => '@foobar',
-        url                     => "https://www.google.com",
-        email                   => $email
-    });
-
-    $schema->resultset("PoliticianGreeting")->create({
-        organization_chatbot_id => $organization_chatbot_id,
-        on_facebook             => 'Olá, sou assistente digital do(a) ${user.office.name} ${user.name} Seja bem-vindo a nossa Rede! Queremos um Brasil melhor e precisamos de sua ajuda.',
-        on_website              => 'Olá, sou assistente digital do(a) ${user.office.name} ${user.name} Seja bem-vindo a nossa Rede! Queremos um Brasil melhor e precisamos de sua ajuda.'
-    });
-
-    rest_put "/api/politician/$politician_id",
-        name => "Adding picframe URL",
-        [
-            picframe_url  => 'https://foobar.com.br',
-            picframe_text => 'foobar'
-        ]
-    ;
 
     rest_get "/api/chatbot/politician",
         name  => "get politician data",
@@ -78,19 +50,6 @@ db_transaction {
 
         is ($res->{user_id},                                     $politician_id,                                                         'user_id');
         is ($res->{name},                                        "Lucas Ansei",                                                          'name');
-        is ($res->{address_state},                               26 ,                                                                    'address_state');
-        is ($res->{address_city},                                9508 ,                                                                  'address_city');
-        is ($res->{gender},                                      $gender ,                                                               'gender');
-        is ($res->{contact}->{twitter},                          '@foobar',                                                              'twitter');
-        is ($res->{contact}->{email},                            $email,                                                                 'email');
-        is ($res->{contact}->{url},                              "https://www.google.com",                                               'url');
-        is ($res->{picframe_url},                                'https://foobar.com.br',                                                'picframe_url' );
-        is ($res->{picframe_text},                               'foobar',                                                               'picframe_text' );
-        is ($res->{share}->{url},                                'https://foobar.com.br',                                                'share url' );
-        is ($res->{share}->{text},                               'foobar',                                                               'share text' );
-        is ($res->{votolegal_integration}->{votolegal_username}, 'fake_username',                                                        'voto legal username');
-        is ($res->{votolegal_integration}->{votolegal_url},      'https://dev.votolegal.com.br/em/fake_username?ref=mandatoaberto#doar', 'voto legal url');
-        is ($res->{greeting}, 'Olá, sou assistente digital do(a) ${user.office.name} ${user.name} Seja bem-vindo a nossa Rede! Queremos um Brasil melhor e precisamos de sua ajuda.', 'greeting content');
     };
 
     rest_get "/api/chatbot/politician",
