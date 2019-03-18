@@ -420,7 +420,7 @@ sub add_to_politician_entity {
             # Verificando se este recipient já estava na entidade.
             my $recipients_rs = $self->organization_chatbot->recipients;
 
-			my $already_in_this_group = $recipients_rs->search(
+            my $already_in_this_group = $recipients_rs->search(
                 {
                     -and => [
                         'me.id' => $self->id,

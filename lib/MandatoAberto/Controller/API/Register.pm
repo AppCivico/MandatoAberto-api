@@ -19,7 +19,7 @@ sub register_POST {
         for  => 'create_user',
         with => $c->req->params,
     );
-    
+
     $self->status_created(
         $c,
         location => $c->uri_for($c->controller("API::User")->action_for('result'), [ $user->id ]),

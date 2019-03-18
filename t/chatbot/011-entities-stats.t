@@ -17,10 +17,10 @@ db_transaction {
 
     my $politician_id = $politician->id;
 
-	api_auth_as user_id => $politician_id;
-	activate_chatbot($politician_id);
+    api_auth_as user_id => $politician_id;
+    activate_chatbot($politician_id);
 
-	my $organization_chatbot_id = $politician->user->organization_chatbot_id;
+    my $organization_chatbot_id = $politician->user->organization_chatbot_id;
 
     my ( $recipient, $entity );
     subtest 'Chatbot | Create recipient and issue' => sub {

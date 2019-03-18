@@ -58,8 +58,8 @@ sub verifiers_specs {
                     post_check => sub {
                         my $ids = $_[0]->get_value('ids');
 
-						my $politician_id = $_[0]->get_value('politician_id');
-						my $politician    = $self->result_source->schema->resultset('Politician')->find($politician_id);
+                        my $politician_id = $_[0]->get_value('politician_id');
+                        my $politician    = $self->result_source->schema->resultset('Politician')->find($politician_id);
 
                         for my $id ( @{ $ids } ) {
                             my $issue = $self->search(
@@ -95,8 +95,8 @@ sub verifiers_specs {
                     post_check => sub {
                         my $ids = $_[0]->get_value('ids');
 
-						my $politician_id = $_[0]->get_value('politician_id');
-						my $politician    = $self->result_source->schema->resultset('Politician')->find($politician_id);
+                        my $politician_id = $_[0]->get_value('politician_id');
+                        my $politician    = $self->result_source->schema->resultset('Politician')->find($politician_id);
 
                         for my $id ( @{$ids} ) {
                             my $issue = $self->search(
@@ -232,7 +232,7 @@ sub get_open_issues_created_today {
 sub extract_metrics {
     my ($self, %opts) = @_;
 
-	$self = $self->search_rs( { 'me.created_at' => { '>=' => \"NOW() - interval '$opts{range} days'" } } ) if $opts{range};
+    $self = $self->search_rs( { 'me.created_at' => { '>=' => \"NOW() - interval '$opts{range} days'" } } ) if $opts{range};
 
     my $politician          = $self->result_source->schema->resultset('Politician')->find($opts{politician_id});
     my $issue_response_view = $self->result_source->schema->resultset('ViewAvgIssueResponseTime')->search( undef, { bind => [ $politician->user->organization_chatbot->id ] } )->next;
@@ -270,8 +270,8 @@ sub extract_metrics {
                 suggested_actions => []
             },
             {
-				text              => $count_replied . ' mensagens respondidas',
-				suggested_actions => []
+                text              => $count_replied . ' mensagens respondidas',
+                suggested_actions => []
             }
         ]
     }

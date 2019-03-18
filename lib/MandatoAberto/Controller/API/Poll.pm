@@ -44,8 +44,8 @@ sub object : Chained('base') : PathPart('') : CaptureArgs(1) {
     my $poll = $c->stash->{collection}->find($poll_id);
     $c->detach("/error_404") unless ref $poll;
 
-	my $politician = $c->model('DB::Politician')->find($c->user->id);
-	$c->detach("/error_404") unless ref $politician;
+    my $politician = $c->model('DB::Politician')->find($c->user->id);
+    $c->detach("/error_404") unless ref $politician;
 
     $c->stash->{is_me} = int($politician->user->organization_chatbot_id == $poll->organization_chatbot_id);
     $c->stash->{poll}  = $poll;

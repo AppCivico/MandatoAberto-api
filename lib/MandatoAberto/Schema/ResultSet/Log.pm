@@ -45,7 +45,7 @@ sub verifiers_specs {
                         my $recipient_fb_id = $_[0]->get_value('recipient_fb_id');
                         my $politician_id   = $_[0]->get_value('politician_id');
 
-						my $politician = $self->result_source->schema->resultset('Politician')->find($politician_id);
+                        my $politician = $self->result_source->schema->resultset('Politician')->find($politician_id);
 
                         $self->result_source->schema->resultset("Recipient")->search(
                             {

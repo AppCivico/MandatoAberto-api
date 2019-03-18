@@ -50,9 +50,9 @@ sub list_POST {
 sub list_GET {
     my ($self, $c) = @_;
 
-	my $page    = $c->req->params->{page}    || 1;
-	my $results = $c->req->params->{results} || 20;
-	$results    = $results <= 20 ? $results : 20;
+    my $page    = $c->req->params->{page}    || 1;
+    my $results = $c->req->params->{results} || 20;
+    $results    = $results <= 20 ? $results : 20;
 
     return $self->status_ok(
         $c,

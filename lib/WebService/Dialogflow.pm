@@ -19,9 +19,9 @@ sub generate_access_token {
     my $project = $opts{project};
     die 'project missing' unless $project;
 
-	my $tmp_file      = File::Temp->new( DIR => '/tmp/', SUFFIX => '.json' );
-	my $tmp_file_name = $tmp_file->filename;
-	print $tmp_file $project->credentials;
+    my $tmp_file      = File::Temp->new( DIR => '/tmp/', SUFFIX => '.json' );
+    my $tmp_file_name = $tmp_file->filename;
+    print $tmp_file $project->credentials;
 
     my $access_token = `GOOGLE_APPLICATION_CREDENTIALS='$tmp_file_name'; gcloud auth application-default print-access-token`;
     die 'fail generating access token for dialogflow' unless $access_token;
@@ -69,10 +69,10 @@ sub get_entities {
 sub get_intents {
     my ( $self, %opts ) = @_;
 
-	my $project = $opts{project};
-	die 'project missing' unless $project;
+    my $project = $opts{project};
+    die 'project missing' unless $project;
 
-	my $project_id = $project->project_id;
+    my $project_id = $project->project_id;
 
     my $res;
     if (is_test()) {
@@ -105,10 +105,10 @@ sub get_intents {
 sub create_intent {
     my ( $self, %opts ) = @_;
 
-	my $project = $opts{project};
-	die 'project missing' unless $project;
+    my $project = $opts{project};
+    die 'project missing' unless $project;
 
-	my $project_id = $project->project_id;
+    my $project_id = $project->project_id;
 
     my $res;
     if (is_test()) {

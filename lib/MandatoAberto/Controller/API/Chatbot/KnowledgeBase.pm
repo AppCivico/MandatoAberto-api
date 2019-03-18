@@ -24,8 +24,8 @@ sub list_GET {
     my $politician_id = $c->req->params->{politician_id};
     die \["politician_id", "missing"] unless $politician_id;
 
-	my $fb_id = $c->req->params->{fb_id};
-	die \["fb_id", "missing"] unless $fb_id;
+    my $fb_id = $c->req->params->{fb_id};
+    die \["fb_id", "missing"] unless $fb_id;
 
     my $politician = $c->model('DB::Politician')->find($politician_id);
 

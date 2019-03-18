@@ -407,12 +407,12 @@ sub setup_dialogflow_intents_response {
                 "priority"     => 500000,
                 "webhookState" => "WEBHOOK_STATE_ENABLED"
             },
-			{
-				"name"         => "projects/mandato-aberto/agent/intents/1dab4a2a-db67-451a-a49b-723c39a3775f",
-				"displayName"  => "mobilidade_urbana",
-				"priority"     => 500000,
-				"webhookState" => "WEBHOOK_STATE_ENABLED"
-			},
+            {
+                "name"         => "projects/mandato-aberto/agent/intents/1dab4a2a-db67-451a-a49b-723c39a3775f",
+                "displayName"  => "mobilidade_urbana",
+                "priority"     => 500000,
+                "webhookState" => "WEBHOOK_STATE_ENABLED"
+            },
             {
                 "name" => "projects/prep-chatbot/agent/intents/124566b6-24eb-4663-b697-dd900417c30a",
                 "displayName" => "Default Welcome Intent",
@@ -464,12 +464,12 @@ sub setup_dialogflow_intents_other_project_response {
                 "priority"     => 500000,
                 "webhookState" => "WEBHOOK_STATE_ENABLED"
             },
-			{
-				"name"         => "projects/mandato-aberto/agent/intents/09fe19c6-1dc6-417c-9e2b-a81edd8e1e31",
-				"displayName"  => "sobre y",
-				"priority"     => 500000,
-				"webhookState" => "WEBHOOK_STATE_ENABLED"
-			},
+            {
+                "name"         => "projects/mandato-aberto/agent/intents/09fe19c6-1dc6-417c-9e2b-a81edd8e1e31",
+                "displayName"  => "sobre y",
+                "priority"     => 500000,
+                "webhookState" => "WEBHOOK_STATE_ENABLED"
+            },
             {
                 "name" => "projects/prep-chatbot/agent/intents/124566b6-24eb-4663-b697-dd900417c30a",
                 "displayName" => "Default Welcome Intent",
@@ -528,12 +528,12 @@ sub setup_dialogflow_intents_with_one_deleted_response {
                 "priority"     => 500000,
                 "webhookState" => "WEBHOOK_STATE_ENABLED"
             },
-			{
-				"name"         => "projects/mandato-aberto/agent/intents/1dab4a2a-db67-451a-a49b-723c39a3775f",
-				"displayName"  => "mobilidade_urbana",
-				"priority"     => 500000,
-				"webhookState" => "WEBHOOK_STATE_ENABLED"
-			},
+            {
+                "name"         => "projects/mandato-aberto/agent/intents/1dab4a2a-db67-451a-a49b-723c39a3775f",
+                "displayName"  => "mobilidade_urbana",
+                "priority"     => 500000,
+                "webhookState" => "WEBHOOK_STATE_ENABLED"
+            },
             {
                 "name" => "projects/prep-chatbot/agent/intents/124566b6-24eb-4663-b697-dd900417c30a",
                 "displayName" => "Default Welcome Intent",

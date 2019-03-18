@@ -189,13 +189,13 @@ sub list_new : Chained('base') : PathPart('new') : Args(0) : ActionClass('REST')
 sub list_new_GET {
     my ($self, $c) = @_;
 
-	$self->validate_request_params(
-		$c,
-		range => {
-			type     => 'Int',
-			required => 0,
-		},
-	);
+    $self->validate_request_params(
+        $c,
+        range => {
+            type     => 'Int',
+            required => 0,
+        },
+    );
 
     my $range = $c->req->params->{range};
 
@@ -207,10 +207,10 @@ sub list_new_GET {
 
     my $first_access = $politician->user->user_sessions->count > 1 ? 0 : 1;
 
-	my $facebook_active_page = {};
-	if ($politician->fb_page_id) {
-		$facebook_active_page = $politician->get_current_facebook_page();
-	}
+    my $facebook_active_page = {};
+    if ($politician->fb_page_id) {
+        $facebook_active_page = $politician->get_current_facebook_page();
+    }
 
     return $self->status_ok(
         $c,
@@ -219,26 +219,26 @@ sub list_new_GET {
             has_facebook_auth    => $has_facebook_auth,
             facebook_active_page => $facebook_active_page,
 
-			metrics => [
-				map {
-					my $r = $_;
+            metrics => [
+                map {
+                    my $r = $_;
 
                     my $chatbot = $politician->user->organization_chatbot;
 
                     if ( $chatbot ) {
-						my $metrics = $chatbot->$r->extract_metrics(range => $range, politician_id => $politician->user_id);
+                        my $metrics = $chatbot->$r->extract_metrics(range => $range, politician_id => $politician->user_id);
 
-						+{
-							name => get_metric_name_for_dashboard($_),
-							text => get_metric_text_for_dashboard($_),
-							%$metrics,
-						}
+                        +{
+                            name => get_metric_name_for_dashboard($_),
+                            text => get_metric_text_for_dashboard($_),
+                            %$metrics,
+                        }
                     }
                     else {
                         empty_metric($r)
                     }
-				} @relations
-			]
+                } @relations
+            ]
         }
     );
 }

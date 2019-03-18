@@ -27,7 +27,7 @@ sub list_GET {
     my $question_name = $c->req->params->{question_name};
     die \["question_name", "missing"] unless $question_name;
 
-	my $politician = $c->model('DB::Politician')->find($politician_id);
+    my $politician = $c->model('DB::Politician')->find($politician_id);
 
     return $self->status_ok(
         $c,

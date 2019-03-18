@@ -540,28 +540,28 @@ sub action_specs {
                     my $chatbot = $self->user->organization->organization_chatbots->next;
 
                     if ( $chatbot ) {
-						$self->result_source->schema->resultset('OrganizationChatbotFacebookConfig')->update_or_create(
-							{
+                        $self->result_source->schema->resultset('OrganizationChatbotFacebookConfig')->update_or_create(
+                            {
                                 organization_chatbot_id => $chatbot->id,
                                 page_id                 => $values{fb_page_id},
                                 access_token            => $values{fb_page_access_token}
-							},
-						);
+                            },
+                        );
                     } else {
-						$self->user->organization->organization_chatbots->update_or_create(
-							{
-								chatbot_platform_id => 1,
-								organization_chatbot_general_config => {
-									is_active      => 1,
-									issue_active   => 1,
-									use_dialogflow => 1,
-								},
-								organization_chatbot_facebook_config => {
-									page_id      => $values{fb_page_id},
-									access_token => $values{fb_page_access_token}
-								}
-							},
-						);
+                        $self->user->organization->organization_chatbots->update_or_create(
+                            {
+                                chatbot_platform_id => 1,
+                                organization_chatbot_general_config => {
+                                    is_active      => 1,
+                                    issue_active   => 1,
+                                    use_dialogflow => 1,
+                                },
+                                organization_chatbot_facebook_config => {
+                                    page_id      => $values{fb_page_id},
+                                    access_token => $values{fb_page_access_token}
+                                }
+                            },
+                        );
                     }
                 }
 
@@ -588,10 +588,10 @@ sub action_specs {
 
                 $self->user->update( { password => $values{new_password} } ) and delete $values{new_password} if $values{new_password};
 
-				$self->user->update( { picture => $values{picture} } ) and delete $values{picture} if $values{picture};
-				$self->user->update( { name => $values{name} } ) if $values{name};
+                $self->user->update( { picture => $values{picture} } ) and delete $values{picture} if $values{picture};
+                $self->user->update( { name => $values{name} } ) if $values{name};
                 $self->user->organization->update( { picture => $values{organization_picture} } ) and delete $values{organization_picture} if $values{organization_picture};
-				$self->user->organization->update( { picture => $values{organization_name} } ) and delete $values{organization_name} if $values{organization_name};
+                $self->user->organization->update( { picture => $values{organization_name} } ) and delete $values{organization_name} if $values{organization_name};
 
                 # p \%values;
                 # my @organization_fields = qw( organization_name organization_picture organization_chatbot_name organization_chatbot_picture );
@@ -936,7 +936,7 @@ sub poll_self_propagation_active {
 sub build_notification_bar {
     my ($self) = @_;
 
-	my @relations = qw( issues );
+    my @relations = qw( issues );
 
     my $issue_response_view = $self->result_source->schema->resultset('ViewAvgIssueResponseTime')->search( undef, { bind => [ $self->user->organization_chatbot_id ] } )->next;
     my $avg_response_time = $issue_response_view ? $issue_response_view->avg_response_time : 0;
@@ -946,8 +946,8 @@ sub build_notification_bar {
     my $unread_count  = $chatbot ? $chatbot->issues->search( { read => 0 } )->count : 0;
     my $response_time = $avg_response_time <= 90 ? 'Bom' : 'Ruim';
 
-	return [
-		{
+    return [
+        {
             name     => 'issue_response_time',
             text     => 'Tempo de resposta',
             is_count => 0,
@@ -965,7 +965,7 @@ sub build_notification_bar {
             icon     => '/assets/images/issue.svg',
             link     => '/mensagens'
         }
-	];
+    ];
 }
 
 __PACKAGE__->meta->make_immutable;

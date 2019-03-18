@@ -16,8 +16,8 @@ db_transaction {
     $politician       = $schema->resultset('Politician')->find( $politician->{id} );
     my $politician_id = $politician->id;
 
-	api_auth_as user_id => $politician_id;
-	activate_chatbot($politician_id);
+    api_auth_as user_id => $politician_id;
+    activate_chatbot($politician_id);
 
     create_recipient( politician_id => $politician_id );
     my $recipient = $schema->resultset('Recipient')->find(stash 'recipient.id');
@@ -323,7 +323,7 @@ db_transaction {
         my $intent = $schema->resultset('PoliticianEntity')->search( { name => 'saude' } )->next;
         is( $intent->recipient_count, 1, 'one recipient' );
 
-		rest_get '/api/chatbot/knowledge-base',
+        rest_get '/api/chatbot/knowledge-base',
             name  => 'get knowledge base with no knowledge base registered for that entity',
             stash => 'get_knowledge_base',
             list  => 1,
@@ -336,7 +336,7 @@ db_transaction {
         ;
 
         ok( $intent = $intent->discard_changes );
-		is( $intent->recipient_count, 2, 'one recipient' );
+        is( $intent->recipient_count, 2, 'one recipient' );
 
     };
 };

@@ -14,7 +14,7 @@ db_transaction {
     $politician->user->update( { approved => 1 } );
 
     api_auth_as user_id => stash "politician.id";
-	activate_chatbot($politician_id);
+    activate_chatbot($politician_id);
 
     my $poll_name = fake_words(1)->();
 

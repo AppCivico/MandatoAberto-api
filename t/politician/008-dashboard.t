@@ -155,14 +155,14 @@ db_transaction {
                 }
             )->delete;
 
-			rest_get "/api/politician/$politician_id/dashboard",
+            rest_get "/api/politician/$politician_id/dashboard",
                 name    => "politician dashboard without role",
                 is_fail => 1,
                 code    => 403
             ;
         };
 
-		rest_get "/api/politician/$politician_id/dashboard",
+        rest_get "/api/politician/$politician_id/dashboard",
             name => "politician dashboard with role",
         ;
     };
@@ -365,10 +365,10 @@ db_transaction {
             my $res = shift;
 
             is( ref $res->{metrics},                     'ARRAY', 'metrics is an array' );
-			is( ref $res->{metrics}->[0]->{sub_metrics}, 'ARRAY', 'sub_metrics is an array' );
-			ok( defined $res->{metrics}->[0]->{count}, 'count is defined' );
-			ok( defined $res->{metrics}->[0]->{text}, 'text is defined' );
-			ok( defined $res->{metrics}->[0]->{name}, 'name is defined' );
+            is( ref $res->{metrics}->[0]->{sub_metrics}, 'ARRAY', 'sub_metrics is an array' );
+            ok( defined $res->{metrics}->[0]->{count}, 'count is defined' );
+            ok( defined $res->{metrics}->[0]->{text}, 'text is defined' );
+            ok( defined $res->{metrics}->[0]->{name}, 'name is defined' );
         }
     }
 };

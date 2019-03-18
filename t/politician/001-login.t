@@ -76,9 +76,9 @@ db_transaction {
     stash_test 'l1' => sub {
         my $res = shift;
 
-		is( $res->{api_key},    $user_session->api_key,  'api_key ok' );
-		is( $res->{user_id},    $user_session->user->id, 'user_id ok' );
-		is( $res->{roles}->[0], 'politician', 'first role ok' );
+        is( $res->{api_key},    $user_session->api_key,  'api_key ok' );
+        is( $res->{user_id},    $user_session->user->id, 'user_id ok' );
+        is( $res->{roles}->[0], 'politician', 'first role ok' );
     }
 };
 

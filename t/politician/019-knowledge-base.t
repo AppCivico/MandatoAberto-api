@@ -19,10 +19,10 @@ db_transaction {
     my $politician_id = stash "politician.id";
     my $politician    = $schema->resultset('Politician')->find($politician_id);
 
-	api_auth_as user_id => $politician_id;
-	activate_chatbot($politician_id);
+    api_auth_as user_id => $politician_id;
+    activate_chatbot($politician_id);
 
-	my $organization_chatbot_id = $politician->user->organization_chatbot_id;
+    my $organization_chatbot_id = $politician->user->organization_chatbot_id;
 
     rest_post "/api/chatbot/recipient",
         name                => "create recipient",
@@ -233,7 +233,7 @@ db_transaction {
     # rest_reload_list 'get_pending_entities';
 
     # stash_test 'get_pending_entities.list' => sub {
-    # 	my $res = shift;
+    #   my $res = shift;
 
     #     is ( scalar @{ $res->{politician_entities} }, 0, 'empty array' );
     # };
@@ -254,9 +254,9 @@ db_transaction {
     # rest_reload_list 'get_pending_entities';
 
     # stash_test 'get_pending_entities.list' => sub {
-    # 	my $res = shift;
+    #   my $res = shift;
 
-    # 	is( scalar @{ $res->{politician_entities} }, 1, 'one row' );
+    #   is( scalar @{ $res->{politician_entities} }, 1, 'one row' );
     # };
 
     # rest_put "/api/politician/$politician_id/knowledge-base/$kb_id",
@@ -267,9 +267,9 @@ db_transaction {
     # rest_reload_list 'get_pending_entities';
 
     # stash_test 'get_pending_entities.list' => sub {
-    # 	my $res = shift;
+    #   my $res = shift;
 
-    # 	is( scalar @{ $res->{politician_entities} }, 2, 'two rows' );
+    #   is( scalar @{ $res->{politician_entities} }, 2, 'two rows' );
     # };
 
 };

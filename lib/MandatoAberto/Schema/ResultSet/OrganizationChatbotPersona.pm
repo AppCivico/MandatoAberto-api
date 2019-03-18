@@ -14,9 +14,9 @@ with "MandatoAberto::Role::Verification";
 with 'MandatoAberto::Role::Verification::TransactionalActions::DBIC';
 
 has _facebook => (
-	is         => "ro",
-	isa        => "WebService::Facebook",
-	lazy_build => 1,
+    is         => "ro",
+    isa        => "WebService::Facebook",
+    lazy_build => 1,
 );
 
 sub verifiers_specs {
@@ -77,8 +77,8 @@ sub action_specs {
                 persona_id   => $persona_id
             );
 
-			$values{facebook_picture_url} = $persona->{profile_picture_url};
-			$values{facebook_id}          = $persona->{id};
+            $values{facebook_picture_url} = $persona->{profile_picture_url};
+            $values{facebook_id}          = $persona->{id};
 
             $persona = $self->create(\%values);
 
