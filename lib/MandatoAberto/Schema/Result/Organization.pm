@@ -232,5 +232,23 @@ sub user {
     return $self->users->next->user;
 }
 
+sub chatbots_for_get {
+    my ($self) = @_;
+
+    return [
+        map {
+            +{
+                id                   => $_->id,
+                name                 => $_->name,
+                picture              => $_->picture,
+                use_dialogflow       => $_->general_config->use_dialogflow,
+                dialogflow_config_id => $_->general_config->dialogflow_config_id,
+                fb_page_id           => $_->has_fb_config ? $_->fb_config->page_id : undef,
+                fb_access_token      => $_->has_fb_config ? $_->fb_config->access_token : undef,
+            }
+        } $self->organization_chatbots->all
+    ]
+}
+
 __PACKAGE__->meta->make_immutable;
 1;
