@@ -217,7 +217,13 @@ __PACKAGE__->has_many(
 sub chatbot {
     my ($self) = @_;
 
-    return $self->organization_chatbots->next;
+    return $self->chatbots->next;
+}
+
+sub chatbots {
+    my ($self) = @_;
+
+    return $self->organization_chatbots;
 }
 
 sub users {
