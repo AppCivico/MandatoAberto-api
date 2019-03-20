@@ -207,38 +207,38 @@ sub build_message_object {
         if ( $self->attachment_type ne 'template' ) {
 
             if ( $self->saved_attachment_id ) {
-				$ret = {
-					attachment => {
-						type    => $self->attachment_type,
-						payload => {
-							attachment_id => $self->saved_attachment_id
-						}
-					},
-					quick_replies   => [
-						{
-							content_type => 'text',
-							title        => "Voltar para o início",
-							payload      => 'greetings'
-						}
-					]
-				};
+                $ret = {
+                    attachment => {
+                        type    => $self->attachment_type,
+                        payload => {
+                            attachment_id => $self->saved_attachment_id
+                        }
+                    },
+                    quick_replies   => [
+                        {
+                            content_type => 'text',
+                            title        => "Voltar para o início",
+                            payload      => 'greetings'
+                        }
+                    ]
+                };
             }
             else {
-				$ret = {
-					attachment => {
-						type    => $self->attachment_type,
-						payload => {
-							url => $self->attachment_url
-						}
-					},
-					quick_replies   => [
-						{
-							content_type => 'text',
-							title        => "Voltar para o início",
-							payload      => 'greetings'
-						}
-					]
-				};
+                $ret = {
+                    attachment => {
+                        type    => $self->attachment_type,
+                        payload => {
+                            url => $self->attachment_url
+                        }
+                    },
+                    quick_replies   => [
+                        {
+                            content_type => 'text',
+                            title        => "Voltar para o início",
+                            payload      => 'greetings'
+                        }
+                    ]
+                };
             }
 
         }

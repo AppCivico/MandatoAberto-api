@@ -66,8 +66,8 @@ sub action_specs {
             my %values = $r->valid_values;
             not defined $values{$_} and delete $values{$_} for keys %values;
 
-			my $politician_id = delete $values{politician_id};
-			my $politician    = $self->result_source->schema->resultset('Politician')->find($politician_id);
+            my $politician_id = delete $values{politician_id};
+            my $politician    = $self->result_source->schema->resultset('Politician')->find($politician_id);
 
             $values{organization_chatbot_id} = $politician->user->organization_chatbot_id;
 
@@ -166,19 +166,19 @@ sub non_self_propagated {
 sub extract_metrics {
     my ($self) = @_;
 
-	return {
-		count             => $self->count,
+    return {
+        count             => $self->count,
         fallback_text     => 'Aqui será onde você poderá ver o desempenho de suas consultas',
-		suggested_actions => [
-			{
-				alert             => 'Melhore o seu engajamento',
-				alert_is_positive => 0,
-				link              => '',
-				link_text         => ''
-			},
-		],
-		sub_metrics => [ ]
-	}
+        suggested_actions => [
+            {
+                alert             => 'Melhore o seu engajamento',
+                alert_is_positive => 0,
+                link              => '',
+                link_text         => ''
+            },
+        ],
+        sub_metrics => [ ]
+    }
 }
 
 1;

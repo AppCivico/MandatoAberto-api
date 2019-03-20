@@ -34,7 +34,7 @@ db_transaction {
 
     # Testando sync com get
     db_transaction{
-		is( $politician_entity_rs->count, 0, 'no intents' );
+        is( $politician_entity_rs->count, 0, 'no intents' );
 
         rest_get "/api/politician/$politician_id/intent",
             name    => 'invalid param',
@@ -48,12 +48,12 @@ db_transaction {
             [ sync => 1 ]
         ;
 
-		is( $politician_entity_rs->count, 3, '3 entities created' );
+        is( $politician_entity_rs->count, 3, '3 entities created' );
 
-		rest_post "/api/politician/$politician_id/intent/sync",
-		    name  => 'sync',
-		    code  => 200,
-		    stash => 'sync'
+        rest_post "/api/politician/$politician_id/intent/sync",
+            name  => 'sync',
+            code  => 200,
+            stash => 'sync'
         ;
     };
 
@@ -66,7 +66,7 @@ db_transaction {
     $politician_id = $politician->{id};
     $politician    = $schema->resultset('Politician')->find($politician_id);
 
-	api_auth_as user_id => $politician_id;
+    api_auth_as user_id => $politician_id;
     rest_put "/api/politician/$politician_id",
         name => 'activate chatbot',
         [
@@ -82,7 +82,7 @@ db_transaction {
     is ( $politician_entity_rs->count, 6, '6 entities created' );
 
     # Sincronizando com uma intent deletada, ela deve ser deletada no banco também
-	setup_dialogflow_intents_with_one_deleted_response();
+    setup_dialogflow_intents_with_one_deleted_response();
     ok ( $politician_entity_rs->sync_dialogflow, 'sync ok' );
     is ( $politician_entity_rs->count, 4,        '4 rows' );
 
@@ -102,7 +102,7 @@ db_transaction {
     $politician_id = $politician->{id};
     $politician    = $schema->resultset('Politician')->find($politician_id);
 
-	api_auth_as user_id => $politician_id;
+    api_auth_as user_id => $politician_id;
     rest_put "/api/politician/$politician_id",
         name => 'activate chatbot',
         [
@@ -115,14 +115,14 @@ db_transaction {
 
     ok( $chatbot->general_config->update( { dialogflow_config_id => $dialogflow_config->id } ), 'update config id' );
 
-	setup_dialogflow_intents_other_project_response();
-	ok( $politician_entity_rs->sync_dialogflow,  'sync ok' );
-	is( $politician_entity_rs->count, 6,         '6 rows' );
-	is( $chatbot->politician_entities->count, 2, '2 rows' );
+    setup_dialogflow_intents_other_project_response();
+    ok( $politician_entity_rs->sync_dialogflow,  'sync ok' );
+    is( $politician_entity_rs->count, 6,         '6 rows' );
+    is( $chatbot->politician_entities->count, 2, '2 rows' );
 
-	$politician    = create_politician;
-	$politician_id = $politician->{id};
-	$politician    = $schema->resultset('Politician')->find($politician_id);
+    $politician    = create_politician;
+    $politician_id = $politician->{id};
+    $politician    = $schema->resultset('Politician')->find($politician_id);
 
     api_auth_as user_id => $politician_id;
     rest_put "/api/politician/$politician_id",
@@ -137,10 +137,10 @@ db_transaction {
 
     ok( $chatbot->general_config->update( { dialogflow_config_id => $dialogflow_config->id } ), 'update config id' );
 
-	setup_dialogflow_intents_other_project_response();
-	ok( $politician_entity_rs->sync_dialogflow,  'sync ok' );
-	is( $politician_entity_rs->count, 8,         '8 rows' );
-	is( $chatbot->politician_entities->count, 2, '2 rows' );
+    setup_dialogflow_intents_other_project_response();
+    ok( $politician_entity_rs->sync_dialogflow,  'sync ok' );
+    is( $politician_entity_rs->count, 8,         '8 rows' );
+    is( $chatbot->politician_entities->count, 2, '2 rows' );
 };
 
 done_testing();

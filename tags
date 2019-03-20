@@ -41,6 +41,7 @@ MandatoAberto::Controller::API::Login::ForgotPassword	./lib/MandatoAberto/Contro
 MandatoAberto::Controller::API::Login::Reset	./lib/MandatoAberto/Controller/API/Login/Reset.pm	/^package MandatoAberto::Controller::API::Login::Reset;$/;"	p
 MandatoAberto::Controller::API::Movement	./lib/MandatoAberto/Controller/API/Movement.pm	/^package MandatoAberto::Controller::API::Movement;$/;"	p
 MandatoAberto::Controller::API::Office	./lib/MandatoAberto/Controller/API/Office.pm	/^package MandatoAberto::Controller::API::Office;$/;"	p
+MandatoAberto::Controller::API::Organization	./lib/MandatoAberto/Controller/API/Organization.pm	/^package MandatoAberto::Controller::API::Organization;$/;"	p
 MandatoAberto::Controller::API::Party	./lib/MandatoAberto/Controller/API/Party.pm	/^package MandatoAberto::Controller::API::Party;$/;"	p
 MandatoAberto::Controller::API::Politician	./lib/MandatoAberto/Controller/API/Politician.pm	/^package MandatoAberto::Controller::API::Politician;$/;"	p
 MandatoAberto::Controller::API::Politician::Answer	./lib/MandatoAberto/Controller/API/Politician/Answer.pm	/^package MandatoAberto::Controller::API::Politician::Answer;$/;"	p
@@ -334,6 +335,7 @@ base	./lib/MandatoAberto/Controller/API/Login/ForgotPassword.pm	/^sub base : Cha
 base	./lib/MandatoAberto/Controller/API/Login/Reset.pm	/^sub base : Chained('root') : PathPart('forgot_password') : CaptureArgs(0) { }$/;"	s
 base	./lib/MandatoAberto/Controller/API/Movement.pm	/^sub base : Chained('root') : PathPart('movement') : CaptureArgs(0) { }$/;"	s
 base	./lib/MandatoAberto/Controller/API/Office.pm	/^sub base : Chained('root') : PathPart('office') : CaptureArgs(0) { }$/;"	s
+base	./lib/MandatoAberto/Controller/API/Organization.pm	/^sub base : Chained('root') : PathPart('organization') : CaptureArgs(0) {$/;"	s
 base	./lib/MandatoAberto/Controller/API/Party.pm	/^sub base : Chained('root') : PathPart('party') : CaptureArgs(0) { }$/;"	s
 base	./lib/MandatoAberto/Controller/API/Politician.pm	/^sub base : Chained('root') : PathPart('politician') : CaptureArgs(0) { }$/;"	s
 base	./lib/MandatoAberto/Controller/API/Politician/Answer.pm	/^sub base : Chained('root') : PathPart('answers') : CaptureArgs(0) { }$/;"	s
@@ -382,6 +384,7 @@ build_result_get	./lib/MandatoAberto/Schema/Result/User.pm	/^sub build_result_ge
 calculate_discount	./lib/MandatoAberto/Schema/Result/Movement.pm	/^sub calculate_discount {$/;"	s
 chatbot	./lib/MandatoAberto/Schema/Result/Organization.pm	/^sub chatbot {$/;"	s
 chatbot	./lib/MandatoAberto/Schema/Result/User.pm	/^sub chatbot {$/;"	s
+chatbots_for_get	./lib/MandatoAberto/Schema/Result/Organization.pm	/^sub chatbots_for_get {$/;"	s
 check	./lib/MandatoAberto/Role/Verification.pm	/^sub check {$/;"	s
 coercion	./lib/Data/Verifier.pm	/^sub coercion {$/;"	s
 confirm	./lib/MandatoAberto/Controller/API/Login/Confirm.pm	/^sub confirm : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }$/;"	s
@@ -481,6 +484,7 @@ groups_rs	./lib/MandatoAberto/Schema/Result/PollPropagate.pm	/^sub groups_rs {$/
 groups_rs	./lib/MandatoAberto/Schema/Result/Recipient.pm	/^sub groups_rs {$/;"	s
 has_access_token	./lib/MandatoAberto/Schema/Result/OrganizationChatbot.pm	/^sub has_access_token {$/;"	s
 has_active_knowledge_base	./lib/MandatoAberto/Schema/Result/PoliticianEntity.pm	/^sub has_active_knowledge_base {$/;"	s
+has_fb_config	./lib/MandatoAberto/Schema/Result/OrganizationChatbot.pm	/^sub has_fb_config {$/;"	s
 has_votolegal_integration	./lib/MandatoAberto/Schema/Result/Politician.pm	/^sub has_votolegal_integration {$/;"	s
 human_name_r	./lib/MandatoAberto/Schema/Result/PoliticianEntity.pm	/^sub human_name_r {$/;"	s
 is_test	./lib/MandatoAberto/Utils.pm	/^sub is_test {$/;"	s
@@ -638,6 +642,7 @@ object	./lib/MandatoAberto/Controller/API/Chatbot/Politician/Entities.pm	/^sub o
 object	./lib/MandatoAberto/Controller/API/Chatbot/Politician/KnowledgeBase.pm	/^sub object : Chained('base') : PathPart('') : CaptureArgs(1) {$/;"	s
 object	./lib/MandatoAberto/Controller/API/Chatbot/Politician/Recipient.pm	/^sub object : Chained('base') : PathPart('') : CaptureArgs(1) {$/;"	s
 object	./lib/MandatoAberto/Controller/API/Dialog.pm	/^sub object : Chained('base') : PathPart('') : CaptureArgs(1) {$/;"	s
+object	./lib/MandatoAberto/Controller/API/Organization.pm	/^sub object : Chained('base') : PathPart('') : CaptureArgs(1) {$/;"	s
 object	./lib/MandatoAberto/Controller/API/Politician.pm	/^sub object : Chained('base') : PathPart('') : CaptureArgs(1) {$/;"	s
 object	./lib/MandatoAberto/Controller/API/Politician/Answer.pm	/^sub object : Chained('base') : PathPart('') : CaptureArgs(1) {$/;"	s
 object	./lib/MandatoAberto/Controller/API/Politician/Entity.pm	/^sub object : Chained('base') : PathPart('') : CaptureArgs(1) { }$/;"	s
@@ -678,6 +683,7 @@ result	./lib/MandatoAberto/Controller/API/Admin/Dialog/Question.pm	/^sub result 
 result	./lib/MandatoAberto/Controller/API/Admin/Movement.pm	/^sub result : Chained('object') : PathPart('') : Args(0) : ActionClass('REST') { }$/;"	s
 result	./lib/MandatoAberto/Controller/API/Chatbot/BlacklistFacebookMessenger.pm	/^sub result : Chained('object') : PathPart('') : Args(0) : ActionClass('REST') { }$/;"	s
 result	./lib/MandatoAberto/Controller/API/Dialog.pm	/^sub result : Chained('object') : PathPart('') :Args(0) : ActionClass('REST') { }$/;"	s
+result	./lib/MandatoAberto/Controller/API/Organization.pm	/^sub result : Chained('object') : PathPart('') : Args(0) : ActionClass('REST') {$/;"	s
 result	./lib/MandatoAberto/Controller/API/Politician.pm	/^sub result : Chained('object') : PathPart('') : Args(0) : ActionClass('REST') {$/;"	s
 result	./lib/MandatoAberto/Controller/API/Politician/Answer.pm	/^sub result : Chained('object') : PathPart('') : Args(0) : ActionClass('REST') { }$/;"	s
 result	./lib/MandatoAberto/Controller/API/Politician/Entity.pm	/^sub result : Chained('object') : PathPart('') : Args(0) : ActionClass('REST') { }$/;"	s
@@ -697,6 +703,7 @@ result_DELETE	./lib/MandatoAberto/Controller/API/Politician/Group.pm	/^sub resul
 result_GET	./lib/MandatoAberto/Controller/API/Admin/Dialog.pm	/^sub result_GET { }$/;"	s
 result_GET	./lib/MandatoAberto/Controller/API/Admin/Movement.pm	/^sub result_GET { }$/;"	s
 result_GET	./lib/MandatoAberto/Controller/API/Dialog.pm	/^sub result_GET { }$/;"	s
+result_GET	./lib/MandatoAberto/Controller/API/Organization.pm	/^sub result_GET {$/;"	s
 result_GET	./lib/MandatoAberto/Controller/API/Politician.pm	/^sub result_GET {$/;"	s
 result_GET	./lib/MandatoAberto/Controller/API/Politician/Entity.pm	/^sub result_GET { }$/;"	s
 result_GET	./lib/MandatoAberto/Controller/API/Politician/Group.pm	/^sub result_GET {$/;"	s
@@ -705,6 +712,7 @@ result_GET	./lib/MandatoAberto/Controller/API/Politician/KnowledgeBase.pm	/^sub 
 result_GET	./lib/MandatoAberto/Controller/API/Politician/Poll.pm	/^sub result_GET {$/;"	s
 result_GET	./lib/MandatoAberto/Controller/API/Politician/Poll/PollQuestion.pm	/^sub result_GET {$/;"	s
 result_GET	./lib/MandatoAberto/Controller/API/Politician/Recipients.pm	/^sub result_GET { }$/;"	s
+result_GET	./lib/MandatoAberto/Controller/API/Poll.pm	/^sub result_GET { }$/;"	s
 result_GET	./lib/MandatoAberto/Controller/API/Poll/Question.pm	/^sub result_GET { }$/;"	s
 result_GET	./lib/MandatoAberto/Controller/API/Poll/Question/Option.pm	/^sub result_GET { }$/;"	s
 result_GET	./lib/MandatoAberto/Controller/API/User.pm	/^sub result_GET {$/;"	s
@@ -712,6 +720,7 @@ result_PUT	./lib/MandatoAberto/Controller/API/Admin/Dialog.pm	/^sub result_PUT {
 result_PUT	./lib/MandatoAberto/Controller/API/Admin/Dialog/Question.pm	/^sub result_PUT { }$/;"	s
 result_PUT	./lib/MandatoAberto/Controller/API/Admin/Movement.pm	/^sub result_PUT { }$/;"	s
 result_PUT	./lib/MandatoAberto/Controller/API/Dialog.pm	/^sub result_PUT { }$/;"	s
+result_PUT	./lib/MandatoAberto/Controller/API/Organization.pm	/^sub result_PUT { }$/;"	s
 result_PUT	./lib/MandatoAberto/Controller/API/Politician.pm	/^sub result_PUT { }$/;"	s
 result_PUT	./lib/MandatoAberto/Controller/API/Politician/Answer.pm	/^sub result_PUT {$/;"	s
 result_PUT	./lib/MandatoAberto/Controller/API/Politician/Group.pm	/^sub result_PUT { }$/;"	s
@@ -759,6 +768,7 @@ root	./lib/MandatoAberto/Controller/API/Login/ForgotPassword.pm	/^sub root : Cha
 root	./lib/MandatoAberto/Controller/API/Login/Reset.pm	/^sub root : Chained('\/api\/login\/base') : PathPart('') : CaptureArgs(0) {$/;"	s
 root	./lib/MandatoAberto/Controller/API/Movement.pm	/^sub root : Chained('\/api\/root') : PathPart('') : CaptureArgs(0) { }$/;"	s
 root	./lib/MandatoAberto/Controller/API/Office.pm	/^sub root : Chained('\/api\/root') : PathPart('') : CaptureArgs(0) { }$/;"	s
+root	./lib/MandatoAberto/Controller/API/Organization.pm	/^sub root : Chained('\/api\/logged') : PathPart('') : CaptureArgs(0) { }$/;"	s
 root	./lib/MandatoAberto/Controller/API/Party.pm	/^sub root : Chained('\/api\/root') : PathPart('') : CaptureArgs(0) { }$/;"	s
 root	./lib/MandatoAberto/Controller/API/Politician.pm	/^sub root : Chained('\/api\/logged') : PathPart('') : CaptureArgs(0) {$/;"	s
 root	./lib/MandatoAberto/Controller/API/Politician/Answer.pm	/^sub root : Chained('\/api\/politician\/object') : PathPart('') : CaptureArgs(0) {$/;"	s

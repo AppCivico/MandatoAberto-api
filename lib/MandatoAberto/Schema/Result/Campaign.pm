@@ -326,20 +326,20 @@ sub send_poll_facebook {
                 recipient => {
                     id => $recipient->fb_id
                 },
-				message => {
-					text          => $question,
-					quick_replies => [
-						{
-							content_type => 'text',
-							title        => $first_option->content,
-							payload      => 'pollAnswerPropagate_' . $first_option->id
-						},
-						{
-							content_type => 'text',
-							title        => $second_option->content,
-							payload      => 'pollAnswerPropagate_' . $second_option->id
-						},
-					]
+                message => {
+                    text          => $question,
+                    quick_replies => [
+                        {
+                            content_type => 'text',
+                            title        => $first_option->content,
+                            payload      => 'pollAnswerPropagate_' . $first_option->id
+                        },
+                        {
+                            content_type => 'text',
+                            title        => $second_option->content,
+                            payload      => 'pollAnswerPropagate_' . $second_option->id
+                        },
+                    ]
                 }
             }
         );

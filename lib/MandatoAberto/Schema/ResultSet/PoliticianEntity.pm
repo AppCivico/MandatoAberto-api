@@ -35,22 +35,22 @@ sub sync_dialogflow {
     $self->result_source->schema->txn_do(
         sub{
             while ( my $organization_chatbot = $organization_chatbot_rs->next() ) {
-				my $chatbot_config     = $organization_chatbot->general_config;
-				my $dialogflow_project = $chatbot_config->dialogflow_config;
+                my $chatbot_config     = $organization_chatbot->general_config;
+                my $dialogflow_project = $chatbot_config->dialogflow_config;
 
                 $project_id = $dialogflow_project->project_id;
 
                 $res             = $self->_dialogflow->get_intents( project => $dialogflow_project ) if $last_project_id ne $project_id;
                 $last_project_id = $project_id;
 
-				for my $entity ( @{ $res->{intents} } ) {
-					my $name = $entity->{displayName};
+                for my $entity ( @{ $res->{intents} } ) {
+                    my $name = $entity->{displayName};
 
-					if ( $self->skip_intent($name) == 0 ) {
-						$name = lc $name;
-						push @entities_names, $name;
-					}
-				}
+                    if ( $self->skip_intent($name) == 0 ) {
+                        $name = lc $name;
+                        push @entities_names, $name;
+                    }
+                }
 
                 for my $entity_name (@entities_names) {
                     $self->find_or_create(
@@ -113,15 +113,13 @@ sub sync_dialogflow_one_project {
                         {
                             organization_chatbot_id => $chatbot->id,
                             name                    => $entity_name,
-							human_name              => $entity_name
+                            human_name              => $entity_name
                         },
                         { key => 'chatbot_id_name' }
                     );
 
                     my $name = $v->name;
                     my $id = $v->id;
-					print STDERR "\nid: $id";
-					print STDERR "\nnome: $name\n\n";
                 }
             }
         }
@@ -649,7 +647,7 @@ sub find_human_name {
 sub extract_metrics {
     my ($self, %opts) = @_;
 
-	$self = $self->search_rs( { 'me.created_at' => { '>=' => \"NOW() - interval '$opts{range} days'" } } ) if $opts{range};
+    $self = $self->search_rs( { 'me.created_at' => { '>=' => \"NOW() - interval '$opts{range} days'" } } ) if $opts{range};
 
     my $most_significative_entity = $self->search(
         undef,
@@ -658,18 +656,18 @@ sub extract_metrics {
 
     return {
         # Contagem total de temas
-		count             => $self->count,
-		fallback_text     => 'Aqui você verá as métricas sobre seus temas.',
-		suggested_actions => [
-			{
-				alert             => '',
-				alert_is_positive => 0,
-				link              => '',
-				link_text         => 'Ver temas'
-			},
-		],
-		sub_metrics => [
-			# Métrica: o tema mais popular
+        count             => $self->count,
+        fallback_text     => 'Aqui você verá as métricas sobre seus temas.',
+        suggested_actions => [
+            {
+                alert             => '',
+                alert_is_positive => 0,
+                link              => '',
+                link_text         => 'Ver temas'
+            },
+        ],
+        sub_metrics => [
+            # Métrica: o tema mais popular
             (
                 $self->count > 0 ?
                 (
@@ -679,8 +677,8 @@ sub extract_metrics {
                     },
                 ) : ( )
             )
-		]
-	}
+        ]
+    }
 }
 
 1;

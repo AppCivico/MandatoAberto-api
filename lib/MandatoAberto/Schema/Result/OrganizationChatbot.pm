@@ -467,5 +467,11 @@ sub sync_dialogflow {
     return $self->politician_entities->sync_dialogflow_one_chatbot( $self->id );
 }
 
+sub has_fb_config {
+    my ($self) = @_;
+
+    return $self->fb_config ? 1 : 0;
+}
+
 __PACKAGE__->meta->make_immutable;
 1;

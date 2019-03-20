@@ -97,7 +97,7 @@ sub list_GET {
     my $sync = $c->req->params->{sync} || 0;
     die \['sync', 'invalid'] unless $sync =~ m/^(1|0)$/;
 
-	my $organization_chatbot = $c->stash->{politician}->user->organization_chatbot;
+    my $organization_chatbot = $c->stash->{politician}->user->organization_chatbot;
     eval { $organization_chatbot->sync_dialogflow if $sync == 1 };
 
     my $organization_chatbot_id = $c->stash->{politician}->user->organization_chatbot_id;
@@ -149,11 +149,11 @@ sub pending_GET {
 
     my $organization_chatbot_id = $c->stash->{politician}->user->organization_chatbot_id;
 
-	my $sync = $c->req->params->{sync} || 0;
-	die \['sync', 'invalid'] unless $sync == 1 || $sync == 0;
+    my $sync = $c->req->params->{sync} || 0;
+    die \['sync', 'invalid'] unless $sync == 1 || $sync == 0;
 
-	my $organization_chatbot = $c->stash->{politician}->user->organization_chatbot;
-	$organization_chatbot->sync_dialogflow if $sync == 1;
+    my $organization_chatbot = $c->stash->{politician}->user->organization_chatbot;
+    $organization_chatbot->sync_dialogflow if $sync == 1;
 
     return $self->status_ok(
         $c,

@@ -19,14 +19,14 @@ db_transaction {
     );
     my $politician_id = stash "politician.id";
 
-	api_auth_as user_id => $politician_id;
-	activate_chatbot($politician_id);
+    api_auth_as user_id => $politician_id;
+    activate_chatbot($politician_id);
 
-	my $politician              = $schema->resultset('Politician')->find($politician_id);
-	my $organization_chatbot_id = $politician->user->organization_chatbot_id;
+    my $politician              = $schema->resultset('Politician')->find($politician_id);
+    my $organization_chatbot_id = $politician->user->organization_chatbot_id;
 
-	api_auth_as user_id => $politician_id;
-	activate_chatbot($politician_id);
+    api_auth_as user_id => $politician_id;
+    activate_chatbot($politician_id);
 
     rest_post "/api/chatbot/recipient",
         name                => "Create first recipient",

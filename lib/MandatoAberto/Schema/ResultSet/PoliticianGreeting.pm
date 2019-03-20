@@ -51,8 +51,8 @@ sub action_specs {
                 my $politician              = $self->result_source->schema->resultset('Politician')->find( $values{politician_id} );
                 my $organization_chatbot_id = $politician->user->organization_chatbot_id;
 
-				# Tratando greetings como do organization_chatbot e não do politician
-				delete $values{politician_id} and $values{organization_chatbot_id} = $organization_chatbot_id;
+                # Tratando greetings como do organization_chatbot e não do politician
+                delete $values{politician_id} and $values{organization_chatbot_id} = $organization_chatbot_id;
 
                 my $existent_politician_greeting = $self->search( { organization_chatbot_id => $organization_chatbot_id } )->next;
 

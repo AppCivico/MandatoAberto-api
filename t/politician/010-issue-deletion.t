@@ -15,8 +15,8 @@ db_transaction {
     my $politician_id = $politician->{id};
     $politician       = $politician_rs->find($politician_id);
 
-	api_auth_as user_id => $politician_id;
-	activate_chatbot($politician_id);
+    api_auth_as user_id => $politician_id;
+    activate_chatbot($politician_id);
 
     my $recipient_id = create_recipient( politician_id => $politician_id );
     my $recipient    = $recipient_rs->find($recipient_id);

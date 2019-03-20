@@ -127,7 +127,7 @@ db_transaction {
             ;
         };
 
-		rest_put "/api/politician/$politician_id",
+        rest_put "/api/politician/$politician_id",
             name => "updating name",
             [ name => 'foobar' ]
         ;

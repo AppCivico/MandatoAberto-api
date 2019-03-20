@@ -9,6 +9,7 @@ BEGIN { extends "CatalystX::Eta::Controller::REST" }
 with "CatalystX::Eta::Controller::AutoBase";
 with "CatalystX::Eta::Controller::AutoListGET";
 with "CatalystX::Eta::Controller::AutoResultPUT";
+with "CatalystX::Eta::Controller::AutoResultGET";
 
 __PACKAGE__->config(
     # AutoBase.
@@ -22,7 +23,8 @@ __PACKAGE__->config(
     list_key => "poll",
     build_row  => sub {
         return { $_[0]->get_columns() };
-    }
+    },
+
 );
 
 sub root : Chained('/api/logged') : PathPart('') : CaptureArgs(0) { }
@@ -44,8 +46,8 @@ sub object : Chained('base') : PathPart('') : CaptureArgs(1) {
     my $poll = $c->stash->{collection}->find($poll_id);
     $c->detach("/error_404") unless ref $poll;
 
-	my $politician = $c->model('DB::Politician')->find($c->user->id);
-	$c->detach("/error_404") unless ref $politician;
+    my $politician = $c->model('DB::Politician')->find($c->user->id);
+    $c->detach("/error_404") unless ref $politician;
 
     $c->stash->{is_me} = int($politician->user->organization_chatbot_id == $poll->organization_chatbot_id);
     $c->stash->{poll}  = $poll;
@@ -115,6 +117,8 @@ sub list_GET {
 sub result : Chained('object') : PathPart('') : Args(0) : ActionClass('REST') { }
 
 sub result_PUT { }
+
+sub result_GET { }
 
 __PACKAGE__->meta->make_immutable;
 

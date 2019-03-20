@@ -321,34 +321,34 @@ sub get_recipients_poll_results {
 sub extract_metrics {
     my ($self, %opts) = @_;
 
-	$self = $self->search_rs( { 'me.created_at' => { '>=' => \"NOW() - interval '$opts{range} days'" } } ) if $opts{range};
+    $self = $self->search_rs( { 'me.created_at' => { '>=' => \"NOW() - interval '$opts{range} days'" } } ) if $opts{range};
 
-	return {
+    return {
         # Contagem total de seguidores
-		count             => $self->count,
-		fallback_text     => 'Aqui você vê as métricas sobre seus seguidores.',
-		suggested_actions => [
-			{
-				alert             => '',
-				alert_is_positive => 0,
-				link              => '',
-				link_text         => 'Ver seguidores'
-			},
-		],
-		sub_metrics => [
-			# Métrica: seguidores com email cadastrado
-			{
-				text              => $self->search( { email => \'IS NOT NULL' } )->count . ' seguidores com e-mail',
-				suggested_actions => []
-			},
+        count             => $self->count,
+        fallback_text     => 'Aqui você vê as métricas sobre seus seguidores.',
+        suggested_actions => [
+            {
+                alert             => '',
+                alert_is_positive => 0,
+                link              => '',
+                link_text         => 'Ver seguidores'
+            },
+        ],
+        sub_metrics => [
+            # Métrica: seguidores com email cadastrado
+            {
+                text              => $self->search( { email => \'IS NOT NULL' } )->count . ' seguidores com e-mail',
+                suggested_actions => []
+            },
 
-			# Métrica: seguidores com telefone cadastrado
-			{
-				text              => $self->search( { cellphone => \'IS NOT NULL' } )->count . ' seguidores com telefone',
-				suggested_actions => []
-			},
-		]
-	}
+            # Métrica: seguidores com telefone cadastrado
+            {
+                text              => $self->search( { cellphone => \'IS NOT NULL' } )->count . ' seguidores com telefone',
+                suggested_actions => []
+            },
+        ]
+    }
 }
 
 1;

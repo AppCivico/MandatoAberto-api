@@ -182,9 +182,9 @@ sub send {
 
     # Valido se o político está com as private replies ativas
     # e também se não está dentro da janela de 'delay'
-	# my $politician           = $self->politician;
-	my $organization_chatbot = $self->organization_chatbot;
-	my $private_reply_config = $organization_chatbot->politician_private_reply_config;
+    # my $politician           = $self->politician;
+    my $organization_chatbot = $self->organization_chatbot;
+    my $private_reply_config = $organization_chatbot->politician_private_reply_config;
 
     if ( $private_reply_config->active && $organization_chatbot->fb_config->access_token ) {
 

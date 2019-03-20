@@ -25,7 +25,7 @@ db_transaction {
     my $politician_id = stash "politician.id";
 
     api_auth_as user_id => $politician_id;
-	activate_chatbot($politician_id);
+    activate_chatbot($politician_id);
 
     answer_question(
         politician_id => $politician_id,

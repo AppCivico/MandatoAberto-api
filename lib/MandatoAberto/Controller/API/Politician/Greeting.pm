@@ -74,8 +74,8 @@ sub list_GET {
     if ( $organization->chatbot->politicians_greeting->count > 0 ) {
         $greeting = $organization->chatbot->politicians_greeting->next;
 
-		$greeting_fb      = $greeting->on_facebook;
-		$greeting_website = $greeting->on_website;
+        $greeting_fb      = $greeting->on_facebook;
+        $greeting_website = $greeting->on_website;
     }
 
     return $self->status_ok(
