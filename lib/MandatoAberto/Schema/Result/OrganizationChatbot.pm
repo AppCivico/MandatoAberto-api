@@ -429,6 +429,17 @@ sub fb_config {
     return $self->organization_chatbot_facebook_config;
 }
 
+sub fb_config_for_GET {
+    my ($self) = @_;
+
+    my $config = $self->fb_config;
+
+    return {
+        access_token => $config ? $config->{access_token} : undef ,
+        page_id      => $config ? $config->{page_id}      : undef
+    }
+}
+
 sub politician_private_reply_config {
     my ($self) = @_;
 
