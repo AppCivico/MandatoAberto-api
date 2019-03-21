@@ -15,7 +15,7 @@ db_transaction {
     };
 
 
-    subtest 'User | Get organization' => sub {
+    subtest 'User | Get chatbot' => sub {
         api_auth_as user_id => $user_id;
 
         rest_get "/api/organization/$organization_id/chatbot",
@@ -43,6 +43,29 @@ db_transaction {
             my $res = shift;
 
             # TODO testar campos do retorno
+        };
+    };
+
+    subtest 'User | Update chatbot' => sub {
+        rest_put "/api/organization/$organization_id/chatbot/$chatbot_id",
+            code => 200,
+            [
+                page_id      => 'foobar',
+                access_token => 'FOOBAR'
+            ]
+        ;
+
+        rest_get "/api/organization/$organization_id/chatbot/$chatbot_id",
+            code  => 200,
+            stash => 'c2',
+            list  => 1
+        ;
+
+        stash_test 'c2' => sub {
+            my $res = shift;
+
+            is( $res->{fb_config}->{page_id},      'foobar', 'page_id' );
+            is( $res->{fb_config}->{access_token}, 'FOOBAR', 'access_token' );
         };
     };
 };

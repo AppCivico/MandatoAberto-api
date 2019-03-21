@@ -63,6 +63,21 @@ sub result_GET {
     )
 }
 
+sub result_PUT {
+    my ($self, $c) = @_;
+
+    my $chatbot = $c->stash->{chatbot}->execute(
+        $c,
+        for  => 'update',
+        with => $c->req->params
+    );
+
+    return $self->status_ok(
+        $c,
+        entity => { id => $chatbot->id }
+    );
+}
+
 __PACKAGE__->meta->make_immutable;
 
 1;

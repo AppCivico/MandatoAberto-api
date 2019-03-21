@@ -21,12 +21,21 @@ sub verifiers_specs {
             filters => [qw(trim)],
             profile => {
                 politician_id => {
-                    required   => 1,
+                    required   => 0,
                     type       => 'Int',
                     post_check => sub {
                         my $politician_id = $_[0]->get_value('politician_id');
 
                         $self->result_source->schema->resultset("Politician")->search({ user_id => $politician_id })->count;
+                    }
+                },
+                chatbot_id => {
+                    required   => 0,
+                    type       => 'Int',
+                    post_check => sub {
+                        my $chatbot_id = $_[0]->get_value('chatbot_id');
+
+                        $self->result_source->schema->resultset('OrganizationChatbot')->search({ id => $chatbot_id })->count;
                     }
                 },
                 name => {
@@ -81,14 +90,26 @@ sub action_specs {
             my %values = $r->valid_values;
             not defined $values{$_} and delete $values{$_} for keys %values;
 
-            # Tratando recipient como do organization_chatbot e não do politician
-            my $politician              = $self->result_source->schema->resultset('Politician')->find($values{politician_id});
-            my $organization_chatbot_id = $politician->user->organization_chatbot_id;
+            # Erros
+            if ( !$values{politician_id} && !$values{chatbot_id} ) {
+                die \['chatbot_id', 'missing'];
+            }
+            elsif ( $values{politician_id} && $values{chatbot_id} ) {
+                die \['politician_id', 'invalid'];
+            }
 
-            delete $values{politician_id} and $values{organization_chatbot_id} = $organization_chatbot_id;
+            # Upsert do recipient
+            if ( $values{politician_id} ) {
+                my $politician              = $self->result_source->schema->resultset('Politician')->find($values{politician_id});
+                my $organization_chatbot_id = $politician->user->organization_chatbot_id;
 
-            if ( defined($values{gender}) && $values{gender} !~ m{^[FM]{1}$} ) {
-                die \["gender", "must be F or M"];
+                delete $values{politician_id} and $values{organization_chatbot_id} = $organization_chatbot_id;
+            }
+            elsif ( $values{chatbot_id} ) {
+                $values{organization_chatbot_id} = delete $values{chatbot_id};
+            }
+            else {
+                die \['chatbot_id', 'missing'];
             }
 
             my $existing_citizen = $self->search( { 'me.fb_id' => $values{fb_id} } )->next;

@@ -25,6 +25,15 @@ __PACKAGE__->config(
     prepare_params_for_create => sub {
         my ($self, $c, $params) = @_;
 
+        if ( $c->req->params->{chatbot_id} ) {
+            my $chatbot = $c->model('DB::OrganizationChatbot')->find($c->req->params->{chatbot_id})
+              or die \['chatbot_id', 'invalid'];
+
+            $params->{page_id} = $chatbot->fb_config->page_id;
+
+            return $params;
+        }
+
         my $politician = $c->model("DB::Politician")->find($c->req->params->{politician_id});
         die \["politician_id", 'could not find politician with that id'] unless $politician;
 
