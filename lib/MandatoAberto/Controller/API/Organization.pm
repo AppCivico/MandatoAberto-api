@@ -95,7 +95,10 @@ sub _upload_picture {
     die \['file', 'invalid']       unless $mimetype =~ m/^image/;
     die \['picture', 'empty file'] unless $upload->size > 0;
 
-    return $self->_drive->upload_file( tempname => $tempname );
+    my $ret = $self->_drive->upload_file( tempname => $tempname );
+    print STDERR "\nret method: $ret\n"
+
+    return $ret;
 }
 
 __PACKAGE__->meta->make_immutable;
