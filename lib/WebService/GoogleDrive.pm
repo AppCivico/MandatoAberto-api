@@ -5,6 +5,7 @@ use MooseX::Singleton;
 use Net::Google::Drive;
 
 use MandatoAberto::Utils;
+use JSON;
 
 has 'drive' => ( is => 'rw', lazy => 1, builder => '_build_drive' );
 
@@ -34,7 +35,8 @@ sub upload_file {
         $res = $self->drive->getFileMetadata( -file_id => $res->{id} );
 		die 'get data fail' unless $res->{embedLink};
         print STDERR "================================================WS========================================\n";
-        print STDERR "\nres: $res\n";
+        my $v = encode_json($res);
+        print STDERR "\nres: $v\n";
         $res = $res->{embedLink};
 
 		print STDERR "================================================WS========================================\n";
