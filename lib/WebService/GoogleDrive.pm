@@ -32,6 +32,8 @@ sub upload_file {
         die 'upload fail' unless $res->{id};
 
         $res = $self->drive->getFileMetadata( -file_id => $res->{id} );
+		die 'get data fail' unless $res->{embedLink};
+
         $res = $res->{embedLink}
     }
 
