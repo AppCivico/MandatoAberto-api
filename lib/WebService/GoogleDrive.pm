@@ -38,10 +38,7 @@ sub upload_file {
             -role    => 'reader'
         );
 
-        $res = $self->drive->getFileMetadata( -file_id => $res->{id} );
-        die 'get data fail' unless $res->{embedLink};
-
-        $res = $res->{embedLink};
+        $res = 'https://drive.google.com/uc?id=' . $res->{id};
     }
 
     return $res;
