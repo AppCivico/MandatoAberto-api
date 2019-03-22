@@ -213,6 +213,63 @@ __PACKAGE__->has_many(
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
+with 'MandatoAberto::Role::Verification';
+with 'MandatoAberto::Role::Verification::TransactionalActions::DBIC';
+
+sub verifiers_specs {
+    my $self = shift;
+
+    return {
+        update => Data::Verifier->new(
+            filters => [qw(trim)],
+            profile => {
+                name => {
+                    required => 0,
+                    type     => 'Str'
+                },
+                picture => {
+                    required => 0,
+                    type     => 'Str'
+                },
+            }
+        ),
+    };
+}
+
+sub action_specs {
+    my ($self) = @_;
+
+    return {
+        update => sub {
+            my $r = shift;
+
+            my %values = $r->valid_values;
+            not defined $values{$_} and delete $values{$_} for keys %values;
+
+            my $chatbot;
+            $self->result_source->schema->txn_do(sub {
+                # Caso mande page_id e access_token devo atualizar ou criar a configuração do facebook
+                if ( $values{page_id} && $values{access_token} ) {
+                    $self->result_source->schema->resultset('OrganizationChatbotFacebookConfig')->find_or_create(
+                        {
+                            organization_chatbot_id => $self->id,
+                            page_id                 => $values{page_id},
+                            access_token            => $values{access_token}
+                        },
+                        { key => 'organization_chatbot_facebook_confi_organization_chatbot_id_key' }
+                    );
+
+                    delete $values{$_} for qw( page_id access_token );
+                }
+
+                $chatbot = $self->update(\%values);
+            });
+
+            return $chatbot;
+        }
+    };
+}
+
 
 sub chatbot {
     my ($self) = @_;
