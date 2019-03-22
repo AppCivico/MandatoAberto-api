@@ -3,7 +3,22 @@ use common::sense;
 use Moose;
 use namespace::autoclean;
 
+use WebService::GoogleDrive;
+
+use File::Basename;
+use File::MimeInfo;
+use DateTime;
+use Crypt::PRNG qw(random_string);
+
 BEGIN { extends 'CatalystX::Eta::Controller::REST' }
+
+has _drive => (
+    is         => "ro",
+    isa        => "WebService::GoogleDrive",
+    lazy_build => 1,
+);
+
+sub _build__drive { WebService::GoogleDrive->instance }
 
 sub root : Chained('/api/logged') : PathPart('') : CaptureArgs(0) { }
 
@@ -49,7 +64,38 @@ sub result_GET {
     );
 }
 
-sub result_PUT { }
+sub result_PUT {
+    my ( $self, $c ) = @_;
+
+    if ( my $upload = $c->req->upload("file") ) {
+        my $picture_url = $self->_upload_picture($upload);
+
+        $c->req->params->{picture} = $picture_url;
+    }
+
+    my $organization = $c->stash->{organization}->execute(
+        $c,
+        for  => 'update',
+        with => $c->req->params
+    );
+
+    return $self->status_ok(
+        $c,
+        entity => { id => $organization->id }
+    );
+}
+
+sub _upload_picture {
+    my ( $self, $upload ) = @_;
+
+    my $mimetype = mimetype( $upload->tempname );
+    my $tempname = $upload->tempname;
+
+    die \['file', 'invalid']       unless $mimetype =~ m/^image/;
+    die \['picture', 'empty file'] unless $upload->size > 0;
+
+    return $self->_drive->upload_file( tempname => $tempname );
+}
 
 __PACKAGE__->meta->make_immutable;
 

@@ -1,4 +1,4 @@
-package MandatoAberto::Controller::API::organization::Chatbot::Poll;
+package MandatoAberto::Controller::API::Organization::Chatbot::Poll;
 use Moose;
 use namespace::autoclean;
 
