@@ -72,7 +72,6 @@ sub result_PUT {
 
         $c->req->params->{picture} = $picture_url;
         print STDERR "picture_url: $picture_url\n";
-        print STDERR "param: $c->req->params->{picture}\n"
     }
 
     my $organization = $c->stash->{organization}->execute(

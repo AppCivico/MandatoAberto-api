@@ -33,8 +33,12 @@ sub upload_file {
 
         $res = $self->drive->getFileMetadata( -file_id => $res->{id} );
 		die 'get data fail' unless $res->{embedLink};
+        print STDERR "================================================WS========================================\n";
+        print STDERR "\nres: $res\n"
+        $res = $res->{embedLink};
 
-        $res = $res->{embedLink}
+		print STDERR "================================================WS========================================\n";
+
     }
 
     return $res;
