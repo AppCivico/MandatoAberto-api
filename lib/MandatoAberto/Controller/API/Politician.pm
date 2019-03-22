@@ -10,6 +10,8 @@ use Crypt::PRNG qw(random_string);
 
 BEGIN { extends 'CatalystX::Eta::Controller::REST' }
 
+use WebService::GoogleDrive;
+
 has _drive => (
 	is         => "ro",
 	isa        => "WebService::GoogleDrive",
