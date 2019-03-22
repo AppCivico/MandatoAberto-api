@@ -477,6 +477,10 @@ sub verifiers_specs {
                 organization_chatbot_picture => {
                     required => 0,
                     type     => 'Str'
+                },
+                picture => {
+                    required => 0,
+                    type     => 'Str'
                 }
             }
         ),
@@ -524,6 +528,12 @@ sub action_specs {
 
                 if ($values{new_password} && length $values{new_password} < 6) {
                     die \["new_password", "must have at least 6 characters"];
+                }
+
+                if ( $values{picture} ) {
+                    my $picture = delete $values{picture};
+
+                    $self->user->organization->update( { picture => $picture } );
                 }
 
                 if (defined $values{fb_page_access_token}) {
