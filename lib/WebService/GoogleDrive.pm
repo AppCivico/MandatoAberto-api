@@ -28,10 +28,10 @@ sub upload_file {
         $res = 'www.google.com';
     }
     else {
-        my $res = $self->_drive->uploadFile( -source_file => $opts{tempname} );
+        my $res = $self->drive->uploadFile( -source_file => $opts{tempname} );
         die 'upload fail' unless $res->{id};
 
-        $res = $self->_drive->getFileMetadata( -file_id => $res->{id} );
+        $res = $self->drive->getFileMetadata( -file_id => $res->{id} );
         $res = $res->{embedLink}
     }
 
