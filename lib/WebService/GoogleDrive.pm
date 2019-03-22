@@ -37,9 +37,9 @@ sub upload_file {
         print STDERR "================================================WS========================================\n";
         my $v = encode_json($res);
         print STDERR "\nres: $v\n";
-        $res = $res->{embedLink};
         my $foo = $res->{embedLink};
 		print STDERR "\nres acesso: $foo\n";
+        $res = $res->{embedLink};
 
 		print STDERR "\nres retorno: $res\n";
 
