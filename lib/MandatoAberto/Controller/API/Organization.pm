@@ -96,7 +96,7 @@ sub _upload_picture {
     die \['picture', 'empty file'] unless $upload->size > 0;
 
     my $ret = $self->_drive->upload_file( tempname => $tempname );
-    print STDERR "\nret method: $ret\n"
+    print STDERR "\nret method: $ret\n";
 
     return $ret;
 }
