@@ -38,6 +38,10 @@ sub upload_file {
         my $v = encode_json($res);
         print STDERR "\nres: $v\n";
         $res = $res->{embedLink};
+        my $foo = $res->{embedLink};
+		print STDERR "\nres acesso: $foo\n";
+
+		print STDERR "\nres retorno: $res\n";
 
 		print STDERR "================================================WS========================================\n";
 
