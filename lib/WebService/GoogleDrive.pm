@@ -32,6 +32,12 @@ sub upload_file {
         $res = $self->drive->uploadFile( -source_file => $opts{tempname} );
         die 'upload fail' unless $res->{id};
 
+        $self->drive->setFilePermission(
+            -file_id => $res->{id},
+            -type    => 'anyone',
+            -role    => 'reader'
+        );
+
         $res = $self->drive->getFileMetadata( -file_id => $res->{id} );
         die 'get data fail' unless $res->{embedLink};
 
