@@ -67,11 +67,10 @@ sub result_GET {
 sub result_PUT {
     my ( $self, $c ) = @_;
 
-    if ( my $upload = $c->req->upload("file") ) {
+    if ( my $upload = $c->req->upload("picture") ) {
         my $picture_url = $self->_upload_picture($upload);
 
         $c->req->params->{picture} = $picture_url;
-        print STDERR "picture_url: $picture_url\n";
     }
 
     my $organization = $c->stash->{organization}->execute(
@@ -96,7 +95,6 @@ sub _upload_picture {
     die \['picture', 'empty file'] unless $upload->size > 0;
 
     my $ret = $self->_drive->upload_file( tempname => $tempname );
-    print STDERR "\nret method: $ret\n";
 
     return $ret;
 }
