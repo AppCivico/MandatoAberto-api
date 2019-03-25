@@ -218,6 +218,7 @@ _build__async	./lib/WebService/HttpCallback/Async.pm	/^sub _build__async { HTTP:
 _build__dialogflow	./lib/MandatoAberto/Schema/ResultSet/Entity.pm	/^sub _build__dialogflow { WebService::Dialogflow->instance }$/;"	s
 _build__dialogflow	./lib/MandatoAberto/Schema/ResultSet/PoliticianEntity.pm	/^sub _build__dialogflow { WebService::Dialogflow->instance }$/;"	s
 _build__drive	./lib/MandatoAberto/Controller/API/Organization.pm	/^sub _build__drive { WebService::GoogleDrive->instance }$/;"	s
+_build__drive	./lib/MandatoAberto/Controller/API/Politician.pm	/^sub _build__drive { WebService::GoogleDrive->instance }$/;"	s
 _build__facebook	./lib/MandatoAberto/Controller/API/Politician/DirectMessage.pm	/^sub _build__facebook { WebService::Facebook->instance }$/;"	s
 _build__facebook	./lib/MandatoAberto/Controller/API/Politician/Issue.pm	/^sub _build__facebook { WebService::Facebook->instance }$/;"	s
 _build__facebook	./lib/MandatoAberto/Controller/API/Politician/KnowledgeBase.pm	/^sub _build__facebook { WebService::Facebook->instance }$/;"	s
@@ -250,6 +251,7 @@ _encode	./lib/MandatoAberto/Uploader.pm	/^sub _encode {$/;"	s
 _filter_value	./lib/Data/Verifier.pm	/^sub _filter_value {$/;"	s
 _generate_auth_uri	./lib/MandatoAberto/Uploader.pm	/^sub _generate_auth_uri {$/;"	s
 _upload_picture	./lib/MandatoAberto/Controller/API/Organization.pm	/^sub _upload_picture {$/;"	s
+_upload_picture	./lib/MandatoAberto/Controller/API/Politician.pm	/^sub _upload_picture {$/;"	s
 _upload_picture	./lib/MandatoAberto/Controller/API/Politician/DirectMessage.pm	/^sub _upload_picture {$/;"	s
 _upload_picture	./lib/MandatoAberto/Controller/API/Politician/Issue.pm	/^sub _upload_picture {$/;"	s
 _upload_picture	./lib/MandatoAberto/Controller/API/Politician/KnowledgeBase.pm	/^sub _upload_picture {$/;"	s
