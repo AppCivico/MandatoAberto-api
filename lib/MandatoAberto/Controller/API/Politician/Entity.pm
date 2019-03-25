@@ -99,6 +99,7 @@ sub list_GET {
 
     my $organization_chatbot = $c->stash->{politician}->user->organization_chatbot;
     eval { $organization_chatbot->sync_dialogflow if $sync == 1 };
+    die $@ if $@;
 
     my $organization_chatbot_id = $c->stash->{politician}->user->organization_chatbot_id;
 
