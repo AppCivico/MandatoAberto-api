@@ -64,19 +64,6 @@ db_transaction {
         ]
     ;
 
-    rest_post "/api/chatbot/recipient",
-        name    => "gender is not required but must be valid",
-        is_fail => 1,
-        [
-            origin_dialog => fake_words(1)->(),
-            name          => fake_name()->(),
-            politician_id => $politician_id,
-            fb_id         => "foobar",
-            gender        => "foobar",
-            security_token => $security_token
-        ]
-    ;
-
     my $fb_id     = fake_words(1)->();
     my $cellphone = fake_digits("+551198#######")->();
     my $email     = fake_email()->();

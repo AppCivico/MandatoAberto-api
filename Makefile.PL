@@ -99,6 +99,7 @@ my %WriteMakefileArgs = (
     "MooseX::Types::Moose" => 0,
     "MooseX::Types::Structured" => 0,
     "Net::Amazon::S3" => 0,
+    "Net::Google::Drive" => 0,
     "Net::Server::SS::PreFork" => 0,
     "Scalar::Util" => 0,
     "Server::Starter" => 0,
@@ -132,7 +133,7 @@ my %WriteMakefileArgs = (
     "blib" => "1.01",
     "lib" => 0
   },
-  "VERSION" => 20190318,
+  "VERSION" => 20190325,
   "test" => {
     "TESTS" => "t/*.t t/admin/*.t t/chatbot/*.t t/misc/*.t t/organization/*.t t/politician/*.t t/polls/*.t t/user/*.t t/worker/*.t"
   }
@@ -229,6 +230,7 @@ my %FallbackPrereqs = (
   "MooseX::Types::Moose" => 0,
   "MooseX::Types::Structured" => 0,
   "Net::Amazon::S3" => 0,
+  "Net::Google::Drive" => 0,
   "Net::Server::SS::PreFork" => 0,
   "Scalar::Util" => 0,
   "Server::Starter" => 0,

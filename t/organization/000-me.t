@@ -37,6 +37,25 @@ db_transaction {
             # TODO testar campos do retorno
         };
     };
+
+    subtest 'User | Update organization' => sub {
+        rest_put "/api/organization/$organization_id",
+            code  => 200,
+            params => [ name => 'fake_name' ],
+            files => { file => "$Bin/picture.jpg", }
+        ;
+
+        rest_get "/api/organization/$organization_id",
+            code  => 200,
+            stash => 'o1',
+            list  => 1
+        ;
+
+        stash_test 'o1' => sub {
+            my $res = shift;
+            # TODO testar campos do retorno
+        };
+    };
 };
 
 done_testing();

@@ -3,7 +3,22 @@ use common::sense;
 use Moose;
 use namespace::autoclean;
 
+use File::Basename;
+use File::MimeInfo;
+use DateTime;
+use Crypt::PRNG qw(random_string);
+
 BEGIN { extends 'CatalystX::Eta::Controller::REST' }
+
+use WebService::GoogleDrive;
+
+has _drive => (
+    is         => "ro",
+    isa        => "WebService::GoogleDrive",
+    lazy_build => 1,
+);
+
+sub _build__drive { WebService::GoogleDrive->instance }
 
 with "CatalystX::Eta::Controller::AutoBase";
 with "CatalystX::Eta::Controller::AutoResultPUT";
@@ -20,6 +35,12 @@ __PACKAGE__->config(
 
         my $share_url  = $c->req->params->{picframe_url}  || $c->req->params->{share_url};
         my $share_text = $c->req->params->{picframe_text} || $c->req->params->{share_text};
+
+        if ( my $upload = $c->req->upload("picture") ) {
+            my $picture_url = $self->_upload_picture($upload);
+
+            $params->{picture} = $picture_url;
+        }
 
         $params->{share_url}  = $share_url;
         $params->{share_text} = $share_text;
@@ -184,6 +205,20 @@ sub result_GET {
 }
 
 sub result_PUT { }
+
+sub _upload_picture {
+    my ( $self, $upload ) = @_;
+
+    my $mimetype = mimetype( $upload->tempname );
+    my $tempname = $upload->tempname;
+
+    die \['file', 'invalid']       unless $mimetype =~ m/^image/;
+    die \['picture', 'empty file'] unless $upload->size > 0;
+
+    my $ret = $self->_drive->upload_file( tempname => $tempname );
+
+    return $ret;
+}
 
 __PACKAGE__->meta->make_immutable;
 

@@ -2,7 +2,7 @@ package WebService::Dialogflow;
 use common::sense;
 use MooseX::Singleton;
 
-use JSON::MaybeXS;
+use JSON;
 use Furl;
 use Try::Tiny::Retry;
 use File::Temp;
@@ -23,7 +23,17 @@ sub generate_access_token {
     my $tmp_file_name = $tmp_file->filename;
     print $tmp_file $project->credentials;
 
-    my $access_token = `GOOGLE_APPLICATION_CREDENTIALS='$tmp_file_name'; gcloud auth application-default print-access-token`;
+    use DDP;
+    p $ENV{GOOGLE_APPLICATION_CREDENTIALS};
+
+    my @args = ("(GOOGLE_APPLICATION_CREDENTIALS='$tmp_file_name' && gcloud auth application-default print-access-token)");
+    system(@args) == 0 or die "porra: $?";
+
+    p $ENV{GOOGLE_APPLICATION_CREDENTIALS};
+    print STDERR `GOOGLE_APPLICATION_CREDENTIALS='$tmp_file_name'`;
+
+    my $access_token = `( GOOGLE_APPLICATION_CREDENTIALS='$tmp_file_name' && gcloud auth application-default print-access-token)`;
+    p $access_token;
     die 'fail generating access token for dialogflow' unless $access_token;
 
     $access_token =~ s/\s+$//;
