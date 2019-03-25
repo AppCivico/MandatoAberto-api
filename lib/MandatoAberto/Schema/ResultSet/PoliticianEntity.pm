@@ -150,7 +150,7 @@ sub sync_dialogflow_one_chatbot {
     $self->result_source->schema->txn_do(
         sub{
             for my $entity_name (@entities_names) {
-                my $v = $self->find_or_create(
+                $self->find_or_create(
                     {
                         organization_chatbot_id => $chatbot->id,
                         name                    => $entity_name,
@@ -158,12 +158,21 @@ sub sync_dialogflow_one_chatbot {
                     },
                     { key => 'chatbot_id_name' }
                 );
-
-                my $name = $v->name;
-                my $id = $v->id;
-                print STDERR "\nid: $id";
-                print STDERR "\nnome: $name\n\n";
             }
+
+             # Após criar as entities
+            # deleto qualquer uma que seja do chatbot
+            # mas não está com o nome na lista
+            my $intents_to_be_deleted = $self->search( { name => { -not_in => \@entities_names } } );
+
+            my $knowledge_base_rs = $self->result_source->schema->resultset('PoliticianKnowledgeBase')->search( { organization_chatbot_id => $chatbot->id } );
+            while ( my $intent_to_be_deleted = $intents_to_be_deleted->next() ) {
+                $knowledge_base_rs->search(
+                        \["? = ANY(entities)", $intent_to_be_deleted->id]
+                )->delete;
+            }
+
+            $intents_to_be_deleted->delete();
         }
     );
 
