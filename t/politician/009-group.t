@@ -43,7 +43,6 @@ db_transaction {
                 {
                     name                    => 'Pizza',
                     organization_chatbot_id => $organization_chatbot_id,
-                    status_id               => 1,
                 },
             ),
             'add poll',

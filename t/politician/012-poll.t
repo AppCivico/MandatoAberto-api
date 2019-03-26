@@ -71,9 +71,7 @@ db_transaction {
         my $second_poll = $res->{polls}->[1];
 
         is ($first_poll->{name},       'foobar', 'first poll name');
-        is ($first_poll->{status_id},  3,        'first poll status is deactivated');
         is ($second_poll->{name},      'bazbar', 'second poll name');
-        is ($second_poll->{status_id}, 1,        'second poll status is active');
     };
 };
 

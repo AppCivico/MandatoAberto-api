@@ -42,7 +42,6 @@ sub list_GET {
                     +{
                         id        => $p->get_column('id'),
                         name      => $p->get_column('name'),
-                        status_id => $p->get_column('status_id'),
 
                         questions => [
                             map {
@@ -143,7 +142,6 @@ sub result_GET {
         entity => {
             id        => $c->stash->{collection}->id,
             name      => $c->stash->{collection}->name,
-            status_id => $c->stash->{collection}->status_id,
 
             questions => [
                 map {

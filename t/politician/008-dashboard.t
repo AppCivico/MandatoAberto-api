@@ -221,7 +221,6 @@ db_transaction {
         is ($res->{has_greeting}, 0, 'politician does not have greeting');
         is ($res->{has_contacts}, 0, 'politician does not have contacts');
         is ($res->{has_dialogs}, 0, 'politician does not have dialogs');
-        is ($res->{has_active_poll}, 0, 'politician does not have active poll');
         is ($res->{ever_had_poll}, 1, 'politician has at least one poll');
         is ($res->{has_facebook_auth}, 1, 'politician does  have facebook auth');
     };

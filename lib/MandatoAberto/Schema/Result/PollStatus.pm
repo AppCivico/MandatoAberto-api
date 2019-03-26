@@ -73,26 +73,9 @@ __PACKAGE__->add_columns(
 
 __PACKAGE__->set_primary_key("id");
 
-=head1 RELATIONS
 
-=head2 polls
-
-Type: has_many
-
-Related object: L<MandatoAberto::Schema::Result::Poll>
-
-=cut
-
-__PACKAGE__->has_many(
-  "polls",
-  "MandatoAberto::Schema::Result::Poll",
-  { "foreign.status_id" => "self.id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
-
-
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2017-12-18 23:15:55
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:AYc/lO/CeAcLnLJrw5Ct5w
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-03-26 09:22:32
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:MHQMgH7Rh2iZ9J42pCHNZQ
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
