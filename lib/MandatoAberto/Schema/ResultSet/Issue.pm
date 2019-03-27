@@ -252,14 +252,16 @@ sub extract_metrics {
     }
 
     my $alert_is_positive = $avg_response_time && $avg_response_time <= 90 ? 1 : 0;
+    my $label             = $alert_is_positive ? 'positive' : 'negative';
 
     return {
         count             => $self->count,
-        fallback_text     => 'Aqui você poderá métricas sobre as mensagens que o assistente digital não conseguiu responder.',
+        description     => 'Aqui você poderá métricas sobre as mensagens que o assistente digital não conseguiu responder.',
         suggested_actions => [
             {
                 alert             => $text,
                 alert_is_positive => $alert_is_positive,
+                label             => $label,
                 link              => '',
                 link_text         => 'Ver mensagens'
             }

@@ -347,7 +347,7 @@ sub extract_metrics {
     return {
         # Contagem total de seguidores
         count             => $self->count,
-        fallback_text     => 'Aqui você vê as métricas sobre seus seguidores.',
+        description     => 'Aqui você vê as métricas sobre seus seguidores.',
         suggested_actions => [
             {
                 alert             => '',

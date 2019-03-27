@@ -166,7 +166,7 @@ sub empty_metric {
             name              => get_metric_name_for_dashboard($metric),
             text              => get_metric_text_for_dashboard($metric),
             count             => 0,
-            fallback_text     => 'Aqui você poderá métricas sobre as mensagens que o assistente digital não conseguiu responder.',
+            description     => 'Aqui você poderá métricas sobre as mensagens que o assistente digital não conseguiu responder.',
             suggested_actions => [],
             sub_metrics       => []
         };
@@ -176,7 +176,7 @@ sub empty_metric {
             name              => get_metric_name_for_dashboard($metric),
             text              => get_metric_text_for_dashboard($metric),
             count             => 0,
-            fallback_text     => 'Aqui ficam as métricas sobre as campanhas enviadas.',
+            description     => 'Aqui ficam as métricas sobre as campanhas enviadas.',
             suggested_actions => [],
             sub_metrics       => []
         };
@@ -186,7 +186,7 @@ sub empty_metric {
             name              => get_metric_name_for_dashboard($metric),
             text              => get_metric_text_for_dashboard($metric),
             count             => 0,
-            fallback_text     => 'Aqui você poderá ver as métricas sobre os grupos que você criou.',
+            description     => 'Aqui você poderá ver as métricas sobre os grupos que você criou.',
             suggested_actions => [],
             sub_metrics       => []
         };
@@ -196,7 +196,7 @@ sub empty_metric {
             name              => get_metric_name_for_dashboard($metric),
             text              => get_metric_text_for_dashboard($metric),
             count             => 0,
-            fallback_text     => 'Aqui será onde você poderá ver o desempenho de suas consultas',
+            description     => 'Aqui será onde você poderá ver o desempenho de suas consultas',
             suggested_actions => [],
             sub_metrics       => []
         };
@@ -206,7 +206,7 @@ sub empty_metric {
             name              => get_metric_name_for_dashboard($metric),
             text              => get_metric_text_for_dashboard($metric),
             count             => 0,
-            fallback_text     => 'Aqui você vê as métricas sobre seus seguidores.',
+            description     => 'Aqui você vê as métricas sobre seus seguidores.',
             suggested_actions => [],
             sub_metrics       => []
         };
@@ -216,7 +216,7 @@ sub empty_metric {
             name              => get_metric_name_for_dashboard($metric),
             text              => get_metric_text_for_dashboard($metric),
             count             => 0,
-            fallback_text     => 'Aqui você verá as métricas sobre seus temas.',
+            description     => 'Aqui você verá as métricas sobre seus temas.',
             suggested_actions => [],
             sub_metrics       => []
         };
