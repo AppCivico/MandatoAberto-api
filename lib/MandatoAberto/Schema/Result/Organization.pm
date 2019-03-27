@@ -294,5 +294,9 @@ sub chatbots_for_get {
     ]
 }
 
+sub weight_for_module {
+
+}
+
 __PACKAGE__->meta->make_immutable;
 1;
