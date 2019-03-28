@@ -160,3 +160,4 @@
 0156-add-invite-token [0155-improving-organization-structure] 2019-03-06T11:18:33Z Lucas Ansei,,, <lucas@lucas-G750JX> # Adding the 'invite_token' to the 'organization' table
 0157-remove-status_id [0156-add-invite-token] 2019-03-26T13:52:37Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Removing the 'status_id' column from the 'poll' table
 0158-add-sub_module [0157-remove-status_id] 2019-03-28T16:45:23Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding 'sub_module' table and updating 'module' table
+0159-update-permissions [0158-add-sub_module] 2019-03-28T18:25:00Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Updating the profile permission
