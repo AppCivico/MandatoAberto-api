@@ -306,42 +306,31 @@ sub chatbots_for_get {
 sub weight_for_module {
     my ($self, %opts) = @_;
 
-    die 'missing sub_module_id' unless $opts{module_id};
+	die 'missing id'            unless $opts{module_id} || $opts{sub_module_id};
+	die 'must send only one id' if     $opts{module_id} && $opts{sub_module_id};
+
+    my ($rs, $id);
+    if ( $opts{module_id} ) {
+        $rs = $self->result_source->schema->resultset('Module');
+        $id = $opts{module_id};
+    }
+    else {
+		$rs = $self->result_source->schema->resultset('SubModule');
+        $id = $opts{sub_module_id};
+    }
 
     my ($config, $weight);
     if ($self->menu_config) {
         $config = from_json( $self->menu_config );
     }
 
-    my $module = $self->result_source->schema->resultset('Module')->find($opts{module_id});
+    my $module = $rs->find($id);
 
     if ( $config ) {
 
     }
     else {
         $weight = $module->standard_weight;
-    }
-
-    return $weight;
-}
-
-sub weight_for_submodule {
-    my ($self, %opts) = @_;
-
-    die 'missing sub_module_id' unless $opts{sub_module_id};
-
-    my ($config, $weight);
-    if ($self->menu_config) {
-        $config = from_json( $self->menu_config );
-    }
-
-    my $sub_module = $self->result_source->schema->resultset('SubModule')->find($opts{sub_module_id});
-
-    if ( $config ) {
-
-    }
-    else {
-        $weight = $sub_module->standard_weight;
     }
 
     return $weight;

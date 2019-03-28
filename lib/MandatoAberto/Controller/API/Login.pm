@@ -78,12 +78,12 @@ sub login_POST {
                                                 human_name   => $_->human_name,
                                                 url          => $_->url,
                                                 icon_class   => $_->icon_class,
-                                                weight       => $o->weight_for_submodule(sub_module_id => $_->id)
+                                                weight       => $o->weight_for_module(sub_module_id => $_->id)
                                             }
                                         } $m->sub_modules->all()
                                     ]
                                 }
-                            } $o->organization_modules
+                            } $o->organization_modules->search( undef, { prefetch => { 'module' => 'sub_modules' } } )->all()
                         ],
                         chatbots => [
                             map {
