@@ -162,3 +162,4 @@
 0158-add-sub_module [0157-remove-status_id] 2019-03-28T16:45:23Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding 'sub_module' table and updating 'module' table
 0159-update-permissions [0158-add-sub_module] 2019-03-28T18:25:00Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Updating the profile permission
 0160-update-sub_modules [0159-update-permissions] 2019-03-28T21:13:39Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Updating sub modules
+0161-update-icons_class [0160-update-sub_modules] 2019-03-28T21:26:01Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Updating icon class of 2 rows
