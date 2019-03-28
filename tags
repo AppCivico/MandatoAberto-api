@@ -156,6 +156,7 @@ MandatoAberto::Schema::Result::RecipientNetwork	./lib/MandatoAberto/Schema/Resul
 MandatoAberto::Schema::Result::Role	./lib/MandatoAberto/Schema/Result/Role.pm	/^package MandatoAberto::Schema::Result::Role;$/;"	p
 MandatoAberto::Schema::Result::State	./lib/MandatoAberto/Schema/Result/State.pm	/^package MandatoAberto::Schema::Result::State;$/;"	p
 MandatoAberto::Schema::Result::SubEntity	./lib/MandatoAberto/Schema/Result/SubEntity.pm	/^package MandatoAberto::Schema::Result::SubEntity;$/;"	p
+MandatoAberto::Schema::Result::SubModule	./lib/MandatoAberto/Schema/Result/SubModule.pm	/^package MandatoAberto::Schema::Result::SubModule;$/;"	p
 MandatoAberto::Schema::Result::User	./lib/MandatoAberto/Schema/Result/User.pm	/^package MandatoAberto::Schema::Result::User;$/;"	p
 MandatoAberto::Schema::Result::UserConfirmation	./lib/MandatoAberto/Schema/Result/UserConfirmation.pm	/^package MandatoAberto::Schema::Result::UserConfirmation;$/;"	p
 MandatoAberto::Schema::Result::UserForgotPassword	./lib/MandatoAberto/Schema/Result/UserForgotPassword.pm	/^package MandatoAberto::Schema::Result::UserForgotPassword;$/;"	p
@@ -930,5 +931,7 @@ verifiers_specs	./lib/MandatoAberto/Schema/ResultSet/UserForgotPassword.pm	/^sub
 verify	./lib/Data/Verifier.pm	/^sub verify {$/;"	s
 visit_hash	./lib/MandatoAberto/Data/Visitor.pm	/^sub visit_hash {$/;"	s
 wait_for_all_responses	./lib/WebService/HttpCallback/Async.pm	/^sub wait_for_all_responses {$/;"	s
+weight_for_module	./lib/MandatoAberto/Schema/Result/Organization.pm	/^sub weight_for_module {$/;"	s
+weight_for_submodule	./lib/MandatoAberto/Schema/Result/Organization.pm	/^sub weight_for_submodule {$/;"	s
 with_active_fb_page	./lib/MandatoAberto/Schema/ResultSet/Politician.pm	/^sub with_active_fb_page {$/;"	s
 with_active_fb_page	./lib/MandatoAberto/Schema/ResultSet/User.pm	/^sub with_active_fb_page {$/;"	s

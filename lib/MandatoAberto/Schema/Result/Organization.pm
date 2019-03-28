@@ -106,6 +106,11 @@ __PACKAGE__->table("organization");
   is_nullable: 0
   size: 16
 
+=head2 menu_config
+
+  data_type: 'json'
+  is_nullable: 1
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -146,6 +151,8 @@ __PACKAGE__->add_columns(
     is_nullable => 0,
     size => 16,
   },
+  "menu_config",
+  { data_type => "json", is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -208,13 +215,15 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-03-06 08:12:19
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:pbkQ7xPgNPv2UpmkFgFI4Q
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-03-28 10:22:15
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:yHo8OZ7F4EVoZTjrkZM6NA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
 with 'MandatoAberto::Role::Verification';
 with 'MandatoAberto::Role::Verification::TransactionalActions::DBIC';
+
+use JSON;
 
 sub verifiers_specs {
     my $self = shift;
@@ -292,6 +301,50 @@ sub chatbots_for_get {
             }
         } $self->organization_chatbots->all
     ]
+}
+
+sub weight_for_module {
+    my ($self, %opts) = @_;
+
+    die 'missing sub_module_id' unless $opts{module_id};
+
+    my ($config, $weight);
+    if ($self->menu_config) {
+        $config = from_json( $self->menu_config );
+    }
+
+    my $module = $self->result_source->schema->resultset('Module')->find($opts{module_id});
+
+    if ( $config ) {
+
+    }
+    else {
+        $weight = $module->standard_weight;
+    }
+
+    return $weight;
+}
+
+sub weight_for_submodule {
+    my ($self, %opts) = @_;
+
+    die 'missing sub_module_id' unless $opts{sub_module_id};
+
+    my ($config, $weight);
+    if ($self->menu_config) {
+        $config = from_json( $self->menu_config );
+    }
+
+    my $sub_module = $self->result_source->schema->resultset('SubModule')->find($opts{sub_module_id});
+
+    if ( $config ) {
+
+    }
+    else {
+        $weight = $sub_module->standard_weight;
+    }
+
+    return $weight;
 }
 
 __PACKAGE__->meta->make_immutable;

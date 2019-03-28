@@ -1,12 +1,12 @@
 use utf8;
-package MandatoAberto::Schema::Result::Module;
+package MandatoAberto::Schema::Result::SubModule;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
 
 =head1 NAME
 
-MandatoAberto::Schema::Result::Module
+MandatoAberto::Schema::Result::SubModule
 
 =cut
 
@@ -34,15 +34,26 @@ extends 'DBIx::Class::Core';
 
 __PACKAGE__->load_components("InflateColumn::DateTime", "TimeStamp", "PassphraseColumn");
 
-=head1 TABLE: C<module>
+=head1 TABLE: C<sub_module>
 
 =cut
 
-__PACKAGE__->table("module");
+__PACKAGE__->table("sub_module");
 
 =head1 ACCESSORS
 
 =head2 id
+
+  data_type: 'integer'
+  is_nullable: 0
+
+=head2 module_id
+
+  data_type: 'integer'
+  is_foreign_key: 1
+  is_nullable: 0
+
+=head2 standard_weight
 
   data_type: 'integer'
   is_nullable: 0
@@ -57,6 +68,21 @@ __PACKAGE__->table("module");
   data_type: 'text'
   is_nullable: 0
 
+=head2 url
+
+  data_type: 'text'
+  is_nullable: 0
+
+=head2 icon_class
+
+  data_type: 'text'
+  is_nullable: 0
+
+=head2 updated_at
+
+  data_type: 'timestamp'
+  is_nullable: 1
+
 =head2 created_at
 
   data_type: 'timestamp'
@@ -64,20 +90,25 @@ __PACKAGE__->table("module");
   is_nullable: 0
   original: {default_value => \"now()"}
 
-=head2 standard_weight
-
-  data_type: 'integer'
-  is_nullable: 1
-
 =cut
 
 __PACKAGE__->add_columns(
   "id",
   { data_type => "integer", is_nullable => 0 },
+  "module_id",
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
+  "standard_weight",
+  { data_type => "integer", is_nullable => 0 },
   "name",
   { data_type => "text", is_nullable => 0 },
   "human_name",
   { data_type => "text", is_nullable => 0 },
+  "url",
+  { data_type => "text", is_nullable => 0 },
+  "icon_class",
+  { data_type => "text", is_nullable => 0 },
+  "updated_at",
+  { data_type => "timestamp", is_nullable => 1 },
   "created_at",
   {
     data_type     => "timestamp",
@@ -85,8 +116,6 @@ __PACKAGE__->add_columns(
     is_nullable   => 0,
     original      => { default_value => \"now()" },
   },
-  "standard_weight",
-  { data_type => "integer", is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -103,7 +132,24 @@ __PACKAGE__->set_primary_key("id");
 
 =head1 UNIQUE CONSTRAINTS
 
-=head2 C<module_name_key>
+=head2 C<sub_module_module_id_standard_weight_key>
+
+=over 4
+
+=item * L</module_id>
+
+=item * L</standard_weight>
+
+=back
+
+=cut
+
+__PACKAGE__->add_unique_constraint(
+  "sub_module_module_id_standard_weight_key",
+  ["module_id", "standard_weight"],
+);
+
+=head2 C<sub_module_name_key>
 
 =over 4
 
@@ -113,55 +159,28 @@ __PACKAGE__->set_primary_key("id");
 
 =cut
 
-__PACKAGE__->add_unique_constraint("module_name_key", ["name"]);
-
-=head2 C<module_standard_weight_key>
-
-=over 4
-
-=item * L</standard_weight>
-
-=back
-
-=cut
-
-__PACKAGE__->add_unique_constraint("module_standard_weight_key", ["standard_weight"]);
+__PACKAGE__->add_unique_constraint("sub_module_name_key", ["name"]);
 
 =head1 RELATIONS
 
-=head2 organization_modules
+=head2 module
 
-Type: has_many
+Type: belongs_to
 
-Related object: L<MandatoAberto::Schema::Result::OrganizationModule>
-
-=cut
-
-__PACKAGE__->has_many(
-  "organization_modules",
-  "MandatoAberto::Schema::Result::OrganizationModule",
-  { "foreign.module_id" => "self.id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
-
-=head2 sub_modules
-
-Type: has_many
-
-Related object: L<MandatoAberto::Schema::Result::SubModule>
+Related object: L<MandatoAberto::Schema::Result::Module>
 
 =cut
 
-__PACKAGE__->has_many(
-  "sub_modules",
-  "MandatoAberto::Schema::Result::SubModule",
-  { "foreign.module_id" => "self.id" },
-  { cascade_copy => 0, cascade_delete => 0 },
+__PACKAGE__->belongs_to(
+  "module",
+  "MandatoAberto::Schema::Result::Module",
+  { id => "module_id" },
+  { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
 );
 
 
 # Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-03-28 11:40:20
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:iVg5rybiGfKuuRj5A0fA8Q
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:6siCrySLpPoaQiLQUgf9Aw
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

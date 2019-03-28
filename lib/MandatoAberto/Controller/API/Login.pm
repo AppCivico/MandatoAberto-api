@@ -61,15 +61,27 @@ sub login_POST {
                         picture => $o->picture,
                         modules => [
                             map {
-                                my $m    = $_->module;
-                                my $name = $m->name;
+                                my $m = $_->module;
 
                                 my $p = $user->parse_permissions( name => $m->name );
 
                                 +{
                                     id          => $m->id,
-                                    name        => $name,
-                                    permissions => $p->{$name},
+                                    name        => $m->name,
+                                    human_name  => $m->human_name,
+                                    permissions => $p->{$m->name},
+                                    weight      => $o->weight_for_module(module_id => $m->id),
+                                    sub_modules => [
+                                        map {
+                                            +{
+                                                name         => $_->name,
+                                                human_name   => $_->human_name,
+                                                url          => $_->url,
+                                                icon_class   => $_->icon_class,
+                                                weight       => $o->weight_for_submodule(sub_module_id => $_->id)
+                                            }
+                                        } $m->sub_modules->all()
+                                    ]
                                 }
                             } $o->organization_modules
                         ],
