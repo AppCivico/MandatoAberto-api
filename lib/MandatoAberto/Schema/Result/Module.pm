@@ -64,6 +64,11 @@ __PACKAGE__->table("module");
   is_nullable: 0
   original: {default_value => \"now()"}
 
+=head2 standard_weight
+
+  data_type: 'integer'
+  is_nullable: 1
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -80,6 +85,8 @@ __PACKAGE__->add_columns(
     is_nullable   => 0,
     original      => { default_value => \"now()" },
   },
+  "standard_weight",
+  { data_type => "integer", is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -107,6 +114,18 @@ __PACKAGE__->set_primary_key("id");
 =cut
 
 __PACKAGE__->add_unique_constraint("module_name_key", ["name"]);
+
+=head2 C<module_standard_weight_key>
+
+=over 4
+
+=item * L</standard_weight>
+
+=back
+
+=cut
+
+__PACKAGE__->add_unique_constraint("module_standard_weight_key", ["standard_weight"]);
 
 =head1 RELATIONS
 
@@ -141,8 +160,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-03-27 17:12:08
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:nUwg4or4jaq+5i7ieR73aw
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-03-28 11:40:20
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:iVg5rybiGfKuuRj5A0fA8Q
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

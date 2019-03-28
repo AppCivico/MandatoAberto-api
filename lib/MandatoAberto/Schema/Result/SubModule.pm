@@ -53,6 +53,11 @@ __PACKAGE__->table("sub_module");
   is_foreign_key: 1
   is_nullable: 0
 
+=head2 standard_weight
+
+  data_type: 'integer'
+  is_nullable: 0
+
 =head2 name
 
   data_type: 'text'
@@ -92,6 +97,8 @@ __PACKAGE__->add_columns(
   { data_type => "integer", is_nullable => 0 },
   "module_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
+  "standard_weight",
+  { data_type => "integer", is_nullable => 0 },
   "name",
   { data_type => "text", is_nullable => 0 },
   "human_name",
@@ -125,6 +132,23 @@ __PACKAGE__->set_primary_key("id");
 
 =head1 UNIQUE CONSTRAINTS
 
+=head2 C<sub_module_module_id_standard_weight_key>
+
+=over 4
+
+=item * L</module_id>
+
+=item * L</standard_weight>
+
+=back
+
+=cut
+
+__PACKAGE__->add_unique_constraint(
+  "sub_module_module_id_standard_weight_key",
+  ["module_id", "standard_weight"],
+);
+
 =head2 C<sub_module_name_key>
 
 =over 4
@@ -155,8 +179,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-03-27 17:12:08
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:S2TbhotmFxdG/kVYCgzQqg
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-03-28 11:40:20
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:6siCrySLpPoaQiLQUgf9Aw
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
