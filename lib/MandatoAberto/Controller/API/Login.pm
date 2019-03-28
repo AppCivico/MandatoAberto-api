@@ -83,7 +83,7 @@ sub login_POST {
                                         } $m->sub_modules->all()
                                     ]
                                 }
-                            } $o->organization_modules->search( undef, { prefetch => { 'module' => 'sub_modules' } } )->all()
+                            } $o->organization_modules->search( undef, { join => { 'module' => 'sub_modules' } } )->all()
                         ],
                         chatbots => [
                             map {
