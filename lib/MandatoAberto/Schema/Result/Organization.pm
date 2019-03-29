@@ -1,3 +1,4 @@
+
 use utf8;
 package MandatoAberto::Schema::Result::Organization;
 
@@ -306,8 +307,8 @@ sub chatbots_for_get {
 sub weight_for_module {
     my ($self, %opts) = @_;
 
-	die 'missing id'            unless $opts{module_id} || $opts{sub_module_id};
-	die 'must send only one id' if     $opts{module_id} && $opts{sub_module_id};
+    die 'missing id'            unless $opts{module_id} || $opts{sub_module_id};
+    die 'must send only one id' if     $opts{module_id} && $opts{sub_module_id};
 
     my ($rs, $id);
     if ( $opts{module_id} ) {
@@ -315,7 +316,7 @@ sub weight_for_module {
         $id = $opts{module_id};
     }
     else {
-		$rs = $self->result_source->schema->resultset('SubModule');
+        $rs = $self->result_source->schema->resultset('SubModule');
         $id = $opts{sub_module_id};
     }
 

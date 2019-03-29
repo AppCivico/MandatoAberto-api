@@ -165,5 +165,12 @@ __PACKAGE__->has_many(
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
+
+sub has_sub_modules {
+    my ($self) = @_;
+
+    return $self->sub_modules->search()->next ? 1 : 0;
+}
+
 __PACKAGE__->meta->make_immutable;
 1;
