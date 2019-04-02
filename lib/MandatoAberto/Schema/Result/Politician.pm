@@ -964,7 +964,7 @@ sub build_notification_bar {
             count    => undef,
             message  => $response_time,
             icon     => '/assets/images/issue_response_time.svg',
-            link     => '/mensagens'
+            link     => '/mensagens/caixa-de-entrada'
         },
         {
             name     => 'issue',
@@ -973,7 +973,7 @@ sub build_notification_bar {
             count    => $unread_count,
             message  => undef,
             icon     => '/assets/images/issue.svg',
-            link     => '/mensagens'
+            link     => '/mensagens/caixa-de-entrada'
         }
     ];
 }
