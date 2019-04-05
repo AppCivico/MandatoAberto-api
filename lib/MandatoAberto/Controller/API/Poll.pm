@@ -9,7 +9,6 @@ BEGIN { extends "CatalystX::Eta::Controller::REST" }
 with "CatalystX::Eta::Controller::AutoBase";
 with "CatalystX::Eta::Controller::AutoListGET";
 with "CatalystX::Eta::Controller::AutoResultPUT";
-with "CatalystX::Eta::Controller::AutoResultGET";
 
 __PACKAGE__->config(
     # AutoBase.
@@ -115,7 +114,41 @@ sub result : Chained('object') : PathPart('') : Args(0) : ActionClass('REST') { 
 
 sub result_PUT { }
 
-sub result_GET { }
+sub result_GET {
+    my ($self, $c) = @_;
+
+    return $self->status_ok(
+        $c,
+        entity => {
+            id        => $c->stash->{poll}->id,
+            name      => $c->stash->{poll}->name,
+            questions => [
+                map {
+                    my $pq = $_;
+
+                    +{
+                        id      => $pq->get_column('id'),
+                        content => $pq->get_column('content'),
+
+                        options => [
+                            map {
+                                my $qo = $_;
+
+                                +{
+                                    id      => $qo->get_column('id'),
+                                    content => $qo->get_column('content'),
+                                    count   => $qo->poll_results->search( { origin => 'propagate' } )->count,
+                                  }
+                            } $pq->poll_question_options->all()
+                        ]
+                    }
+
+                } $c->stash->{poll}->poll_questions->all()
+            ]
+
+        }
+    );
+}
 
 __PACKAGE__->meta->make_immutable;
 
