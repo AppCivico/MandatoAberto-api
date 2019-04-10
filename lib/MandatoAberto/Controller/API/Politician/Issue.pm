@@ -32,11 +32,6 @@ __PACKAGE__->config(
     prepare_params_for_update => sub {
         my ($self, $c, $params) = @_;
 
-        my $ignore_flag = $c->req->params->{ignore} || 0;
-        $params->{ignore} = $ignore_flag;
-
-        $params->{open} = 0;
-
         if ($c->req->params->{groups}) {
             $c->req->params->{groups} =~ s/(\[|\]|(\s))//g;
 
@@ -98,38 +93,32 @@ sub list_GET {
 
     my $politician_id = $c->stash->{politician}->id;
 
-    my $filter = $c->req->params->{filter};
-    die \['filter', 'missing'] unless $filter;
-    die \['filter', 'invalid'] unless $filter =~ m/^(open|closed|ignored)$/;
+    my $filter = $c->req->params->{filter} || 'all';
+    die \['filter', 'invalid'] unless $filter =~ m/^(all|deleted|replied)$/;
 
     $c->stash->{collection} = $c->stash->{politician}->user->organization_chatbot->issues;
 
     my $page_id = $c->stash->{politician}->user->organization_chatbot->fb_config->page_id;
 
     my $cond;
-    if ( $filter eq 'open' ) {
+    if ( $filter eq 'all' ) {
         $cond = {
-            open                => 1,
             'me.message'        => { '!=' => 'Participar' },
             deleted             => 0,
             'recipient.page_id' => $page_id
         }
     }
-    elsif ( $filter eq 'ignored' ) {
-        $cond = {
-            open                => 0,
-            reply               => \'IS NULL',
+    elsif ( $filter eq 'replied' ) {
+        $cond =  {
             'me.message'        => { '!=' => 'Participar' },
-            deleted             => 0,
+            reply               => \'IS NOT NULL',
             'recipient.page_id' => $page_id
         }
     }
     else {
         $cond = {
-            open                => 0,
-            reply               => \'IS NOT NULL',
             'me.message'        => { '!=' => 'Participar' },
-            deleted             => 0,
+            deleted             => 1,
             'recipient.page_id' => $page_id
         }
     }
@@ -146,31 +135,12 @@ sub list_GET {
                 map {
                     my $i = $_;
 
-                    my $reply = $i->reply;
-                    my $open  = $i->open;
-
-                    my ( $ignored_flag, $replied_flag );
-                    if ( !$open && !$reply ) {
-                        $ignored_flag = 1;
-                        $replied_flag = 0;
-                    }
-                    elsif ( !$open && $reply ) {
-                        $ignored_flag = 0;
-                        $replied_flag = 1;
-                    }
-                    else {
-                        $ignored_flag = 0;
-                        $replied_flag = 0;
-                    }
-
                     {
                         id           => $i->get_column('id'),
                         reply        => $i->get_column('reply'),
-                        open         => $i->get_column('open'),
                         read         => $i->get_column('read'),
-                        ignored      => $ignored_flag,
-                        replied      => $replied_flag,
                         message      => $i->get_column('message'),
+                        deleted      => $i->get_column('deleted'),
                         created_at   => $i->created_at->set_time_zone( 'America/Sao_Paulo' ),
                         recipient    => {
                             id              => $i->get_column('recipient_id'),
@@ -223,34 +193,14 @@ sub result_GET {
     my $issue     = $c->stash->{issue};
     my $recipient = $c->stash->{issue}->recipient;
 
-    my $reply = $issue->reply;
-    my $open  = $issue->open;
-
-    my ( $ignored_flag, $replied_flag );
-    if ( !$open && !$reply ) {
-        $ignored_flag = 1;
-        $replied_flag = 0;
-    }
-    elsif ( !$open && $reply ) {
-        $ignored_flag = 0;
-        $replied_flag = 1;
-    }
-    else {
-        $ignored_flag = 0;
-        $replied_flag = 0;
-    }
-
     return $self->status_ok(
         $c,
         entity => {
             id         => $issue->id,
             reply      => $issue->reply,
-            open       => $issue->open,
             read       => $issue->read,
             message    => $issue->message,
             created_at => $issue->created_at,
-            ignored    => $ignored_flag,
-            replied    => $replied_flag,
             recipient  => {
                 id              => $recipient->id,
                 name            => $recipient->name,
@@ -278,36 +228,6 @@ sub result_GET {
             ]
         }
     );
-}
-
-sub batch_ignore : Chained('base') : PathPart('batch-ignore') : Args(0) : ActionClass('REST') { }
-
-sub batch_ignore_PUT {
-    my ($self, $c) = @_;
-
-    $c->stash->{collection} = $c->stash->{collection}->search( { organization_chatbot_id => $c->stash->{politician}->user->organization_chatbot_id } );
-
-    my $ids = $c->req->params->{ids};
-    die \['ids', 'missing'] unless $ids;
-
-    $ids =~ s/(\[|\]|(\s))//g;
-    my @ids = split(',', $ids);
-
-    $c->stash->{collection}->execute(
-        $c,
-        for  => 'batch_ignore',
-        with => {
-            politician_id => $c->stash->{politician}->id,
-            ids           => \@ids
-        }
-    );
-
-    return $self->status_ok(
-        $c,
-        entity => {
-            sucess => 1
-        }
-    )
 }
 
 sub batch_delete : Chained('base') : PathPart('batch-delete') : Args(0) : ActionClass('REST') { }

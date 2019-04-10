@@ -101,7 +101,7 @@ db_transaction {
         name  => "get issues",
         list  => 1,
         stash => "get_issues",
-        [ filter => 'open' ]
+        [ filter => 'all' ]
     ;
 
     stash_test "get_issues" => sub {
@@ -110,57 +110,9 @@ db_transaction {
         ok( defined $res->{itens_count}, 'itens_count is defined' );
 
         is ($res->{issues}->[0]->{message}, $message, 'issue message');
-        is ($res->{issues}->[0]->{open},  1, 'issue status');
         is ($res->{issues}->[0]->{reply}, undef, 'issue reply');
         is ($res->{issues}->[0]->{updated_at}, undef, 'issue updated timestamp');
-        is ($res->{issues}->[0]->{ignored}, 0, 'issue is not ignored');
-        is ($res->{issues}->[0]->{replied}, 0, 'issue is not replied');
         is ($res->{issues}->[0]->{read}, 1, 'issue was read');
-    };
-
-    rest_put "/api/politician/$politician_id/issue/$first_issue_id",
-        name    => "updating issue with reply with more than 2000 chars",
-        is_fail => 1,
-        code    => 400,
-        [ reply => fake_paragraphs(100)->() ]
-    ;
-
-    rest_put "/api/politician/$politician_id/issue/$first_issue_id",
-        name    => "ignoring issue without flag",
-        is_fail => 1,
-        code    => 400,
-    ;
-
-    rest_put "/api/politician/$politician_id/issue/$first_issue_id",
-        name    => "updating issue (ignoring) with reply",
-        is_fail => 1,
-        code    => 400,
-        [
-            ignore => 1,
-            reply  => 'foobar'
-        ]
-    ;
-
-    rest_put "/api/politician/$politician_id/issue/$first_issue_id",
-        name => "updating issue without reply",
-        [ ignore => 1 ]
-    ;
-
-    rest_put "/api/politician/$politician_id/issue/$first_issue_id",
-        name    => "updating issue alredy closed",
-        is_fail => 1,
-        code    => 400
-    ;
-
-    rest_get "/api/politician/$politician_id/issue/$first_issue_id",
-        name  => "get only one issue",
-        stash => 'r1'
-    ;
-
-    stash_test 'r1' => sub {
-        my $res = shift;
-
-        is ( $res->{ignored}, 1, 'issue was ignored' );
     };
 
     # Testando issue com conteúdo "Participar"
@@ -175,13 +127,6 @@ db_transaction {
             security_token => $security_token
         ]
     ;
-
-    rest_reload_list 'get_issues';
-    stash_test 'get_issues.list' => sub {
-        my $res = shift;
-
-        is ( scalar @{ $res->{issues} }, 0, 'no open issues' );
-    };
 
     rest_post "/api/chatbot/issue",
         name                => "issue creation",
@@ -223,44 +168,10 @@ db_transaction {
     my $second_issue_id = stash "i2.id";
     my $second_issue    = $issue_rs->find($second_issue_id);
 
-    # Testando batch ignore de issues
-    db_transaction{
-        $first_issue->update( { reply => undef, open => 1 } );
-        $second_issue->update( { reply => undef, open => 1 } );
-
-        $first_issue  = $first_issue->discard_changes;
-        $second_issue = $second_issue->discard_changes;
-
-        rest_put "/api/politician/$politician_id/issue/batch-ignore",
-            name    => 'batch ignore without ids',
-            is_fail => 1,
-            code    => 400
-        ;
-
-        rest_put "/api/politician/$politician_id/issue/batch-ignore",
-            name => 'batch ignore',
-            code => 200,
-            [ ids => "$first_issue_id, $second_issue_id" ]
-        ;
-
-        rest_get "/api/politician/$politician_id/issue",
-            name  => 'get ignored issues',
-            stash => 'get_ignored_issues',
-            list  => 1,
-            [ filter => 'ignored' ]
-        ;
-
-        stash_test 'get_ignored_issues' => sub {
-            my $res = shift;
-
-            is( scalar @{ $res->{issues} }, 2, '2 ignored issues' );
-        }
-    };
-
     # Testando batch delete de issues
     db_transaction{
-        $first_issue->update( { reply => undef, open => 1 } );
-        $second_issue->update( { reply => undef, open => 1 } );
+        $first_issue->update( { reply => undef } );
+        $second_issue->update( { reply => undef } );
 
         $first_issue  = $first_issue->discard_changes;
         $second_issue = $second_issue->discard_changes;
@@ -279,12 +190,12 @@ db_transaction {
           name  => 'get deleted issues',
           stash => 'get_deleted_issues',
           list  => 1,
-          [ filter => 'open' ];
+          [ filter => 'deleted' ];
 
         stash_test 'get_deleted_issues' => sub {
             my $res = shift;
 
-            is( scalar @{ $res->{issues} }, 0, '0 issues' );
+            is( scalar @{ $res->{issues} }, 2, '2 issues' );
           }
     };
 
