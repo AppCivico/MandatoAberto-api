@@ -47,9 +47,10 @@ sub get {
     my $results = $c->req->params->to_hash->{results} || 20;
     $results    = $results <= 20 ? $results : 20;
 
-    $c->stash->{collection} = $c->schema->resultset('Group')->search( { politician_id => $c->stash->{politician}->id }, { page => $page, rows => $results } );
-
+    $c->stash->{collection} = $c->schema->resultset('Group')->search( { politician_id => $c->stash->{politician}->id, deleted => 'false' } );
     my $total = $c->stash->{collection}->count;
+
+    $c->stash->{collection} = $c->schema->resultset('Group')->search( undef, { page => $page, rows => $results } );
 
     my @rows;
     while ( my $r = $c->stash->{collection}->next() ) {
