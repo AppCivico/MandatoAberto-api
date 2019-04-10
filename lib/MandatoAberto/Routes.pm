@@ -80,7 +80,12 @@ sub register {
 
     # Politician::Groups.
     my $politician_groups = $politician_result->route('/group');
-    $politician_groups->post()->to('politician-groups#post');
+    my $politician_group  = $politician_groups->route('/:group_id')->under->to('politician-groups#stasher');
+	$politician_groups->post()->to('politician-groups#post');
+	$politician_groups->get()->to('politician-groups#get');
+	$politician_group->put()->to('politician-groups#put');
+	$politician_group->get()->to('politician-groups#get_result');
+	$politician_group->delete()->to('politician-groups#delete');
 
     # Politician::Groups::Count.
     $politician_groups->post('/count')->to('politician-groups-count#post');

@@ -1,6 +1,27 @@
 package MandatoAberto::Controller::Politician::Groups;
 use Mojo::Base 'MandatoAberto::Controller';
 
+sub stasher {
+    my $c = shift;
+
+    my $group_id = $c->param('group_id');
+
+    my $group = $c->schema->resultset('Group')->search( { 'me.id' => $group_id, 'me.deleted' => 'false' } )->next;
+
+    if (!ref $group) {
+        $c->reply_not_found;
+        $c->detach();
+    }
+
+    $c->stash(group => $group);
+
+    if ($group->politician_id != $c->current_user->id) {
+        $c->reply_forbidden();
+        $c->detach;
+    }
+    return $c;
+}
+
 sub post {
     my $c = shift;
 
@@ -19,142 +40,16 @@ sub post {
     );
 }
 
-1;
+sub get {
+    my $c = shift;
 
-__END__
-use common::sense;
-use Moose;
-use namespace::autoclean;
-
-BEGIN { extends 'CatalystX::Eta::Controller::REST' }
-
-with 'CatalystX::Eta::Controller::AutoObject';
-with 'CatalystX::Eta::Controller::AutoListPOST';
-with 'CatalystX::Eta::Controller::AutoResultPUT';
-
-__PACKAGE__->config(
-    result      => 'DB::Group',
-
-    object_verify_type => 'int',
-    object_key         => 'group',
-
-    data_from_body => 1,
-    prepare_params_for_create => sub {
-        my ($self, $c, $params) = @_;
-
-        $params->{politician_id} = $c->user->id;
-
-        return $params;
-    },
-);
-
-sub root : Chained('/api/politician/object') : PathPart('') : CaptureArgs(0) { }
-
-sub base : Chained('root') : PathPart('group') : CaptureArgs(0) {
-    my ($self, $c) = @_;
-
-    $c->stash->{collection} = $c->model('DB::Group')->search(
-        {
-            'me.politician_id' => $c->user->id,
-            'me.deleted'       => 'false',
-        }
-    );
-}
-
-sub object : Chained('base') : PathPart('') : CaptureArgs(1) { }
-
-sub result : Chained('object') : PathPart('') : Args(0) : ActionClass('REST') { }
-
-sub result_GET {
-    my ($self, $c) = @_;
-
-    my $page    = $c->req->params->{page}    || 1;
-    my $results = $c->req->params->{results} || 20;
+    my $page    = $c->req->params->to_hash->{page}    || 1;
+    my $results = $c->req->params->to_hash->{results} || 20;
     $results    = $results <= 20 ? $results : 20;
 
-    my $group = $c->stash->{group};
-
-    my $recipients_rs = $group->politician->recipients->search(
-        {},
-        {
-            # page => $page,
-            # rows => $results,
-        },
-    );
-
-    # Por agora a API irá retornar regras com null
-    # Ao invés de não enviar o objeto de regra
-    my $filter     = $group->filter;
-    my $first_rule = $filter->{rules}->[0];
-    if ( $first_rule->{name} eq 'EMPTY' ) {
-        $filter->{rules}->[0] = {
-            name => 'EMPTY',
-            data => {
-                field => undef,
-                value => undef
-            }
-        }
-    }
-
-    return $self->status_ok(
-        $c,
-        entity => {
-            id               => $group->id,
-            filter           => $filter,
-            name             => $group->get_column('name'),
-            status           => $group->get_column('status'),
-            updated_at       => $group->get_column('updated_at'),
-            created_at       => $group->get_column('created_at'),
-            politician_id    => $group->get_column('politician_id'),
-            recipients_count => $group->get_column('recipients_count'),
-
-            recipients => [
-                map {
-                    my $r = $_;
-                    +{
-                        id         => $r->id,
-                        name       => $r->get_column('name'),
-                        email      => $r->get_column('email'),
-                        gender     => $r->get_column('gender'),
-                        picture    => $r->get_column('picture'),
-                        cellphone  => $r->get_column('cellphone'),
-                        created_at => $r->get_column('created_at'),
-                    }
-                } $recipients_rs->search_by_group_ids($group->id)->all()
-            ]
-        },
-    );
-}
-
-sub result_PUT { }
-
-sub result_DELETE {
-    my ($self, $c) = @_;
-
-    $c->stash->{group}->update(
-        {
-            deleted    => 'true',
-            deleted_at => \'NOW()',
-        }
-    );
-
-    return $self->status_no_content($c);
-}
-
-sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }
-
-sub list_GET {
-    my ($self, $c) = @_;
-
-    my $page    = $c->req->params->{page}    || 1;
-    my $results = $c->req->params->{results} || 20;
-    $results    = $results <= 20 ? $results : 20;
+    $c->stash->{collection} = $c->schema->resultset('Group')->search( { politician_id => $c->stash->{politician}->id }, { page => $page, rows => $results } );
 
     my $total = $c->stash->{collection}->count;
-
-    $c->stash->{collection} = $c->stash->{collection}->search( {}, { page => $page, rows => $results } );
-
-    my $func = $self->config->{build_list_row} || $self->config->{build_row};
 
     my @rows;
     while ( my $r = $c->stash->{collection}->next() ) {
@@ -170,90 +65,86 @@ sub list_GET {
         };
     }
 
-    return $self->status_ok(
-        $c,
-        entity => {
+    return $c->render(
+        status => 200,
+        json  => {
             total  => $total,
             groups => \@rows,
         }
     );
 }
 
-sub list_POST { }
+sub put {
+    my $c = shift;
 
-sub count : Chained('base') : PathPart('count') : Args(0) : ActionClass('REST') { }
-
-sub count_POST {
-    my ($self, $c) = @_;
-
-    my $filter = $c->req->data->{filter};
-
-    return $self->status_ok(
+    $c->stash->{group}->execute(
         $c,
-        entity => {
-            count => $c->stash->{politician}->recipients->search_by_filter($filter)->count,
-        },
+        for  => 'update',
+        with => $c->req->json
+    );
+
+    return $c->render(
+        status => 202,
+        json   => {
+            id => $c->stash->{group}->id
+        }
     );
 }
 
-sub structure : Chained('base') : PathPart('structure') : Args(0) : ActionClass('REST') { }
+sub get_result {
+	my $c = shift;
 
-sub structure_GET {
-    my ($self, $c) = @_;
+    my $group         = $c->stash->{group};
+	my $recipients_rs = $group->politician->recipients;
 
-    # my $filter = $c->req->params->{filter} || 'poll';
-    # die \['filter', 'invalid'] unless $filter =~ m/^(poll|gender|intent)$/;
+	return $c->render(
+		status => 200,
+		json   => {
+			id               => $group->id,
+            filter           => $group->filter,
+            name             => $group->name,
+            status           => $group->status,
+            updated_at       => $group->updated_at,
+            created_at       => $group->created_at,
+            politician_id    => $group->politician_id,
+            recipients_count => $group->recipients_count,
 
-    return $self->status_ok(
-        $c,
-        entity => {
-            valid_operators => [ qw/ AND OR / ],
-
-            valid_rules => [
-                poll => [
-                    {
-                        name      => 'QUESTION_ANSWER_EQUALS',
-                        has_value => 1,
-                    },
-                    {
-                        name      => 'QUESTION_ANSWER_NOT_EQUALS',
-                        has_value => 1,
-                    },
-                    {
-                        name      => 'QUESTION_IS_NOT_ANSWERED',
-                        has_value => 0,
-                    },
-                    {
-                        name      => 'QUESTION_IS_ANSWERED',
-                        has_value => 0,
-                    },
-                ],
-                gender => [
-                    {
-                        name      => 'GENDER_IS',
-                        has_value => 1
-                    },
-                    {
-                        name      => 'GENDER_IS_NOT',
-                        has_value => 1
-                    },
-                ],
-                intent => [
-					{
-						name      => 'INTENT_IS',
-						has_value => 1
-					},
-					{
-					    name      => 'INTENT_IS_NOT',
-					    has_value => 1
-					},
-                ]
-            ],
-        },
-    );
+            recipients => [
+                map {
+                    my $r = $_;
+                    +{
+                        id         => $r->id,
+                        name       => $r->get_column('name'),
+                        email      => $r->get_column('email'),
+                        gender     => $r->get_column('gender'),
+                        picture    => $r->get_column('picture'),
+                        cellphone  => $r->get_column('cellphone'),
+                        created_at => $r->get_column('created_at'),
+                    }
+                } $recipients_rs->search_by_group_ids($group->id)->all()
+            ]
+		}
+	);
 }
 
-__PACKAGE__->meta->make_immutable;
+sub delete {
+    my $c = shift;
+
+	$c->stash->{group}->update(
+		{
+			deleted    => 'true',
+			deleted_at => \'NOW()',
+		}
+	);
+
+    return $c->render(
+        status => 204,
+        json   => {}
+    );
+}
 
 1;
+
+__END__
+
 

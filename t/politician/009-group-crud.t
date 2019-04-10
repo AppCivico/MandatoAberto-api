@@ -172,18 +172,19 @@ db_transaction {
 
     subtest 'validate operators' => sub {
 
-        rest_post "/api/politician/$politician_id/group",
-            name    => 'add group',
-            is_fail => 1,
-            headers => [ 'Content-Type' => 'application/json' ],
-            data    => encode_json({
+        $t->post_ok(
+            "/api/politician/$politician_id/group",
+            json => {
                 name     => 'AppCivico',
                 filter   => {
                     operator => 'NOT_EXISTS',
                     rules    => [],
                 },
-            }),
-        ;
+            }
+        )
+        ->status_is(400)
+        ->json_is('/error',             'form_error')
+        ->json_is('/form_error/filter', 'invalid');
 
         my $rules = [
             {
@@ -195,38 +196,39 @@ db_transaction {
             },
         ];
 
-        rest_post "/api/politician/$politician_id/group",
-            name    => 'add group',
-            headers => [ 'Content-Type' => 'application/json' ],
-            data    => encode_json({
+        $t->post_ok(
+            "/api/politician/$politician_id/group",
+            json => {
                 name     => 'AppCivico',
                 filter   => {
                     operator => 'AND',
                     rules => $rules,
                 },
-            }),
-        ;
+            }
+        )
+        ->status_is(201)
+        ->json_has('/id');
 
-        rest_post "/api/politician/$politician_id/group",
-            name    => 'add group',
-            headers => [ 'Content-Type' => 'application/json' ],
-            data    => encode_json({
+        $t->post_ok(
+            "/api/politician/$politician_id/group",
+            json => {
                 name     => 'AppCivico',
                 filter   => {
                     operator => 'OR',
-                    rules    => $rules,
+                    rules => $rules,
                 },
-            }),
-        ;
+            }
+        )
+        ->status_is(201)
+        ->json_has('/id');
     };
 
     subtest 'validate rules' => sub {
 
-        rest_post "/api/politician/$politician_id/group",
-            name    => 'add group with invalid filter',
-            is_fail => 1,
-            headers => [ 'Content-Type' => 'application/json' ],
-            data    => encode_json({
+        # add group with invalid filter
+        $t->post_ok(
+            "/api/politician/$politician_id/group",
+            json => {
                 name     => 'AppCivico',
                 filter   => {
                     operator => 'AND',
@@ -240,13 +242,15 @@ db_transaction {
                         },
                     ],
                 },
-            }),
-        ;
+            }
+        )
+        ->status_is(400)
+        ->json_is('/error',             'form_error')
+        ->json_is('/form_error/filter', 'invalid');
 
-        rest_post "/api/politician/$politician_id/group",
-            name    => 'add group',
-            headers => [ 'Content-Type' => 'application/json' ],
-            data    => encode_json({
+         $t->post_ok(
+            "/api/politician/$politician_id/group",
+            json => {
                 name     => 'AppCivico',
                 filter   => {
                     operator => 'AND',
@@ -260,17 +264,19 @@ db_transaction {
                         },
                     ],
                 },
-            }),
-        ;
+            }
+        )
+        ->status_is(201)
+        ->json_has('/id');
+
     };
 
     subtest 'validate data keys' => sub {
 
-        rest_post "/api/politician/$politician_id/group",
-            name    => 'add group with invalid data key',
-            is_fail => 1,
-            headers => [ 'Content-Type' => 'application/json' ],
-            data    => encode_json({
+        # add group with invalid data key
+        $t->post_ok(
+            "/api/politician/$politician_id/group",
+            json => {
                 name     => 'AppCivico',
                 filter   => {
                     operator => 'OR',
@@ -284,53 +290,62 @@ db_transaction {
                         },
                     ],
                 },
-            }),
-        ;
+            }
+        )
+        ->status_is(400)
+        ->json_is('/error',             'form_error')
+        ->json_is('/form_error/filter', 'invalid');
+
     };
 
     subtest 'empty rules is not allowed' => sub {
 
-        rest_post "/api/politician/$politician_id/group",
-            name    => 'add group',
-            is_fail => 1,
-            headers => [ 'Content-Type' => 'application/json' ],
-            data    => encode_json({
+        $t->post_ok(
+            "/api/politician/$politician_id/group",
+            json => {
                 name     => 'AppCivico',
                 filter   => {
-                    operator => 'AND',
+                    operator => 'OR',
                     rules    => [],
                 },
-            }),
-        ;
+            }
+        )
+        ->status_is(400)
+        ->json_is('/error',             'form_error')
+        ->json_is('/form_error/filter', 'invalid');
+
     };
 
     db_transaction {
         # grupo sem filtro é permitido
-        rest_post "/api/politician/$politician_id/group",
-            name    => 'add group',
-            headers => [ 'Content-Type' => 'application/json' ],
-            stash   => 'group',
-            data    => encode_json({
+
+        $t->post_ok(
+            "/api/politician/$politician_id/group",
+            json => {
                 name     => 'AppCivico',
                 filter   => {},
-            }),
-        ;
+            }
+        )
+        ->status_is(201)
+        ->json_has('/id');
 
     };
 
+    my $res;
     subtest 'list created groups' => sub {
 
-        rest_get "/api/politician/$politician_id/group", name => 'list groups', stash => 'groups';
+        $t->get_ok(
+            "/api/politician/$politician_id/group"
+        )
+        ->status_is(200);
 
-        stash_test 'groups' => sub {
-            my $res = shift;
+        $res = $t->tx->res->json;
 
-            for my $group (@{ $res->{groups} }) {
-                is( $group->{name}, 'AppCivico', 'name=AppCivico' );
-                is( ref($group->{filter}),          'HASH',  'filters=HASH' );
-                is( ref($group->{filter}->{rules}), 'ARRAY', 'rules=HASH' );
-            }
-        };
+        for my $group (@{ $res->{groups} }) {
+            is( $group->{name}, 'AppCivico', 'name=AppCivico' );
+            is( ref($group->{filter}),          'HASH',  'filters=HASH' );
+            is( ref($group->{filter}->{rules}), 'ARRAY', 'rules=HASH' );
+        }
     };
 
     use_ok 'MandatoAberto::Worker::Segmenter';
@@ -339,7 +354,7 @@ db_transaction {
     my $group_id;
     subtest 'edit group' => sub {
 
-        $group_id = (stash 'groups')->{groups}->[0]->{id};
+        $group_id = $res->{groups}->[0]->{id};
 
         ok(
             $schema->resultset('Group')->search( { id => { '!=', $group_id } } )->delete,
@@ -347,10 +362,9 @@ db_transaction {
         );
         ok( $worker->run_once(), 'run once' );
 
-        rest_put "/api/politician/$politician_id/group/$group_id",
-            name    => 'edit group',
-            headers => [ 'Content-Type' => 'application/json' ],
-            data    => encode_json({
+        $t->put_ok(
+            "/api/politician/$politician_id/group/$group_id",
+            json => {
                 name     => 'Edited',
                 filter   => {
                     operator => 'AND',
@@ -363,16 +377,17 @@ db_transaction {
                         },
                     ],
                 },
-            }),
-        ;
+            }
+        )
+        ->status_is(202)
+        ->json_has('/id');
 
         ok( $worker->run_once(), 'run once' );
 
-        rest_get "/api/politician/$politician_id/group/$group_id", name => 'get group', stash => 'group';
+        $t->get_ok("/api/politician/$politician_id/group/$group_id")->status_is(200);
+        $res = $t->tx->res->json;
 
-        stash_test 'group' => sub {
-            my $res = shift;
-
+        subtest 'test get' => sub {
             is(   ref($res->{filter}),          'HASH',  'filter=hashref' );
             is(   ref($res->{filter}->{rules}), 'ARRAY', 'rules=arrayref' );
             isnt( $res->{updated_at},           undef,   'updated_at filled' );
@@ -394,10 +409,9 @@ db_transaction {
 
     subtest 'edit locked group' => sub {
 
-        rest_put "/api/politician/$politician_id/group/$group_id",
-            name    => 'edit group again',
-            headers => [ 'Content-Type' => 'application/json' ],
-            data    => encode_json({
+        $t->put_ok(
+            "/api/politician/$politician_id/group/$group_id",
+            json => {
                 name     => 'Edited',
                 filter   => {
                     operator => 'AND',
@@ -410,17 +424,15 @@ db_transaction {
                         },
                     ],
                 },
-            }),
-        ;
+            }
+        )
+        ->status_is(202);
 
         # Atualmente o estado desse grupo é 'processing'. Não devemos poder editá-lo novamente enquanto não
         # estiver 'ready'.
-        rest_put "/api/politician/$politician_id/group/$group_id",
-            name    => 'edit group again',
-            is_fail => 1,
-            code    => 400,
-            headers => [ 'Content-Type' => 'application/json' ],
-            data    => encode_json({
+		$t->put_ok(
+			"/api/politician/$politician_id/group/$group_id",
+			json => {
                 name     => 'Edited',
                 filter   => {
                     operator => 'AND',
@@ -433,28 +445,28 @@ db_transaction {
                         },
                     ],
                 },
-            }),
+			}
+		)
+        ->status_is(400)
         ;
     };
 
     subtest 'delete group' => sub {
 
-        rest_delete "/api/politician/$politician_id/group/$group_id", name => 'delete group';
-
-        rest_get "/api/politician/$politician_id/group/$group_id",
-            name    => 'get deleted group',
-            is_fail => 1,
-            code    => 404,
-        ;
+        $t->delete_ok( "/api/politician/$politician_id/group/$group_id" );
+        $t->get_ok(
+            "/api/politician/$politician_id/group/$group_id"
+        )
+        ->status_is(404);
     };
 
     subtest 'paginate groups' => sub {
 
         # Criando 25 grupos.
         for my $i ( 1 .. 25 ) {
-            rest_post "/api/politician/$politician_id/group",
-                headers => [ 'Content-Type' => 'application/json' ],
-                data    => encode_json({
+            $t->post_ok(
+                "/api/politician/$politician_id/group",
+                json => {
                     name     => "AppCivico $i",
                     filter   => {
                         operator => fake_pick(qw/ AND OR /)->(),
@@ -468,34 +480,29 @@ db_transaction {
                             },
                         ],
                     },
-                }),
-            ;
+                }
+            )
+            ->status_is(201)
+            ->json_has('/id');
         }
 
-        rest_get "/api/politician/$politician_id/group", name => 'list groups', stash => 'groups';
+        $t->get_ok("/api/politician/$politician_id/group")->status_is(200);
 
-        stash_test 'groups' => sub {
-            my $res = shift;
+        $res = $t->tx->res->json;
 
-            # O default é 20 itens sem parâmetros 'page' e 'results'.
-            is( scalar(@{ $res->{groups} }), 20, 'count=20' );
-        };
+        # O default é 20 itens sem parâmetros 'page' e 'results'.
+        is( scalar(@{ $res->{groups} }), 20, 'count=20' );
 
-        rest_get "/api/politician/$politician_id/group?results=3&page=2",
-            name  => 'list groups with pagination',
-            stash => 'groups_pagination'
-        ;
+		$t->get_ok("/api/politician/$politician_id/group?results=3&page=2")->status_is(200);
+		$res = $t->tx->res->json;
 
-        stash_test 'groups_pagination' => sub {
-            my $res = shift;
+        is( scalar(@{ $res->{groups} }), 3, 'count=3' );
+        is( $res->{total}, 25, 'total=25' );
+        is_deeply(
+            [ sort map { $_->{name} } @{ $res->{groups } } ],
+            [ 'AppCivico 4', 'AppCivico 5', 'AppCivico 6' ],
+        );
 
-            is( scalar(@{ $res->{groups} }), 3, 'count=3' );
-            is( $res->{total}, 25, 'total=25' );
-            is_deeply(
-                [ sort map { $_->{name} } @{ $res->{groups } } ],
-                [ 'AppCivico 4', 'AppCivico 5', 'AppCivico 6' ],
-            );
-        };
     };
 };
 
