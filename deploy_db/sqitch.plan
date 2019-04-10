@@ -166,3 +166,4 @@
 0162-update-icon_class [0161-update-icons_class] 2019-03-29T14:17:53Z Lucas Ansei,,, <lucas@lucas-G750JX> # updating the 'icon_class' of three rows
 0163-update-sub_module [0162-update-icon_class] 2019-04-02T14:05:56Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # updating a sub module url
 0164-update-sub_module-human_name [0163-update-sub_module] 2019-04-03T18:59:39Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # updating human name
+0165-remove-ignored [0164-update-sub_module-human_name] 2019-04-10T19:00:58Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Removing ignored bool from issues
