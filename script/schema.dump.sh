@@ -1,15 +1,9 @@
-#!/usr/bin/env bash
+#!/bin/bash -e
+GIT_DIR=$(git rev-parse --show-toplevel)
+CWD=$(pwd)
+source $GIT_DIR/envfile.sh
+cd $GIT_DIR
 
-if [ -d "script" ]; then
-  cd script;
-fi
+dbicdump -Ilib -o dump_directory=./lib -o use_moose=1 -o components='["InflateColumn::DateTime", "TimeStamp", "PassphraseColumn"]' -o overwrite_modifications=1 -o generate_pod=1 MandatoAberto::Schema "dbi:Pg:dbname=${POSTGRESQL_DBNAME};host=${POSTGRESQL_HOST}" $POSTGRESQL_USER $POSTGRESQL_PASSWORD
 
-source ../envfile.sh
-
-perl mandatoaberto_create.pl model DB DBIC::Schema MandatoAberto::Schema create=static components=TimeStamp,PassphraseColumn 'dbi:Pg:dbname=mandatoaberto_dev;host=localhost' postgres trustable quote_names=1 overwrite_modifications=1
-
-cd ..;
-
-rm -f lib/MandatoAberto/Model/DB.pm.new;
-rm -f t/model_DB.t;
-rm -f t/model_DB.t.new;
+cd $CWD

@@ -1,88 +1,51 @@
 package MandatoAberto;
-use Moose;
-use namespace::autoclean;
+use Mojo::Base 'Mojolicious';
 
-use Catalyst::Runtime 5.80;
+use MandatoAberto::Routes;
+use MandatoAberto::Authentication;
+use MandatoAberto::Authorization;
+use MandatoAberto::Controller;
+use MandatoAberto::SchemaConnected;
 
-use Catalyst qw/
-    -Debug
-    ConfigLoader
-    Static::Simple
-    Authentication
-    Authorization::Roles
-/;
-
-extends 'Catalyst';
-
-our $VERSION = '0.01';
-
-__PACKAGE__->config(
-    name     => 'MandatoAberto',
-    encoding => "UTF-8",
-
-
-    disable_component_resolution_regex_fallback => 1,
-    enable_catalyst_header => 0,
-);
-
-use WebService::Slack::IncomingWebHook;
-
-has _slack_webhook => (
-    is      => "ro",
-    lazy    => 1,
-    default => sub {
-        WebService::Slack::IncomingWebHook->new(
-            webhook_url => $ENV{MANDATOABERTO_SLACK_WEBHOOK_URL},
-            channel     => "#" . $ENV{MANDATOABERTO_SLACK_CHANNEL},
-            username    => $ENV{MANDATOABERTO_SLACK_USERNAME},
-            icon_emoji  => ":robot_face:",
-        );
-    },
-    handles => { slack_notify => [ post => "text" ] }
-);
-
-around 'slack_notify' => sub {
-    my $orig = shift;
+sub startup {
     my $self = shift;
-    my $message = shift;
 
-    my $project = lc(__PACKAGE__);
-    chomp(my $hostname = `hostname`);
+	# Helpers.
+	$self->helper(schema => sub { state $schema = MandatoAberto::SchemaConnected->get_schema(@_) });
 
-    eval { $self->$orig("[$project] [$hostname] " . $message, @_) };
-    warn $@ if $@;
-};
+	# force load of ENV before plugins
+	$self->schema;
 
-# Start the application
-__PACKAGE__->setup();
+	# nao precisa manter conexao no processo manager
+	$self->schema->storage->dbh->disconnect unless $ENV{HARNESS_ACTIVE};
 
-=encoding utf8
+    # Plugins.
+    $self->plugin('Detach');
+	$self->plugin('RemoteAddr');
+	$self->plugin('Subprocess');
 
-=head1 NAME
+    $self->plugin('SimpleAuthentication', {
+        load_user     => sub { MandatoAberto::Authentication::load_user(@_)     },
+        validate_user => sub { MandatoAberto::Authentication::validate_user(@_) },
+    });
 
-MandatoAberto - Catalyst based application
+    $self->plugin(
+        authorization => {
+            has_priv    => sub { return MandatoAberto::Authorization->has_priv(@_)   },
+            is_role     => sub { return MandatoAberto::Authorization->is_role(@_)    },
+            user_privs  => sub { return MandatoAberto::Authorization->user_privs(@_) },
+            user_role   => sub { return MandatoAberto::Authorization->user_role(@_)  },
+            fail_render => MandatoAberto::Authorization->fail_render(),
+        }
+    );
 
-=head1 SYNOPSIS
+    # Overwrite default helpers.
+    $self->controller_class('MandatoAberto::Controller');
+    $self->helper('reply.exception' => sub { MandatoAberto::Controller::reply_exception(@_) });
+    $self->helper('reply.not_found' => sub { MandatoAberto::Controller::reply_not_found(@_) });
 
-    script/mandatoaberto_server.pl
-
-=head1 DESCRIPTION
-
-[enter your description here]
-
-=head1 SEE ALSO
-
-L<MandatoAberto::Controller::Root>, L<Catalyst>
-
-=head1 AUTHOR
-
-lucas-eokoe,,,
-
-=head1 LICENSE
-
-This library is free software. You can redistribute it and/or modify
-it under the same terms as Perl itself.
-
-=cut
+    # Router.
+    MandatoAberto::Routes::register($self->routes);
+}
 
 1;

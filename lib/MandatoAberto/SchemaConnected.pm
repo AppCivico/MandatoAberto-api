@@ -37,7 +37,20 @@ sub get_connect_info {
 }
 
 sub get_schema {
-    return MandatoAberto::Schema->connect(get_connect_info());
+	my $schema = MandatoAberto::Schema->connect( get_connect_info() );
+
+	my $dbh = $schema->storage->dbh;
+	my $confs =
+	  $dbh->selectall_arrayref( 'select "name", "value" from config where valid_to = \'infinity\'', { Slice => {} } );
+
+	foreach my $kv (@$confs) {
+		my ( $k, $v ) = ( $kv->{name}, $kv->{value} );
+		$ENV{$k} = $v;
+	}
+
+	print STDERR "Loaded " . scalar @$confs . " envs\n";
+	return $schema;
+
 }
 
 1;
