@@ -44,7 +44,6 @@ sub reply_exception {
             );
         }
         elsif (ref $an_error eq 'HASH' && $an_error->{error_code}) {
-            $c->log->info( 'Exception treated: ' . $an_error->{msg} );
 
             return $c->render(
                 json   => { error => $an_error->{message} },
