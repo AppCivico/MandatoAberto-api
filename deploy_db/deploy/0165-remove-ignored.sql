@@ -3,7 +3,7 @@
 
 BEGIN;
 
-ALTER TABLE issue DROP column open, DROP COLUMN ignored;
+ALTER TABLE issue DROP column open;
 
 
 COMMIT;
