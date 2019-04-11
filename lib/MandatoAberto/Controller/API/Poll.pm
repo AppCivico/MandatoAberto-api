@@ -66,9 +66,16 @@ sub list_GET {
 
     my $now = DateTime->now;
 
+	my $page    = $c->req->params->{page}    || 1;
+	my $results = $c->req->params->{results} || 20;
+	$results    = $results <= 20 ? $results : 20;
+
+	my $total = $c->stash->{collection}->count;
+
     return $self->status_ok(
         $c,
         entity => {
+            total => $total,
             polls => [
                 map {
                     my $p = $_;
@@ -103,7 +110,11 @@ sub list_GET {
                     }
                 } $c->stash->{collection}->search(
                     { 'me.organization_chatbot_id' => $organization_chatbot_id },
-                    { prefetch => [ 'poll_questions' , { 'poll_questions' => { "poll_question_options" => 'poll_results' } } ] }
+                    {
+                        prefetch => [ 'poll_questions' , { 'poll_questions' => { "poll_question_options" => 'poll_results' } } ],
+                        page     => $page,
+                        rows     => $results
+                    }
                 )->all()
             ],
         }
