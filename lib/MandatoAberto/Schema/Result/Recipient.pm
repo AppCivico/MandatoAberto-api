@@ -300,9 +300,24 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 recipient_labels
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-03-01 15:05:46
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:B9oVNITDjiYwCmEqGB1gbA
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::RecipientLabel>
+
+=cut
+
+__PACKAGE__->has_many(
+  "recipient_labels",
+  "MandatoAberto::Schema::Result::RecipientLabel",
+  { "foreign.recipient_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-04-12 10:16:27
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:jgDjBFt6uJYLb3W1smNNng
 
 __PACKAGE__->load_components("InflateColumn::Serializer", "Core");
 __PACKAGE__->remove_column('groups');

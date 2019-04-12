@@ -200,6 +200,21 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 labels
+
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::Label>
+
+=cut
+
+__PACKAGE__->has_many(
+  "labels",
+  "MandatoAberto::Schema::Result::Label",
+  { "foreign.organization_chatbot_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 organization
 
 Type: belongs_to
@@ -411,8 +426,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-02-04 10:28:25
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:N2GdPo1H9ve31tEF1LpcWQ
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-04-12 10:16:27
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:rwYrjIehrLhHN8QlKUTWYw
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

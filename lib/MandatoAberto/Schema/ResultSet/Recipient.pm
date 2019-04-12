@@ -13,6 +13,8 @@ use MandatoAberto::Types qw(EmailAddress PhoneNumber URI);
 use Data::Verifier;
 use Data::Printer;
 
+use JSON;
+
 sub verifiers_specs {
     my $self = shift;
 
@@ -74,6 +76,10 @@ sub verifiers_specs {
 
                         $self->result_source->schema->resultset("OrganizationChatbotFacebookConfig")->search({ page_id => $page_id })->count;
                     }
+                },
+                extra_fields => {
+                    required => 0,
+                    type     => 'Str'
                 }
             }
         ),
@@ -90,6 +96,9 @@ sub action_specs {
             my %values = $r->valid_values;
             not defined $values{$_} and delete $values{$_} for keys %values;
 
+            # Por agora os extra fields não existem como coluna na tabela de recipient
+            my $extra_fields = delete $values{extra_fields};
+
             # Erros
             if ( !$values{politician_id} && !$values{chatbot_id} ) {
                 die \['chatbot_id', 'missing'];
@@ -98,34 +107,136 @@ sub action_specs {
                 die \['politician_id', 'invalid'];
             }
 
-            # Upsert do recipient
-            if ( $values{politician_id} ) {
-                my $politician              = $self->result_source->schema->resultset('Politician')->find($values{politician_id});
-                my $organization_chatbot_id = $politician->user->organization_chatbot_id;
+            my $recipient;
+            $self->result_source->schema->txn_do( sub {
 
-                delete $values{politician_id} and $values{organization_chatbot_id} = $organization_chatbot_id;
-            }
-            elsif ( $values{chatbot_id} ) {
-                $values{organization_chatbot_id} = delete $values{chatbot_id};
-            }
-            else {
-                die \['chatbot_id', 'missing'];
-            }
+                # Upsert do recipient
+                if ( $values{politician_id} ) {
+                    my $politician              = $self->result_source->schema->resultset('Politician')->find($values{politician_id});
+                    my $organization_chatbot_id = $politician->user->organization_chatbot_id;
 
-            my $existing_citizen = $self->search( { 'me.fb_id' => $values{fb_id} } )->next;
+                    delete $values{politician_id} and $values{organization_chatbot_id} = $organization_chatbot_id;
+                }
+                elsif ( $values{chatbot_id} ) {
+                    $values{organization_chatbot_id} = delete $values{chatbot_id};
+                }
+                else {
+                    die \['chatbot_id', 'missing'];
+                }
 
-            if (!defined $existing_citizen) {
+                my $existing_citizen = $self->search( { 'me.fb_id' => $values{fb_id} } )->next;
 
-                die \['name', 'missing'] unless $values{name};
+                # Criando ou atualizando recipient
+                if (!defined $existing_citizen) {
 
-                my $citizen = $self->create(\%values);
+                    die \['name', 'missing'] unless $values{name};
 
-                return $citizen;
-            } else {
-                my $updated_citizen = $existing_citizen->update(\%values);
+                    $recipient = $self->create(\%values);
+                } else {
+                    $recipient = $existing_citizen->update(\%values);
+                }
 
-                return $updated_citizen;
-            }
+                # Tratando extra_fields
+                if ( $extra_fields ) {
+                    $extra_fields = eval { decode_json( $extra_fields ) };
+                    die \['extra_fields', 'invalid'] if $@;
+					die \['extra_fields', 'invalid'] unless ref $extra_fields eq 'HASH';
+
+                    if ( $extra_fields->{custom_labels} ) {
+                        die \['custom_labels', 'invalid'] unless ref $extra_fields->{custom_labels} eq 'ARRAY';
+
+                        my (@labels, @label_names);
+                        for my $label ( @{$extra_fields->{custom_labels}} ) {
+                            die \['custom_label', 'must have name'] unless $label->{name};
+
+                            # Colocando já no formato para o insert
+                            push @labels, "('$label->{name}', $values{organization_chatbot_id})";
+                            push @label_names, $label->{name};
+                        }
+
+                        # Criando labels e recipient_labels
+                        @labels = $self->result_source->schema->storage->dbh_do(
+                            sub {
+                                my ($storage, $dbh, @cols) = @_;
+                                my $values = join ',', @cols;
+                                $dbh->do("INSERT INTO label (name, organization_chatbot_id) VALUES $values ON CONFLICT DO NOTHING");
+                            },
+                            @labels
+                        );
+
+                        my $recipient_id  = $recipient->id;
+
+                        my @recipient_labels = $self->result_source->schema->resultset('Label')->search( { name => { -in => \@label_names } } )->get_column('id')->all();
+                        @recipient_labels = map { "($recipient_id, $_)" } @recipient_labels;
+						@recipient_labels = $self->result_source->schema->storage->dbh_do(
+							sub {
+								my ($storage, $dbh, @cols) = @_;
+								my $values = join ',', @cols;
+								$dbh->do("INSERT INTO recipient_label (recipient_id, label_id) VALUES $values ON CONFLICT DO NOTHING");
+							},
+							@recipient_labels
+						);
+                    }
+
+                    if ( $extra_fields->{system_labels} ) {
+                        die \['system_labels', 'invalid'] unless ref $extra_fields->{system_labels} eq 'ARRAY';
+
+                        my (@labels, @label_names);
+                        for my $label ( @{$extra_fields->{system_labels}} ) {
+                            die \['custom_label', 'must have name'] unless $label->{name};
+
+                            # Colocando já no formato para o insert
+                            push @labels, "('$label->{name}', $values{organization_chatbot_id})";
+                            push @label_names, $label->{name};
+                        }
+
+                        # Criando labels e recipient_labels
+                        @labels = $self->result_source->schema->storage->dbh_do(
+                            sub {
+                                my ($storage, $dbh, @cols) = @_;
+                                my $values = join ',', @cols;
+                                $dbh->do("INSERT INTO label (name, organization_chatbot_id) VALUES $values ON CONFLICT DO NOTHING");
+                            },
+                            @labels
+                        );
+
+                        my $recipient_id  = $recipient->id;
+
+                        my @recipient_labels = $self->result_source->schema->resultset('Label')->search( { name => { -in => \@label_names } } )->get_column('id')->all();
+                        @recipient_labels = map { "($recipient_id, $_)" } @recipient_labels;
+						@recipient_labels = $self->result_source->schema->storage->dbh_do(
+							sub {
+								my ($storage, $dbh, @cols) = @_;
+								my $values = join ',', @cols;
+								$dbh->do("INSERT INTO recipient_label (recipient_id, label_id) VALUES $values ON CONFLICT DO NOTHING");
+							},
+							@recipient_labels
+						);
+                    }
+
+                    # Adding to group
+                    my $group_rs      = $recipient->organization_chatbot->groups;
+                    my $recipients_rs = $recipient->organization_chatbot->recipients;
+
+                    while (my $group = $group_rs->next()) {
+                        my $filter = $group->filter;
+
+                        my $should_add_to_this_group = $recipients_rs
+                        ->search_by_filter($filter)
+                        ->search(
+                            { 'me.id' => $recipient->id },
+                            { select => [ \'1' ] }
+                        )
+                        ->next;
+                        use DDP; p $should_add_to_this_group;
+                        if ($should_add_to_this_group) {
+                            $recipient->add_to_group($group->id);
+                        }
+                    }
+                }
+            });
+
+            return $recipient;
         }
     };
 }
@@ -192,6 +303,12 @@ sub search_by_filter {
         elsif ($name eq 'INTENT_IS_NOT') {
             push @where_attrs, $self->_build_rule_intent_is_not($value);
         }
+		elsif ($name eq 'LABEL_IS') {
+			push @where_attrs, $self->_build_rule_label_is($value);
+		}
+		elsif ($name eq 'LABEL_IS_NOT') {
+			push @where_attrs, $self->_build_rule_label_is_not($value);
+		}
         else {
             die "rule name '$name' does not exists.";
         }
@@ -315,6 +432,34 @@ sub _build_rule_intent_is_not {
 
     return \[ <<'SQL_QUERY', $value ];
 NOT (? = ANY (entities::int[]))
+SQL_QUERY
+}
+
+sub _build_rule_label_is {
+	my ($self, $value) = @_;
+
+	return \[ <<'SQL_QUERY', $value ];
+EXISTS(
+    SELECT 1
+    FROM recipient_label
+    WHERE
+        recipient_id = me.id AND
+        label_id = ?
+)
+SQL_QUERY
+}
+
+sub _build_rule_label_is_not {
+	my ($self, $value) = @_;
+
+	return \[ <<'SQL_QUERY', $value ];
+NOT EXISTS(
+    SELECT 1
+    FROM recipient_label
+    WHERE
+        recipient_id = me.id AND
+        label_id = ?
+)
 SQL_QUERY
 }
 
