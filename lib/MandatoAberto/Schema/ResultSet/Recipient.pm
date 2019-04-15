@@ -145,93 +145,21 @@ sub action_specs {
                     if ( $extra_fields->{custom_labels} ) {
                         die \['custom_labels', 'invalid'] unless ref $extra_fields->{custom_labels} eq 'ARRAY';
 
-                        my (@labels, @label_names);
-                        for my $label ( @{$extra_fields->{custom_labels}} ) {
-                            die \['custom_label', 'must have name'] unless $label->{name};
-
-                            # Colocando já no formato para o insert
-                            push @labels, "('$label->{name}', $values{organization_chatbot_id})";
-                            push @label_names, $label->{name};
-                        }
-
-                        # Criando labels e recipient_labels
-                        @labels = $self->result_source->schema->storage->dbh_do(
-                            sub {
-                                my ($storage, $dbh, @cols) = @_;
-                                my $values = join ',', @cols;
-                                $dbh->do("INSERT INTO label (name, organization_chatbot_id) VALUES $values ON CONFLICT DO NOTHING");
-                            },
-                            @labels
-                        );
-
-                        my $recipient_id  = $recipient->id;
-
-                        my @recipient_labels = $self->result_source->schema->resultset('Label')->search( { name => { -in => \@label_names } } )->get_column('id')->all();
-                        @recipient_labels = map { "($recipient_id, $_)" } @recipient_labels;
-						@recipient_labels = $self->result_source->schema->storage->dbh_do(
-							sub {
-								my ($storage, $dbh, @cols) = @_;
-								my $values = join ',', @cols;
-								$dbh->do("INSERT INTO recipient_label (recipient_id, label_id) VALUES $values ON CONFLICT DO NOTHING");
-							},
-							@recipient_labels
-						);
+                        $self->upsert_labels(
+                            labels                  => $extra_fields->{custom_labels},
+                            recipient_id            => $recipient->id,
+                            organization_chatbot_id => $recipient->organization_chatbot_id
+                        )
                     }
 
                     if ( $extra_fields->{system_labels} ) {
                         die \['system_labels', 'invalid'] unless ref $extra_fields->{system_labels} eq 'ARRAY';
 
-                        my (@labels, @label_names);
-                        for my $label ( @{$extra_fields->{system_labels}} ) {
-                            die \['custom_label', 'must have name'] unless $label->{name};
-
-                            # Colocando já no formato para o insert
-                            push @labels, "('$label->{name}', $values{organization_chatbot_id})";
-                            push @label_names, $label->{name};
-                        }
-
-                        # Criando labels e recipient_labels
-                        @labels = $self->result_source->schema->storage->dbh_do(
-                            sub {
-                                my ($storage, $dbh, @cols) = @_;
-                                my $values = join ',', @cols;
-                                $dbh->do("INSERT INTO label (name, organization_chatbot_id) VALUES $values ON CONFLICT DO NOTHING");
-                            },
-                            @labels
+                        $self->upsert_labels(
+                            labels                  => $extra_fields->{system_labels},
+                            recipient_id            => $recipient->id,
+                            organization_chatbot_id => $recipient->organization_chatbot_id
                         );
-
-                        my $recipient_id  = $recipient->id;
-
-                        my @recipient_labels = $self->result_source->schema->resultset('Label')->search( { name => { -in => \@label_names } } )->get_column('id')->all();
-                        @recipient_labels = map { "($recipient_id, $_)" } @recipient_labels;
-						@recipient_labels = $self->result_source->schema->storage->dbh_do(
-							sub {
-								my ($storage, $dbh, @cols) = @_;
-								my $values = join ',', @cols;
-								$dbh->do("INSERT INTO recipient_label (recipient_id, label_id) VALUES $values ON CONFLICT DO NOTHING");
-							},
-							@recipient_labels
-						);
-                    }
-
-                    # Adding to group
-                    my $group_rs      = $recipient->organization_chatbot->groups;
-                    my $recipients_rs = $recipient->organization_chatbot->recipients;
-
-                    while (my $group = $group_rs->next()) {
-                        my $filter = $group->filter;
-
-                        my $should_add_to_this_group = $recipients_rs
-                        ->search_by_filter($filter)
-                        ->search(
-                            { 'me.id' => $recipient->id },
-                            { select => [ \'1' ] }
-                        )
-                        ->next;
-                        use DDP; p $should_add_to_this_group;
-                        if ($should_add_to_this_group) {
-                            $recipient->add_to_group($group->id);
-                        }
                     }
                 }
             });
@@ -514,6 +442,82 @@ sub extract_metrics {
                 suggested_actions => []
             },
         ]
+    }
+}
+
+sub upsert_labels {
+    my ($self, %opts) = @_;
+
+    my @required_opts = qw( labels recipient_id organization_chatbot_id );
+    defined $opts{$_} or die \["$_", 'missing'] for @required_opts;
+
+	my $recipient_id = $opts{recipient_id};
+    my $recipient    = $self->find($recipient_id);
+
+	my (@labels, @label_names);
+	for my $label ( @{$opts{labels}} ) {
+		die \['custom_label', 'must have name'] unless $label->{name};
+
+		# Tratando caso de remoção da label
+		# deleto apenas a relação entre o recipient
+		# e a label, e não a label em si.
+		if ( $label->{deleted} && $label->{deleted} == 1 ) {
+			$self->result_source->schema->resultset('RecipientLabel')->search(
+                {
+                    'me.recipient_id' => $recipient_id,
+                    'label.name'      => $label->{name}
+                },
+                { prefetch => 'label' }
+            )->delete;
+			next;
+		}
+
+		# Colocando já no formato para o insert
+		push @labels, "('$label->{name}', $opts{organization_chatbot_id})";
+		push @label_names, $label->{name};
+	}
+
+	# Criando labels e recipient_labels
+    if ( scalar @labels > 0 ) {
+        @labels = $self->result_source->schema->storage->dbh_do(
+            sub {
+                my ($storage, $dbh, @cols) = @_;
+
+                my $values = join ',', @cols;
+                $dbh->do("INSERT INTO label (name, organization_chatbot_id) VALUES $values ON CONFLICT DO NOTHING");
+            },
+            @labels
+        );
+
+        my @recipient_labels = $self->result_source->schema->resultset('Label')->search( { name => { -in => \@label_names } } )->get_column('id')->all();
+        @recipient_labels = map { "($recipient_id, $_)" } @recipient_labels;
+        @recipient_labels = $self->result_source->schema->storage->dbh_do(
+            sub {
+                my ($storage, $dbh, @cols) = @_;
+                my $values = join ',', @cols;
+                $dbh->do("INSERT INTO recipient_label (recipient_id, label_id) VALUES $values ON CONFLICT DO NOTHING");
+            },
+            @recipient_labels
+        );
+
+        # Adicionando recipient à grupos casos eles já existam
+        my $group_rs      = $recipient->organization_chatbot->groups;
+        my $recipients_rs = $recipient->organization_chatbot->recipients;
+
+        while (my $group = $group_rs->next()) {
+            my $filter = $group->filter;
+
+            my $should_add_to_this_group = $recipients_rs
+            ->search_by_filter($filter)
+            ->search(
+                { 'me.id' => $recipient->id },
+                { select => [ \'1' ] }
+            )
+            ->next;
+            if ($should_add_to_this_group) {
+                $recipient->add_to_group($group->id);
+            }
+        }
     }
 }
 
