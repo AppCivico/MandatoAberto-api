@@ -136,8 +136,6 @@ db_transaction {
     ok ( my $politician_entity = $politician->user->organization_chatbot->politician_entities->next, 'politician entity' );
     is ( $politician_entity->recipient_count, 1,           'recipient count' );
 
-    ok ($issue->open eq '1', 'Issue is created as open');
-
     rest_post "/api/chatbot/issue",
         name                => "issue creation",
         automatic_load_item => 0,

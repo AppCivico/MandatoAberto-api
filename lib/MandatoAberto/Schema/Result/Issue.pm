@@ -77,12 +77,6 @@ __PACKAGE__->table("issue");
   data_type: 'text'
   is_nullable: 1
 
-=head2 open
-
-  data_type: 'boolean'
-  default_value: true
-  is_nullable: 0
-
 =head2 entities
 
   data_type: 'integer[]'
@@ -147,8 +141,6 @@ __PACKAGE__->add_columns(
   },
   "reply",
   { data_type => "text", is_nullable => 1 },
-  "open",
-  { data_type => "boolean", default_value => \"true", is_nullable => 0 },
   "entities",
   { data_type => "integer[]", is_nullable => 1 },
   "peding_entity_recognition",
@@ -210,8 +202,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-12-06 14:32:08
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:j+mbzicCsTExUK/LE0dHlg
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-04-10 15:42:07
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:ym9P/jxnxTCu5h8nY9YRQQ
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
@@ -236,28 +228,10 @@ sub verifiers_specs {
         update => Data::Verifier->new(
             filters => [ qw(trim) ],
             profile => {
-                open => {
-                    required   => 1,
-                    type       => "Bool",
-                    post_check => sub {
-                        my $open_boolean    = $_[0]->get_value('open');
-                        my $deleted_boolean = $_[0]->get_value('deleted');
-
-                        if (!$self->open && !$deleted_boolean) {
-                            die \["open", "issue is alredy closed"];
-                        }
-
-                        return 1;
-                    }
-                },
                 reply => {
                     required   => 0,
                     type       => "Str",
                     max_length => 2000
-                },
-                ignore => {
-                    required => 1,
-                    type     => "Bool"
                 },
                 groups => {
                     required   => 0,
@@ -318,14 +292,6 @@ sub action_specs {
 
                 return $self->update( { read => $values{read} } );
             }
-
-            if ($values{ignore} == 1 && $values{reply}) {
-                die \['ignore', 'must not have reply'];
-            } elsif ($values{ignore} == 0 && !$values{reply} && !$values{saved_attachment_id} && !$values{deleted} ) {
-                die \['reply', 'missing'];
-            }
-
-            delete $values{ignore};
 
             die \['organization_chatbot_id', 'Não há um chatbot ativo para responder essa mensagem'] unless $self->organization_chatbot->has_access_token;
             my $access_token = $self->organization_chatbot->fb_config->access_token;

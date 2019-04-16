@@ -61,6 +61,18 @@ sub list_GET {
                                 +{
                                     id      => $pq->get_column('id'),
                                     content => $pq->get_column('content'),
+
+									options => [
+										map {
+											my $qo = $_;
+
+											+{
+												id      => $qo->get_column('id'),
+												content => $qo->get_column('content'),
+												count   => $qo->poll_results->search()->count,
+											  }
+										} $pq->poll_question_options->all()
+									]
                                 }
 
                             } $p->poll_questions->all()
