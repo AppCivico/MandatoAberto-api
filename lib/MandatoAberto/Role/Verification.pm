@@ -45,9 +45,11 @@ sub execute {
     my $result = $dm->apply;
 
     unless ( $dm->success ) {
-        $c->stash->{rest} = { form_error => $dm->errors, error => 'form_error' };
-        $c->res->code(400);
-        $c->detach();
+		$c->render(
+			json   => { error =>'form_error', message => $dm->errors },
+			status => 400,
+		);
+		$c->detach();
     }
 
     return wantarray ? ( $dm, $result ) : $result;

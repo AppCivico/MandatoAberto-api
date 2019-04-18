@@ -5,10 +5,12 @@ use warnings;
 sub register {
     my $r = shift;
 
-    my $api = $r->route('/api');
+    # User
+    my $user = $r->route('/user');
+    $user->post()->to(controller => 'User', action => 'post');
 
-    # Chatbot
-    my $chatbot = $api->route('/chatbot')->under->to('chatbot#validade_security_token');
+    # Login
+    my $login = $r->route('/login');
 
 }
 

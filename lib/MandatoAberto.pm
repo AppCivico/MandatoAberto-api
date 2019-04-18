@@ -1,11 +1,13 @@
 package MandatoAberto;
 use Mojo::Base 'Mojolicious';
 
+use MandatoAberto::Config;
 use MandatoAberto::Routes;
 use MandatoAberto::Authentication;
 use MandatoAberto::Authorization;
 use MandatoAberto::Controller;
 use MandatoAberto::SchemaConnected;
+use MandatoAberto::Logger;
 
 sub startup {
     my $self = shift;
@@ -19,10 +21,12 @@ sub startup {
 	# nao precisa manter conexao no processo manager
 	$self->schema->storage->dbh->disconnect unless $ENV{HARNESS_ACTIVE};
 
+	# Config.
+	MandatoAberto::Config::setup($self);
+
     # Plugins.
     $self->plugin('Detach');
-	$self->plugin('RemoteAddr');
-	$self->plugin('Subprocess');
+	$self->plugin('ParamLogger', filter => [qw(password)]);
 
     $self->plugin('SimpleAuthentication', {
         load_user     => sub { MandatoAberto::Authentication::load_user(@_)     },
