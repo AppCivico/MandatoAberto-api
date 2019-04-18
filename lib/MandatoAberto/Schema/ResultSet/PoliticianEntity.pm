@@ -21,18 +21,73 @@ sub _build__dialogflow { WebService::Dialogflow->instance }
 sub sync_dialogflow {
     my ($self) = @_;
 
-    my $organization_chatbot_rs = $self->result_source->schema->resultset('OrganizationChatbot')->search(
-        { 'organization_chatbot_general_config.dialogflow_config_id' => \'IS NOT NULL' },
-        {
-            prefetch => { 'organization_chatbot_general_config' => 'dialogflow_config' },
-            order_by => { -asc => 'dialogflow_config.project_id' }
+    my $dialogflow_project_rs = $self->result_source->schema->resultset('DialogflowConfig');
+
+    eval {
+        while ( my $project = $dialogflow_project_rs->next() ) {
+            # Buscando intents no DialogFlow
+            my @intents_names;
+            my $res = $self->_dialogflow->get_intents( project => $project );
+
+            for my $intent ( @{ $res->{intents} } ) {
+                my $name = $intent->{displayName};
+
+                if ( $self->skip_intent($name) == 0 ) {
+                    # Padronizando tudo em lower case.
+                    $name = lc $name;
+                    push @intents_names, $name;
+                }
+            }
+
+            $self->result_source->schema->txn_do( sub {
+                # Preparando valores para o insert
+                my @values;
+
+                my @chatbots_configs = $project->chatbots_using->all();
+                for my $chatbot_config ( @chatbots_configs ) {
+                    my $chatbot_id = $chatbot_config->organization_chatbot->id;
+
+                    for my $intent_name (@intents_names) {
+                        push @values, "($chatbot_id, '$intent_name', '$intent_name')";
+                    }
+                }
+
+                # Realizando INSERT com ON CONFLICT DO NOTHING
+                $self->result_source->schema->storage->dbh_do(
+                    sub {
+                        my ($storage, $dbh, @cols) = @_;
+                        my $values = join ',', @cols;
+                        $dbh->do("INSERT INTO politician_entity (organization_chatbot_id, name, human_name) VALUES $values ON CONFLICT DO NOTHING");
+                    },
+                    @values
+                );
+
+                # Após criar as entities
+                # deleto qualquer uma que seja do chatbot
+                # mas não está com o nome na lista
+                my $intents_to_be_deleted = $self->search( { name => { -not_in => \@intents_names } } );
+
+                while ( my $intent_to_be_deleted = $intents_to_be_deleted->next() ) {
+                    my $knowledge_base_rs       = $self->result_source->schema->resultset('PoliticianKnowledgeBase');
+                    my $knowledge_base_stats_rs = $self->result_source->schema->resultset('PoliticianEntityStat');
+
+                    # Deletando a intent e suas relações
+                    $knowledge_base_stats_rs->search(
+                        {
+                            politician_entity_id => $intent_to_be_deleted->id
+                        }
+                    )->delete;
+
+                    $knowledge_base_rs->search(
+                            \["? = ANY(entities)", $intent_to_be_deleted->id]
+                    )->delete;
+
+                    $intents_to_be_deleted->delete();
+                }
+            });
         }
-    );
-
-    while ( my $chatbot = $organization_chatbot_rs->next() ) {
-        $self->sync_dialogflow_one_chatbot($chatbot->id);
-
-    }
+    };
+    die $@ if $@;
 
     return 1;
 }
@@ -69,7 +124,7 @@ sub sync_dialogflow_one_chatbot {
                 );
             }
 
-             # Após criar as entities
+            # Após criar as entities
             # deleto qualquer uma que seja do chatbot
             # mas não está com o nome na lista
             my $intents_to_be_deleted = $self->search( { name => { -not_in => \@entities_names } } );
