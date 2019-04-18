@@ -27,7 +27,7 @@ sub generate_access_token {
     p $ENV{GOOGLE_APPLICATION_CREDENTIALS};
 
     my @args = ("(GOOGLE_APPLICATION_CREDENTIALS='$tmp_file_name' && gcloud auth application-default print-access-token)");
-    system(@args) == 0 or die "porra: $?";
+    system(@args) == 0 or die "FAIL: $?";
 
     p $ENV{GOOGLE_APPLICATION_CREDENTIALS};
     print STDERR `GOOGLE_APPLICATION_CREDENTIALS='$tmp_file_name'`;
