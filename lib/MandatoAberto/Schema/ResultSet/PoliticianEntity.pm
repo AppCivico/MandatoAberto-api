@@ -4,7 +4,6 @@ use Moose;
 use namespace::autoclean;
 
 use MandatoAberto::Utils qw( is_test );
-use DDP;
 
 use WebService::Dialogflow;
 
@@ -25,8 +24,6 @@ sub sync_dialogflow {
 
     eval {
         while ( my $project = $dialogflow_project_rs->next() ) {
-            print STDERR "\n Project_google_id: " . $project->project_id;
-
             # Buscando intents no DialogFlow
             my @intents_names;
             my $res = $self->_dialogflow->get_intents( project => $project );
@@ -77,7 +74,6 @@ sub sync_dialogflow {
                     { join => { 'organization_chatbot' => 'organization_chatbot_general_config' } }
                 );
 
-                print STDERR "\n Count intents delete: " . $intents_to_be_deleted->count;
                 while ( my $intent_to_be_deleted = $intents_to_be_deleted->next() ) {
                     my $knowledge_base_rs       = $self->result_source->schema->resultset('PoliticianKnowledgeBase');
                     my $knowledge_base_stats_rs = $self->result_source->schema->resultset('PoliticianEntityStat');
