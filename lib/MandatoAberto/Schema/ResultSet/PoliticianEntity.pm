@@ -25,6 +25,8 @@ sub sync_dialogflow {
 
     eval {
         while ( my $project = $dialogflow_project_rs->next() ) {
+            print STDERR "\n Project_google_id: " . $project->project_id;
+
             # Buscando intents no DialogFlow
             my @intents_names;
             my $res = $self->_dialogflow->get_intents( project => $project );
@@ -53,14 +55,16 @@ sub sync_dialogflow {
                 }
 
                 # Realizando INSERT com ON CONFLICT DO NOTHING
-                $self->result_source->schema->storage->dbh_do(
-                    sub {
-                        my ($storage, $dbh, @cols) = @_;
-                        my $values = join ',', @cols;
-                        $dbh->do("INSERT INTO politician_entity (organization_chatbot_id, name, human_name) VALUES $values ON CONFLICT DO NOTHING");
-                    },
-                    @values
-                );
+                if ( scalar @values > 0 ) {
+                    $self->result_source->schema->storage->dbh_do(
+                        sub {
+                            my ($storage, $dbh, @cols) = @_;
+                            my $values = join ',', @cols;
+                            $dbh->do("INSERT INTO politician_entity (organization_chatbot_id, name, human_name) VALUES $values ON CONFLICT DO NOTHING");
+                        },
+                        @values
+                    );
+                }
 
                 # Após criar as entities
                 # deleto qualquer uma que seja do chatbot
