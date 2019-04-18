@@ -69,8 +69,15 @@ sub sync_dialogflow {
                 # Após criar as entities
                 # deleto qualquer uma que seja do chatbot
                 # mas não está com o nome na lista
-                my $intents_to_be_deleted = $self->search( { name => { -not_in => \@intents_names } } );
+                my $intents_to_be_deleted = $self->search(
+                    {
+                        'me.name' => { -not_in => \@intents_names },
+                        'organization_chatbot_general_config.dialogflow_config_id' => $project->id
+                    },
+                    { join => { 'organization_chatbot' => 'organization_chatbot_general_config' } }
+                );
 
+                print STDERR "\n Count intents delete: " . $intents_to_be_deleted->count;
                 while ( my $intent_to_be_deleted = $intents_to_be_deleted->next() ) {
                     my $knowledge_base_rs       = $self->result_source->schema->resultset('PoliticianKnowledgeBase');
                     my $knowledge_base_stats_rs = $self->result_source->schema->resultset('PoliticianEntityStat');
