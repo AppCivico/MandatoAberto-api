@@ -30,9 +30,7 @@ sub sync_dialogflow {
     );
 
     while ( my $chatbot = $organization_chatbot_rs->next() ) {
-        p "\n======================================================================\n";
         $self->sync_dialogflow_one_chatbot($chatbot->id);
-		p "\n======================================================================\n";
 
     }
 
@@ -48,8 +46,6 @@ sub sync_dialogflow_one_chatbot {
 
     my $project = $chatbot->general_config->dialogflow_config;
     my $res     = $self->_dialogflow->get_intents( project => $project );
-
-    p "project_google_id: " . $project->id . "\n";
 
     for my $entity ( @{ $res->{intents} } ) {
         my $name = $entity->{displayName};
