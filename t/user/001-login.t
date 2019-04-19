@@ -15,7 +15,7 @@ db_transaction {
 
     my ($user, $user_id);
     subtest 'User | Register' => sub {
-        $user = $t->post_ok(
+        $t->post_ok(
             '/user',
             form => {
                 name     => 'Lucas Ansei',
@@ -25,7 +25,9 @@ db_transaction {
         )
         ->status_is(201);
 
-        $user_id = $user->{id};
+        my $res = $t->tx->res->json;
+
+        $user_id = $res->{id};
     };
 
     my $organization = $organization_rs->search(undef)->next;
@@ -41,6 +43,7 @@ db_transaction {
         )
         ->status_is(200);
         my $res = $t->tx->res->json;
+        use DDP; p $res;
 
         ok (
             my $user_session = $schema->resultset("UserSession")->search(

@@ -11,7 +11,7 @@ sub register {
 
     # Login
     my $login = $r->route('/login');
-
+    $login->post()->to(controller => 'Login', action => 'post');
 }
 
 1;
