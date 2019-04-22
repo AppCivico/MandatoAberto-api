@@ -87,28 +87,57 @@ sub db_transaction (&) {
 sub api_auth_as {
     my (%args) = @_;
 
-    if ( exists $args{api_key} ) {
+    my $user_session;
+    if (exists $args{user_id}) {
+        my $user_id = $args{user_id};
 
-        $t->ua->on(
-            start => sub {
-                my ( $ua, $tx ) = @_;
-                $tx->req->headers->header( 'X-API-Key' => $args{api_key} );
-            }
-        );
+        my $schema = get_schema;
+        my $user = $schema->resultset('User')->find($user_id);
+
+        $user_session = $user->new_session();
+
+        $t->ua->on(start => sub {
+            my ($ua, $tx) = @_;
+            $tx->req->headers->header('X-API-Key' => $user_session->{api_key});
+        });
     }
-    elsif ( exists $args{nobody} ) {
-        $t->ua->on(
-            start => sub {
-                my ( $ua, $tx ) = @_;
-                $tx->req->headers->remove('X-API-Key');
-            }
-        );
+    elsif (exists $args{nobody}) {
+        $t->ua->on(start => sub {
+            my ($ua, $tx) = @_;
+            $tx->req->headers->remove('X-API-Key');
+        });
     }
     else {
         die __PACKAGE__ . ": invalid params for 'api_auth_as'";
     }
+
+    return $user_session;
 }
 
+sub create_user {
+    my (%args) = @_;
+
+    my $email = fake_email->();
+
+    my $t = test_instance;
+
+    my $res = $t->post_ok(
+        '/user',
+        form => {
+            name     => fake_name->(),
+            email    => $email,
+            password => fake_words(2)->(),
+            %args
+        },
+      )
+      ->status_is(201)
+      ->json_has('/id')
+      ->tx->res->json;
+
+    my $user = resultset('User')->find($res->{id});
+
+    return $user;
+}
 
 1;
 
