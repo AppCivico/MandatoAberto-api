@@ -18,6 +18,13 @@ sub register {
     my $organization_result = $organization_list->under('/:organization_id')->to(controller => 'Organization', action => 'load');
 	$organization_result->get()->to(controller => 'Organization', action => 'get');
 	$organization_result->put()->to(controller => 'Organization', action => 'put');
+
+    # Organization::Chatbot
+    my $chatbot_list   = $organization_result->route('/chatbot');
+    my $chatbot_result = $chatbot_list->under('/:chatbot_id')->to(controller => 'Organization::Chatbot', action => 'load');
+	$chatbot_list->get()->to(controller => 'Organization::Chatbot', action => 'get');
+	$chatbot_result->get()->to(controller => 'Organization::Chatbot', action => 'get_result');
+	$chatbot_result->put()->to(controller => 'Organization::Chatbot', action => 'put');
 }
 
 1;
