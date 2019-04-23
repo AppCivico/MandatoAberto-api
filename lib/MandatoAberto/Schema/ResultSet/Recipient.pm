@@ -22,15 +22,6 @@ sub verifiers_specs {
         create => Data::Verifier->new(
             filters => [qw(trim)],
             profile => {
-                politician_id => {
-                    required   => 0,
-                    type       => 'Int',
-                    post_check => sub {
-                        my $politician_id = $_[0]->get_value('politician_id');
-
-                        $self->result_source->schema->resultset("Politician")->search({ user_id => $politician_id })->count;
-                    }
-                },
                 chatbot_id => {
                     required   => 0,
                     type       => 'Int',
@@ -99,31 +90,10 @@ sub action_specs {
             # Por agora os extra fields não existem como coluna na tabela de recipient
             my $extra_fields = delete $values{extra_fields};
 
-            # Erros
-            if ( !$values{politician_id} && !$values{chatbot_id} ) {
-                die \['chatbot_id', 'missing'];
-            }
-            elsif ( $values{politician_id} && $values{chatbot_id} ) {
-                die \['politician_id', 'invalid'];
-            }
-
             my $recipient;
             $self->result_source->schema->txn_do( sub {
 
                 # Upsert do recipient
-                if ( $values{politician_id} ) {
-                    my $politician              = $self->result_source->schema->resultset('Politician')->find($values{politician_id});
-                    my $organization_chatbot_id = $politician->user->organization_chatbot_id;
-
-                    delete $values{politician_id} and $values{organization_chatbot_id} = $organization_chatbot_id;
-                }
-                elsif ( $values{chatbot_id} ) {
-                    $values{organization_chatbot_id} = delete $values{chatbot_id};
-                }
-                else {
-                    die \['chatbot_id', 'missing'];
-                }
-
                 my $existing_citizen = $self->search( { 'me.fb_id' => $values{fb_id} } )->next;
 
                 # Criando ou atualizando recipient

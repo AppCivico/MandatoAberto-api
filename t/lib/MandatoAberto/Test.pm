@@ -139,5 +139,33 @@ sub create_user {
     return $user;
 }
 
+sub create_recipient {
+    my (%args) = @_;
+
+	my $security_token = $ENV{CHATBOT_SECURITY_TOKEN};
+
+    my $t = test_instance;
+
+    my $res = $t->post_ok(
+        '/chatbot/recipient',
+        form => {
+            name           => fake_name->(),
+            fb_id          => fake_words(2)->(),
+            password       => fake_words(2)->(),
+            page_id        => 'fake_page_id',
+            security_token => $security_token,
+            %args
+        },
+    )
+    ->status_is(201)
+    ->json_has('/id')
+    ->tx->res->json;
+
+    my $recipient = resultset('Recipient')->find($res->{id});
+
+    return $recipient;
+
+}
+
 1;
 
