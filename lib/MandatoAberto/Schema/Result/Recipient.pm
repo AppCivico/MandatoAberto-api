@@ -461,6 +461,20 @@ sub add_to_politician_entity {
 
 }
 
+sub extra_fields {
+    my ($self) = @_;
+
+    my $labels = $self->recipient_labels;
+
+    return {
+        labels => [
+            map {
+                { name => $_->label->name }
+            } $labels->all()
+        ]
+    }
+}
+
 __PACKAGE__->meta->make_immutable;
 
 1;
