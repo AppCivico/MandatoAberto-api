@@ -108,7 +108,7 @@ sub action_specs {
 
                 # Tratando extra_fields
                 if ( $extra_fields ) {
-                    $extra_fields = eval { decode_json( $extra_fields ) };
+                    $extra_fields = eval { from_json( $extra_fields ) };
                     die \['extra_fields', 'invalid'] if $@;
 					die \['extra_fields', 'invalid'] unless ref $extra_fields eq 'HASH';
 
