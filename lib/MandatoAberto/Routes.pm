@@ -32,6 +32,13 @@ sub register {
 	$chatbot_recipient_list->get()->to(controller => 'Organization::Chatbot::Recipient', action => 'get');
 	$chatbot_recipient_result->get()->to(controller => 'Organization::Chatbot::Recipient', action => 'get_result');
 
+    # Organization::Chatbot::Poll
+	my $chatbot_poll_list   = $organization_chatbot_result->route('/poll');
+	my $chatbot_poll_result = $chatbot_poll_list->under('/:poll_id')->to(controller => 'Organization::Chatbot::Recipient', action => 'load');
+	$chatbot_poll_list->get()->to(controller => 'Organization::Chatbot::Poll', action => 'get');
+	$chatbot_poll_list->post()->to(controller => 'Organization::Chatbot::Poll', action => 'post');
+	$chatbot_poll_result->get()->to(controller => 'Organization::Chatbot::Poll', action => 'get_result');
+
     # Chatbot
     my $chatbot = $r->under('/chatbot')->to(controller => 'Chatbot', action => 'load');
     $chatbot->get()->to(controller => 'Chatbot', action => 'load');

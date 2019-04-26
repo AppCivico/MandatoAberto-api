@@ -17,24 +17,13 @@ sub verifiers_specs {
         create => Data::Verifier->new(
             filters => [qw(trim)],
             profile => {
-                politician_id => {
-                    required => 1,
-                    type     => "Int"
-                },
                 name => {
                     required   => 1,
                     type       => "Str",
                     post_check => sub {
-                        my $name          = $_[0]->get_value("name");
-                        my $politician_id = $_[0]->get_value('politician_id');
-                        my $politician    = $self->result_source->schema->resultset('Politician')->find($politician_id);
+                        my $name = $_[0]->get_value("name");
 
-                        my $count = $self->result_source->schema->resultset("Poll")->search(
-                            {
-                                name                    => $name,
-                                organization_chatbot_id => $politician->user->organization_chatbot_id
-                            }
-                        )->count;
+                        my $count = $self->search( { name => $name } )->count;
 
                         die \["name", 'alredy exists'] unless $count == 0;
                     }
@@ -58,33 +47,7 @@ sub action_specs {
             my %values = $r->valid_values;
             not defined $values{$_} and delete $values{$_} for keys %values;
 
-            my $politician_id = delete $values{politician_id};
-            my $politician    = $self->result_source->schema->resultset('Politician')->find($politician_id);
-
-            $values{organization_chatbot_id} = $politician->user->organization_chatbot_id;
-
-            my $poll;
-            $self->result_source->schema->txn_do(sub{
-
-                $poll = $self->create(\%values);
-
-                if ( $politician->poll_self_propagation_active ) {
-                    my $poll_self_propagation_rs = $self->result_source->schema->resultset('PollSelfPropagationQueue');
-                    my @ids = $politician->user->organization_chatbot->recipients->search( { page_id => $politician->fb_page_id } )->only_opt_in->get_column('id')->all;
-
-                    my @queue;
-                    for my $id (@ids) {
-                        my $queue = {
-                            recipient_id => $id,
-                            poll_id      => $poll->id
-                        };
-
-                        push @queue, $queue;
-                    }
-
-                    $poll_self_propagation_rs->populate(\@queue);
-                }
-            });
+            my $poll = $self->create(\%values);
 
             return $poll;
         }
