@@ -26,6 +26,12 @@ sub register {
 	$organization_chatbot_result->get()->to(controller => 'Organization::Chatbot', action => 'get_result');
 	$organization_chatbot_result->put()->to(controller => 'Organization::Chatbot', action => 'put');
 
+    # Organization::Chatbot::Recipient
+	my $chatbot_recipient_list   = $organization_chatbot_result->route('/recipients');
+	my $chatbot_recipient_result = $chatbot_recipient_list->under('/:recipient_id')->to(controller => 'Organization::Chatbot::Recipient', action => 'load');
+	$chatbot_recipient_list->get()->to(controller => 'Organization::Chatbot::Recipient', action => 'get');
+	$chatbot_recipient_result->get()->to(controller => 'Organization::Chatbot::Recipient', action => 'get_result');
+
     # Chatbot
     my $chatbot = $r->under('/chatbot')->to(controller => 'Chatbot', action => 'load');
     $chatbot->get()->to(controller => 'Chatbot', action => 'load');

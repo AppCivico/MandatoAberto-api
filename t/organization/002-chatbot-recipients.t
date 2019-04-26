@@ -18,7 +18,7 @@ db_transaction {
         $chatbot_id      = $user->organization->chatbot->id;
     };
 
-    subtest 'User | Get organization' => sub {
+    subtest 'User | Get recipient' => sub {
         api_auth_as user_id => $user_id;
 
         # Ativando chatbot
@@ -33,27 +33,32 @@ db_transaction {
         ->json_has('/id');
 
         $recipient = create_recipient();
-        use DDP; p $recipient;
 
         $t->get_ok(
-            'organization/$organization_id/chatbot/$chatbot_id/recipients',
+            "/organization/$organization_id/chatbot/$chatbot_id/recipients",
             form => {
                 security_token => $security_token,
-
             }
         )
+        ->status_is(200)
+        ->json_is('/itens_count', '1')
+        ->json_has('/recipients/0/id')
+        ->json_has('/recipients/0/name')
+        ->json_has('/recipients/0/groups')
+        ->json_has('/recipients/0/intents');
 
-        # rest_get "/api/organization/$organization_id/chatbot/$chatbot_id/recipients",
-        #     code  => 200,
-        #     stash => 'cl1',
-        #     list  => 1
-        # ;
-
-        # stash_test 'cl1' => sub {
-        #     my $res = shift;
-
-        #     # TODO testar campos do retorno
-        # };
+        my $recipient_id = $recipient->id;
+        $t->get_ok(
+            "/organization/$organization_id/chatbot/$chatbot_id/recipients/$recipient_id",
+            form => {
+                security_token => $security_token,
+            }
+        )
+        ->status_is(200)
+        ->json_has('/id')
+        ->json_has('/name')
+        ->json_has('/groups')
+        ->json_has('/intents');
     };
 };
 
