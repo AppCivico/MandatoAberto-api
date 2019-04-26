@@ -38,7 +38,7 @@ __PACKAGE__->config(
 
         my $file;
         if ( my $upload = $c->req->upload("file") ) {
-            my $page_access_token = $c->stash->{politician}->fb_page_access_token;
+            my $page_access_token = $c->stash->{politician}->user->organization->chatbot->fb_config->access_token;
 
             $file = $self->_upload_picture($upload, $page_access_token);
 
