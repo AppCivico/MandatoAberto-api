@@ -50,6 +50,14 @@ sub login_POST {
             ip => $ipAddr,
         );
 
+        # TODO melhorar esse tratamento
+        my $cond;
+        if ( $user->organization->id =~ /^(234|235|236)$/ ) {
+            $cond = {
+                'me.id' => { '!=' => 9 }
+            };
+        }
+
         my $ret = {
             organizations => [
                 map {
@@ -80,7 +88,7 @@ sub login_POST {
                                                 icon_class   => $_->icon_class,
                                                 weight       => $o->weight_for_module(sub_module_id => $_->id)
                                             }
-                                        } $m->sub_modules->all()
+                                        } $m->sub_modules->search($cond)->all()
                                     ]
                                 }
                             } grep { $_->module->has_sub_modules == 1 } $o->organization_modules->search()->all()
