@@ -65,7 +65,7 @@ __PACKAGE__->config(
 
         my $file;
         if ( my $upload = $c->req->upload('file') ) {
-            my $page_access_token = $c->stash->{politician}->user->chatbot->fb_config->access_token;
+            my $page_access_token = $c->stash->{politician}->user->organization->chatbot->fb_config->access_token;
 
             $file = $self->_upload_picture($upload, $page_access_token);
             $params->{saved_attachment_id}   = $file->{attachment_id};
@@ -184,7 +184,8 @@ sub _upload_picture {
 
     my $mimetype = mimetype( $upload->tempname );
     my $tempname = $upload->tempname;
-
+	print STDERR, "\n$mimetype\n";
+	print STDOUT, "\n$mimetype\n";
     my $attachment_type;
     if ( $mimetype =~ m/^image/ ) {
         $attachment_type = 'image'
