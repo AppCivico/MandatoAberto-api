@@ -184,8 +184,7 @@ sub _upload_picture {
 
     my $mimetype = mimetype( $upload->tempname );
     my $tempname = $upload->tempname;
-	print STDERR "\n$mimetype\n";
-	print STDOUT "\n$mimetype\n";
+
     my $attachment_type;
     if ( $mimetype =~ m/^image/ ) {
         $attachment_type = 'image'
