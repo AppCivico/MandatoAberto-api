@@ -584,9 +584,9 @@ sub send_email_forgot_password {
 
     my $is_mandatoaberto = $self->organization->is_mandatoaberto;
 
-    my $subject        = $is_mandatoaberto ? 'Mandato Aberto - Recuperação de senha' : 'AppCívico Chatbot - Recuperação de senha';
-    my $project_name   = $is_mandatoaberto ? 'Mandato Aberto' : 'AppCívico Chatbots';
-    my $url            = $is_mandatoaberto ? $ENV{MANDATOABERTO_URL} . 'reset-password/' : 'http://v4.app.mandatoaberto.com.br/reset-password';
+    my $subject        = 'Assistente Cívico - Recuperação de senha';
+    my $project_name   = 'Assistente Cívico';
+    my $url            = $is_mandatoaberto ? $ENV{MANDATOABERTO_URL} . 'reset-password/' : 'http://dev.app.assistente.appcivico.com/reset-password';
     my $home_url       = $is_mandatoaberto ? $ENV{MANDATOABERTO_URL}: 'http://v4.app.mandatoaberto.com.br/';
     my $header_picture = $is_mandatoaberto ?
         'https://gallery.mailchimp.com/3db402cdd48dbf45ea97bd7da/images/940adc5a-6e89-468e-9a03-2a4769245c79.png' :
