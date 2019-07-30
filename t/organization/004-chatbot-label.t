@@ -6,10 +6,8 @@ use MandatoAberto::Test::Further;
 
 my $schema = MandatoAberto->model("DB");
 
-use JSON;
-
 db_transaction {
-	my $security_token = $ENV{CHATBOT_SECURITY_TOKEN};
+    my $security_token = $ENV{CHATBOT_SECURITY_TOKEN};
 
     my ($user_id, $organization_id, $chatbot_id, $recipient_id, $recipient);
     subtest 'Create chatbot and recipient' => sub {
@@ -50,11 +48,15 @@ db_transaction {
             ]
         ;
 
+        is( $schema->resultset('Group')->count, 0, 'no rows on group' );
+
         # Criando label
         rest_post "/api/organization/$organization_id/chatbot/$chatbot_id/label",
             automatic_load_item => 0,
             [ name => 'foobar' ]
         ;
+
+        is( $schema->resultset('Group')->count, 1, 'one row on group' );
 
         rest_get "/api/organization/$organization_id/chatbot/$chatbot_id/label";
     };
@@ -62,6 +64,24 @@ db_transaction {
     subtest 'Chatbot | Label' => sub {
         subtest 'Add to label' => sub {
             is( $schema->resultset('RecipientLabel')->count, 0, 'no rows' );
+
+            db_transaction{
+                rest_post "/api/chatbot/recipient/",
+                  name => "change recipient data",
+                  [
+                    chatbot_id     => $chatbot_id,
+                    fb_id          => 'bar',
+                    security_token => $security_token,
+                    extra_fields   => encode_json(
+                        {
+                            custom_labels => [{ name => 'foobar' }],
+                        }
+                    ),
+                  ];
+
+                is( $schema->resultset('RecipientLabel')->count, 1, '1 rows inserted' );
+                is( $schema->resultset('Group')->count, 1, '1 row on group' );
+            };
 
             rest_post "/api/chatbot/recipient/",
                 name => "change recipient data",
@@ -83,6 +103,8 @@ db_transaction {
             ;
 
             is( $schema->resultset('RecipientLabel')->count, 2, '2 rows inserted' );
+            is( $schema->resultset('Group')->count, 2, '2 rows on group' );
+
         };
 
         subtest 'Remove from label' => sub {
@@ -152,7 +174,7 @@ db_transaction {
                 ]
             ;
 
-			ok($recipient = $recipient->discard_changes, 'discard changes');
+            ok($recipient = $recipient->discard_changes, 'discard changes');
             ok(defined $recipient->groups, 'recipient now part of a group');
 
         };

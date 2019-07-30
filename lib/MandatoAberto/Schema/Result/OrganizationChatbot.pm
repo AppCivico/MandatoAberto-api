@@ -434,6 +434,8 @@ __PACKAGE__->has_many(
 with 'MandatoAberto::Role::Verification';
 with 'MandatoAberto::Role::Verification::TransactionalActions::DBIC';
 
+use JSON;
+
 sub verifiers_specs {
     my $self = shift;
 
@@ -585,6 +587,42 @@ sub has_fb_config {
     my ($self) = @_;
 
     return $self->fb_config ? 1 : 0;
+}
+
+sub has_group_for_label {
+    my ($self, $label_id) = @_;
+
+    return $self->groups->search( { '-and' => [ \"filter->'rules'->0->>'name' = 'LABEL_IS'", \"filter->'rules'->0->'data'->>'value' = '$label_id'",  ] } )->count > 0 ? 1 : 0;
+}
+
+sub upsert_groups_for_labels {
+    my ($self) = @_;
+
+    my $labels = $self->labels;
+
+    while ( my $label = $labels->next() ) {
+        next if $self->has_group_for_label($label->id);
+
+        my $group = $self->groups->create(
+            {
+                name   => $label->name,
+                status => 'processing',
+                filter => to_json(
+                    {
+                        operator => 'AND',
+                        rules => [
+                            {
+                                name => 'LABEL_IS',
+                                data => { value => $label->id },
+                            },
+                        ],
+                    }
+                ),
+            }
+        );
+    }
+
+    return 1;
 }
 
 __PACKAGE__->meta->make_immutable;

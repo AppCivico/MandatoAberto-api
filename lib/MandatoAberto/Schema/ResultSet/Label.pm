@@ -11,6 +11,7 @@ with "MandatoAberto::Role::Verification";
 with 'MandatoAberto::Role::Verification::TransactionalActions::DBIC';
 
 use Data::Verifier;
+use JSON;
 
 sub resultset {
     my $self = shift;
@@ -44,7 +45,29 @@ sub action_specs {
             my %values = $r->valid_values;
             not defined $values{$_} and delete $values{$_} for keys %values;
 
-            my $label = $self->create(\%values);
+            my $label;
+            $self->result_source->schema->txn_do( sub {
+                $label = $self->create(\%values);
+
+                # Criando um grupo para a label.
+                my $group = $label->organization_chatbot->groups->create(
+                    {
+                        name   => $label->name,
+                        status => 'processing',
+                        filter => to_json(
+                            {
+                                operator => 'AND',
+                                rules => [
+                                    {
+                                        name => 'LABEL_IS',
+                                        data => { value => $label->id },
+                                    },
+                                ],
+                            }
+                        ),
+                    }
+                ) unless $label->organization_chatbot->has_group_for_label($label->id);
+            });
 
             return $label;
         }

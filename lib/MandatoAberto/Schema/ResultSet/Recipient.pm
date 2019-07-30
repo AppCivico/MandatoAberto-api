@@ -140,7 +140,7 @@ sub action_specs {
                 if ( $extra_fields ) {
                     $extra_fields = eval { from_json( $extra_fields ) };
                     die \['extra_fields', 'invalid'] if $@;
-					die \['extra_fields', 'invalid'] unless ref $extra_fields eq 'HASH';
+                    die \['extra_fields', 'invalid'] unless ref $extra_fields eq 'HASH';
 
                     if ( $extra_fields->{custom_labels} ) {
                         die \['custom_labels', 'invalid'] unless ref $extra_fields->{custom_labels} eq 'ARRAY';
@@ -231,12 +231,12 @@ sub search_by_filter {
         elsif ($name eq 'INTENT_IS_NOT') {
             push @where_attrs, $self->_build_rule_intent_is_not($value);
         }
-		elsif ($name eq 'LABEL_IS') {
-			push @where_attrs, $self->_build_rule_label_is($value);
-		}
-		elsif ($name eq 'LABEL_IS_NOT') {
-			push @where_attrs, $self->_build_rule_label_is_not($value);
-		}
+        elsif ($name eq 'LABEL_IS') {
+            push @where_attrs, $self->_build_rule_label_is($value);
+        }
+        elsif ($name eq 'LABEL_IS_NOT') {
+            push @where_attrs, $self->_build_rule_label_is_not($value);
+        }
         else {
             die "rule name '$name' does not exists.";
         }
@@ -364,9 +364,9 @@ SQL_QUERY
 }
 
 sub _build_rule_label_is {
-	my ($self, $value) = @_;
+    my ($self, $value) = @_;
 
-	return \[ <<'SQL_QUERY', $value ];
+    return \[ <<'SQL_QUERY', $value ];
 EXISTS(
     SELECT 1
     FROM recipient_label
@@ -378,9 +378,9 @@ SQL_QUERY
 }
 
 sub _build_rule_label_is_not {
-	my ($self, $value) = @_;
+    my ($self, $value) = @_;
 
-	return \[ <<'SQL_QUERY', $value ];
+    return \[ <<'SQL_QUERY', $value ];
 NOT EXISTS(
     SELECT 1
     FROM recipient_label
@@ -451,33 +451,33 @@ sub upsert_labels {
     my @required_opts = qw( labels recipient_id organization_chatbot_id );
     defined $opts{$_} or die \["$_", 'missing'] for @required_opts;
 
-	my $recipient_id = $opts{recipient_id};
+    my $recipient_id = $opts{recipient_id};
     my $recipient    = $self->find($recipient_id);
 
-	my (@labels, @label_names);
-	for my $label ( @{$opts{labels}} ) {
-		die \['custom_label', 'must have name'] unless $label->{name};
+    my (@labels, @label_names);
+    for my $label ( @{$opts{labels}} ) {
+        die \['custom_label', 'must have name'] unless $label->{name};
 
-		# Tratando caso de remoção da label
-		# deleto apenas a relação entre o recipient
-		# e a label, e não a label em si.
-		if ( $label->{deleted} && $label->{deleted} == 1 ) {
-			$self->result_source->schema->resultset('RecipientLabel')->search(
+        # Tratando caso de remoção da label
+        # deleto apenas a relação entre o recipient
+        # e a label, e não a label em si.
+        if ( $label->{deleted} && $label->{deleted} == 1 ) {
+            $self->result_source->schema->resultset('RecipientLabel')->search(
                 {
                     'me.recipient_id' => $recipient_id,
                     'label.name'      => $label->{name}
                 },
                 { prefetch => 'label' }
             )->delete;
-			next;
-		}
+            next;
+        }
 
-		# Colocando já no formato para o insert
-		push @labels, "('$label->{name}', $opts{organization_chatbot_id})";
-		push @label_names, $label->{name};
-	}
+        # Colocando já no formato para o insert
+        push @labels, "('$label->{name}', $opts{organization_chatbot_id})";
+        push @label_names, $label->{name};
+    }
 
-	# Criando labels e recipient_labels
+    # Criando labels e recipient_labels e também grupos
     if ( scalar @labels > 0 ) {
         @labels = $self->result_source->schema->storage->dbh_do(
             sub {
@@ -501,6 +501,8 @@ sub upsert_labels {
         );
 
         # Adicionando recipient à grupos casos eles já existam
+        $recipient->organization_chatbot->upsert_groups_for_labels;
+        use DDP; p $recipient->organization_chatbot->groups->count;
         my $group_rs      = $recipient->organization_chatbot->groups;
         my $recipients_rs = $recipient->organization_chatbot->recipients;
 
