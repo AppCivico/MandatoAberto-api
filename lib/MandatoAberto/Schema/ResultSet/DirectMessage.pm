@@ -137,7 +137,7 @@ sub action_specs {
                 my $politician_id = delete $values{politician_id};
                 my $politician    = $self->result_source->schema->resultset('Politician')->find($politician_id);
 
-                my $access_token = $politician->fb_page_access_token;
+                my $access_token = $politician->user->organization_chatbot->fb_config->access_token;
                 die \['politician_id', 'politician does not have active Facebook page access_token'] unless $access_token;
 
                 my $campaign = $politician->user->chatbot->campaigns->create(
