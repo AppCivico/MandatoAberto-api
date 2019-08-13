@@ -105,21 +105,21 @@ sub list_GET {
         $cond = {
             'me.message'        => { '!=' => 'Participar' },
             deleted             => 0,
-            'recipient.page_id' => $page_id
+            # 'recipient.page_id' => $page_id
         }
     }
     elsif ( $filter eq 'replied' ) {
         $cond =  {
             'me.message'        => { '!=' => 'Participar' },
             reply               => \'IS NOT NULL',
-            'recipient.page_id' => $page_id
+            # 'recipient.page_id' => $page_id
         }
     }
     else {
         $cond = {
             'me.message'        => { '!=' => 'Participar' },
             deleted             => 1,
-            'recipient.page_id' => $page_id
+            # 'recipient.page_id' => $page_id
         }
     }
 
