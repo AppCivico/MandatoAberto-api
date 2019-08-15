@@ -59,8 +59,6 @@ sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }
 sub list_POST {
     my ($self, $c) = @_;
 
-    die \['premium', 'politician is not premium'] unless $c->stash->{politician}->premium;
-
     my $groups;
     if ($c->req->params->{groups}) {
         $c->req->params->{groups} =~ s/(\[|\]|(\s))//g;
