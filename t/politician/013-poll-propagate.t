@@ -50,12 +50,6 @@ db_transaction {
 
     my $poll_question_option_id = $schema->resultset("PollQuestionOption")->search(undef)->next->id;
 
-    rest_post "/api/politician/$politician_id/poll/$poll_id/propagate",
-        name    => 'propagating poll without premium',
-        is_fail => 1,
-        code    => 400
-    ;
-
     $schema->resultset("Politician")->find($politician_id)->update( { premium => 1 } );
 
     my $group_id = $schema->resultset("Group")->create(
