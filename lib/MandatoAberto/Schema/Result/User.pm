@@ -426,6 +426,36 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 ticket_assignees
+
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::Ticket>
+
+=cut
+
+__PACKAGE__->has_many(
+  "ticket_assignees",
+  "MandatoAberto::Schema::Result::Ticket",
+  { "foreign.assignee_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+=head2 tickets_assigned_by
+
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::Ticket>
+
+=cut
+
+__PACKAGE__->has_many(
+  "tickets_assigned_by",
+  "MandatoAberto::Schema::Result::Ticket",
+  { "foreign.assigned_by" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 user_confirmations
 
 Type: has_many
@@ -527,8 +557,8 @@ Composing rels: L</user_roles> -> role
 __PACKAGE__->many_to_many("roles", "user_roles", "role");
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-03-18 14:48:08
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:O4phDxTnCpJi6nCvOxUZww
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-08-20 14:02:40
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:GjWWuZ6bZwxXdfIAfMVdRg
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
