@@ -94,7 +94,10 @@ sub action_specs {
 }
 
 sub build_list {
-    my $self = shift;
+    my ($self, $page, $rows) = @_;
+
+    $page = 1  if !defined $page;
+    $rows = 20 if !defined $rows;
 
     return {
         tickets => [
@@ -110,8 +113,9 @@ sub build_list {
                     assignee_id => $_->assignee_id,
                     assigned_at => $_->assigned_at
                 }
-            } $self->all()
-        ]
+            } $self->search(undef, {page => $page, rows => $rows})->all()
+        ],
+        itens_count => $self->count
     }
 }
 

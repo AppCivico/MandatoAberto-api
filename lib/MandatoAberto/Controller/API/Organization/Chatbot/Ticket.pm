@@ -33,7 +33,7 @@ sub list_GET {
 
     return $self->status_ok(
         $c,
-        entity => $c->stash->{collection}->build_list
+        entity => $c->stash->{collection}->build_list($c->req->params->{page}, $c->req->params->{results})
     );
 }
 
@@ -51,9 +51,9 @@ sub result_GET {
 sub result_PUT {
     my ($self, $c) = @_;
 
-	if ($c->req->params->{response} && ref $c->req->params->{response} ne 'ARRAY') {
-		$c->req->params->{response} = [$c->req->params->{response}];
-	}
+    if ($c->req->params->{response} && ref $c->req->params->{response} ne 'ARRAY') {
+        $c->req->params->{response} = [$c->req->params->{response}];
+    }
 
     $c->req->params->{user_id} = $c->user->id;
 
