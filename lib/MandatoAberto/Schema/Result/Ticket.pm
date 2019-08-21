@@ -248,6 +248,21 @@ __PACKAGE__->belongs_to(
   { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
 );
 
+=head2 ticket_logs
+
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::TicketLog>
+
+=cut
+
+__PACKAGE__->has_many(
+  "ticket_logs",
+  "MandatoAberto::Schema::Result::TicketLog",
+  { "foreign.ticket_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 type
 
 Type: belongs_to
@@ -264,10 +279,137 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-08-20 14:04:21
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:utJB3z0CqTrQhZ//8J7Dsg
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-08-20 16:31:06
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:rFiDjFAytVswhqgN5xM3iQ
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
+with 'MandatoAberto::Role::Verification';
+with 'MandatoAberto::Role::Verification::TransactionalActions::DBIC';
+
+sub verifiers_specs {
+    my $self = shift;
+
+    return {
+        update => Data::Verifier->new(
+            filters => [ qw(trim) ],
+            profile => {
+                user_id => {
+                    required => 0,
+                    type     => 'Int'
+                },
+
+                assignee_id => {
+                    required => 0,
+                    type     => 'Int'
+                },
+
+                response => {
+                    required => 0,
+                    type     => 'ArrayRef'
+                },
+
+                status => {
+                    required => 0,
+                    type     => 'Str'
+                }
+            }
+        )
+    };
+}
+
+sub action_specs {
+    my ($self) = @_;
+
+    return {
+        update => sub {
+            my $r = shift;
+
+            my %values = $r->valid_values;
+            not defined $values{$_} and delete $values{$_} for keys %values;
+
+            my $ticket;
+            $self->result_source->schema->txn_do( sub {
+                my @logs;
+                my $user_id = delete $values{user_id};
+                my $user = $self->organization_chatbot->organization->users->search( { user_id => $user_id } )->next
+                    or die \['user_id', 'invalid'];
+                $user = $user->user;
+
+                if ( my $assignee_id = $values{assignee_id} ) {
+                    my $assignee = $self->organization_chatbot->organization->users->search( { user_id => $assignee_id } )->next
+                    or die \['assignee_id', 'invalid'];
+
+                    $values{assigned_by} = $user_id or die \['user_id', 'missing'];
+                    $values{assigned_at} = \'NOW()';
+
+                    my $assignee_name = $assignee->user->name;
+                    my $assignor_name = $user->name;
+
+                    push @logs, { text => "Ticket designado para: $assignee_name, por: $assignor_name" };
+                    # $self->ticket_logs->create( { text => "Ticket designado para: $assignee_name, por: $assignor_name" } );
+                }
+
+                if ( my $status = $values{status} ) {
+                    die \['status', 'invalid'] unless $status =~ /^(pending|closed|progress)$/;
+                    $values{status_last_updated_at} = \'NOW()';
+
+                    my $ticket_rs = $self->result_source->schema->resultset('Ticket');
+
+                    my $current_status = $ticket_rs->human_status($self->status);
+                    my $next_status    = $ticket_rs->human_status($status);
+                    my $user_name      = $user->name;
+
+                    push @logs, { text => "Ticket movido de '$current_status', para '$next_status', por: $user_name" };
+                }
+                use DDP; p \%values;
+                $self->ticket_logs->populate(\@logs);
+                $ticket = $self->update(\%values);
+            });
+
+            return $ticket;
+        }
+    };
+}
+
+sub build_list {
+    my $self = shift;
+
+    return {
+        (map { $_ => $self->$_ } qw(id status message response created_at closed_at assigned_at)),
+        (
+            logs => [
+                map {
+                    +{
+                        text => $_->text,
+                        created_at => $_->created_at
+                    }
+                } $self->ticket_logs->search(undef, { order_by => { '-desc' => 'me.created_at' } })->all()
+            ]
+        ),
+
+        (
+            recipient => {
+                id   => $self->recipient->id,
+                name => $self->recipient->name,
+            }
+        ),
+
+        (
+            assignee => {
+                id   => $self->assignee ? $self->assignee->id : undef,
+                name => $self->assignee ? $self->assignee->name : undef
+            }
+        ),
+
+        (
+            assignor => {
+                id   => $self->assigned_by ? $self->assigned_by->id : undef,
+                name => $self->assigned_by ? $self->assigned_by->name : undef
+            }
+        )
+    }
+}
+
 __PACKAGE__->meta->make_immutable;
 1;

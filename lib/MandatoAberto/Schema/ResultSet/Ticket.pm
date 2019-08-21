@@ -80,6 +80,7 @@ sub action_specs {
             $values{organization_chatbot_id} = $chatbot->id;
             $values{recipient_id}            = $recipient->id;
             $values{status}                  = 'pending';
+            $values{ticket_logs}             = [ { text => 'Ticket criado' } ];
 
             my $ticket;
             $self->result_source->schema->txn_do(sub{
@@ -104,11 +105,30 @@ sub build_list {
                     response   => $_->response,
                     status     => $_->status,
                     created_at => $_->created_at,
-                    closed_at  => $_->closed_at
+                    closed_at  => $_->closed_at,
+                    assigned_by => $_->assigned_by,
+                    assignee_id => $_->assignee_id,
+                    assigned_at => $_->assigned_at
                 }
             } $self->all()
         ]
     }
+}
+
+sub human_status {
+    my ($self, $status) = @_;
+
+    if ($status eq 'pending') {
+        $status = 'pendente';
+    }
+    elsif ($status eq 'closed') {
+        $status = 'fechado';
+    }
+    else {
+        $status = 'em progresso';
+    }
+
+    return $status;
 }
 
 1;
