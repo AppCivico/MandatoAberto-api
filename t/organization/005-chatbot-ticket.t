@@ -84,20 +84,20 @@ db_transaction {
     };
 
     subtest 'User | CRUD ticket' => sub {
-		api_auth_as user_id => $user_id;
+        api_auth_as user_id => $user_id;
 
         my $res = rest_get "/api/organization/$organization_id/chatbot/$chatbot_id/ticket";
 
         is ref $res->{tickets}, 'ARRAY';
-		ok defined $res->{tickets}->[0]->{status};
-		ok defined $res->{tickets}->[0]->{message};
-		ok defined $res->{tickets}->[0]->{created_at};
+        ok defined $res->{tickets}->[0]->{status};
+        ok defined $res->{tickets}->[0]->{message};
+        ok defined $res->{tickets}->[0]->{created_at};
 
         ok my $ticket_id = $res->{tickets}->[0]->{id};
-		ok my $ticket = $schema->resultset('Ticket')->find($ticket_id);
+        ok my $ticket = $schema->resultset('Ticket')->find($ticket_id);
 
-		$res = rest_get "/api/organization/$organization_id/chatbot/$chatbot_id/ticket/$ticket_id";
-		$res = rest_put "/api/organization/$organization_id/chatbot/$chatbot_id/ticket/$ticket_id",
+        $res = rest_get "/api/organization/$organization_id/chatbot/$chatbot_id/ticket/$ticket_id";
+        $res = rest_put "/api/organization/$organization_id/chatbot/$chatbot_id/ticket/$ticket_id",
             automatic_load_item => 0,
             code                => 200,
             [
@@ -108,10 +108,7 @@ db_transaction {
 
         ok $ticket->discard_changes;
 
-		$res = rest_get "/api/organization/$organization_id/chatbot/$chatbot_id/ticket/$ticket_id";
-
-        use DDP; p $res;
-
+        $res = rest_get "/api/organization/$organization_id/chatbot/$chatbot_id/ticket/$ticket_id";
     };
 
 };

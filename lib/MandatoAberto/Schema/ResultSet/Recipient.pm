@@ -502,7 +502,7 @@ sub upsert_labels {
 
         # Adicionando recipient à grupos casos eles já existam
         $recipient->organization_chatbot->upsert_groups_for_labels;
-        use DDP; p $recipient->organization_chatbot->groups->count;
+
         my $group_rs      = $recipient->organization_chatbot->groups;
         my $recipients_rs = $recipient->organization_chatbot->recipients;
 

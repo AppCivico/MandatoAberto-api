@@ -362,7 +362,7 @@ sub action_specs {
 
                     push @logs, { text => "Ticket movido de '$current_status', para '$next_status', por: $user_name" };
                 }
-                use DDP; p \%values;
+
                 $self->ticket_logs->populate(\@logs);
                 $ticket = $self->update(\%values);
             });
