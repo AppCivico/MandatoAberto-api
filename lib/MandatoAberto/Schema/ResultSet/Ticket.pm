@@ -109,9 +109,28 @@ sub build_list {
                     status     => $_->status,
                     created_at => $_->created_at,
                     closed_at  => $_->closed_at,
-                    assigned_by => $_->assigned_by,
-                    assignee_id => $_->assignee_id,
-                    assigned_at => $_->assigned_at
+                    assigned_at => $_->assigned_at,
+
+                    (
+                        recipient => {
+                            id   => $_->recipient->id,
+                            name => $_->recipient->name,
+                        }
+                    ),
+
+                    (
+                        assignee => {
+                            id   => $_->assignee ? $self->assignee->id : undef,
+                            name => $_->assignee ? $self->assignee->name : undef
+                        }
+                    ),
+
+                    (
+                        assignor => {
+                            id   => $_->assigned_by ? $self->assigned_by->id : undef,
+                            name => $_->assigned_by ? $self->assigned_by->name : undef
+                        }
+                    )
                 }
             } $self->search(undef, {page => $page, rows => $rows})->all()
         ],
