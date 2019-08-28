@@ -130,6 +130,13 @@ sub build_list {
                             id   => $_->assigned_by ? $self->assigned_by->id : undef,
                             name => $_->assigned_by ? $self->assigned_by->name : undef
                         }
+                    ),
+
+                    (
+                        type => {
+                            id   => $_->type_id,
+                            name => $_->type->name
+                        }
                     )
                 }
             } $self->search(undef, {page => $page, rows => $rows})->all()

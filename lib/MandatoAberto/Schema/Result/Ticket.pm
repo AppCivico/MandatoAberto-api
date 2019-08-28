@@ -407,6 +407,13 @@ sub build_list {
                 id   => $self->assigned_by ? $self->assigned_by->id : undef,
                 name => $self->assigned_by ? $self->assigned_by->name : undef
             }
+        ),
+
+        (
+            type => {
+                id => $self->type_id,
+                name => $self->type->name
+            }
         )
     }
 }
