@@ -6,7 +6,7 @@ BEGIN { extends "CatalystX::Eta::Controller::REST" }
 
 sub root : Chained('/api/politician/object') : PathPart('') : CaptureArgs(0) { }
 
-sub base : Chained('root') : PathPart('ticket') : CaptureArgs(0) {
+sub base : Chained('root') : PathPart('users') : CaptureArgs(0) {
     my ($self, $c) = @_;
 
     $c->stash->{collection} = $c->stash->{politician}->user->organization->users;
