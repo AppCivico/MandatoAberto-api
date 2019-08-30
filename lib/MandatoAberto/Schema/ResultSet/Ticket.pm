@@ -36,6 +36,10 @@ sub verifiers_specs {
                 message => {
                     required => 0,
                     type     => "ArrayRef",
+                },
+                data => {
+                    required => 0,
+                    type     => 'Str'
                 }
             }
         ),
@@ -77,10 +81,12 @@ sub action_specs {
                 }
             )->next or die \['fb_id', 'invalid'];
 
+            my $log_action = $self->result_source->schema->resultset('TicketLogAction')->search( { 'me.code' => 'ticket criado' } )->next;
+
             $values{organization_chatbot_id} = $chatbot->id;
             $values{recipient_id}            = $recipient->id;
             $values{status}                  = 'pending';
-            $values{ticket_logs}             = [ { text => 'Ticket criado' } ];
+            $values{ticket_logs}             = [ { text => 'Ticket criado', action_id => $log_action->id } ];
 
             my $ticket;
             $self->result_source->schema->txn_do(sub{

@@ -170,3 +170,4 @@
 0166-add-labels [0165-remove-ignored] 2019-04-12T19:15:39Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Creating the label tables
 0167-add-ticket [0166-add-labels] 2019-08-20T18:21:12Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding ticket
 0168-add-ticket_log [0167-add-ticket] 2019-08-21T13:52:53Z Lucas Ansei,,, <lucas@lucas-G750JX> # Creating the ticket_log table
+0169-add-ticket-data [0168-add-ticket_log] 2019-08-30T18:07:40Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding more data to the ticket

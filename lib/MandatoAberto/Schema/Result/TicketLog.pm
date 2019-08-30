@@ -60,6 +60,18 @@ __PACKAGE__->table("ticket_log");
   is_nullable: 0
   original: {default_value => \"now()"}
 
+=head2 action_id
+
+  data_type: 'integer'
+  is_foreign_key: 1
+  is_nullable: 0
+
+=head2 data
+
+  data_type: 'json'
+  default_value: '{}'
+  is_nullable: 0
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -74,9 +86,28 @@ __PACKAGE__->add_columns(
     is_nullable   => 0,
     original      => { default_value => \"now()" },
   },
+  "action_id",
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
+  "data",
+  { data_type => "json", default_value => "{}", is_nullable => 0 },
 );
 
 =head1 RELATIONS
+
+=head2 action
+
+Type: belongs_to
+
+Related object: L<MandatoAberto::Schema::Result::TicketLogAction>
+
+=cut
+
+__PACKAGE__->belongs_to(
+  "action",
+  "MandatoAberto::Schema::Result::TicketLogAction",
+  { id => "action_id" },
+  { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
+);
 
 =head2 ticket
 
@@ -94,8 +125,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-08-20 16:31:06
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:KaGGMhoCi4WqJkk4PJ8egw
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-08-30 11:39:43
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:FmzkB2J7prlGwFx79+w9Ag
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

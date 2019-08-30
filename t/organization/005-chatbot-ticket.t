@@ -3,6 +3,7 @@ use FindBin qw($Bin);
 use lib "$Bin/../lib";
 
 use MandatoAberto::Test::Further;
+use JSON;
 
 my $schema = MandatoAberto->model("DB");
 
@@ -56,7 +57,8 @@ db_transaction {
                 type_id        => 1,
                 chatbot_id     => $chatbot_id,
                 fb_id          => 'bar',
-                message        => 'Olá, você pode me ajudar?'
+                message        => 'Olá, você pode me ajudar?',
+				data        => to_json( { cpf => '1111111111111', email => 'foobar@email.com' } )
             ]
         ;
 
@@ -103,12 +105,13 @@ db_transaction {
             [
                 assignee_id => $user_id,
                 status      => 'progress',
-                response    => 'foobar'
+                response    => 'foobar',
             ];
 
         ok $ticket->discard_changes;
 
         $res = rest_get "/api/organization/$organization_id/chatbot/$chatbot_id/ticket/$ticket_id";
+        use DDP; p $res;
     };
 
 };

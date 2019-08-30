@@ -121,6 +121,12 @@ __PACKAGE__->table("ticket");
   is_nullable: 0
   original: {default_value => \"now()"}
 
+=head2 data
+
+  data_type: 'json'
+  default_value: '{}'
+  is_nullable: 0
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -162,6 +168,8 @@ __PACKAGE__->add_columns(
     is_nullable   => 0,
     original      => { default_value => \"now()" },
   },
+  "data",
+  { data_type => "json", default_value => "{}", is_nullable => 0 },
 );
 
 =head1 PRIMARY KEY
@@ -279,13 +287,26 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-08-20 16:31:06
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:rFiDjFAytVswhqgN5xM3iQ
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-08-30 15:02:11
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:dYlTqEU/7hzBxc9HuYfkww
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
+
+__PACKAGE__->load_components("InflateColumn::Serializer", "Core");
+__PACKAGE__->remove_columns(qw/data/);
+__PACKAGE__->add_columns(
+	data => {
+		'data_type'        => "json",
+		is_nullable        => 1,
+		'serializer_class' => 'JSON'
+	},
+);
+
 with 'MandatoAberto::Role::Verification';
 with 'MandatoAberto::Role::Verification::TransactionalActions::DBIC';
+
+use JSON;
 
 sub verifiers_specs {
     my $self = shift;
@@ -328,9 +349,19 @@ sub action_specs {
             my %values = $r->valid_values;
             not defined $values{$_} and delete $values{$_} for keys %values;
 
+            my $log_action_rs = $self->result_source->schema->resultset('TicketLogAction');
+            my $actions = {
+                'ticket criado'    => 1,
+                'ticket designado' => 2,
+                'ticket movido'    => 3,
+                'ticket cancelado' => 4
+            };
+
             my $ticket;
             $self->result_source->schema->txn_do( sub {
+                my $log_action;
                 my @logs;
+
                 my $user_id = delete $values{user_id};
                 my $user = $self->organization_chatbot->organization->users->search( { user_id => $user_id } )->next
                     or die \['user_id', 'invalid'];
@@ -346,7 +377,17 @@ sub action_specs {
                     my $assignee_name = $assignee->user->name;
                     my $assignor_name = $user->name;
 
-                    push @logs, { text => "Ticket designado para: $assignee_name, por: $assignor_name" };
+                    push @logs, {
+                        text      => "Ticket designado para: $assignee_name, por: $assignor_name",
+                        action_id => $actions->{'ticket designado'},
+                        data => to_json(
+                            {
+                                action    => 'ticket designado',
+                                impact    => 'neutral',
+                                user_name => $assignor_name
+                            }
+                        )
+                    };
                     # $self->ticket_logs->create( { text => "Ticket designado para: $assignee_name, por: $assignor_name" } );
                 }
 
@@ -360,7 +401,27 @@ sub action_specs {
                     my $next_status    = $ticket_rs->human_status($status);
                     my $user_name      = $user->name;
 
-                    push @logs, { text => "Ticket movido de '$current_status', para '$next_status', por: $user_name" };
+                    my $impact;
+
+                    if ($next_status eq 'pending') {
+                        $impact = 'negative'
+                    }
+                    else {
+                        $impact = 'positive';
+                    }
+
+                    push @logs, {
+                        text      => "Ticket movido de '$current_status', para '$next_status', por: $user_name",
+                        action_id => $actions->{'ticket movido'},
+                        data => to_json(
+                            {
+                                action    => 'ticket movido',
+                                impact    => $impact,
+                                user_name => $user_name,
+                                status    => $next_status
+                            }
+                        )
+                    };
                 }
 
                 $self->ticket_logs->populate(\@logs);
@@ -376,13 +437,14 @@ sub build_list {
     my $self = shift;
 
     return {
-        (map { $_ => $self->$_ } qw(id status message response created_at closed_at assigned_at)),
+        (map { $_ => $self->$_ } qw(id status message response created_at closed_at assigned_at data)),
         (
             logs => [
                 map {
                     +{
-                        text => $_->text,
-                        created_at => $_->created_at
+                        text       => $_->text,
+                        created_at => $_->created_at,
+                        data       => from_json($_->data)
                     }
                 } $self->ticket_logs->search(undef, { order_by => { '-desc' => 'me.created_at' } })->all()
             ]

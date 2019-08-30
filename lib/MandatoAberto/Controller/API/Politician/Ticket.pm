@@ -33,7 +33,7 @@ sub list_GET {
 
     return $self->status_ok(
         $c,
-        entity => $c->stash->{collection}->build_list
+        entity => $c->stash->{collection}->build_list($c->req->params->{page}, $c->req->params->{results})
     );
 }
 
