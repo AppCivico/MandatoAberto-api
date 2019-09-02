@@ -374,21 +374,23 @@ sub action_specs {
                     $values{assigned_by} = $user_id or die \['user_id', 'missing'];
                     $values{assigned_at} = \'NOW()';
 
-                    my $assignee_name = $assignee->user->name;
-                    my $assignor_name = $user->name;
+                    my $assignee_name    = $assignee->user->name;
+                    my $assignor_name    = $user->name;
+                    my $current_assignee = $self->assignee;
 
-                    push @logs, {
-                        text      => "Ticket designado para: $assignee_name, por: $assignor_name",
-                        action_id => $actions->{'ticket designado'},
-                        data => to_json(
-                            {
-                                action    => 'ticket designado',
-                                impact    => 'neutral',
-                                user_name => $assignor_name
-                            }
-                        )
-                    };
-                    # $self->ticket_logs->create( { text => "Ticket designado para: $assignee_name, por: $assignor_name" } );
+                    if (!$current_assignee || $current_assignee ne $assignee_name) {
+                        push @logs, {
+                            text      => "Ticket designado para: $assignee_name, por: $assignor_name",
+                            action_id => $actions->{'ticket designado'},
+                            data => to_json(
+                                {
+                                    action    => 'ticket designado',
+                                    impact    => 'neutral',
+                                    user_name => $assignor_name
+                                }
+                            )
+                        };
+                    }
                 }
 
                 if ( my $status = $values{status} ) {
