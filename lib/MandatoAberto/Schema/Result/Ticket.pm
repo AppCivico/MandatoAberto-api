@@ -296,11 +296,11 @@ __PACKAGE__->belongs_to(
 __PACKAGE__->load_components("InflateColumn::Serializer", "Core");
 __PACKAGE__->remove_columns(qw/data/);
 __PACKAGE__->add_columns(
-	data => {
-		'data_type'        => "json",
-		is_nullable        => 1,
-		'serializer_class' => 'JSON'
-	},
+    data => {
+        'data_type'        => "json",
+        is_nullable        => 1,
+        'serializer_class' => 'JSON'
+    },
 );
 
 with 'MandatoAberto::Role::Verification';
@@ -452,22 +452,25 @@ sub build_list {
 
         (
             recipient => {
-                id   => $self->recipient->id,
-                name => $self->recipient->name,
+                id      => $self->recipient->id,
+                name    => $self->recipient->name,
+                picture => $self->recipient->picture
             }
         ),
 
         (
             assignee => {
-                id   => $self->assignee ? $self->assignee->id : undef,
-                name => $self->assignee ? $self->assignee->name : undef
+                id      => $self->assignee ? $self->assignee->id : undef,
+                name    => $self->assignee ? $self->assignee->name : undef,
+                picture => $self->assignee ? $self->assignee->picture : undef,
             }
         ),
 
         (
             assignor => {
-                id   => $self->assigned_by ? $self->assigned_by->id : undef,
-                name => $self->assigned_by ? $self->assigned_by->name : undef
+                id      => $self->assigned_by ? $self->assigned_by->id : undef,
+                name    => $self->assigned_by ? $self->assigned_by->name : undef,
+                picture => $self->assigned_by ? $self->assigned_by->picture : undef,
             }
         ),
 

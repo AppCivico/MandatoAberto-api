@@ -119,22 +119,25 @@ sub build_list {
 
                     (
                         recipient => {
-                            id   => $_->recipient->id,
-                            name => $_->recipient->name,
+                            id      => $_->recipient->id,
+                            name    => $_->recipient->name,
+                            picture => $_->recipient->picture
                         }
                     ),
 
                     (
                         assignee => {
-                            id   => $_->assignee_id ? $self->assignee->id : undef,
-                            name => $_->assignee_id ? $self->assignee->name : undef
+                            id      => $_->assignee_id ? $self->assignee->id : undef,
+                            name    => $_->assignee_id ? $self->assignee->name : undef,
+                            picture => $_->assignee_id ? $self->assignee->picture : undef
                         }
                     ),
 
                     (
                         assignor => {
-                            id   => $_->assigned_by ? $self->assigned_by->id : undef,
-                            name => $_->assigned_by ? $self->assigned_by->name : undef
+                            id      => $_->assigned_by ? $self->assigned_by->id : undef,
+                            name    => $_->assigned_by ? $self->assigned_by->name : undef,
+                            picture => $_->assigned_by ? $self->assigned_by->picture : undef
                         }
                     ),
 
