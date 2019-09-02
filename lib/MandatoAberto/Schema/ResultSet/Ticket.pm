@@ -126,8 +126,8 @@ sub build_list {
 
                     (
                         assignee => {
-                            id   => $_->assignee ? $self->assignee->id : undef,
-                            name => $_->assignee ? $self->assignee->name : undef
+                            id   => $_->assignee_id ? $self->assignee->id : undef,
+                            name => $_->assignee_id ? $self->assignee->name : undef
                         }
                     ),
 
