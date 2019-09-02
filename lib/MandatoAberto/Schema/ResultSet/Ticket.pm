@@ -127,17 +127,17 @@ sub build_list {
 
                     (
                         assignee => {
-                            id      => $_->assignee_id ? $self->assignee->id : undef,
-                            name    => $_->assignee_id ? $self->assignee->name : undef,
-                            picture => $_->assignee_id ? $self->assignee->picture : undef
+                            id      => $_->assignee_id ? $_->assignee->id : undef,
+                            name    => $_->assignee_id ? $_->assignee->name : undef,
+                            picture => $_->assignee_id ? $_->assignee->picture : undef
                         }
                     ),
 
                     (
                         assignor => {
-                            id      => $_->assigned_by ? $self->assigned_by->id : undef,
-                            name    => $_->assigned_by ? $self->assigned_by->name : undef,
-                            picture => $_->assigned_by ? $self->assigned_by->picture : undef
+                            id      => $_->assigned_by ? $_->assigned_by->id : undef,
+                            name    => $_->assigned_by ? $_->assigned_by->name : undef,
+                            picture => $_->assigned_by ? $_->assigned_by->picture : undef
                         }
                     ),
 
