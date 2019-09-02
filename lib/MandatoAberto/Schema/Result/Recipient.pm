@@ -300,6 +300,36 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 questionnaire_answers
+
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::QuestionnaireAnswer>
+
+=cut
+
+__PACKAGE__->has_many(
+  "questionnaire_answers",
+  "MandatoAberto::Schema::Result::QuestionnaireAnswer",
+  { "foreign.recipient_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+=head2 questionnaire_stashes
+
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::QuestionnaireStash>
+
+=cut
+
+__PACKAGE__->has_many(
+  "questionnaire_stashes",
+  "MandatoAberto::Schema::Result::QuestionnaireStash",
+  { "foreign.recipient_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 recipient_labels
 
 Type: has_many
@@ -331,8 +361,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-08-20 14:02:40
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:KL9y44oPL/3+zXZh2Ukz1Q
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-09-02 15:25:38
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:AW77xGe9HZMxpTDL67VfUw
 
 __PACKAGE__->load_components("InflateColumn::Serializer", "Core");
 __PACKAGE__->remove_column('groups');
