@@ -376,9 +376,9 @@ sub action_specs {
 
                     my $assignee_name    = $assignee->user->name;
                     my $assignor_name    = $user->name;
-                    my $current_assignee = $self->assignee->name;
+                    my $current_assignee = $self->assignee;
 
-                    if (!$current_assignee || $current_assignee ne $assignee_name) {
+                    if (!$current_assignee || $current_assignee && $current_assignee->name ne $assignee_name) {
                         push @logs, {
                             text      => "Ticket designado para: $assignee_name, por: $assignor_name",
                             action_id => $actions->{'ticket designado'},
