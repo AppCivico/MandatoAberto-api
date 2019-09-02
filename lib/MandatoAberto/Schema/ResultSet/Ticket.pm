@@ -158,13 +158,13 @@ sub human_status {
     my ($self, $status) = @_;
 
     if ($status eq 'pending') {
-        $status = 'pendente';
+        $status = 'Aberto';
     }
     elsif ($status eq 'closed') {
-        $status = 'fechado';
+        $status = 'Fechado';
     }
     else {
-        $status = 'em progresso';
+        $status = 'Em andamento';
     }
 
     return $status;
