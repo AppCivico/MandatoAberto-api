@@ -401,27 +401,29 @@ sub action_specs {
                     my $next_status    = $ticket_rs->human_status($status);
                     my $user_name      = $user->name;
 
-                    my $impact;
+                    if ( $current_status ne $next_status ) {
+                        my $impact;
 
-                    if ($next_status eq 'pending') {
-                        $impact = 'negative'
-                    }
-                    else {
-                        $impact = 'positive';
-                    }
+                        if ($next_status eq 'pending') {
+                            $impact = 'negative'
+                        }
+                        else {
+                            $impact = 'positive';
+                        }
 
-                    push @logs, {
-                        text      => "Ticket movido de '$current_status', para '$next_status', por: $user_name",
-                        action_id => $actions->{'ticket movido'},
-                        data => to_json(
-                            {
-                                action    => 'ticket movido',
-                                impact    => $impact,
-                                user_name => $user_name,
-                                status    => $next_status
-                            }
-                        )
-                    };
+                        push @logs, {
+                            text      => "Ticket movido de '$current_status', para '$next_status', por: $user_name",
+                            action_id => $actions->{'ticket movido'},
+                            data => to_json(
+                                {
+                                    action    => 'ticket movido',
+                                    impact    => $impact,
+                                    user_name => $user_name,
+                                    status    => $next_status
+                                }
+                            )
+                        };
+                    }
                 }
 
                 $self->ticket_logs->populate(\@logs);
