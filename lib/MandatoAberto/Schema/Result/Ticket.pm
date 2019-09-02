@@ -376,7 +376,7 @@ sub action_specs {
 
                     my $assignee_name    = $assignee->user->name;
                     my $assignor_name    = $user->name;
-                    my $current_assignee = $self->assignee;
+                    my $current_assignee = $self->assignee->name;
 
                     if (!$current_assignee || $current_assignee ne $assignee_name) {
                         push @logs, {
