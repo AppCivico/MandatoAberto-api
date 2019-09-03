@@ -414,7 +414,7 @@ sub action_specs {
                                     action    => 'ticket designado',
                                     impact    => 'neutral',
                                     user_name => $assignor_name,
-                                    status    => $self->status
+                                    status    => $self->status_human_name
                                 }
                             )
                         };
@@ -502,7 +502,7 @@ sub action_specs {
                                     action    => 'ticket recebeu uma nova resposta',
                                     impact    => 'positive',
                                     user_name => $user_name,
-                                    status    => $self->status
+                                    status    => $self->status_human_name
                                 }
                             )
                         };
@@ -598,6 +598,28 @@ sub build_list {
             }
         )
     }
+}
+
+sub status_human_name {
+    my $self = shift;
+
+    my $status = $self->status;
+    my $ret;
+
+    if ($status eq 'pending') {
+        $ret = 'Pendente'
+    }
+    elsif ($status eq 'progress') {
+        $ret = 'Em progresso'
+    }
+    elsif ($status eq 'closed') {
+        $ret = 'Fechado'
+    }
+    else {
+        $ret = 'Cancelado'
+    }
+
+    return $ret;
 }
 
 __PACKAGE__->meta->make_immutable;
