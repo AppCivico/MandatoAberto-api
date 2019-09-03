@@ -34,6 +34,14 @@ db_transaction {
                 address_state_id => 1,
                 address_city_id  => 1,
             }
+        );
+
+        $schema->resultset('OrganizationChatbotFacebookConfig')->create(
+            {
+                organization_chatbot_id => $chatbot_id,
+                page_id => 'foobar',
+                access_token => 'foobar'
+            }
         )
     };
 

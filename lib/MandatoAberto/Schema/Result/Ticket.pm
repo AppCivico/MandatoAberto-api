@@ -92,11 +92,13 @@ __PACKAGE__->table("ticket");
 =head2 message
 
   data_type: 'text[]'
-  is_nullable: 1
+  default_value: '{}'::text[]
+  is_nullable: 0
 
 =head2 response
 
   data_type: 'text[]'
+  default_value: '{}'::text[]
   is_nullable: 1
 
 =head2 progress_started_at
@@ -152,9 +154,17 @@ __PACKAGE__->add_columns(
   "assigned_at",
   { data_type => "timestamp", is_nullable => 1 },
   "message",
-  { data_type => "text[]", is_nullable => 1 },
+  {
+    data_type     => "text[]",
+    default_value => \"'{}'::text[]",
+    is_nullable   => 0,
+  },
   "response",
-  { data_type => "text[]", is_nullable => 1 },
+  {
+    data_type     => "text[]",
+    default_value => \"'{}'::text[]",
+    is_nullable   => 1,
+  },
   "progress_started_at",
   { data_type => "timestamp", is_nullable => 1 },
   "closed_at",
@@ -287,8 +297,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-08-30 15:02:11
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:dYlTqEU/7hzBxc9HuYfkww
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-09-03 11:06:54
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:WBo5Ih87ldqgisFsy9Xv2A
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
@@ -307,6 +317,15 @@ with 'MandatoAberto::Role::Verification';
 with 'MandatoAberto::Role::Verification::TransactionalActions::DBIC';
 
 use JSON;
+use WebService::HttpCallback::Async;
+
+has _httpcb => (
+    is         => "ro",
+    isa        => "WebService::HttpCallback::Async",
+    lazy_build => 1,
+);
+
+sub _build__httpcb { WebService::HttpCallback::Async->instance }
 
 sub verifiers_specs {
     my $self = shift;
@@ -327,7 +346,12 @@ sub verifiers_specs {
 
                 response => {
                     required => 0,
-                    type     => 'ArrayRef'
+                    type     => 'Str'
+                },
+
+                message => {
+                    required => 0,
+                    type     => 'Str'
                 },
 
                 status => {
@@ -426,6 +450,66 @@ sub action_specs {
                             )
                         };
                     }
+                }
+
+                if ( my $response = delete $values{response} ) {
+                    my $responses = $self->response;
+                    my $messages  = $self->message;
+
+                    my $messages_size  = scalar @{ $messages };
+                    my $responses_size = scalar @{ $responses };
+
+                    if ( $responses_size > $messages_size ) {
+                        my $last_response = pop @{$responses};
+                        $response         = $last_response . "\n" . $response;
+                    }
+                    push @{$responses}, $response;
+
+                    my $access_token = $self->organization_chatbot->fb_config->access_token;
+                    my $text = 'Você possui uma nova atualização para o seu ticket! #' . $self->id . "\n";
+                    $text   .= "Mensagem: $response";
+
+                    $self->_httpcb->add(
+                        url     => $ENV{FB_API_URL} . '/me/messages?access_token=' . $access_token,
+                        method  => "post",
+                        headers => 'Content-Type: application/json',
+                        body    => to_json {
+                            messaging_type => "UPDATE",
+                            recipient => {
+                                id => $self->recipient->fb_id
+                            },
+                            message => {
+                                text          => $text,
+                                quick_replies => [
+                                    {
+                                        content_type => 'text',
+                                        title        => 'Voltar ao início',
+                                        payload      => 'mainMenu'
+                                    }
+                                ]
+                            }
+                        }
+                    );
+
+                    $values{response} = $responses;
+                }
+
+                if ( my $message = delete $values{message} ) {
+                    my $responses = $self->response;
+                    my $messages  = $self->message;
+
+                    my $messages_size  = scalar @{ $messages };
+                    my $responses_size = scalar @{ $responses };
+
+                    if ( $messages_size > $responses_size ) {
+                        my $last_message = pop @{$messages};
+                        $message         = $last_message . "\n" . $message;
+                    }
+                    push @{$messages}, $message;
+
+                    $values{message} = $messages;
+
+                    # TODO adicionar email
                 }
 
                 $self->ticket_logs->populate(\@logs);

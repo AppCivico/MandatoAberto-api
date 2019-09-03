@@ -51,10 +51,6 @@ sub result_GET {
 sub result_PUT {
     my ($self, $c) = @_;
 
-    if ($c->req->params->{response} && ref $c->req->params->{response} ne 'ARRAY') {
-        $c->req->params->{response} = [$c->req->params->{response}];
-    }
-
     $c->req->params->{user_id} = $c->user->id;
 
     my $ticket = $c->stash->{ticket}->execute(

@@ -51,12 +51,8 @@ sub result_GET {
 sub result_PUT {
     my ($self, $c) = @_;
 
-	if ($c->req->params->{response} && ref $c->req->params->{response} ne 'ARRAY') {
-		$c->req->params->{response} = [$c->req->params->{response}];
-	}
-
     $c->req->params->{user_id} = $c->user->id;
-
+    use DDP; p $c->req->params;
     my $ticket = $c->stash->{ticket}->execute(
         $c,
         for  => 'update',

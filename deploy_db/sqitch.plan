@@ -172,3 +172,4 @@
 0168-add-ticket_log [0167-add-ticket] 2019-08-21T13:52:53Z Lucas Ansei,,, <lucas@lucas-G750JX> # Creating the ticket_log table
 0169-add-ticket-data [0168-add-ticket_log] 2019-08-30T18:07:40Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding more data to the ticket
 0170-add-questionnaire [0169-add-ticket-data] 2019-09-03T10:07:55Z Lucas Ansei,,, <lucas@lucas-G750JX> # Adding the questionnaire data
+0171-add-default-ticket [0170-add-questionnaire] 2019-09-03T14:29:25Z Lucas Ansei,,, <lucas@lucas-G750JX> # Adding default values to the responses and messages to the ticket
