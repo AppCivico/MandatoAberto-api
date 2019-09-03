@@ -375,10 +375,12 @@ sub action_specs {
 
             my $log_action_rs = $self->result_source->schema->resultset('TicketLogAction');
             my $actions = {
-                'ticket criado'    => 1,
-                'ticket designado' => 2,
-                'ticket movido'    => 3,
-                'ticket cancelado' => 4
+                'ticket criado'        => 1,
+                'ticket designado'     => 2,
+                'ticket movido'        => 3,
+                'ticket cancelado'     => 4,
+                'ticket nova resposta' => 5,
+                'ticket nova mensagem' => 6
             };
 
             my $ticket;
@@ -390,6 +392,7 @@ sub action_specs {
                 my $user = $self->organization_chatbot->organization->users->search( { user_id => $user_id } )->next
                     or die \['user_id', 'invalid'];
                 $user = $user->user;
+                my $user_name = $user->name;
 
                 if ( my $assignee_id = $values{assignee_id} ) {
                     my $assignee = $self->organization_chatbot->organization->users->search( { user_id => $assignee_id } )->next
@@ -410,7 +413,8 @@ sub action_specs {
                                 {
                                     action    => 'ticket designado',
                                     impact    => 'neutral',
-                                    user_name => $assignor_name
+                                    user_name => $assignor_name,
+                                    status    => $self->status
                                 }
                             )
                         };
@@ -425,7 +429,6 @@ sub action_specs {
 
                     my $current_status = $ticket_rs->human_status($self->status);
                     my $next_status    = $ticket_rs->human_status($status);
-                    my $user_name      = $user->name;
 
                     if ( $current_status ne $next_status ) {
                         my $impact;
@@ -491,6 +494,19 @@ sub action_specs {
                         }
                     );
 
+                    push @logs, {
+                            text      => "Ticket atualizado, nova resposta adicionada '$response', por: $user_name",
+                            action_id => $actions->{'ticket nova resposta'},
+                            data => to_json(
+                                {
+                                    action    => 'ticket recebeu uma nova resposta',
+                                    impact    => 'positive',
+                                    user_name => $user_name,
+                                    status    => $self->status
+                                }
+                            )
+                        };
+
                     $values{response} = $responses;
                 }
 
@@ -506,6 +522,19 @@ sub action_specs {
                         $message         = $last_message . "\n" . $message;
                     }
                     push @{$messages}, $message;
+
+                    push @logs, {
+                            text      => "Ticket atualizado, nova mensagem recebida '$message'",
+                            action_id => $actions->{'ticket nova mensagem'},
+                            data => to_json(
+                                {
+                                    action    => 'ticket recebeu uma nova mensagem',
+                                    impact    => 'negative',
+                                    user_name => $self->recipient->name,
+                                    status    => $self->status
+                                }
+                            )
+                        };
 
                     $values{message} = $messages;
 

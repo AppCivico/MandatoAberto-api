@@ -9,6 +9,7 @@ with "MandatoAberto::Role::Verification";
 with 'MandatoAberto::Role::Verification::TransactionalActions::DBIC';
 
 use Data::Verifier;
+use JSON;
 
 sub verifiers_specs {
     my $self = shift;
@@ -86,7 +87,19 @@ sub action_specs {
             $values{organization_chatbot_id} = $chatbot->id;
             $values{recipient_id}            = $recipient->id;
             $values{status}                  = 'pending';
-            $values{ticket_logs}             = [ { text => 'Ticket criado', action_id => $log_action->id } ];
+            $values{ticket_logs}             = [
+                {
+                    text      => 'Ticket criado',
+                    action_id => $log_action->id,
+                    data      => to_json(
+                        {
+                            status    => 'pending',
+                            action    => 'ticket criado',
+                            impact    => 'neutral',
+                        }
+                    )
+                }
+            ];
 
             my $ticket;
             $self->result_source->schema->txn_do(sub{
