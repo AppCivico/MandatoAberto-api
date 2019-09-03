@@ -613,7 +613,7 @@ sub status_human_name {
         $ret = 'Pendente'
     }
     elsif ($status eq 'progress') {
-        $ret = 'Em progresso'
+        $ret = 'Em andamento'
     }
     elsif ($status eq 'closed') {
         $ret = 'Fechado'
