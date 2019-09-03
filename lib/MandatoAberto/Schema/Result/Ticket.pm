@@ -406,7 +406,7 @@ sub action_specs {
                     if ( $current_status ne $next_status ) {
                         my $impact;
 
-                        if ($next_status eq 'pending') {
+                        if ($next_status eq 'Aberto') {
                             $impact = 'negative'
                         }
                         else {
