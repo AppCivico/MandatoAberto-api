@@ -533,7 +533,7 @@ sub action_specs {
                                     action    => 'ticket recebeu uma nova mensagem',
                                     impact    => 'negative',
                                     user_name => $self->recipient->name,
-                                    status    => $self->status
+                                    status    => $self->status_human_name
                                 }
                             )
                         };
