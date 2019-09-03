@@ -216,7 +216,7 @@ sub next_pending_question {
         my @pending_questions  = sort { $a <=> $b } grep { my $k = $_; !grep { $question_map->{$k} eq $_ } @answered_questions } sort keys %{ $question_map };
 
         if (scalar @pending_questions > 0) {
-            $has_more   = 1;
+            $has_more   = scalar @pending_questions == 1 ? 0 : 1;
             $count_more = scalar @pending_questions - 1;
 
             my $next_question_code = scalar @pending_questions > 0 ? $question_map->{ $pending_questions[0] } : undef;

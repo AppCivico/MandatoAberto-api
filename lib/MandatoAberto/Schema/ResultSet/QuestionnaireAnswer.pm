@@ -48,7 +48,6 @@ sub action_specs {
             $self->result_source->schema->txn_do( sub {
                 # Pegando recipient pelo fb_id
                 my $fb_id = delete $values{fb_id};
-                use DDP; p $fb_id;
                 my $recipient = $self->result_source->schema->resultset('Recipient')->search( { fb_id => $fb_id } )->next
                   or die \['fb_id', 'invalid'];
                 $values{recipient_id} = $recipient->id;
@@ -61,7 +60,6 @@ sub action_specs {
                 $values{questionnaire_map_id} = $question->questionnaire_map_id;
 
                 # Caso seja a última pergunta, devo atualizar o boolean de quiz preenchido do recipient
-                use DDP; p $answer;
                 $answer = $self->create(\%values);
                 $answer->update_stash;
 

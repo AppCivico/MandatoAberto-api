@@ -83,7 +83,6 @@ db_transaction {
                 type           => $type,
                 fb_id          => 'bar'
             ];
-        use DDP; p $res;
     };
 
     subtest 'Chatbot | Answer' => sub {
@@ -94,11 +93,11 @@ db_transaction {
                 type           => $type,
                 fb_id          => 'bar'
             ];
-        use DDP;
 
         my $code = $res->{question}->{code};
         $res = rest_post '/api/chatbot/questionnaire/answer',
             automatic_load_item => 0,
+            code => 200,
             [
                 security_token => $security_token,
                 type           => $type,
@@ -107,87 +106,66 @@ db_transaction {
                 answer_value   => '1'
             ];
 
-            $res = rest_get '/api/chatbot/questionnaire/pending',
+        $res = rest_get '/api/chatbot/questionnaire/pending',
             stash => 'tt1',
             [
                 security_token => $security_token,
                 type           => $type,
                 fb_id          => 'bar'
             ];
-        p $res;
+        $code = $res->{question}->{code};
+
+        $res = rest_post '/api/chatbot/questionnaire/answer',
+            automatic_load_item => 0,
+            code => 200,
+            [
+                security_token => $security_token,
+                type           => $type,
+                fb_id          => 'bar',
+                code           => $code,
+                answer_value   => '1'
+            ];
+
+        $res = rest_get '/api/chatbot/questionnaire/pending',
+            stash => 'tt1',
+            [
+                security_token => $security_token,
+                type           => $type,
+                fb_id          => 'bar'
+            ];
+        $code = $res->{question}->{code};
+
+        $res = rest_post '/api/chatbot/questionnaire/answer',
+            automatic_load_item => 0,
+            code => 200,
+            [
+                security_token => $security_token,
+                type           => $type,
+                fb_id          => 'bar',
+                code           => $code,
+                answer_value   => '1'
+            ];
+
+        $res = rest_get '/api/chatbot/questionnaire/pending',
+            stash => 'tt1',
+            [
+                security_token => $security_token,
+                type           => $type,
+                fb_id          => 'bar'
+            ];
+        $code = $res->{question}->{code};
+
+        $res = rest_post '/api/chatbot/questionnaire/answer',
+            automatic_load_item => 0,
+            code => 200,
+            [
+                security_token => $security_token,
+                type           => $type,
+                fb_id          => 'bar',
+                code           => $code,
+                answer_value   => '1'
+            ];
     };
-
-    # subtest 'Chatbot | Cr' => sub {
-    #     # Listando tipos de ticket
-
-    #     is ref $ticket_types->{ticket_types}, 'ARRAY';
-    #     ok defined $ticket_types->{ticket_types}->[0]->{id};
-    #     ok defined $ticket_types->{ticket_types}->[0]->{name};
-
-    #     # Criando ticket
-    #     my $res = rest_post "/api/chatbot/ticket",
-    #         automatic_load_item => 0,
-    #         [
-    #             security_token => $security_token,
-    #             type_id        => 1,
-    #             chatbot_id     => $chatbot_id,
-    #             fb_id          => 'bar',
-    #             message        => 'Olá, você pode me ajudar?',
-	# 			data        => to_json( { cpf => '1111111111111', email => 'foobar@email.com' } )
-    #         ]
-    #     ;
-
-    #     ok defined $res->{id};
-
-    #     ok my $ticket = $schema->resultset('Ticket')->find($res->{id});
-    #     is $ticket->status, 'pending';
-    #     is ref $ticket->message, 'ARRAY';
-
-    #     $res = rest_get "/api/chatbot/ticket",
-    #         automatic_load_item => 0,
-    #         [
-    #             security_token => $security_token,
-    #             fb_id          => 'bar',
-    #         ]
-    #     ;
-
-    #     is ref $res->{tickets}, 'ARRAY';
-    #     ok exists $res->{tickets}->[0]->{id};
-    #     ok exists $res->{tickets}->[0]->{closed_at};
-    #     ok exists $res->{tickets}->[0]->{message};
-    #     ok exists $res->{tickets}->[0]->{created_at};
-    #     ok exists $res->{tickets}->[0]->{status};
-    #     ok exists $res->{tickets}->[0]->{response};
-    # };
-
-    # subtest 'User | CRUD ticket' => sub {
-    #     api_auth_as user_id => $user_id;
-
-    #     my $res = rest_get "/api/organization/$organization_id/chatbot/$chatbot_id/ticket";
-
-    #     is ref $res->{tickets}, 'ARRAY';
-    #     ok defined $res->{tickets}->[0]->{status};
-    #     ok defined $res->{tickets}->[0]->{message};
-    #     ok defined $res->{tickets}->[0]->{created_at};
-
-    #     ok my $ticket_id = $res->{tickets}->[0]->{id};
-    #     ok my $ticket = $schema->resultset('Ticket')->find($ticket_id);
-
-    #     $res = rest_get "/api/organization/$organization_id/chatbot/$chatbot_id/ticket/$ticket_id";
-    #     $res = rest_put "/api/organization/$organization_id/chatbot/$chatbot_id/ticket/$ticket_id",
-    #         automatic_load_item => 0,
-    #         code                => 200,
-    #         [
-    #             assignee_id => $user_id,
-    #             status      => 'progress',
-    #             response    => 'foobar',
-    #         ];
-
-    #     ok $ticket->discard_changes;
-
-    #     $res = rest_get "/api/organization/$organization_id/chatbot/$chatbot_id/ticket/$ticket_id";
-    #     use DDP; p $res;
-    # };
 
 };
 
