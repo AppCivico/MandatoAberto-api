@@ -394,33 +394,6 @@ sub action_specs {
                 $user = $user->user;
                 my $user_name = $user->name;
 
-                if ( my $assignee_id = $values{assignee_id} ) {
-                    my $assignee = $self->organization_chatbot->organization->users->search( { user_id => $assignee_id } )->next
-                    or die \['assignee_id', 'invalid'];
-
-                    $values{assigned_by} = $user_id or die \['user_id', 'missing'];
-                    $values{assigned_at} = \'NOW()';
-
-                    my $assignee_name    = $assignee->user->name;
-                    my $assignor_name    = $user->name;
-                    my $current_assignee = $self->assignee;
-
-                    if (!$current_assignee || $current_assignee && $current_assignee->name ne $assignee_name) {
-                        push @logs, {
-                            text      => "Ticket designado para: $assignee_name, por: $assignor_name",
-                            action_id => $actions->{'ticket designado'},
-                            data => to_json(
-                                {
-                                    action    => 'ticket designado',
-                                    impact    => 'neutral',
-                                    user_name => $assignor_name,
-                                    status    => $self->status_human_name
-                                }
-                            )
-                        };
-                    }
-                }
-
                 if ( my $status = $values{status} ) {
                     die \['status', 'invalid'] unless $status =~ /^(pending|closed|progress)$/;
                     $values{status_last_updated_at} = \'NOW()';
@@ -449,6 +422,35 @@ sub action_specs {
                                     impact    => $impact,
                                     user_name => $user_name,
                                     status    => $next_status
+                                }
+                            )
+                        };
+                    }
+
+                    $self->update( { status => $values{status} } );
+                }
+
+                if ( my $assignee_id = $values{assignee_id} ) {
+                    my $assignee = $self->organization_chatbot->organization->users->search( { user_id => $assignee_id } )->next
+                    or die \['assignee_id', 'invalid'];
+
+                    $values{assigned_by} = $user_id or die \['user_id', 'missing'];
+                    $values{assigned_at} = \'NOW()';
+
+                    my $assignee_name    = $assignee->user->name;
+                    my $assignor_name    = $user->name;
+                    my $current_assignee = $self->assignee;
+
+                    if (!$current_assignee || $current_assignee && $current_assignee->name ne $assignee_name) {
+                        push @logs, {
+                            text      => "Ticket designado para: $assignee_name, por: $assignor_name",
+                            action_id => $actions->{'ticket designado'},
+                            data => to_json(
+                                {
+                                    action    => 'ticket designado',
+                                    impact    => 'neutral',
+                                    user_name => $assignor_name,
+                                    status    => $self->status_human_name
                                 }
                             )
                         };
