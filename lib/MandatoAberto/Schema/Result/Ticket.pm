@@ -428,6 +428,7 @@ sub action_specs {
                     }
 
                     $self->update( { status => $values{status} } );
+                    $self->discard_changes;
                 }
 
                 if ( my $assignee_id = $values{assignee_id} ) {
