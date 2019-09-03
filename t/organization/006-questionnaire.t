@@ -165,6 +165,15 @@ db_transaction {
                 code           => $code,
                 answer_value   => '1'
             ];
+
+        $res = rest_post '/api/chatbot/questionnaire/reset',
+            automatic_load_item => 0,
+            code => 200,
+            [
+                security_token => $security_token,
+                type           => $type,
+                fb_id          => 'bar',
+            ];
     };
 
 };

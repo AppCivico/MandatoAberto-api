@@ -185,9 +185,9 @@ __PACKAGE__->belongs_to(
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
 
 sub parsed {
-	my ($self) = @_;
+    my ($self) = @_;
 
-	return from_json( $self->value );
+    return from_json( $self->value );
 }
 
 sub answered_questions {
@@ -267,6 +267,26 @@ sub remove_question {
     }
 
     return $self->update( { value => to_json( $map ) } );
+}
+
+sub reset {
+    my $self = shift;
+
+    $self->result_source->schema->txn_do( sub {
+        $self->recipient->questionnaire_answers->search(
+            { 'me.questionnaire_map_id' => $self->questionnaire_map_id }
+        )->delete;
+
+        $self->update(
+            {
+                value      => $self->questionnaire_map->map,
+                updated_at => \'NOW()',
+                finished   => 0,
+            }
+        )
+    });
+
+    return 1;
 }
 
 __PACKAGE__->meta->make_immutable;
