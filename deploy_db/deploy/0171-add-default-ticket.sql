@@ -5,7 +5,9 @@ BEGIN;
 
 ALTER TABLE ticket
     ALTER COLUMN message SET DEFAULT '{}',
-    ALTER COLUMN response SET DEFAULT '{}',
+    ALTER COLUMN response SET DEFAULT '{}';
+
+ALTER TABLE ticket
     ALTER COLUMN message SET NOT NULL,
     ALTER COLUMN message SET NOT NULL;
 
