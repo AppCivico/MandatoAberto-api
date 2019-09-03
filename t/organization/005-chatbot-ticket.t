@@ -111,7 +111,6 @@ db_transaction {
         ok $ticket->discard_changes;
 
         $res = rest_get "/api/organization/$organization_id/chatbot/$chatbot_id/ticket/$ticket_id";
-        use DDP; p $res;
     };
 
 };
