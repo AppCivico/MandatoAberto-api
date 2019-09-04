@@ -607,7 +607,7 @@ sub status_human_name {
     my $ret;
 
     if ($status eq 'pending') {
-        $ret = 'Em aberto'
+        $ret = 'Aberto'
     }
     elsif ($status eq 'progress') {
         $ret = 'Em andamento'
