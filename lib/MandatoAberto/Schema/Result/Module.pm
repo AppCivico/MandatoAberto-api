@@ -69,6 +69,11 @@ __PACKAGE__->table("module");
   data_type: 'integer'
   is_nullable: 1
 
+=head2 class
+
+  data_type: 'text'
+  is_nullable: 1
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -87,6 +92,8 @@ __PACKAGE__->add_columns(
   },
   "standard_weight",
   { data_type => "integer", is_nullable => 1 },
+  "class",
+  { data_type => "text", is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -160,8 +167,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-03-28 11:40:20
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:iVg5rybiGfKuuRj5A0fA8Q
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-09-04 10:04:29
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:a4+Tj8ScmKoc1scupJPWpg
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

@@ -34,6 +34,17 @@ sub base : Chained('root') : PathPart('dashboard') : CaptureArgs(0) { }
 
 sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }
 
+sub list_GET {
+    my ($self, $c) = @_;
+
+    my $chatbot = $c->stash->{politician}->user->organization_chatbot;
+
+    return $self->status_ok(
+        $c,
+        entity => $chatbot->build_dashboard
+    )
+}
+
 sub list_new : Chained('base') : PathPart('new') : Args(0) : ActionClass('REST') { }
 
 sub list_new_GET {

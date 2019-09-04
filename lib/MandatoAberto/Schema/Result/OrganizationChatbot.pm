@@ -640,5 +640,26 @@ sub upsert_groups_for_labels {
     return 1;
 }
 
+sub build_dashboard {
+    my $self = shift;
+
+    return {
+        modules => [
+            map {
+                my $module = $_->module;
+                my $rs     = $self->result_source->schema->resultset($module->class)->search_rs( { 'me.organization_chatbot_id' => $self->id } );
+
+                +{
+                    name    => $module->human_name,
+                    metrics => $rs->extract_metrics(politician_id => $self->organization->user->id)
+                }
+            } $self->organization->organization_modules->search(
+                { 'module.class' => \'IS NOT NULL' },
+                { join => 'module' }
+              )->all()
+        ]
+    }
+}
+
 __PACKAGE__->meta->make_immutable;
 1;

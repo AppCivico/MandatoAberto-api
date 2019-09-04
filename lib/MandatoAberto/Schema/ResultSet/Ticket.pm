@@ -205,4 +205,32 @@ sub human_status {
     return $status;
 }
 
+sub extract_metrics {
+    my ($self, %opts) = @_;
+
+    my $count_open     = $self->search({'me.status' => 'pending'})->count;
+    my $count_progress = $self->search({'me.status' => 'progress'})->count;
+    my $count_closed   = $self->search({'me.status' => 'closed'})->count;
+
+    return {
+        count           => $self->count,
+        description     => 'Aqui você poderá métricas sobre os seus tickets.',
+        suggested_actions => [],
+        sub_metrics => [
+            {
+                text              => $count_open . ' tickets em aberto',
+                suggested_actions => []
+            },
+            {
+                text              => $count_progress . ' tickets em progresso',
+                suggested_actions => []
+            },
+            {
+                text              => $count_closed . ' tickets fechados',
+                suggested_actions => []
+            }
+        ]
+    }
+}
+
 1;

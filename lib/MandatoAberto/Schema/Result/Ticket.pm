@@ -99,7 +99,7 @@ __PACKAGE__->table("ticket");
 
   data_type: 'text[]'
   default_value: '{}'::text[]
-  is_nullable: 1
+  is_nullable: 0
 
 =head2 progress_started_at
 
@@ -163,7 +163,7 @@ __PACKAGE__->add_columns(
   {
     data_type     => "text[]",
     default_value => \"'{}'::text[]",
-    is_nullable   => 1,
+    is_nullable   => 0,
   },
   "progress_started_at",
   { data_type => "timestamp", is_nullable => 1 },
@@ -297,8 +297,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-09-03 11:06:54
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:WBo5Ih87ldqgisFsy9Xv2A
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-09-04 09:54:05
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:DXN81R5giuMUsu/P+4NE7w
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

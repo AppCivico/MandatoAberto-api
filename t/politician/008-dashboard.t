@@ -238,7 +238,12 @@ db_transaction {
             ok( defined $res->{metrics}->[0]->{text}, 'text is defined' );
             ok( defined $res->{metrics}->[0]->{name}, 'name is defined' );
         }
-    }
+    };
+
+	my $res = rest_get "/api/politician/$politician_id/dashboard",
+	  name  => 'get new dashboard',
+	  stash => 'd2',
+	  list  => 1;
 };
 
 done_testing();
