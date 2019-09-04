@@ -536,6 +536,7 @@ sub action_specs {
                         };
 
                     $values{response} = $responses;
+                    $self->update( { response => [] } );
                 }
 
                 if ( my $message = delete $values{message} ) {
@@ -565,6 +566,7 @@ sub action_specs {
                         };
 
                     $values{message} = $messages;
+					$self->update( { message => [] } );
 
                     # TODO adicionar email
                 }

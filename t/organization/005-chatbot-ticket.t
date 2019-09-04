@@ -97,6 +97,14 @@ db_transaction {
             code => 200,
             [
                 security_token => $security_token,
+                message        => 'new message',
+            ]
+        ;
+
+        $res = rest_put "/api/chatbot/ticket/$ticket_id",
+            code => 200,
+            [
+                security_token => $security_token,
                 status         => 'canceled',
             ]
         ;
