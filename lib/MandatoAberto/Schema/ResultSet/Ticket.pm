@@ -119,7 +119,7 @@ sub build_list {
     $rows = 20 if !defined $rows;
 
     if ( $filter ) {
-        die \['filter', 'invalid'] unless $filter =~ m/pending|closed|progress|canceled/;
+        die \['filter', 'invalid'] unless $filter =~ m/pending|closed|progress|canceled|all/;
 
         if ($filter eq 'pending') {
             $filter = { 'me.status' => 'pending' }
@@ -129,6 +129,9 @@ sub build_list {
         }
         elsif ($filter eq 'progress') {
             $filter = { 'me.status' => 'progress' }
+        }
+        elsif ($filter eq 'all') {
+            $filter = undef;
         }
         else {
             $filter = { 'me.status' => 'canceled' }
