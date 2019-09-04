@@ -52,6 +52,7 @@ sub result_PUT {
     my ($self, $c) = @_;
 
     $c->req->params->{user_id} = $c->user->id;
+    $c->req->params->{updated_by_chatbot} = 0;
 
     my $ticket = $c->stash->{ticket}->execute(
         $c,

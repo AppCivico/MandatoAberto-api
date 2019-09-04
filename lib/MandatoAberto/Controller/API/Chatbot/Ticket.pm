@@ -9,6 +9,17 @@ sub root : Chained('/api/chatbot/base') : PathPart('') : CaptureArgs(0) { }
 
 sub base : Chained('root') : PathPart('ticket') : CaptureArgs(0) { }
 
+sub object : Chained('base') : PathPart('') : CaptureArgs(1) {
+    my ($self, $c, $ticket_id) = @_;
+
+    $c->stash->{collection} = $c->model('DB::Ticket')->search_rs( { id => $ticket_id } );
+
+    my $ticket = $c->stash->{collection}->find($ticket_id);
+    $c->detach("/error_404") unless ref $ticket;
+
+    $c->stash->{ticket} = $ticket;
+}
+
 sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }
 
 sub list_POST {
@@ -47,6 +58,31 @@ sub list_GET {
         $c,
         entity   => $rs->build_list
     );
+}
+
+sub result : Chained('object') : PathPart('') : Args(0) : ActionClass('REST') { }
+
+sub result_PUT {
+    my ($self, $c) = @_;
+
+    if ( $c->req->params->{status} ) {
+        die \['status', 'invalid'] unless $c->req->params->{status} eq 'canceled';
+    }
+
+    my $ticket = $c->stash->{ticket}->execute(
+        $c,
+        for  => 'update',
+        with => {
+            message            => $c->req->params->{message},
+            status             => $c->req->params->{status},
+            updated_by_chatbot => 1,
+        }
+    );
+
+    return $self->status_ok(
+        $c,
+        entity => { id => $ticket->id }
+    )
 }
 
 __PACKAGE__->meta->make_immutable;

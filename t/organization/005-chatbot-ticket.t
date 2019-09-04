@@ -91,6 +91,15 @@ db_transaction {
         ok exists $res->{tickets}->[0]->{created_at};
         ok exists $res->{tickets}->[0]->{status};
         ok exists $res->{tickets}->[0]->{response};
+
+        my $ticket_id = $res->{tickets}->[0]->{id};
+        $res = rest_put "/api/chatbot/ticket/$ticket_id",
+            code => 200,
+            [
+                security_token => $security_token,
+                status         => 'canceled',
+            ]
+        ;
     };
 
     subtest 'User | CRUD ticket' => sub {

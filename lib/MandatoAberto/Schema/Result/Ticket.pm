@@ -357,6 +357,11 @@ sub verifiers_specs {
                 status => {
                     required => 0,
                     type     => 'Str'
+                },
+
+                updated_by_chatbot => {
+                    required => 1,
+                    type     => 'Bool'
                 }
             }
         )
@@ -388,43 +393,66 @@ sub action_specs {
                 my $log_action;
                 my @logs;
 
+                my $updated_by_chatbot = delete $values{updated_by_chatbot};
+
                 my $user_id = delete $values{user_id};
-                my $user = $self->organization_chatbot->organization->users->search( { user_id => $user_id } )->next
-                    or die \['user_id', 'invalid'];
-                $user = $user->user;
-                my $user_name = $user->name;
+                my ($user, $user_name);
+                if (!$updated_by_chatbot) {
+                    $user = $self->organization_chatbot->organization->users->search( { user_id => $user_id } )->next
+                        or die \['user_id', 'invalid'];
+                    $user = $user->user;
+
+                    $user_name = $user->name;
+                }
 
                 if ( my $status = $values{status} ) {
-                    die \['status', 'invalid'] unless $status =~ /^(pending|closed|progress)$/;
+
+                    die \['status', 'invalid'] unless $status =~ /^(pending|closed|progress|canceled)$/;
                     $values{status_last_updated_at} = \'NOW()';
 
-                    my $ticket_rs = $self->result_source->schema->resultset('Ticket');
-
-                    my $current_status = $ticket_rs->human_status($self->status);
-                    my $next_status    = $ticket_rs->human_status($status);
-
-                    if ( $current_status ne $next_status ) {
-                        my $impact;
-
-                        if ($next_status eq 'Aberto') {
-                            $impact = 'negative'
-                        }
-                        else {
-                            $impact = 'positive';
-                        }
-
+                    if ( $status eq 'canceled' ) {
                         push @logs, {
-                            text      => "Ticket movido de '$current_status', para '$next_status', por: $user_name",
-                            action_id => $actions->{'ticket movido'},
+                            text      => "Ticket cancelado pelo usuário",
+                            action_id => $actions->{'ticket cancelado'},
                             data => to_json(
                                 {
-                                    action    => 'ticket movido',
-                                    impact    => $impact,
-                                    user_name => $user_name,
-                                    status    => $next_status
+                                    action    => 'ticket cancelado',
+                                    status    => 'Cancelado',
+                                    impact    => 'neutral',
+                                    user_name => $self->recipient->name,
                                 }
                             )
                         };
+                    }
+                    else {
+                        my $ticket_rs = $self->result_source->schema->resultset('Ticket');
+
+                        my $current_status = $ticket_rs->human_status($self->status);
+                        my $next_status    = $ticket_rs->human_status($status);
+
+                        if ( $current_status ne $next_status ) {
+                            my $impact;
+
+                            if ($next_status eq 'Aberto') {
+                                $impact = 'negative'
+                            }
+                            else {
+                                $impact = 'positive';
+                            }
+
+                            push @logs, {
+                                text      => "Ticket movido de '$current_status', para '$next_status', por: $user_name",
+                                action_id => $actions->{'ticket movido'},
+                                data => to_json(
+                                    {
+                                        action    => 'ticket movido',
+                                        impact    => $impact,
+                                        user_name => $user_name,
+                                        status    => $next_status
+                                    }
+                                )
+                            };
+                        }
                     }
                 }
 
