@@ -93,7 +93,7 @@ sub action_specs {
                     action_id => $log_action->id,
                     data      => to_json(
                         {
-                            status    => 'Pendente',
+                            status    => 'Em aberto',
                             action    => 'Ticket criado',
                             impact    => 'neutral',
                         }
