@@ -33,7 +33,7 @@ sub list_GET {
 
     return $self->status_ok(
         $c,
-        entity => $c->stash->{collection}->build_list($c->req->params->{page}, $c->req->params->{results})
+        entity => $c->stash->{collection}->build_list($c->req->params->{page}, $c->req->params->{results}, $c->req->params->{filter})
     );
 }
 
@@ -52,7 +52,7 @@ sub result_PUT {
     my ($self, $c) = @_;
 
     $c->req->params->{user_id} = $c->user->id;
-    use DDP; p $c->req->params;
+
     my $ticket = $c->stash->{ticket}->execute(
         $c,
         for  => 'update',

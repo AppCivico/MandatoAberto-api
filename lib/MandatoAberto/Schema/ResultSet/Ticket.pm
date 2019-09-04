@@ -113,10 +113,29 @@ sub action_specs {
 }
 
 sub build_list {
-    my ($self, $page, $rows) = @_;
+    my ($self, $page, $rows, $filter) = @_;
 
     $page = 1  if !defined $page;
     $rows = 20 if !defined $rows;
+
+    if ( $filter ) {
+        die \['filter', 'invalid'] unless $filter =~ m/pending|closed|progress|canceled/;
+
+        if ($filter eq 'pending') {
+            $filter = { 'me.status' => 'pending' }
+        }
+        elsif ($filter eq 'closed') {
+            $filter = { 'me.status' => 'closed' }
+        }
+        elsif ($filter eq 'progress') {
+            $filter = { 'me.status' => 'progress' }
+        }
+        else {
+            $filter = { 'me.status' => 'canceled' }
+        }
+
+        $self = $self->search_rs($filter);
+    }
 
     return {
         tickets => [
@@ -161,7 +180,7 @@ sub build_list {
                         }
                     )
                 }
-            } $self->search(undef, {page => $page, rows => $rows})->all()
+            } $self->search($filter, {page => $page, rows => $rows})->all()
         ],
         itens_count => $self->count
     }

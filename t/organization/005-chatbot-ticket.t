@@ -66,7 +66,7 @@ db_transaction {
                 chatbot_id     => $chatbot_id,
                 fb_id          => 'bar',
                 message        => 'Olá, você pode me ajudar?',
-				data        => to_json( { cpf => '1111111111111', email => 'foobar@email.com' } )
+                data        => to_json( { cpf => '1111111111111', email => 'foobar@email.com' } )
             ]
         ;
 
@@ -119,6 +119,9 @@ db_transaction {
         ok $ticket->discard_changes;
 
         $res = rest_get "/api/organization/$organization_id/chatbot/$chatbot_id/ticket/$ticket_id";
+
+        $res = rest_get "/api/organization/$organization_id/chatbot/$chatbot_id/ticket", [ filter => 'closed' ];
+        is scalar @{ $res->{tickets} }, 0;
     };
 
 };
