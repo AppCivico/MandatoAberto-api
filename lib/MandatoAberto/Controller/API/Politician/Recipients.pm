@@ -3,6 +3,8 @@ use common::sense;
 use Moose;
 use namespace::autoclean;
 
+use MandatoAberto::Utils qw(is_test);
+
 BEGIN { extends 'CatalystX::Eta::Controller::REST' }
 
 with 'CatalystX::Eta::Controller::AutoObject';
@@ -97,7 +99,7 @@ sub list_GET {
         {
             # Caso o político não tenha nenhuma página ativa no momento
             # mostro todos os recipients, independente da página de origem
-            ( $has_active_page ? ( page_id => $politician->user->organization_chatbot->fb_config->page_id ) : () )
+            ( $has_active_page && !is_test ? ( page_id => $politician->user->organization_chatbot->fb_config->page_id ) : () )
         },
     );
 

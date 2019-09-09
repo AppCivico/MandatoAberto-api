@@ -25,16 +25,6 @@ db_transaction {
             }
         );
         $recipient_id = $recipient->id;
-
-        $schema->resultset('Politician')->create(
-            {
-                user_id          => $user_id,
-                name             => 'foobar',
-                gender           => 'M',
-                address_state_id => 1,
-                address_city_id  => 1,
-            }
-        )
     };
 
     my $questionnaire_map_id;

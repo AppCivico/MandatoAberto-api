@@ -258,6 +258,12 @@ sub action_specs {
                 $user = $self->create(
                     {
                         ( map { $_ => $values{$_} } qw( name email password ) ),
+                        politician => {
+                            name             => $values{name},
+                            gender           => 'F',
+                            address_city_id  => 1,
+                            address_state_id => 1,
+                        },
                         user_organizations => [{
                             organization_id => $organization->id,
                         }]
