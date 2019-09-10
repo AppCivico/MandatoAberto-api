@@ -7,6 +7,27 @@ use MandatoAberto::Test::Further;
 my $schema = MandatoAberto->model("DB");
 
 db_transaction {
+
+    my $question_id;
+    subtest 'Create dialog and questions' => sub {
+        api_auth_as user_id => 1;
+
+        create_dialog(name => 'foobar');
+        my $dialog_id = stash "dialog.id";
+
+        my $question_name = fake_words(1)->();
+        rest_post "/api/admin/dialog/$dialog_id/question",
+          name                => "question",
+          automatic_load_item => 0,
+          stash               => "q1",
+          [
+            name          => $question_name,
+            content       => fake_words(1)->(),
+            citizen_input => fake_words(1)->()
+          ];
+        $question_id = stash "q1.id";
+    };
+
     my $party    = fake_int(1, 35)->();
     my $office   = fake_int(1, 8)->();
     my $gender   = fake_pick(qw/F M/)->();
@@ -33,9 +54,20 @@ db_transaction {
     api_auth_as user_id => $politician_id;
     activate_chatbot($politician_id);
 
+    my $answer_content = fake_words(1)->();
+    subtest 'Politician | Create answer' => sub {
+
+        rest_post "/api/politician/$politician_id/answers",
+            name  => "POST politician answer",
+            code  => 200,
+            stash => "a1",
+            [ "question[$question_id][answer]" => $answer_content ]
+        ;
+    };
+
     my $organization_chatbot_id = $politician->user->organization_chatbot_id;
 
-    rest_get "/api/chatbot/politician",
+    my $res = rest_get "/api/chatbot/politician",
         name  => "get politician data",
         list  => 1,
         stash => "get_politician_data",
@@ -48,8 +80,8 @@ db_transaction {
     stash_test "get_politician_data" => sub {
         my $res = shift;
 
-        is ($res->{user_id},                                     $politician_id,                                                         'user_id');
-        is ($res->{name},                                        "Lucas Ansei",                                                          'name');
+        is ($res->{user_id}, $politician_id, 'user_id');
+        is ($res->{name},    "Lucas Ansei",  'name');
     };
 
     rest_get "/api/chatbot/politician",
