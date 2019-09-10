@@ -175,3 +175,4 @@
 0171-add-default-ticket [0170-add-questionnaire] 2019-09-03T14:29:25Z Lucas Ansei,,, <lucas@lucas-G750JX> # Adding default values to the responses and messages to the ticket
 0172-add-log-types [0171-add-default-ticket] 2019-09-03T18:17:02Z Lucas Ansei,,, <lucas@lucas-G750JX> # adding more log types for the tickets
 0173-add-module-resultset_class [0172-add-log-types] 2019-09-04T12:51:03Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the resultset_class column to the module table
+0174-drop-questionnaire-constraint [0173-add-module-resultset_class] 2019-09-10T13:48:31Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Dropping a constraint on the questionnaire question table

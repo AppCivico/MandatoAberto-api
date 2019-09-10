@@ -154,9 +154,11 @@ __PACKAGE__->set_primary_key("id");
 
 =head1 UNIQUE CONSTRAINTS
 
-=head2 C<questionnaire_question_code_key>
+=head2 C<questionnaire_question_code_map_key>
 
 =over 4
+
+=item * L</questionnaire_map_id>
 
 =item * L</code>
 
@@ -164,7 +166,10 @@ __PACKAGE__->set_primary_key("id");
 
 =cut
 
-__PACKAGE__->add_unique_constraint("questionnaire_question_code_key", ["code"]);
+__PACKAGE__->add_unique_constraint(
+  "questionnaire_question_code_map_key",
+  ["questionnaire_map_id", "code"],
+);
 
 =head1 RELATIONS
 
@@ -199,8 +204,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-09-02 11:23:21
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:1nCfQK4iMG92yhfRJC1Ybg
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-09-10 10:50:01
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Qk8JTWPYJMUBV5RCkYIYfA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
