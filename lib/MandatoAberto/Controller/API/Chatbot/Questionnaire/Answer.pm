@@ -22,7 +22,10 @@ sub list_POST {
 
     return $self->status_ok(
         $c,
-        entity => $c->stash->{questionnaire_stash}->next_pending_question()
+        entity => {
+            %{$c->stash->{questionnaire_stash}->next_pending_question()},
+            followup_messages => $answer->{followup_messages}
+        }
     );
 }
 

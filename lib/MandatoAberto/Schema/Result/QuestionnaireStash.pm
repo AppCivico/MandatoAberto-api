@@ -289,5 +289,36 @@ sub reset {
     return 1;
 }
 
+sub messages_to_send_after_finish {
+    my $self = shift;
+
+    my @messages;
+
+    my $questionnaire_type = $self->questionnaire_map->type->name;
+    if ($questionnaire_type eq 'preparatory') {
+        push @messages, 'Terminamos o nosso Quiz. Será que você é um expert?';
+
+        # Verificando score.
+        my $score = 0;
+
+        my @answers = $self->recipient->questionnaire_answers->search( { 'me.questionnaire_map_id' => $self->questionnaire_map_id } )->all();
+        for my $answer (@answers) {
+            if ( my $score_map = $answer->question->multiple_choices_score_map ) {
+                my $awarded_score = $score_map->{$answer->answer_value};
+                $score += $awarded_score;
+            }
+        }
+
+        if ( $score <= 10 ) {
+            push @messages, 'Você tem um grande potencial. Mas, ainda não é um conhecedor da LGPD. Mas, não desista.💪 Te dou uma dica, esse vídeo vai te ajudar a conhecer mais. Assista: https://www.youtube.com/watch?v=C9n6RBgcqng'
+        }
+        elsif ( $score > 10 ) {
+            push @messages, 'Parabéns! Temos um expert!🏆 Mas, aprender sempre é fundamental. Ainda mais porque é uma lei nova. Te dou uma dica, esse vídeo vai te ajudar a conhecer mais. Assista: https://www.youtube.com/watch?v=C9n6RBgcqng';
+        }
+    }
+
+    return @messages;
+}
+
 __PACKAGE__->meta->make_immutable;
 1;

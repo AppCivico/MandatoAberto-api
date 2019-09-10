@@ -276,8 +276,41 @@ sub update_stash {
             }
         }
 
+        my $next_question = $stash->next_pending_question;
+        if ( !$next_question->{question} ) {
+            $stash->update( { finished => 1 } );
+        }
+
     });
 
+}
+
+sub followup_messages {
+    my $self = shift;
+
+    my $answer = $self->answer_value;
+    my $rules  = $self->question->rules_parsed;
+    my $stash  = $self->recipient->questionnaire_stashes->search( { questionnaire_map_id => $self->questionnaire_map_id } )->next;
+
+    my @followup_messages;
+    if ( $rules->{followup_messages} && scalar @{ $rules->{followup_messages} } > 0 ) {
+
+        for my $followup_message ( @{ $rules->{followup_messages} } ) {
+            if ( defined $followup_message->{conditions} ) {
+                my $conditions_satisfied = grep { $_ eq $answer } @{ $followup_message->{conditions} };
+                next if !$conditions_satisfied;
+            }
+
+            push @followup_messages, $followup_message->{text}
+        }
+    }
+
+    if ( $stash->finished ) {
+        my @messages_to_send_after_finish = $stash->messages_to_send_after_finish;
+        push @followup_messages, @messages_to_send_after_finish;
+    }
+
+    return @followup_messages;
 }
 
 __PACKAGE__->meta->make_immutable;

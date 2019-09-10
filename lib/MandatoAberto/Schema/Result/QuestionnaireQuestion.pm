@@ -222,9 +222,18 @@ sub decoded {
 }
 
 sub rules_parsed {
-	my ($self) = @_;
+    my ($self) = @_;
 
-	return from_json( $self->rules ) if $self->rules;
+    return from_json( $self->rules ) if $self->rules;
+}
+
+sub multiple_choices_score_map {
+    my ($self) = @_;
+
+    my $rules = $self->rules_parsed or die \['question', 'does not have any rules'];
+    return undef unless $rules->{multiple_choice_score_map} && ref $rules->{multiple_choice_score_map} eq 'HASH';
+
+    return $rules->{multiple_choice_score_map};
 }
 
 __PACKAGE__->meta->make_immutable;
