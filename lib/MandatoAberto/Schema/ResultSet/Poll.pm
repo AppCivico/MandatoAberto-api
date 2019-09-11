@@ -43,14 +43,6 @@ sub verifiers_specs {
                     required => 1,
                     type     => "ArrayRef"
                 },
-                status_id => {
-                    required   => 1,
-                    type       => "Int",
-                    post_check => sub {
-                        my $status_id = $_[0]->get_value("status_id");
-                        $self->result_source->schema->resultset("PollStatus")->search( { id => $status_id } )->count == 1;
-                    }
-                }
             }
         ),
     };
@@ -73,29 +65,6 @@ sub action_specs {
 
             my $poll;
             $self->result_source->schema->txn_do(sub{
-
-                # Caso tenha uma enquete ativa, essa deverá ser desativada
-                # E a nova criada deverá ser já ativada
-                if ($values{status_id} == 1) {
-                    my $active_poll = $self->result_source->schema->resultset("Poll")->search(
-                        {
-                            organization_chatbot_id => $values{organization_chatbot_id},
-                            status_id               => 1
-                        }
-                    );
-
-                    $active_poll->update(
-                        {
-                            status_id  => 3,
-                            updated_at => \'NOW()',
-                        }
-                    ) if $active_poll;
-                }
-
-                # Não deve ser permitido criar uma enquete desativada
-                # apenas inativa, pois uma vez desativada
-                # uma enquete não pode ser ativada novamente
-                die \['status_id', 'cannot created deactivated poll'] if $values{status_id} == 3;
 
                 $poll = $self->create(\%values);
 
@@ -126,7 +95,7 @@ sub get_active_politician_poll_with_data {
     my ($self) = @_;
 
     return $self->search(
-        { status_id => 1 },
+        undef,
         { prefetch => [ 'poll_questions' , { 'poll_questions' => { "poll_question_options" => 'poll_results' } } ] }
     )->next;
 }
@@ -168,7 +137,7 @@ sub extract_metrics {
 
     return {
         count             => $self->count,
-        fallback_text     => 'Aqui será onde você poderá ver o desempenho de suas consultas',
+        description     => 'Aqui será onde você poderá ver o desempenho de suas consultas',
         suggested_actions => [
             {
                 alert             => 'Melhore o seu engajamento',

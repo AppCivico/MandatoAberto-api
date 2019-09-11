@@ -21,7 +21,7 @@ sub create_mandatoaberto_modules {
 sub create_modules {
     my ($self, $organization_id) = @_;
 
-    my @module_ids = qw( 1 4 6 7 8 9 10 );
+    my @module_ids = qw( 1 2 4 6 7 8 );
 
     for my $id (@module_ids) {
         my $module = $self->find_or_create( { organization_id => $organization_id, module_id => $id } );

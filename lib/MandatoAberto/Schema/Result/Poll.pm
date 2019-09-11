@@ -61,12 +61,6 @@ __PACKAGE__->table("poll");
   is_nullable: 0
   original: {default_value => \"now()"}
 
-=head2 status_id
-
-  data_type: 'integer'
-  is_foreign_key: 1
-  is_nullable: 0
-
 =head2 updated_at
 
   data_type: 'timestamp'
@@ -103,8 +97,6 @@ __PACKAGE__->add_columns(
     is_nullable   => 0,
     original      => { default_value => \"now()" },
   },
-  "status_id",
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "updated_at",
   { data_type => "timestamp", is_nullable => 1 },
   "notification_sent",
@@ -187,24 +179,9 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 status
 
-Type: belongs_to
-
-Related object: L<MandatoAberto::Schema::Result::PollStatus>
-
-=cut
-
-__PACKAGE__->belongs_to(
-  "status",
-  "MandatoAberto::Schema::Result::PollStatus",
-  { id => "status_id" },
-  { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
-);
-
-
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-03-01 15:05:46
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:3tlMCjM5V+PLhMc0qQBlsQ
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-03-26 09:22:32
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:mm3PQKr+Hf0bdSXOOkMb1Q
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
@@ -221,16 +198,7 @@ sub verifiers_specs {
     return {
         update => Data::Verifier->new(
             filters => [ qw(trim) ],
-            profile => {
-                status_id => {
-                    required   => 0,
-                    type       => "Int",
-                    post_check => sub {
-                        my $status_id = $_[0]->get_value("status_id");
-                        $self->result_source->schema->resultset("PollStatus")->search( { id => $status_id } )->count == 1;
-                    }
-                }
-            }
+            profile => { }
         )
     };
 }
@@ -244,25 +212,6 @@ sub action_specs {
 
             my %values = $r->valid_values;
             not defined $values{$_} and delete $values{$_} for keys %values;
-
-            if ($self->status_id == 3) {
-                die \["status_id", "poll has been deactivated"];
-            }
-
-            if ($values{status_id} == 2 && $self->status_id == 1) {
-                die \["status_id", "active poll cannot be inactive, must be deactivated"];
-            }
-
-            if ($values{status_id} == 1) {
-                my $active_poll = $self->schema->resultset('Poll')->search(
-                    {
-                        status_id               => 1,
-                        organization_chatbot_id => $self->organization_chatbot_id
-                    }
-                )->next;
-
-                $active_poll->update( { status_id => 3 } ) if $active_poll;
-            }
 
             $self->update({
                 %values,

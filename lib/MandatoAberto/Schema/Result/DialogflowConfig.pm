@@ -138,5 +138,12 @@ __PACKAGE__->has_many(
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
+
+sub chatbots_using {
+    my ($self) = @_;
+
+    return $self->organization_chatbot_general_configs->search( undef, { prefetch => 'organization_chatbot' } )
+}
+
 __PACKAGE__->meta->make_immutable;
 1;

@@ -75,9 +75,9 @@ sub object : Chained('base') : PathPart('') : CaptureArgs(1) {
     my $user = $c->stash->{collection}->find($user_id);
     $c->detach("/error_404") unless ref $user;
 
-    $c->stash->{is_me}    = int($c->user->id == $user->id);
+    $c->stash->{is_me}      = int($c->user->id == $user->id);
     $c->stash->{politician} = $user;
-
+    $c->stash->{chatbot}    = $c->stash->{politician}->user->organization->chatbot;
 }
 
 sub result : Chained('object') : PathPart('') : Args(0) : ActionClass('REST') {
@@ -86,7 +86,7 @@ sub result : Chained('object') : PathPart('') : Args(0) : ActionClass('REST') {
     $c->detach("/api/forbidden") unless $c->stash->{is_me};
 
     # Asserting user role for module
-    eval { $c->assert_user_roles(qw/profile_read profile_update/) };
+    eval { $c->assert_user_roles(qw/general_profile_read general_profile_update/) };
     if ($@) {
         $c->forward("/api/forbidden");
     }

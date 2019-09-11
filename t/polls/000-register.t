@@ -38,21 +38,6 @@ db_transaction {
         ]
     ;
 
-    rest_post "/api/register/poll",
-        name    => "Poll without status_id",
-        is_fail => 1,
-        code    => 400,
-        [
-            name                       => 'foobar',
-            'questions[0]'             => 'alalala?',
-            'questions[0][options][0]' => 'Sim',
-            'questions[0][options][1]' => 'Não',
-            'questions[1]'             => 'foobar?',
-            'questions[1][options][0]' => 'foo',
-            'questions[1][options][1]' => 'bar',
-        ]
-    ;
-
     my $poll_name = fake_words(1)->();
 
     rest_post "/api/register/poll",
@@ -150,54 +135,6 @@ db_transaction {
     ;
 
     rest_post "/api/register/poll",
-        name    => "Create deactivated poll",
-        is_fail => 1,
-        [
-            name                       => 'this is a deactivated poll',
-            status_id                  => 3,
-            'questions[0]'             => 'Você está bem?',
-            'questions[0][options][0]' => 'Sim',
-            'questions[0][options][1]' => 'Não',
-            'questions[1]'             => 'foobar?',
-            'questions[1][options][0]' => 'foo',
-            'questions[1][options][1]' => 'bar',
-            'questions[1][options][2]' => 'não',
-        ]
-    ;
-
-    rest_post "/api/register/poll",
-        name    => "Create poll with invalid status (non existent id)",
-        is_fail => 1,
-        [
-            name                       => 'this is a poll without a valid status_id',
-            status_id                  => fake_int(4, 100)->(),
-            'questions[0]'             => 'Você está bem?',
-            'questions[0][options][0]' => 'Sim',
-            'questions[0][options][1]' => 'Não',
-            'questions[1]'             => 'foobar?',
-            'questions[1][options][0]' => 'foo',
-            'questions[1][options][1]' => 'bar',
-            'questions[1][options][2]' => 'não',
-        ]
-    ;
-
-    rest_post "/api/register/poll",
-        name    => "Create poll with invalid status (string)",
-        is_fail => 1,
-        [
-            name                       => 'this is a poll without a valid status_id',
-            status_id                  => 'foobar',
-            'questions[0]'             => 'Você está bem?',
-            'questions[0][options][0]' => 'Sim',
-            'questions[0][options][1]' => 'Não',
-            'questions[1]'             => 'foobar?',
-            'questions[1][options][0]' => 'foo',
-            'questions[1][options][1]' => 'bar',
-            'questions[1][options][2]' => 'não',
-        ]
-    ;
-
-    rest_post "/api/register/poll",
         name                => "Create inactive poll",
         automatic_load_item => 0,
         stash               => "p2",
@@ -213,9 +150,6 @@ db_transaction {
             'questions[1][options][2]' => 'não',
         ]
     ;
-
-    is( $schema->resultset('Poll')->find(stash "p1.id")->status_id, 1, 'first poll is active' );
-    is( $schema->resultset('Poll')->find(stash "p2.id")->status_id, 2, 'second poll is inactive' );
 
     rest_post "/api/register/poll",
         name                => "Create a new active poll",
@@ -233,10 +167,6 @@ db_transaction {
             'questions[1][options][2]' => 'não',
         ]
     ;
-
-    is( $schema->resultset('Poll')->find(stash "p1.id")->status_id, 3, 'first poll is deactivated' );
-    is( $schema->resultset('Poll')->find(stash "p2.id")->status_id, 2, 'second poll is inactive' );
-    is( $schema->resultset('Poll')->find(stash "p3.id")->status_id, 1, 'third poll is active' );
 };
 
 done_testing();

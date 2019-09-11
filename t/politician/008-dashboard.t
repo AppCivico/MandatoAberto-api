@@ -100,7 +100,7 @@ db_transaction {
 
     api_auth_as user_id => 1;
 
-    rest_get "/api/politician/$politician_id/dashboard",
+    rest_get "/api/politician/$politician_id/dashboard/new",
         name    => "get dashboard as admin",
         is_fail => 1,
         code    => 403,
@@ -126,25 +126,6 @@ db_transaction {
     ;
     my $poll_id = stash "p1.id";
 
-    # rest_get "/api/politician/$politician_id/dashboard",
-    #     name    => "invalid data range",
-    #     is_fail => 1,
-    #     code    => 400,
-    #     [ range => 5 ]
-    # ;
-
-    # rest_get "/api/politician/$politician_id/dashboard",
-    #     name    => "invalid data range",
-    #     is_fail => 1,
-    #     code    => 400,
-    #     [ range => 'foobar' ]
-    # ;
-
-    # rest_get "/api/politician/$politician_id/dashboard",
-    #     name    => "valid data range",
-    #     [ range => 16 ]
-    # ;
-
     # Testando role para módulo de métricas
     db_transaction{
         db_transaction{
@@ -155,28 +136,16 @@ db_transaction {
                 }
             )->delete;
 
-            rest_get "/api/politician/$politician_id/dashboard",
+            rest_get "/api/politician/$politician_id/dashboard/new",
                 name    => "politician dashboard without role",
                 is_fail => 1,
                 code    => 403
             ;
         };
 
-        rest_get "/api/politician/$politician_id/dashboard",
+        rest_get "/api/politician/$politician_id/dashboard/new",
             name => "politician dashboard with role",
         ;
-    };
-
-    rest_get "/api/politician/$politician_id/dashboard",
-        name  => "politician dashboard",
-        list  => 1,
-        stash => "get_politician_dashboard"
-    ;
-
-    stash_test "get_politician_dashboard" => sub {
-        my $res = shift;
-
-        is ($res->{recipients}->{count}, 1, 'one citizen');
     };
 
     rest_post "/api/chatbot/recipient",
@@ -194,37 +163,10 @@ db_transaction {
         ]
     ;
 
-    rest_reload_list "get_politician_dashboard";
-
-    stash_test "get_politician_dashboard.list" => sub {
-        my $res = shift;
-
-        is ($res->{recipients}->{count}, 2, 'two citizens');
-        is ($res->{has_greeting}, 0, 'politician does not have greeting');
-        is ($res->{has_contacts}, 0, 'politician does not have contacts');
-        is ($res->{has_dialogs}, 0, 'politician does not have dialogs');
-        is ($res->{has_active_poll}, 1, 'politician has active poll');
-        is ($res->{has_facebook_auth}, 1, 'politician does have facebook auth');
-    };
-
     rest_put "/api/poll/$poll_id",
         name => 'Deactivating poll',
         [ status_id => 3 ]
     ;
-
-    rest_reload_list "get_politician_dashboard";
-
-    stash_test "get_politician_dashboard.list" => sub {
-        my $res = shift;
-
-        is ($res->{recipients}->{count}, 2, 'two citizens');
-        is ($res->{has_greeting}, 0, 'politician does not have greeting');
-        is ($res->{has_contacts}, 0, 'politician does not have contacts');
-        is ($res->{has_dialogs}, 0, 'politician does not have dialogs');
-        is ($res->{has_active_poll}, 0, 'politician does not have active poll');
-        is ($res->{ever_had_poll}, 1, 'politician has at least one poll');
-        is ($res->{has_facebook_auth}, 1, 'politician does  have facebook auth');
-    };
 
     rest_post "/api/politician/$politician_id/greeting",
         name                => 'politician greeting',
@@ -235,18 +177,6 @@ db_transaction {
             on_website  => 'Olá, sou assistente digital do(a) ${user.office.name} ${user.name} Seja bem-vindo a nossa Rede! Queremos um Brasil melhor e precisamos de sua ajuda.'
         ]
     ;
-
-    rest_reload_list "get_politician_dashboard";
-
-    stash_test "get_politician_dashboard.list" => sub {
-        my $res = shift;
-
-        is ($res->{recipients}->{count}, 2, 'two citizens');
-        is ($res->{has_greeting}, 1, 'politician has greeting');
-        is ($res->{has_contacts}, 0, 'politician does not have contacts');
-        is ($res->{has_dialogs}, 0, 'politician does not have dialogs');
-        is ($res->{has_facebook_auth}, 1, 'politician does have facebook auth');
-    };
 
     rest_post "/api/politician/$politician_id/contact",
         name                => "politician contact",
@@ -260,48 +190,11 @@ db_transaction {
         ]
     ;
 
-    rest_reload_list "get_politician_dashboard";
-
-    stash_test "get_politician_dashboard.list" => sub {
-        my $res = shift;
-
-        is ($res->{recipients}->{count}, 2, 'two citizens');
-        is ($res->{has_greeting}, 1, 'politician has greeting');
-        is ($res->{has_contacts}, 1, 'politician has contacts');
-        is ($res->{has_dialogs}, 0, 'politician does not have dialogs');
-        is ($res->{has_facebook_auth}, 1, 'politician does have facebook auth');
-    };
-
     rest_post "/api/politician/$politician_id/answers",
         name  => "politician answer",
         code  => 200,
         [ "question[$question_id][answer]" => fake_words(1)->() ]
     ;
-
-    rest_reload_list "get_politician_dashboard";
-
-    stash_test "get_politician_dashboard.list" => sub {
-        my $res = shift;
-
-        is ($res->{recipients}->{count}, 2, 'two citizens');
-        is ($res->{has_greeting}, 1, 'politician has greeting');
-        is ($res->{has_contacts}, 1, 'politician has contacts');
-        is ($res->{has_dialogs}, 1, 'politician has dialogs');
-        is ($res->{has_facebook_auth}, 1, 'politician does have facebook auth');
-    };
-
-    rest_reload_list "get_politician_dashboard";
-
-    stash_test "get_politician_dashboard.list" => sub {
-        my $res = shift;
-
-        is ($res->{recipients}->{count}, 2, 'two citizens');
-        is ($res->{has_greeting}, 1, 'politician has greeting');
-        is ($res->{has_contacts}, 1, 'politician has contacts');
-        is ($res->{has_dialogs}, 1, 'politician has dialogs');
-        is ($res->{has_facebook_auth}, 1, 'politician has facebook auth');
-        is ($res->{first_access}, 1, 'politician first access');
-    };
 
     $schema->resultset("UserSession")->create({
         user_id     => $politician_id,
@@ -320,38 +213,13 @@ db_transaction {
         }
     );
 
-    rest_reload_list "get_politician_dashboard";
-
-    stash_test "get_politician_dashboard.list" => sub {
-        my $res = shift;
-
-        is ($res->{recipients}->{count}, 2, 'two citizens');
-        is ($res->{has_greeting}, 1, 'politician has greeting');
-        is ($res->{has_contacts}, 1, 'politician has contacts');
-        is ($res->{has_dialogs}, 1, 'politician has dialogs');
-        is ($res->{has_facebook_auth}, 1, 'politician has facebook auth');
-        is ($res->{first_access}, 0, 'politician first access');
-        is ($res->{groups}->{count}, 1, 'group count');
-        is ($res->{issues}->{count_open}, 1, 'open issues count');
-        is ($res->{issues}->{count_open_last_24_hours}, 1, 'open issues count');
-    };
-
     my $issue = $schema->resultset('Issue')->find($issue_id);
     $issue->update(
         {
             reply => 'foobar',
-            open  => 0,
             updated_at => \"NOW() + interval '1 hour'"
         }
     );
-
-    rest_reload_list "get_politician_dashboard";
-
-    stash_test "get_politician_dashboard.list" => sub {
-        my $res = shift;
-
-        is ( $res->{issues}->{avg_response_time}, '60', '60 minutes avg response time' );
-    };
 
     subtest 'Politician | Dashboard (new)' => sub {
         rest_get "/api/politician/$politician_id/dashboard/new",
@@ -370,7 +238,12 @@ db_transaction {
             ok( defined $res->{metrics}->[0]->{text}, 'text is defined' );
             ok( defined $res->{metrics}->[0]->{name}, 'name is defined' );
         }
-    }
+    };
+
+	my $res = rest_get "/api/politician/$politician_id/dashboard",
+	  name  => 'get new dashboard',
+	  stash => 'd2',
+	  list  => 1;
 };
 
 done_testing();

@@ -64,6 +64,16 @@ __PACKAGE__->table("module");
   is_nullable: 0
   original: {default_value => \"now()"}
 
+=head2 standard_weight
+
+  data_type: 'integer'
+  is_nullable: 1
+
+=head2 class
+
+  data_type: 'text'
+  is_nullable: 1
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -80,6 +90,10 @@ __PACKAGE__->add_columns(
     is_nullable   => 0,
     original      => { default_value => \"now()" },
   },
+  "standard_weight",
+  { data_type => "integer", is_nullable => 1 },
+  "class",
+  { data_type => "text", is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -108,6 +122,18 @@ __PACKAGE__->set_primary_key("id");
 
 __PACKAGE__->add_unique_constraint("module_name_key", ["name"]);
 
+=head2 C<module_standard_weight_key>
+
+=over 4
+
+=item * L</standard_weight>
+
+=back
+
+=cut
+
+__PACKAGE__->add_unique_constraint("module_standard_weight_key", ["standard_weight"]);
+
 =head1 RELATIONS
 
 =head2 organization_modules
@@ -125,11 +151,33 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 sub_modules
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-12-13 10:45:58
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:z0WuGqRQYOEb0DH+ImzHcQ
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::SubModule>
+
+=cut
+
+__PACKAGE__->has_many(
+  "sub_modules",
+  "MandatoAberto::Schema::Result::SubModule",
+  { "foreign.module_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-09-04 10:04:29
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:a4+Tj8ScmKoc1scupJPWpg
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
+
+sub has_sub_modules {
+    my ($self) = @_;
+
+    return $self->sub_modules->search()->next ? 1 : 0;
+}
+
 __PACKAGE__->meta->make_immutable;
 1;

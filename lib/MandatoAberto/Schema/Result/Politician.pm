@@ -954,7 +954,16 @@ sub build_notification_bar {
     my $chatbot = $self->user->organization_chatbot;
 
     my $unread_count  = $chatbot ? $chatbot->issues->search( { read => 0 } )->count : 0;
-    my $response_time = $avg_response_time <= 90 ? 'Bom' : 'Ruim';
+
+    my ($response_time, $label);
+    if ( $avg_response_time <= 90 ) {
+        $response_time = 'Bom';
+        $label         = 'positive';
+    }
+    else {
+        $response_time = 'Ruim';
+        $label         = 'negative';
+    }
 
     return [
         {
@@ -964,7 +973,8 @@ sub build_notification_bar {
             count    => undef,
             message  => $response_time,
             icon     => '/assets/images/issue_response_time.svg',
-            link     => '/mensagens'
+            link     => '/mensagens/caixa-de-entrada',
+            label    => $label
         },
         {
             name     => 'issue',
@@ -973,7 +983,8 @@ sub build_notification_bar {
             count    => $unread_count,
             message  => undef,
             icon     => '/assets/images/issue.svg',
-            link     => '/mensagens'
+            link     => '/mensagens/caixa-de-entrada',
+            label    => $label
         }
     ];
 }

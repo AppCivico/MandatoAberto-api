@@ -50,6 +50,14 @@ sub login_POST {
             ip => $ipAddr,
         );
 
+        # TODO melhorar esse tratamento
+        my $cond;
+        if ( $user->organization->id =~ /^(234|235|236)$/ ) {
+            $cond = {
+                'me.id' => { '!=' => 9 }
+            };
+        }
+
         my $ret = {
             organizations => [
                 map {
@@ -61,17 +69,29 @@ sub login_POST {
                         picture => $o->picture,
                         modules => [
                             map {
-                                my $m    = $_->module;
-                                my $name = $m->name;
+                                my $m = $_->module;
 
                                 my $p = $user->parse_permissions( name => $m->name );
 
                                 +{
                                     id          => $m->id,
-                                    name        => $name,
-                                    permissions => $p->{$name},
+                                    name        => $m->name,
+                                    human_name  => $m->human_name,
+                                    permissions => $p->{$m->name},
+                                    weight      => $o->weight_for_module(module_id => $m->id),
+                                    sub_modules => [
+                                        map {
+                                            +{
+                                                name         => $_->name,
+                                                human_name   => $_->human_name,
+                                                url          => $_->url,
+                                                icon_class   => $_->icon_class,
+                                                weight       => $o->weight_for_module(sub_module_id => $_->id)
+                                            }
+                                        } $m->sub_modules->search($cond)->all()
+                                    ]
                                 }
-                            } $o->organization_modules
+                            } grep { $_->module->has_sub_modules == 1 } $o->organization_modules->search()->all()
                         ],
                         chatbots => [
                             map {

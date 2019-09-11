@@ -9,7 +9,6 @@ BEGIN { extends "CatalystX::Eta::Controller::REST" }
 with "CatalystX::Eta::Controller::AutoBase";
 with "CatalystX::Eta::Controller::AutoListGET";
 with "CatalystX::Eta::Controller::AutoResultPUT";
-with "CatalystX::Eta::Controller::AutoResultGET";
 
 __PACKAGE__->config(
     # AutoBase.
@@ -67,9 +66,16 @@ sub list_GET {
 
     my $now = DateTime->now;
 
+	my $page    = $c->req->params->{page}    || 1;
+	my $results = $c->req->params->{results} || 20;
+	$results    = $results <= 20 ? $results : 20;
+
+	my $total = $c->stash->{collection}->count;
+
     return $self->status_ok(
         $c,
         entity => {
+            total => $total,
             polls => [
                 map {
                     my $p = $_;
@@ -77,10 +83,7 @@ sub list_GET {
                     +{
                         id          => $p->get_column('id'),
                         name        => $p->get_column('name'),
-                        status_id   => $p->get_column('status_id'),
                         created_at  => $p->created_at,
-
-                        ( $p->status_id == 1 ? ( active_time => $now->subtract_datetime( $p->created_at )->in_units('days') ) : ( ) ),
 
                         questions => [
                             map {
@@ -107,7 +110,11 @@ sub list_GET {
                     }
                 } $c->stash->{collection}->search(
                     { 'me.organization_chatbot_id' => $organization_chatbot_id },
-                    { prefetch => [ 'poll_questions' , { 'poll_questions' => { "poll_question_options" => 'poll_results' } } ] }
+                    {
+                        prefetch => [ 'poll_questions' , { 'poll_questions' => { "poll_question_options" => 'poll_results' } } ],
+                        page     => $page,
+                        rows     => $results
+                    }
                 )->all()
             ],
         }
@@ -118,7 +125,41 @@ sub result : Chained('object') : PathPart('') : Args(0) : ActionClass('REST') { 
 
 sub result_PUT { }
 
-sub result_GET { }
+sub result_GET {
+    my ($self, $c) = @_;
+
+    return $self->status_ok(
+        $c,
+        entity => {
+            id        => $c->stash->{poll}->id,
+            name      => $c->stash->{poll}->name,
+            questions => [
+                map {
+                    my $pq = $_;
+
+                    +{
+                        id      => $pq->get_column('id'),
+                        content => $pq->get_column('content'),
+
+                        options => [
+                            map {
+                                my $qo = $_;
+
+                                +{
+                                    id      => $qo->get_column('id'),
+                                    content => $qo->get_column('content'),
+                                    count   => $qo->poll_results->search( { origin => 'propagate' } )->count,
+                                  }
+                            } $pq->poll_question_options->all()
+                        ]
+                    }
+
+                } $c->stash->{poll}->poll_questions->all()
+            ]
+
+        }
+    );
+}
 
 __PACKAGE__->meta->make_immutable;
 

@@ -56,7 +56,7 @@ sub extract_metrics {
     return {
         # Contagem total de campanhas
         count             => $self->count,
-        fallback_text     => 'Aqui ficam as métricas sobre as campanhas enviadas.',
+        description     => 'Aqui ficam as métricas sobre as campanhas enviadas.',
         suggested_actions => [
             {
                 alert             => '',

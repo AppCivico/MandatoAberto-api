@@ -129,8 +129,6 @@ sub action_specs {
 
             my $issue;
             $self->result_source->schema->txn_do(sub {
-                # Uma issue sempre é criada como aberta
-                $values{open} = 1;
 
                 my $politician = $self->result_source->schema->resultset('Politician')->find( $values{politician_id} );
                 my $recipient  = $politician->user->organization_chatbot->recipients->find($values{recipient_id});
@@ -181,20 +179,6 @@ sub action_specs {
 
             return $issue;
         },
-        batch_ignore => sub {
-            my $r = shift;
-
-            my %values = $r->valid_values;
-            not defined $values{$_} and delete $values{$_} for keys %values;
-
-            $self->result_source->schema->txn_do(sub {
-                for my $id ( @{ $values{ids} } ) {
-                    my $issue = $self->find($id);
-
-                    $issue->update( { open => 0 } );
-                }
-            });
-        },
         batch_delete => sub {
             my $r = shift;
 
@@ -237,9 +221,8 @@ sub extract_metrics {
     my $politician          = $self->result_source->schema->resultset('Politician')->find($opts{politician_id});
     my $issue_response_view = $self->result_source->schema->resultset('ViewAvgIssueResponseTime')->search( undef, { bind => [ $politician->user->organization_chatbot->id ] } )->next;
 
-    my $count_open        = $self->search( { open => 1 } )->count;
-    my $count_ignored     = $self->search( { open => 0, reply => \'IS NULL' } )->count;
-    my $count_replied     = $self->search( { open => 0, reply => \'IS NOT NULL' } )->count;
+    my $count_open        = $self->search( { reply => \'IS NULL', deleted => 0 } )->count;
+    my $count_replied     = $self->search( { reply => \'IS NOT NULL' } )->count;
     my $avg_response_time = $issue_response_view ? $issue_response_view->avg_response_time : undef;
 
     # Caso nunca tenha respondido devo mostrar um texto específico
@@ -252,14 +235,16 @@ sub extract_metrics {
     }
 
     my $alert_is_positive = $avg_response_time && $avg_response_time <= 90 ? 1 : 0;
+    my $label             = $alert_is_positive ? 'positive' : 'negative';
 
     return {
         count             => $self->count,
-        fallback_text     => 'Aqui você poderá métricas sobre as mensagens que o assistente digital não conseguiu responder.',
+        description     => 'Aqui você poderá métricas sobre as mensagens que o assistente digital não conseguiu responder.',
         suggested_actions => [
             {
                 alert             => $text,
                 alert_is_positive => $alert_is_positive,
+                label             => $label,
                 link              => '',
                 link_text         => 'Ver mensagens'
             }

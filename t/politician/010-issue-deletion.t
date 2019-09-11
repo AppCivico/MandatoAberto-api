@@ -32,43 +32,13 @@ db_transaction {
         name  => 'get open issues',
         stash => 'get_open_issues',
         list  => 1,
-        [ filter => 'open' ]
+        [ filter => 'all' ]
     ;
 
     stash_test 'get_open_issues' => sub {
         my $res = shift;
 
         is( scalar @{ $res->{issues} }, 1, '1 issue on list' );
-    };
-
-    # Testando com issue ignorada
-    db_transaction{
-        ok( $issue = $issue->update( { open => 0 } ), 'ignoring issue' );
-
-        rest_get "/api/politician/$politician_id/issue",
-            name  => 'get ignored issues',
-            stash => 'get_ignored_issues',
-            list  => 1,
-            [ filter => 'ignored' ]
-        ;
-
-        stash_test 'get_ignored_issues' => sub {
-            my $res = shift;
-
-            is( scalar @{ $res->{issues} }, 1, '1 ignored issue' );
-        };
-
-        rest_put "/api/politician/$politician_id/issue/$issue_id",
-            name => 'deleting issue',
-            [ deleted => 1 ]
-        ;
-
-        rest_reload_list 'get_ignored_issues';
-        stash_test 'get_ignored_issues.list' => sub {
-            my $res = shift;
-
-            is( scalar @{ $res->{issues} }, 0, 'issue has been deleted' );
-        };
     };
 
     # Testando batch delete

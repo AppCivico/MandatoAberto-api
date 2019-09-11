@@ -2,6 +2,8 @@ use common::sense;
 use FindBin qw($Bin);
 use lib "$Bin/../lib";
 
+use JSON qw(to_json);
+
 use MandatoAberto::Test::Further;
 
 my $schema = MandatoAberto->model("DB");
@@ -43,7 +45,6 @@ db_transaction {
                 {
                     name                    => 'Pizza',
                     organization_chatbot_id => $organization_chatbot_id,
-                    status_id               => 1,
                 },
             ),
             'add poll',
@@ -584,6 +585,48 @@ db_transaction {
         ok( my $group = $schema->resultset("Group")->find($group_id), 'get group' );
 
         is ($group->discard_changes->recipients_count, 2, 'recipient count');
+    };
+
+    # Grupo por label
+    db_transaction{
+        my $organization_id = $schema->resultset('Organization')->next->id;
+        my $chatbot_id      = $schema->resultset('OrganizationChatbot')->next->id;
+
+        rest_post "/api/organization/$organization_id/chatbot/$chatbot_id/label",
+            automatic_load_item => 0,
+            [ name => 'foobar' ]
+        ;
+        is $schema->resultset('Group')->count, 1;
+        ok $schema->resultset('Group')->delete;
+
+        my $label_id = $schema->resultset('Label')->next->id;
+        $schema->resultset('RecipientLabel')->create( { label_id => $label_id, recipient_id => $first_recipient_id } );
+
+        rest_post "/api/politician/$politician_id/group",
+            name                => 'add group (intent is not)',
+            stash               => 'group',
+            automatic_load_item => 0,
+            headers             => [ 'Content-Type' => 'application/json' ],
+            data                => to_json({
+                name     => 'Gender',
+                filter   => {
+                    operator => 'AND',
+                    rules => [
+                        {
+                            name => 'LABEL_IS',
+                            data => { value => $label_id },
+                        },
+                    ],
+                },
+            }),
+        ;
+
+        ok( $worker->run_once(), 'run once' );
+
+        my $group_id = stash 'group.id';
+
+        ok( my $group = $schema->resultset("Group")->find($group_id), 'get group' );
+        is($group->discard_changes->recipients_count, 1, 'recipient count');
     };
 
 };

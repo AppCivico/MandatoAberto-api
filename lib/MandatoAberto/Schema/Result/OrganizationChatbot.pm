@@ -200,6 +200,21 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 labels
+
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::Label>
+
+=cut
+
+__PACKAGE__->has_many(
+  "labels",
+  "MandatoAberto::Schema::Result::Label",
+  { "foreign.organization_chatbot_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 organization
 
 Type: belongs_to
@@ -410,14 +425,31 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 tickets
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-02-04 10:28:25
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:N2GdPo1H9ve31tEF1LpcWQ
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::Ticket>
+
+=cut
+
+__PACKAGE__->has_many(
+  "tickets",
+  "MandatoAberto::Schema::Result::Ticket",
+  { "foreign.organization_chatbot_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-08-20 14:02:40
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Js3OwMbneJQHoFzspM+pqA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
 with 'MandatoAberto::Role::Verification';
 with 'MandatoAberto::Role::Verification::TransactionalActions::DBIC';
+
+use JSON;
 
 sub verifiers_specs {
     my $self = shift;
@@ -570,6 +602,65 @@ sub has_fb_config {
     my ($self) = @_;
 
     return $self->fb_config ? 1 : 0;
+}
+
+sub has_group_for_label {
+    my ($self, $label_id) = @_;
+
+    return $self->groups->search( { '-and' => [ \"filter->'rules'->0->>'name' = 'LABEL_IS'", \"filter->'rules'->0->'data'->>'value' = '$label_id'",  ] } )->count > 0 ? 1 : 0;
+}
+
+sub upsert_groups_for_labels {
+    my ($self) = @_;
+
+    my $labels = $self->labels;
+
+    while ( my $label = $labels->next() ) {
+        next if $self->has_group_for_label($label->id);
+
+        my $group = $self->groups->create(
+            {
+                name   => $label->name,
+                status => 'processing',
+                filter => to_json(
+                    {
+                        operator => 'AND',
+                        rules => [
+                            {
+                                name => 'LABEL_IS',
+                                data => { value => $label->id },
+                            },
+                        ],
+                    }
+                ),
+            }
+        );
+    }
+
+    return 1;
+}
+
+sub build_dashboard {
+    my $self = shift;
+
+    return {
+        metrics => [
+            map {
+                my $module = $_->module;
+                my $rs     = $self->result_source->schema->resultset($module->class)->search_rs( { 'me.organization_chatbot_id' => $self->id } );
+                my $metrics = $rs->extract_metrics(politician_id => $self->organization->user->id);
+
+                +{
+                    name    => $module->human_name,
+                    text    => $module->human_name,
+                    %$metrics,
+                }
+            } $self->organization->organization_modules->search(
+                { 'module.class' => \'IS NOT NULL' },
+                { join => 'module' }
+              )->all()
+        ]
+    }
 }
 
 __PACKAGE__->meta->make_immutable;

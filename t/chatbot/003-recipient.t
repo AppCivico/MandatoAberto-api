@@ -112,6 +112,12 @@ db_transaction {
         is($res->{gender}, $gender, 'gender');
     };
 
+	my $label_rs           = $schema->resultset('Label');
+	my $recipient_label_rs = $schema->resultset('RecipientLabel');
+
+	is($label_rs->count,           0);
+	is($recipient_label_rs->count, 0);
+
     my $new_email = fake_email()->();
     rest_post "/api/chatbot/recipient/",
         name => "change recipient data",
@@ -119,9 +125,20 @@ db_transaction {
             fb_id          => $fb_id,
             politician_id  => $politician_id,
             email          => $new_email,
-            security_token => $security_token
+            security_token => $security_token,
+            extra_fields   => encode_json(
+                {
+                    custom_labels => [
+                        { name => 'foo' },
+                        { name => 'bar' }
+                    ],
+                }
+            ),
         ]
     ;
+
+	is($label_rs->count,           2);
+	is($recipient_label_rs->count, 2);
 
     rest_reload_list "get_citizen";
 

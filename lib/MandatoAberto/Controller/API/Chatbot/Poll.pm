@@ -67,10 +67,7 @@ sub list_GET {
                     } $p->poll_questions->all()
                 ],
             } $c->model("DB::Poll")->search(
-                {
-                    "$page_id_param" => $page_id,
-                    status_id        => 1
-                },
+                { "$page_id_param" => $page_id },
                 { prefetch => [ 'poll_questions', { 'poll_questions' => "poll_question_options" }, { 'organization_chatbot' => 'organization_chatbot_facebook_config' } ] }
             )
         }

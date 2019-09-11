@@ -42,13 +42,23 @@ sub list_GET {
     return $self->status_ok(
         $c,
         entity => {
-            user_id => $user->user->id,
-            id      => $user->user->id,
-            name    => $user->user->name,
-            use_dialogflow => $organization_chatbot->general_config->use_dialogflow,
-            issue_active => $organization_chatbot->general_config->issue_active,
+            user_id                 => $user->user->id,
+            id                      => $user->user->id,
+            name                    => $user->user->name,
+            use_dialogflow          => $organization_chatbot->general_config->use_dialogflow,
+            issue_active            => $organization_chatbot->general_config->issue_active,
             organization_chatbot_id => $organization_chatbot->id,
-            fb_access_token         => $organization_chatbot->fb_config->access_token
+            fb_access_token         => $organization_chatbot->fb_config->access_token,
+            answers                 => [
+                map {
+                    my $a = $_;
+
+                    +{
+                        code    => $a->question->name,
+                        content => $a->content
+                    }
+                } $organization_chatbot->answers->all()
+            ]
         }
     );
 }

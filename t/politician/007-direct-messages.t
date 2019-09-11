@@ -64,15 +64,6 @@ db_transaction {
 
     api_auth_as user_id => $politician_id;
 
-    rest_post "/api/politician/$politician_id/direct-message",
-        name    => "Politician not premium",
-        is_fail => 1,
-        code    => 400,
-        [
-            name    => "Foobar",
-            content => fake_words(2)->(),
-        ]
-    ;
 
     ok( $schema->resultset('Politician')->find($politician_id)->update( { premium => 1 } ) , 'politician premium');
 

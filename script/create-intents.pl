@@ -8,8 +8,6 @@ use WebService::Dialogflow;
 
 my $df = WebService::Dialogflow->instance;
 
-use DDP; p $df;
-
 my $schema         = get_schema;
 my $entity_rs      = $schema->resultset('PoliticianEntity')->search( undef, {group_by => 'me.name'} );
 my @entitites_name = $entity_rs->get_column('name')->all();

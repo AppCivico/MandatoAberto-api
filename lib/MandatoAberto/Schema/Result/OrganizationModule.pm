@@ -136,7 +136,7 @@ __PACKAGE__->belongs_to(
   "module",
   "MandatoAberto::Schema::Result::Module",
   { id => "module_id" },
-  { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
+  { is_deferrable => 0, on_delete => "NO ACTION", on_update => "CASCADE" },
 );
 
 =head2 organization
@@ -155,8 +155,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-12-14 14:53:34
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:AJZJeA8RnqOPYVWUrfYbiw
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-04-10 15:42:07
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:P94HLiSK8tfMnP3G7lbv2A
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

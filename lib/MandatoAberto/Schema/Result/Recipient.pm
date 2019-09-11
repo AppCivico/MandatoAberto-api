@@ -300,9 +300,69 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 questionnaire_answers
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-03-01 15:05:46
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:B9oVNITDjiYwCmEqGB1gbA
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::QuestionnaireAnswer>
+
+=cut
+
+__PACKAGE__->has_many(
+  "questionnaire_answers",
+  "MandatoAberto::Schema::Result::QuestionnaireAnswer",
+  { "foreign.recipient_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+=head2 questionnaire_stashes
+
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::QuestionnaireStash>
+
+=cut
+
+__PACKAGE__->has_many(
+  "questionnaire_stashes",
+  "MandatoAberto::Schema::Result::QuestionnaireStash",
+  { "foreign.recipient_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+=head2 recipient_labels
+
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::RecipientLabel>
+
+=cut
+
+__PACKAGE__->has_many(
+  "recipient_labels",
+  "MandatoAberto::Schema::Result::RecipientLabel",
+  { "foreign.recipient_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+=head2 tickets
+
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::Ticket>
+
+=cut
+
+__PACKAGE__->has_many(
+  "tickets",
+  "MandatoAberto::Schema::Result::Ticket",
+  { "foreign.recipient_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-09-02 15:25:38
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:AW77xGe9HZMxpTDL67VfUw
 
 __PACKAGE__->load_components("InflateColumn::Serializer", "Core");
 __PACKAGE__->remove_column('groups');
@@ -444,6 +504,20 @@ sub add_to_politician_entity {
 
     return $ret;
 
+}
+
+sub extra_fields {
+    my ($self) = @_;
+
+    my $labels = $self->recipient_labels;
+
+    return {
+        labels => [
+            map {
+                { name => $_->label->name }
+            } $labels->all()
+        ]
+    }
 }
 
 __PACKAGE__->meta->make_immutable;

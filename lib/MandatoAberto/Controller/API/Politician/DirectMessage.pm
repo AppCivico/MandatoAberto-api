@@ -59,8 +59,6 @@ sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }
 sub list_POST {
     my ($self, $c) = @_;
 
-    die \['premium', 'politician is not premium'] unless $c->stash->{politician}->premium;
-
     my $groups;
     if ($c->req->params->{groups}) {
         $c->req->params->{groups} =~ s/(\[|\]|(\s))//g;
@@ -79,7 +77,7 @@ sub list_POST {
     if ( my $upload = $c->req->upload("file") ) {
         die \['attachment_type', 'missing'] unless $c->req->params->{attachment_type};
 
-        my $page_access_token = $c->stash->{politician}->user->organization->chatbot->fb_config->access_token;
+        my $page_access_token = $c->stash->{politician}->user->chatbot->fb_config->access_token;
 
         $file = $self->_upload_picture($upload, $page_access_token);
         $c->req->params->{saved_attachment_id} = $file->{attachment_id};

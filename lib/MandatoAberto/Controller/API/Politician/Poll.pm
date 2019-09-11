@@ -54,7 +54,6 @@ sub list_GET {
                     +{
                         id        => $p->get_column('id'),
                         name      => $p->get_column('name'),
-                        status_id => $p->get_column('status_id'),
 
                         questions => [
                             map {
@@ -62,6 +61,18 @@ sub list_GET {
                                 +{
                                     id      => $pq->get_column('id'),
                                     content => $pq->get_column('content'),
+
+									options => [
+										map {
+											my $qo = $_;
+
+											+{
+												id      => $qo->get_column('id'),
+												content => $qo->get_column('content'),
+												count   => $qo->poll_results->search()->count,
+											  }
+										} $pq->poll_question_options->all()
+									]
                                 }
 
                             } $p->poll_questions->all()
@@ -155,8 +166,6 @@ sub result_GET {
         entity => {
             id        => $c->stash->{collection}->id,
             name      => $c->stash->{collection}->name,
-            status_id => $c->stash->{collection}->status_id,
-
             questions => [
                 map {
                     my $pq = $_;
