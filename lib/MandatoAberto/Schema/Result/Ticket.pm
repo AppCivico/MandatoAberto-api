@@ -319,6 +319,9 @@ with 'MandatoAberto::Role::Verification::TransactionalActions::DBIC';
 use JSON;
 use WebService::HttpCallback::Async;
 
+use MandatoAberto::Utils;
+use MandatoAberto::Mailer::Template;
+
 has _httpcb => (
     is         => "ro",
     isa        => "WebService::HttpCallback::Async",
@@ -388,10 +391,20 @@ sub action_specs {
                 'ticket nova mensagem' => 6
             };
 
+            my $has_asignee = $self->assignee_id || $values{assignee_id} ? 1 : 0;
+            my $assignee;
+            if ( $has_asignee ) {
+                $assignee = $self->assignee || $self->organization_chatbot->organization->users->search( { user_id => $values{assignee_id} } )->next;
+                die \['assignee_id', 'invalid'] unless $assignee;
+            }
+
             my $ticket;
             $self->result_source->schema->txn_do( sub {
                 my $log_action;
                 my @logs;
+
+                my @emails;
+                my $email_rs = $self->result_source->schema->resultset('EmailQueue');
 
                 my $updated_by_chatbot = delete $values{updated_by_chatbot};
 
@@ -452,6 +465,42 @@ sub action_specs {
                                     }
                                 )
                             };
+                        }
+                    }
+
+                    # Adicionando email na fila
+                    my $email_vars = {
+                        ticket_url => $ENV{ASSISTENTE_URL} . 'chamados/' . $self->id,
+                        status     => $status
+                    };
+
+                    if ($has_asignee) {
+                        my $user = $assignee->user;
+                        $email_vars->{name} = $user->name;
+
+                        my $email = MandatoAberto::Mailer::Template->new(
+                            to       => $user->email,
+                            from     => 'no-reply@assistentecivico.com.br',
+                            subject  => 'Ticket atualizado',
+                            template => get_data_section('ticket_updated.tt'),
+                            vars     => $email_vars,
+                        )->build_email();
+                        push @emails, { body => $email->as_string };
+                    }
+                    else {
+                        my $user_rs = $self->organization_chatbot->organization->users;
+                        while (my $user_rel = $user_rs->next) {
+                            my $user = $user_rel->user;
+                            $email_vars->{name} = $user->name;
+
+                            my $email = MandatoAberto::Mailer::Template->new(
+                                to       => $user->email,
+                                from     => 'no-reply@assistentecivico.com.br',
+                                subject  => 'Ticket atualizado',
+                                template => get_data_section('ticket_updated.tt'),
+                                vars     => $email_vars,
+                            )->build_email();
+                            push @emails, { body => $email->as_string };
                         }
                     }
                 }
@@ -542,6 +591,7 @@ sub action_specs {
                 if ( my $message = delete $values{message} ) {
                     my $responses = $self->response;
                     my $messages  = $self->message;
+                    my $message_param = $message;
 
                     my $messages_size  = scalar @{ $messages };
                     my $responses_size = scalar @{ $responses };
@@ -565,13 +615,48 @@ sub action_specs {
                             )
                         };
 
-                    $values{message} = $messages;
-					$self->update( { message => [] } );
+                    # Adicionando email na fila
+                    my $email_vars = {
+                        ticket_url  => $ENV{ASSISTENTE_URL} . 'chamados/' . $self->id,
+                        message     => $message_param
+                    };
 
-                    # TODO adicionar email
+                    if ($has_asignee) {
+                        my $user = $assignee->user;
+                        $email_vars->{name} = $user->name;
+
+                        my $email = MandatoAberto::Mailer::Template->new(
+                            to       => $user->email,
+                            from     => 'no-reply@assistentecivico.com.br',
+                            subject  => 'Ticket atualizado',
+                            template => get_data_section('ticket_updated.tt'),
+                            vars     => $email_vars,
+                        )->build_email();
+                        push @emails, { body => $email->as_string };
+                    }
+                    else {
+                        my $user_rs = $self->organization_chatbot->organization->users;
+                        while (my $user_rel = $user_rs->next) {
+                            my $user = $user_rel->user;
+                            $email_vars->{name} = $user->name;
+
+                            my $email = MandatoAberto::Mailer::Template->new(
+                                to       => $user->email,
+                                from     => 'no-reply@assistentecivico.com.br',
+                                subject  => 'Ticket atualizado',
+                                template => get_data_section('ticket_updated.tt'),
+                                vars     => $email_vars,
+                            )->build_email();
+                            push @emails, { body => $email->as_string };
+                        }
+                    }
+
+                    $values{message} = $messages;
+                    $self->update( { message => [] } );
                 }
 
                 $self->ticket_logs->populate(\@logs);
+                $email_rs->populate(\@emails);
                 $ticket = $self->update(\%values);
             });
 
@@ -654,3 +739,78 @@ sub status_human_name {
 
 __PACKAGE__->meta->make_immutable;
 1;
+
+__DATA__
+
+@@ ticket_updated.tt
+
+<!doctype html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html charset=UTF-8">
+</head>
+<body>
+<div leftmargin="0" marginheight="0" marginwidth="0" topmargin="0" style="background-color:#f5f5f5; font-family:'Montserrat',Arial,sans-serif; margin:0; padding:0; width:100%">
+<table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse:collapse">
+<tbody>
+<tr>
+<td>
+<table align="center" border="0" cellpadding="0" cellspacing="0" class="x_deviceWidth" width="600" style="border-collapse:collapse">
+<tbody>
+<tr>
+<td height="50"></td>
+</tr>
+<tr>
+<td bgcolor="#ffffff" colspan="2" style="background-color:rgb(255,255,255); border-radius:0 0 7px 7px; font-family:'Montserrat',Arial,sans-serif; font-size:13px; font-weight:normal; line-height:24px; padding:30px 0; text-align:center; vertical-align:top">
+<table align="center" border="0" cellpadding="0" cellspacing="0" width="84%" style="border-collapse:collapse">
+<tbody>
+<tr>
+<td align="justify" style="color:#666666; font-family:'Montserrat',Arial,sans-serif; font-size:16px; font-weight:300; line-height:23px; margin:0">
+<p style="text-align: center;"><a href="[% home_url %]"><img src="[% header_picture %]" class="x_deviceWidth" style="border-radius:7px 7px 0 0; align: center"></a></p>
+<p><b>Olá, [% name %]. </b></p>
+<p> <strong> </strong>Um ticket do seu assistente foi atualizado!</p>
+  </td>
+</tr>
+<tr>
+<td height="30"></td>
+</tr>
+<tr>
+<td align="center" bgcolor="#ffffff" valign="top" style="padding-top:20px">
+<table align="center" border="0" cellpadding="0" cellspacing="0" style="border-collapse:separate; border-radius:7px; margin:0">
+<tbody>
+<tr>
+<td align="center" valign="middle"><a href="[% ticket_url %]" target="_blank" class="x_btn" style="background:#502489; border-radius:8px; color:#ffffff; font-family:'Montserrat',Arial,sans-serif; font-size:15px; padding:16px 24px 15px 24px; text-decoration:none; text-transform:uppercase"><strong>VER TICKET</strong></a></td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<td height="40"></td>
+</tr>
+
+<tr>
+<td height="30"></td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+<table align="center" border="0" cellpadding="0" cellspacing="0" class="x_deviceWidth" width="540" style="border-collapse:collapse">
+  <tbody>
+<tr>
+<td align="center" style="color:#666666; font-family:'Montserrat',Arial,sans-serif; font-size:11px; font-weight:300; line-height:16px; margin:0; padding:30px 0px">
+
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+</div>
+</div></div>

@@ -8,6 +8,8 @@ use JSON;
 my $schema = MandatoAberto->model("DB");
 
 db_transaction {
+    my $email_rs = $schema->resultset('EmailQueue');
+
     my $security_token = $ENV{CHATBOT_SECURITY_TOKEN};
 
     my ($user_id, $organization_id, $chatbot_id, $recipient_id, $recipient);
@@ -48,6 +50,8 @@ db_transaction {
         ok defined $ticket_types->{ticket_types}->[0]->{name};
 
         # Criando ticket
+        is $email_rs->count, 0;
+
         my $res = rest_post "/api/chatbot/ticket",
             automatic_load_item => 0,
             [
@@ -60,6 +64,7 @@ db_transaction {
             ]
         ;
 
+        is $email_rs->count, 1; # email created
         ok defined $res->{id};
 
         ok my $ticket = $schema->resultset('Ticket')->find($res->{id});
@@ -90,6 +95,7 @@ db_transaction {
                 message        => 'new message',
             ]
         ;
+        is $email_rs->count, 2;
 
         $res = rest_put "/api/chatbot/ticket/$ticket_id",
             code => 200,
@@ -98,6 +104,7 @@ db_transaction {
                 status         => 'canceled',
             ]
         ;
+		is $email_rs->count, 3;
     };
 
     subtest 'User | CRUD ticket' => sub {
