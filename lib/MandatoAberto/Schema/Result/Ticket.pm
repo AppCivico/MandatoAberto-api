@@ -394,7 +394,7 @@ sub action_specs {
             my $has_asignee = $self->assignee_id || $values{assignee_id} ? 1 : 0;
             my $assignee;
             if ( $has_asignee ) {
-                $assignee = $self->assignee || $self->organization_chatbot->organization->users->search( { user_id => $values{assignee_id} } )->next;
+                $assignee = $self->assignee || $self->organization_chatbot->organization->users->search( { user_id => $values{assignee_id} } )->next->user;
                 die \['assignee_id', 'invalid'] unless $assignee;
             }
 
@@ -475,7 +475,7 @@ sub action_specs {
                     };
 
                     if ($has_asignee) {
-                        my $user = $assignee->user;
+                        my $user = $assignee;
                         $email_vars->{name} = $user->name;
 
                         my $email = MandatoAberto::Mailer::Template->new(
@@ -503,6 +503,9 @@ sub action_specs {
                             push @emails, { body => $email->as_string };
                         }
                     }
+
+                    $values{closed_at}           = \'NOW()' if $status eq 'closed';
+                    $values{progress_started_at} = \'NOW()' if $status eq 'progress';
                 }
 
                 if ( my $assignee_id = $values{assignee_id} ) {
@@ -622,7 +625,7 @@ sub action_specs {
                     };
 
                     if ($has_asignee) {
-                        my $user = $assignee->user;
+                        my $user = $assignee;
                         $email_vars->{name} = $user->name;
 
                         my $email = MandatoAberto::Mailer::Template->new(
