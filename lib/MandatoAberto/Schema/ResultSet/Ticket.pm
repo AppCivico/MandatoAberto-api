@@ -237,7 +237,8 @@ sub extract_metrics {
     my $chatbot_id     = $politician->user->organization_chatbot->id;
     my $ticket_metrics = $self->result_source->schema->resultset('ViewTicketMetrics')->search( undef, { bind => [ $chatbot_id, $chatbot_id ] } )->next;
 
-    my $avg_close = $ticket_metrics->avg_close ? $ticket_metrics->avg_close : '00:00:00';
+    my $avg_close = $ticket_metrics->avg_close ? $ticket_metrics->avg_close : '0';
+    my $avg_open  = $ticket_metrics->avg_open ? $ticket_metrics->avg_open : '0';
 
     return {
         count           => $self->count,
@@ -257,7 +258,7 @@ sub extract_metrics {
                 suggested_actions => []
             },
             {
-                text              => 'Tempo de atendimento: ' . $ticket_metrics->avg_open . ' minutos',
+                text              => 'Tempo de atendimento: ' . $avg_open . ' minutos',
                 suggested_actions => []
             },
             {
