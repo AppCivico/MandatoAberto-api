@@ -32,8 +32,8 @@ WITH closed_tickets AS (
     FROM ticket
 )
 SELECT
-    ( SELECT AVG( c.closed_at - c.created_at ) )::interval AS avg_close,
-    ( SELECT AVG( now() - progress_started_at ) FROM all_tickets WHERE organization_chatbot_id = ? )::interval AS avg_open
+    ( SELECT ROUND(EXTRACT(epoch FROM AVG( c.closed_at - c.created_at )::interval )/60) ) AS avg_close,
+    ( SELECT ROUND(EXTRACT(epoch FROM AVG( now() - progress_started_at WHERE organization_chatbot_id = ? ))) FROM all_tickets ) AS avg_open
 FROM closed_tickets c WHERE c.organization_chatbot_id = ?
 SQL_QUERY
 1;

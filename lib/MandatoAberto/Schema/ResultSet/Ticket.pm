@@ -257,11 +257,11 @@ sub extract_metrics {
                 suggested_actions => []
             },
             {
-                text              => 'Tempo de atendimento: ' . $ticket_metrics->avg_open,
+                text              => 'Tempo de atendimento: ' . $ticket_metrics->avg_open . ' minutos',
                 suggested_actions => []
             },
             {
-                text              => 'Tempo de resolução: ' . $avg_close,
+                text              => 'Tempo de resolução: ' . $avg_close . ' minutos',
                 suggested_actions => []
             }
         ]
