@@ -233,6 +233,12 @@ sub extract_metrics {
     my $count_progress = $self->search({'me.status' => 'progress'})->count;
     my $count_closed   = $self->search({'me.status' => 'closed'})->count;
 
+    my $politician     = $self->result_source->schema->resultset('Politician')->find($opts{politician_id});
+    my $chatbot_id     = $politician->user->organization_chatbot->id;
+    my $ticket_metrics = $self->result_source->schema->resultset('ViewTicketMetrics')->search( undef, { bind => [ $chatbot_id, $chatbot_id ] } )->next;
+
+    my $avg_close = $ticket_metrics->avg_close ? $ticket_metrics->avg_close : '00:00:00';
+
     return {
         count           => $self->count,
         description     => 'Aqui você poderá métricas sobre os seus tickets.',
@@ -248,6 +254,14 @@ sub extract_metrics {
             },
             {
                 text              => $count_closed . ' tickets fechados',
+                suggested_actions => []
+            },
+            {
+                text              => 'Tempo de atendimento: ' . $ticket_metrics->avg_open,
+                suggested_actions => []
+            },
+            {
+                text              => 'Tempo de resolução: ' . $avg_close,
                 suggested_actions => []
             }
         ]
