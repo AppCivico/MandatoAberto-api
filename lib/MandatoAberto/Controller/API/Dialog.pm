@@ -105,7 +105,7 @@ sub list_GET {
                 } $c->stash->{collection}->search(
                     {
                         'me.active'                     => 1,
-                        'organization.is_mandatoaberto' => 1
+                        # 'organization.is_mandatoaberto' => 1
                     },
                     { prefetch => [ 'questions', { 'questions' => { 'answers' => { 'organization_chatbot' => 'organization' } } } ] }
                   )->all()
