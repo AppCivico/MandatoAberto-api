@@ -503,6 +503,8 @@ sub action_specs {
                             push @emails, { body => $email->as_string };
                         }
                     }
+
+                    $values{closed_at} = \'NOW()' if $status = 'closed';
                 }
 
                 if ( my $assignee_id = $values{assignee_id} ) {
