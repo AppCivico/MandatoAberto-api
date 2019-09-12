@@ -504,7 +504,7 @@ sub action_specs {
                         }
                     }
 
-                    $values{closed_at} = \'NOW()' if $status = 'closed';
+                    $values{closed_at} = \'NOW()' if $status eq 'closed';
                 }
 
                 if ( my $assignee_id = $values{assignee_id} ) {
