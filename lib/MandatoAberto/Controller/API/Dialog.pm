@@ -50,14 +50,6 @@ sub list_GET {
     my $politician_id = $c->user->id;
 
     my $politician = $c->model('DB::Politician')->find($politician_id);
-    if ( !$politician->user->organization->is_mandatoaberto ) {
-        return $self->status_ok(
-            $c,
-            entity => {
-                dialogs => []
-            }
-        );
-    }
 
     my $show_question_name = $ENV{SHOW_QUESTION_NAME};
 
