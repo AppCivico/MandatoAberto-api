@@ -477,6 +477,7 @@ sub action_specs {
                     if ($has_asignee) {
                         my $user = $assignee;
                         $email_vars->{name} = $user->name;
+                        next if $user->email =~ m/\@email/;
 
                         my $email = MandatoAberto::Mailer::Template->new(
                             to       => $user->email,
@@ -492,6 +493,7 @@ sub action_specs {
                         while (my $user_rel = $user_rs->next) {
                             my $user = $user_rel->user;
                             $email_vars->{name} = $user->name;
+                            next if $user->email =~ m/\@email/;
 
                             my $email = MandatoAberto::Mailer::Template->new(
                                 to       => $user->email,
@@ -627,6 +629,7 @@ sub action_specs {
                     if ($has_asignee) {
                         my $user = $assignee;
                         $email_vars->{name} = $user->name;
+                        next if $user->email =~ m/\@email/;
 
                         my $email = MandatoAberto::Mailer::Template->new(
                             to       => $user->email,
@@ -642,6 +645,7 @@ sub action_specs {
                         while (my $user_rel = $user_rs->next) {
                             my $user = $user_rel->user;
                             $email_vars->{name} = $user->name;
+                            next if $user->email =~ m/\@email/;
 
                             my $email = MandatoAberto::Mailer::Template->new(
                                 to       => $user->email,
