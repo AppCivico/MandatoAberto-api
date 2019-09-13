@@ -46,3 +46,6 @@ COPY mandatoaberto-email.sh /etc/service/mandatoaberto-email/run
 
 RUN mkdir /etc/service/mandatoaberto-segmenter
 COPY mandatoaberto-segmenter.sh /etc/service/mandatoaberto-segmenter/run
+
+RUN mkdir /etc/service/mandatoaberto-campaign
+COPY mandatoaberto-campaign.sh /etc/service/mandatoaberto-campaign/run
