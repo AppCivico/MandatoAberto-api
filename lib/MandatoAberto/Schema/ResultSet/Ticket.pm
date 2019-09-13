@@ -246,18 +246,6 @@ sub extract_metrics {
         suggested_actions => [],
         sub_metrics => [
             {
-                text              => $count_open . ' tickets em aberto',
-                suggested_actions => []
-            },
-            {
-                text              => $count_progress . ' tickets em progresso',
-                suggested_actions => []
-            },
-            {
-                text              => $count_closed . ' tickets fechados',
-                suggested_actions => []
-            },
-            {
                 text              => 'Tempo de atendimento: ' . $avg_open . ' minutos',
                 suggested_actions => []
             },
