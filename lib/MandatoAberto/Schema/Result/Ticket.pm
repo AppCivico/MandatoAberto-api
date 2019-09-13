@@ -535,7 +535,7 @@ sub action_specs {
                     }
                 }
 
-                if ( my $response = delete $values{response} ) {
+                if ( my $response = $values{response} ) {
                     my $responses = $self->response;
                     my $messages  = $self->message;
 
@@ -550,7 +550,7 @@ sub action_specs {
 
                     my $access_token = $self->organization_chatbot->fb_config->access_token;
                     my $text = 'Você possui uma nova atualização para o seu ticket! #' . $self->id . "\n";
-                    $text   .= "Mensagem: $response";
+                    $text   .= "Mensagem: $values{response}";
 
                     $self->_httpcb->add(
                         url     => $ENV{FB_API_URL} . '/me/messages?access_token=' . $access_token,
