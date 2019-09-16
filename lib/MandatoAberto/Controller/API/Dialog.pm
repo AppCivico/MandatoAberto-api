@@ -53,6 +53,8 @@ sub list_GET {
 
     my $show_question_name = $ENV{SHOW_QUESTION_NAME};
 
+    my $showcase_cond = $politician->user->email eq 'ma_showcase@email.com' ? 1 : 0;
+
     return $self->status_ok(
         $c,
         entity => {
@@ -97,6 +99,15 @@ sub list_GET {
                 } $c->stash->{collection}->search(
                     {
                         'me.active'                     => 1,
+                        (
+                            $showcase_cond ?
+                            (
+                                'me.name' => { '!=' => 'Ticket' }
+                            ) :
+                            (
+                                'me.name' => { '!=' => 'Showcase' }
+                            )
+                        )
                         # 'organization.is_mandatoaberto' => 1
                     },
                     { prefetch => [ 'questions', { 'questions' => { 'answers' => { 'organization_chatbot' => 'organization' } } } ] }
