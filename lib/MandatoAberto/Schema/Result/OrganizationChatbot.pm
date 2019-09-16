@@ -537,6 +537,15 @@ sub action_specs {
     };
 }
 
+sub modules {
+    my $self = shift;
+
+    return $self->result_source->schema->resultset('Module')->search_rs(
+        { 'organization_modules.organization_id' => $self->organization_id },
+        { prefetch => 'organization_modules' }
+    );
+}
+
 sub general_config {
     my ($self) = @_;
 
@@ -661,6 +670,83 @@ sub build_dashboard {
               )->all()
         ]
     }
+}
+
+sub build_notification_bar {
+    my ($self) = @_;
+
+    my $modules_rs = $self->modules->search_rs( { 'me.part_of_notification_bar' => 1 } );
+
+    my @bar_items;
+    while (my $module = $modules_rs->next) {
+
+        if ($module->name eq 'issue') {
+            my $issue_response_view = $self->result_source->schema->resultset('ViewAvgIssueResponseTime')->search( undef, { bind => [ $self->id ] } )->next;
+            my $avg_response_time = $issue_response_view ? $issue_response_view->avg_response_time : 0;
+
+            my $unread_count  = $self->issues->search( { read => 0 } )->count;
+
+            my ($response_time, $label);
+            if ( $avg_response_time <= 90 ) {
+                $response_time = 'Bom';
+                $label         = 'positive';
+            }
+            else {
+                $response_time = 'Ruim';
+                $label         = 'negative';
+            }
+
+            push @bar_items, {
+                name     => 'issue_response_time',
+                text     => 'Tempo de resposta',
+                is_count => 0,
+                count    => undef,
+                message  => $response_time,
+                icon     => 'notifications__response-time',
+                link     => '/mensagens/caixa-de-entrada',
+                label    => $label
+            };
+
+            push @bar_items, {
+                name     => 'issue',
+                text     => 'Caixa de Entrada',
+                is_count => 1,
+                count    => $unread_count,
+                message  => undef,
+                icon     => 'notifications__inbox',
+                link     => '/mensagens/caixa-de-entrada',
+                label    => $label
+            };
+        }
+        else {
+            my $ticket_metrics = $self->result_source->schema->resultset('ViewTicketMetrics')->search( undef, { bind => [ $self->id, $self->id ] } )->next;
+
+            my $avg_close = $ticket_metrics->avg_close ? $ticket_metrics->avg_close : '0';
+            my $avg_open  = $ticket_metrics->avg_open ? $ticket_metrics->avg_open : '0';
+
+            push @bar_items, {
+                name => 'ticket_open',
+                text => 'Tempo de atendimento',
+                is_count => 0,
+                message  => $avg_open,
+                icon     => 'notifications__ticket-open-time',
+                link     => '',
+                label    => 'positive'
+            };
+
+            push @bar_items, {
+                name => 'ticket_close',
+                text => 'Tempo de resolução',
+                is_count => 0,
+                message  => $avg_close,
+                icon     => 'notifications__ticket-closed-time',
+                link     => '',
+                label    => 'positive'
+            };
+        }
+    }
+
+    return \@bar_items;
 }
 
 __PACKAGE__->meta->make_immutable;
