@@ -177,3 +177,4 @@
 0173-add-module-resultset_class [0172-add-log-types] 2019-09-04T12:51:03Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding the resultset_class column to the module table
 0174-drop-questionnaire-constraint [0173-add-module-resultset_class] 2019-09-10T13:48:31Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Dropping a constraint on the questionnaire question table
 0175-add-notification_bar [0174-drop-questionnaire-constraint] 2019-09-16T10:50:54Z Lucas Ansei,,, <lucas@lucas-G750JX> # Adding data to module
+0176-add-custom_url [0175-add-notification_bar] 2019-09-16T11:37:32Z Lucas Ansei,,, <lucas@lucas-G750JX> # adding custom url for organization
