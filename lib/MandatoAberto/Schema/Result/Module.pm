@@ -74,6 +74,12 @@ __PACKAGE__->table("module");
   data_type: 'text'
   is_nullable: 1
 
+=head2 part_of_notification_bar
+
+  data_type: 'boolean'
+  default_value: false
+  is_nullable: 0
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -94,6 +100,8 @@ __PACKAGE__->add_columns(
   { data_type => "integer", is_nullable => 1 },
   "class",
   { data_type => "text", is_nullable => 1 },
+  "part_of_notification_bar",
+  { data_type => "boolean", default_value => \"false", is_nullable => 0 },
 );
 
 =head1 PRIMARY KEY
@@ -167,8 +175,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-09-04 10:04:29
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:a4+Tj8ScmKoc1scupJPWpg
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-09-13 11:35:53
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:BEh1un5Adpf/2UGY9gkgIA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

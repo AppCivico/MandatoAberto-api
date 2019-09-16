@@ -27,7 +27,7 @@ sub list_GET {
     return $self->status_ok(
         $c,
         entity => {
-            notifications => $c->stash->{politician}->build_notification_bar
+            notifications => $c->stash->{politician}->user->organization->chatbot->build_notification_bar
         }
     )
 }
