@@ -212,6 +212,11 @@ sub verifiers_specs {
 
                         return 1;
                     }
+                },
+
+                delete_attachment => {
+                    required => 0,
+                    type     => 'Bool'
                 }
             },
         )
@@ -240,6 +245,12 @@ sub action_specs {
 
             if ( $values{active} && $values{active} == 1 && $active_knowledge_base_entry && $active_knowledge_base_entry->id != $self->id ) {
                 $active_knowledge_base_entry->update( { active => 0 } );
+            }
+
+            if ( $values{delete_attachment} == 1 ) {
+                delete $values{delete_attachment};
+                $values{saved_attachment_type} = undef;
+                $values{saved_attachment_id} = undef;
             }
 
             $self->update({
