@@ -245,6 +245,8 @@ sub action_specs {
                         {
                             name             => $values{name},
                             is_mandatoaberto => 0,
+                            approved         => 1,
+                            premium          => 1,
                             custom_url       => $values{custom_url},
                             # Ao criar a organização já crio com um chatbot.
                             organization_chatbots => [
