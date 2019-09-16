@@ -485,7 +485,7 @@ sub action_specs {
                             template => get_data_section('ticket_updated.tt'),
                             vars     => $email_vars,
                         )->build_email();
-                        push @emails, { body => $email->as_string };
+                        push @emails, { body => $email->as_string } unless $user->email =~ m/email.com/;
                     }
                     else {
                         my $user_rs = $self->organization_chatbot->organization->users;
@@ -500,7 +500,7 @@ sub action_specs {
                                 template => get_data_section('ticket_updated.tt'),
                                 vars     => $email_vars,
                             )->build_email();
-                            push @emails, { body => $email->as_string };
+                            push @emails, { body => $email->as_string } unless $user->email =~ m/email.com/;
                         }
                     }
 
@@ -636,7 +636,7 @@ sub action_specs {
                             template => get_data_section('ticket_updated.tt'),
                             vars     => $email_vars,
                         )->build_email();
-                        push @emails, { body => $email->as_string };
+                        push @emails, { body => $email->as_string } unless $user->email =~ m/email.com/;
                     }
                     else {
                         my $user_rs = $self->organization_chatbot->organization->users;
@@ -651,7 +651,7 @@ sub action_specs {
                                 template => get_data_section('ticket_updated.tt'),
                                 vars     => $email_vars,
                             )->build_email();
-                            push @emails, { body => $email->as_string };
+                            push @emails, { body => $email->as_string } unless $user->email =~ m/email.com/;
                         }
                     }
 
