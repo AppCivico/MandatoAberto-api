@@ -111,7 +111,10 @@ sub list_GET {
     elsif ( $filter eq 'replied' ) {
         $cond =  {
             'me.message'        => { '!=' => 'Participar' },
-            reply               => \'IS NOT NULL',
+            '-or' => [
+                reply               => \'IS NOT NULL',
+                saved_attachment_id => \'IS NOT NULL'
+            ]
             # 'recipient.page_id' => $page_id
         }
     }
