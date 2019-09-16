@@ -141,6 +141,10 @@ sub verifiers_specs {
                         $self->result_source->schema->resultset('Organization')->search({ invite_token => $token })->count
                             or die \['invite_token', 'invalid'];
                     }
+                },
+                custom_url => {
+                    required => 0,
+                    type     => 'Str'
                 }
             }
         ),
@@ -241,6 +245,9 @@ sub action_specs {
                         {
                             name             => $values{name},
                             is_mandatoaberto => 0,
+                            approved         => 1,
+                            premium          => 1,
+                            custom_url       => $values{custom_url},
                             # Ao criar a organização já crio com um chatbot.
                             organization_chatbots => [
                                 {

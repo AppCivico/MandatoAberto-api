@@ -398,6 +398,8 @@ sub action_specs {
                 die \['assignee_id', 'invalid'] unless $assignee;
             }
 
+            my $url = $self->organization_chatbot->organization->custom_url ? $self->organization_chatbot->organization->custom_url : $ENV{ASSISTENTE_URL};
+
             my $ticket;
             $self->result_source->schema->txn_do( sub {
                 my $log_action;
@@ -470,7 +472,7 @@ sub action_specs {
 
                     # Adicionando email na fila
                     my $email_vars = {
-                        ticket_url => $ENV{ASSISTENTE_URL} . 'chamados/' . $self->id,
+                        ticket_url => $url . 'chamados/' . $self->id,
                         status     => $status
                     };
 
@@ -485,7 +487,7 @@ sub action_specs {
                             template => get_data_section('ticket_updated.tt'),
                             vars     => $email_vars,
                         )->build_email();
-                        push @emails, { body => $email->as_string };
+                        push @emails, { body => $email->as_string } unless $user->email =~ m/email.com/;
                     }
                     else {
                         my $user_rs = $self->organization_chatbot->organization->users;
@@ -500,7 +502,7 @@ sub action_specs {
                                 template => get_data_section('ticket_updated.tt'),
                                 vars     => $email_vars,
                             )->build_email();
-                            push @emails, { body => $email->as_string };
+                            push @emails, { body => $email->as_string } unless $user->email =~ m/email.com/;
                         }
                     }
 
@@ -621,7 +623,7 @@ sub action_specs {
 
                     # Adicionando email na fila
                     my $email_vars = {
-                        ticket_url  => $ENV{ASSISTENTE_URL} . 'chamados/' . $self->id,
+                        ticket_url  => $url . 'chamados/' . $self->id,
                         message     => $message_param
                     };
 
@@ -636,7 +638,7 @@ sub action_specs {
                             template => get_data_section('ticket_updated.tt'),
                             vars     => $email_vars,
                         )->build_email();
-                        push @emails, { body => $email->as_string };
+                        push @emails, { body => $email->as_string } unless $user->email =~ m/email.com/;
                     }
                     else {
                         my $user_rs = $self->organization_chatbot->organization->users;
@@ -651,7 +653,7 @@ sub action_specs {
                                 template => get_data_section('ticket_updated.tt'),
                                 vars     => $email_vars,
                             )->build_email();
-                            push @emails, { body => $email->as_string };
+                            push @emails, { body => $email->as_string } unless $user->email =~ m/email.com/;
                         }
                     }
 

@@ -14,7 +14,7 @@ db_transaction {
 
     my ($user_id, $organization_id, $chatbot_id, $recipient_id, $recipient);
     subtest 'Create chatbot and recipient' => sub {
-        $user_id         = create_user();
+        $user_id         = create_user(custom_url => 'foobar.com');
         $user_id         = $user_id->{id};
         $organization_id = $schema->resultset('Organization')->search(undef)->next->id;
         $chatbot_id      = $schema->resultset('OrganizationChatbot')->search(undef)->next->id;
