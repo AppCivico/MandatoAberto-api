@@ -93,7 +93,7 @@ sub get_intents {
 
         eval {
             retry {
-                my $url = $ENV{DIALOGFLOW_URL} . "/v2/projects/$project_id/agent/intents";
+                my $url = $ENV{DIALOGFLOW_URL} . "/v2/projects/$project_id/agent/intents?pageSize=1000";
 
                 $res = $self->furl->get(
                     $url,
