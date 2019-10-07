@@ -115,7 +115,7 @@ sub action_specs {
 
                     my $email = MandatoAberto::Mailer::Template->new(
                         to       => $user->email,
-                        from     => 'no-reply@assistentecivico.com.br',
+                        from     => 'no-reply@dipiou.com.br',
                         subject  => "Novo ticket criado",
                         template => get_data_section('ticket_created.tt'),
                         vars     => {
@@ -204,7 +204,7 @@ sub build_list {
                         }
                     )
                 }
-            } $self->search($filter, {page => $page, rows => $rows})->all()
+            } $self->search($filter, {page => $page, rows => $rows, order_by => { -desc => 'me.created_at' } })->all()
         ],
         itens_count => $self->count
     }
