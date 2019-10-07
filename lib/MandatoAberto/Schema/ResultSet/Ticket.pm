@@ -204,7 +204,7 @@ sub build_list {
                         }
                     )
                 }
-            } $self->search($filter, {page => $page, rows => $rows})->all()
+            } $self->search($filter, {page => $page, rows => $rows, order_by => { -desc => 'me.created_at' } })->all()
         ],
         itens_count => $self->count
     }
