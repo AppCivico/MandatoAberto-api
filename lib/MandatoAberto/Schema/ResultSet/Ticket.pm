@@ -112,6 +112,7 @@ sub action_specs {
                 my $user_rs = $chatbot->organization->users;
                 while (my $user_rel = $user_rs->next) {
                     my $user = $user_rel->user;
+                    next unless $user->email eq 'edgard.lobo@appcivico.com';
 
                     my $email = MandatoAberto::Mailer::Template->new(
                         to       => $user->email,
