@@ -112,6 +112,7 @@ sub action_specs {
                 my $user_rs = $chatbot->organization->users;
                 while (my $user_rel = $user_rs->next) {
                     my $user = $user_rel->user;
+                    next unless $user->email eq 'edgard.lobo@appcivico.com';
 
                     my $email = MandatoAberto::Mailer::Template->new(
                         to       => $user->email,
@@ -284,8 +285,9 @@ __DATA__
 <table align="center" border="0" cellpadding="0" cellspacing="0" width="84%" style="border-collapse:collapse">
 <tbody>
 <tr>
-<td align="justify" style="color:#666666; font-family:'Montserrat',Arial,sans-serif; font-size:16px; font-weight:300; line-height:23px; margin:0">
-<p style="text-align: center;"><a href="[% home_url %]"><img src="[% header_picture %]" class="x_deviceWidth" style="border-radius:7px 7px 0 0; align: center"></a></p>
+<td align="center" style="color:#666666; font-family:'Montserrat',Arial,sans-serif; font-size:16px; font-weight:300; line-height:23px; margin:0">
+<p style="text-align: center;"><a href="[% home_url %]"><img src="https://i.imgur.com/scZuhOQ.png" class="x_deviceWidth" style="border-radius:7px 7px 0 0; align: center"></a></p>
+<br>
 <p><b>Olá, [% name %]. </b></p>
 <p> <strong> </strong>Seu assistente recebeu um novo ticket!</p>
   </td>
@@ -298,7 +300,7 @@ __DATA__
 <table align="center" border="0" cellpadding="0" cellspacing="0" style="border-collapse:separate; border-radius:7px; margin:0">
 <tbody>
 <tr>
-<td align="center" valign="middle"><a href="[% ticket_url %]" target="_blank" class="x_btn" style="background:#502489; border-radius:8px; color:#ffffff; font-family:'Montserrat',Arial,sans-serif; font-size:15px; padding:16px 24px 15px 24px; text-decoration:none; text-transform:uppercase"><strong>VER TICKET</strong></a></td>
+<td align="center" valign="middle"><a href="[% ticket_url %]" target="_blank" class="x_btn" style="background:#276165; border-radius:8px; color:#ffffff; font-family:'Montserrat',Arial,sans-serif; font-size:15px; padding:16px 24px 15px 24px; text-decoration:none; text-transform:uppercase"><strong>VER TICKET</strong></a></td>
 </tr>
 </tbody>
 </table>
