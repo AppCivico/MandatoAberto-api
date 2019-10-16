@@ -274,6 +274,21 @@ __PACKAGE__->belongs_to(
   { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
 );
 
+=head2 ticket_attachments
+
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::TicketAttachment>
+
+=cut
+
+__PACKAGE__->has_many(
+  "ticket_attachments",
+  "MandatoAberto::Schema::Result::TicketAttachment",
+  { "foreign.ticket_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 ticket_logs
 
 Type: has_many
@@ -285,6 +300,21 @@ Related object: L<MandatoAberto::Schema::Result::TicketLog>
 __PACKAGE__->has_many(
   "ticket_logs",
   "MandatoAberto::Schema::Result::TicketLog",
+  { "foreign.ticket_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+=head2 ticket_messages
+
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::TicketMessage>
+
+=cut
+
+__PACKAGE__->has_many(
+  "ticket_messages",
+  "MandatoAberto::Schema::Result::TicketMessage",
   { "foreign.ticket_id" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
@@ -305,8 +335,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-10-16 10:45:38
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:18VF6VKV5YSr27NLrsugRw
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-10-16 13:48:56
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:08BKCV853DcEb4oKLjxonQ
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
