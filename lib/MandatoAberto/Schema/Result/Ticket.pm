@@ -403,7 +403,12 @@ sub verifiers_specs {
                 updated_by_chatbot => {
                     required => 1,
                     type     => 'Bool'
-                }
+                },
+
+                ticket_attachments => {
+                    required => 0,
+                    type     => 'ArrayRef'
+                },
             }
         )
     };
@@ -699,6 +704,10 @@ sub action_specs {
                     $self->update( { message => [] } );
                 }
 
+                if ( my $attachments = delete $values{ticket_attachments} ) {
+                    $self->ticket_attachments->populate($attachments);
+                }
+
                 $self->ticket_logs->populate(\@logs);
                 $email_rs->populate(\@emails);
                 $ticket = $self->update(\%values);
@@ -755,6 +764,19 @@ sub build_list {
                 id => $self->type_id,
                 name => $self->type->name
             }
+        ),
+
+        (
+            attachments => [
+                map {
+                    +{
+                        id         => $_->id,
+                        type       => $_->type,
+                        url        => $_->url,
+                        created_at => $_->created_at
+                    }
+                } $self->ticket_attachments->search( { 'me.attached_to_message' => 0 }, { order_by => { -desc => 'me.created_at' } } )->all()
+            ]
         )
     }
 }

@@ -48,6 +48,10 @@ sub verifiers_specs {
                 anonymous => {
                     required => 0,
                     type     => 'Bool'
+                },
+                ticket_attachments => {
+                    required => 0,
+                    type     => 'ArrayRef'
                 }
             }
         ),
@@ -113,8 +117,12 @@ sub action_specs {
             ];
 
             # Preparando messages
-            if (my $messages = $values{message}) {
-                use DDP; p $messages;
+            # if (my $messages = $values{message}) {
+            #     use DDP; p $messages;
+            # }
+
+            if (my $attachments = delete $values{attachments}) {
+                $values{ticket_attachments} = $attachments;
             }
 
             my $ticket;

@@ -345,6 +345,21 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 ticket_messages
+
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::TicketMessage>
+
+=cut
+
+__PACKAGE__->has_many(
+  "ticket_messages",
+  "MandatoAberto::Schema::Result::TicketMessage",
+  { "foreign.recipient_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 tickets
 
 Type: has_many
@@ -361,8 +376,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-09-02 15:25:38
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:AW77xGe9HZMxpTDL67VfUw
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-10-16 13:48:56
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:5gT682p7ya5Ji9DmnXo5ow
 
 __PACKAGE__->load_components("InflateColumn::Serializer", "Core");
 __PACKAGE__->remove_column('groups');
