@@ -722,7 +722,7 @@ sub build_list {
     my $self = shift;
 
     return {
-        (map { $_ => $self->$_ } qw(id status message response created_at closed_at assigned_at data)),
+        (map { $_ => $self->$_ } qw(id status message response created_at closed_at assigned_at data anonymous)),
         (
             logs => [
                 map {
@@ -735,12 +735,21 @@ sub build_list {
             ]
         ),
 
-        (
-            recipient => {
-                id      => $self->recipient->id,
-                name    => $self->recipient->name,
-                picture => $self->recipient->picture
-            }
+        ( $self->anonymous ?
+            (
+                recipient => {
+                    id      => undef,
+                    name    => undef,
+                    picture => undef
+                }
+            ) :
+            (
+                recipient => {
+                    id      => $self->recipient->id,
+                    name    => $self->recipient->name,
+                    picture => $self->recipient->picture
+                }
+            )
         ),
 
         (
