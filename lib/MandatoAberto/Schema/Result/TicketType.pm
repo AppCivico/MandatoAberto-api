@@ -52,6 +52,12 @@ __PACKAGE__->table("ticket_type");
   data_type: 'text'
   is_nullable: 0
 
+=head2 can_be_anonymous
+
+  data_type: 'boolean'
+  default_value: false
+  is_nullable: 0
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -59,6 +65,8 @@ __PACKAGE__->add_columns(
   { data_type => "integer", is_nullable => 0 },
   "name",
   { data_type => "text", is_nullable => 0 },
+  "can_be_anonymous",
+  { data_type => "boolean", default_value => \"false", is_nullable => 0 },
 );
 
 =head1 PRIMARY KEY
@@ -91,8 +99,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-08-20 14:02:40
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:2t9G+lDncz1hpP0LsZXR2w
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-10-16 10:38:27
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:ccALaOQKyMqCJZcahhANgg
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
