@@ -87,26 +87,9 @@ __PACKAGE__->add_columns(
 
 __PACKAGE__->set_primary_key("id");
 
-=head1 RELATIONS
 
-=head2 logs
-
-Type: has_many
-
-Related object: L<MandatoAberto::Schema::Result::Log>
-
-=cut
-
-__PACKAGE__->has_many(
-  "logs",
-  "MandatoAberto::Schema::Result::Log",
-  { "foreign.action_id" => "self.id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
-
-
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-12-14 15:10:05
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:bdpYVqwYLGUkdP8ALmmGZg
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-10-17 15:55:06
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:KNNSD0Mtvt/BHGyxCz0FBA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

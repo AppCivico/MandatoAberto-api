@@ -149,21 +149,6 @@ __PACKAGE__->set_primary_key("id");
 
 =head1 RELATIONS
 
-=head2 answers
-
-Type: has_many
-
-Related object: L<MandatoAberto::Schema::Result::Answer>
-
-=cut
-
-__PACKAGE__->has_many(
-  "answers",
-  "MandatoAberto::Schema::Result::Answer",
-  { "foreign.question_id" => "self.id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
-
 =head2 created_by_admin
 
 Type: belongs_to
@@ -215,8 +200,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-09-05 11:16:42
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:GKFoNWXxoU1aKtE601I0hw
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-10-17 15:55:06
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:arBzVvW3kS7O6QCYkOC9tQ
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

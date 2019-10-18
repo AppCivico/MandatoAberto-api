@@ -35,6 +35,24 @@ db_transaction {
     ;
     my $question_id = stash "q1.id";
 
+    my $politician = $schema->resultset('Politician')->find($politician_id);
+    ok my $dialog = $schema->resultset('OrganizationDialog')->create(
+        {
+            organization_id => $politician->user->organization->id,
+            name            => 'foobar',
+            description     => 'foobar'
+        }
+    );
+    ok my $question = $schema->resultset('OrganizationQuestion')->create(
+        {
+            organization_dialog_id => $dialog->id,
+            name                   => 'foobar',
+            content                => fake_words(1)->(),
+            citizen_input          => fake_words(1)->()
+        }
+    );
+    $question_id = $question->id;
+
     api_auth_as user_id => $politician_id;
 
     my $answer_content = fake_words(1)->();

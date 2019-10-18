@@ -191,6 +191,21 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 organization_dialogs
+
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::OrganizationDialog>
+
+=cut
+
+__PACKAGE__->has_many(
+  "organization_dialogs",
+  "MandatoAberto::Schema::Result::OrganizationDialog",
+  { "foreign.organization_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 organization_modules
 
 Type: has_many
@@ -222,8 +237,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-09-16 08:37:24
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:rODgL5+ELeC3pk8l8k2l5w
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-10-17 15:55:06
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:kQkRfSY7Vdhj4ejPudIp8Q
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

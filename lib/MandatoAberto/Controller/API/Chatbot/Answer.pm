@@ -38,11 +38,11 @@ sub list_GET {
                 content => $a->get_column('content');
             } $c->stash->{collection}->search(
                 {
-                    organization_chatbot_id => $politician->user->organization_chatbot_id,
-                    'question.name'         => $question_name,
-                    'me.active'             => 1
+                    organization_chatbot_id      => $politician->user->organization_chatbot_id,
+                    'organization_question.name' => $question_name,
+                    'me.active'                  => 1
                 },
-                { prefetch => 'question' }
+                { prefetch => 'organization_question' }
             )->all
         }
     );

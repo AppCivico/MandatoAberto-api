@@ -72,9 +72,11 @@ sub action_specs {
                         $self->search(
                             {
                                 organization_chatbot_id => $answer->{organization_chatbot_id},
-                                question_id             => $answer->{question_id}
+                                organization_question_id => $answer->{organization_question_id}
                             }
                         )->count and die \["question_id", "politician alredy has an answer for that question"];
+
+                        # $values{organization_question_id} = delete $values{question_id};
 
                         my $new_answer = $self->create($answer);
 
@@ -107,12 +109,12 @@ sub get_answered_dialogs {
             my $a = $_;
 
             +{
-                id   => $a->question->dialog->id,
-                name => $a->question->dialog->name,
+                id   => $a->organization_question->organization_dialog->id,
+                name => $a->organization_question->organization_dialog->name,
             }
         } $self->search(
             { },
-            { prefetch => { 'question' => 'dialog' }  }
+            { prefetch => { 'organization_question' => 'organization_dialog' }  }
           )
     ]
 }

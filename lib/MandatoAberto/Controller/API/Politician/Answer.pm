@@ -62,12 +62,12 @@ sub list_GET {
                    +{
                         id          => $a->get_column('id'),
                         content     => $a->get_column('content'),
-                        question_id => $a->get_column('question_id'),
-                        dialog_id   => $a->question->get_column('dialog_id')
+                        question_id => $a->get_column('organization_question_id'),
+                        dialog_id   => $a->organization_question->get_column('organization_dialog_id')
                     }
                 } $c->stash->{collection}->search(
                     { organization_chatbot_id => $c->stash->{politician}->user->organization_chatbot_id },
-                    { prefetch => [ qw / question / ] }
+                    { prefetch => [ qw / organization_question / ] }
                 )->all()
             ]
         }
@@ -87,16 +87,16 @@ sub list_POST {
 
             if ($5 && looks_like_number($5)) {
                 $c->req->params->{answers}->[$i] = {
-                    id            => $5,
-                    question_id   => $1,
-                    content       => delete $c->req->params->{$param},
-                    politician_id => $c->user->id,
+                    id                       => $5,
+                    organization_question_id => $1,
+                    content                  => delete $c->req->params->{$param},
+                    politician_id            => $c->user->id,
                 };
             } else {
                 $c->req->params->{answers}->[$i] = {
-                    question_id   => $1,
-                    content       => delete $c->req->params->{$param},
-                    politician_id => $c->user->id,
+                    organization_question_id => $1,
+                    content                  => delete $c->req->params->{$param},
+                    politician_id            => $c->user->id,
                 };
             }
 

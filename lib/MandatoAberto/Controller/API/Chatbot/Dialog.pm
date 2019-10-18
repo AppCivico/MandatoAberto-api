@@ -9,7 +9,7 @@ with "CatalystX::Eta::Controller::AutoBase";
 
 __PACKAGE__->config(
     # AutoBase.
-    result => "DB::Dialog",
+    result => "DB::OrganizationDialog",
 );
 
 sub root : Chained('/api/chatbot/base') : PathPart('') : CaptureArgs(0) { }
@@ -57,14 +57,14 @@ sub list_GET {
                                     } $c->model("DB::Answer")->search(
                                         {
                                             organization_chatbot_id => $politician->user->organization_chatbot_id,
-                                            question_id   => $q->get_column('id'),
+                                            organization_question_id   => $q->get_column('id'),
                                         }
                                       )->all()
 
                             }
-                        } $d->questions->all()
+                        } $d->organization_questions->all()
                     ],
-            } $c->stash->{collection}->search({ 'me.name' => $dialog_name }, { prefetch => [ 'questions', { 'questions' => 'answers' } ] })->all()
+            } $c->stash->{collection}->search({ 'me.name' => $dialog_name }, { prefetch => [ { 'organization_questions' => 'answers' } ] })->all()
         }
     );
 }

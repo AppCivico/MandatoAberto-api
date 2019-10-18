@@ -11,7 +11,7 @@ with "CatalystX::Eta::Controller::AutoResultGET";
 
 __PACKAGE__->config(
     # AutoBase.
-    result => "DB::Dialog",
+    result => "DB::OrganizationDialog",
 
     # AutoResultPUT.
     object_key     => "dialog",
@@ -85,15 +85,12 @@ sub list_GET {
                                                 content => $a->get_column('content'),
                                                 active  => $a->get_column('active')
                                             }
-                                        } $c->model("DB::Answer")->search(
-                                            {
-                                                organization_chatbot_id => $politician->user->organization_chatbot_id,
-                                                question_id             => $q->get_column('id'),
-                                            }
+                                        } $q->answers->search(
+                                            { organization_chatbot_id => $politician->user->organization_chatbot_id }
                                           )->all()
 
                                 }
-                            } $d->questions->search( { 'me.active' => 1 } )->all()
+                            } $d->organization_questions->search( { 'me.active' => 1 } )->all()
                         ],
                     }
                 } $c->stash->{collection}->search(
@@ -110,7 +107,7 @@ sub list_GET {
                         )
                         # 'organization.is_mandatoaberto' => 1
                     },
-                    { prefetch => [ 'questions', { 'questions' => { 'answers' => { 'organization_chatbot' => 'organization' } } } ] }
+                    { prefetch => [ { 'organization_questions' => { 'answers' => { 'organization_chatbot' => 'organization' } } } ] }
                   )->all()
             ],
         }

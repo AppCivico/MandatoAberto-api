@@ -180,3 +180,4 @@
 0176-add-custom_url [0175-add-notification_bar] 2019-09-16T11:37:32Z Lucas Ansei,,, <lucas@lucas-G750JX> # adding custom url for organization
 0177-add-anonymous-tickets [0176-add-custom_url] 2019-10-16T13:42:07Z Lucas Ansei,,, <lucas@lucas-G750JX> # Adding columns required to add anonymous tickets
 0178-add-ticket-attachment [0177-add-anonymous-tickets] 2019-10-16T17:34:07Z Lucas Ansei,,, <lucas@lucas-G750JX> # Adding the ticket attachment table
+0179-add-organization_dialog [0178-add-ticket-attachment] 2019-10-17T18:53:11Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding organization data
