@@ -96,6 +96,7 @@ sub list_GET {
                 } $c->stash->{collection}->search(
                     {
                         'me.active'                     => 1,
+                        'me.organization_id'            => $politician->user->organization->id,
                         (
                             $showcase_cond ?
                             (
