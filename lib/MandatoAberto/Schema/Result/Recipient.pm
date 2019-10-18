@@ -225,6 +225,21 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 logs
+
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::Log>
+
+=cut
+
+__PACKAGE__->has_many(
+  "logs",
+  "MandatoAberto::Schema::Result::Log",
+  { "foreign.recipient_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 organization_chatbot
 
 Type: belongs_to
@@ -361,8 +376,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-10-17 15:55:06
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:2A96gRuaM/0iSJq2+sSXRA
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-10-18 08:34:23
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:fnY8I6VZDbS62ezWjZTyJA
 
 __PACKAGE__->load_components("InflateColumn::Serializer", "Core");
 __PACKAGE__->remove_column('groups');

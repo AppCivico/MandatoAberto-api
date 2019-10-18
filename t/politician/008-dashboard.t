@@ -11,21 +11,6 @@ db_transaction {
 
     api_auth_as user_id => 1;
 
-    create_dialog;
-    my $dialog_id = stash "dialog.id";
-
-    rest_post "/api/admin/dialog/$dialog_id/question",
-        name                => "Creating question",
-        stash               => "q1",
-        automatic_load_item => 0,
-        [
-            name          => 'foobar',
-            content       => "Foobar",
-            citizen_input => fake_words(1)->()
-        ]
-    ;
-    my $question_id = stash "q1.id";
-
     my $politician = create_politician(
         fb_page_id           => fake_words(1)->(),
         fb_page_access_token => fake_words(1)->()
@@ -37,6 +22,25 @@ db_transaction {
 
     api_auth_as user_id => $politician_id;
     activate_chatbot($politician_id);
+
+     ok my $dialog = $schema->resultset('OrganizationDialog')->create(
+        {
+            organization_id => $politician->user->organization->id,
+            name            => 'foobar',
+            description     => 'foobar'
+        }
+    );
+    my $dialog_id = $dialog->id;
+
+    ok my $question = $schema->resultset('OrganizationQuestion')->create(
+        {
+            organization_dialog_id => $dialog->id,
+            name                   => fake_words(1)->(),
+            content                => fake_words(1)->(),
+            citizen_input          => fake_words(1)->()
+        }
+    );
+    my $question_id = $question->id;
 
     my $organization_chatbot_id = $politician->user->organization_chatbot_id;
 
