@@ -70,7 +70,7 @@ __PACKAGE__->table("ticket_attachment");
 =head2 type
 
   data_type: 'text'
-  is_nullable: 0
+  is_nullable: 1
 
 =head2 url
 
@@ -101,7 +101,7 @@ __PACKAGE__->add_columns(
   "attached_to_message",
   { data_type => "boolean", default_value => \"false", is_nullable => 0 },
   "type",
-  { data_type => "text", is_nullable => 0 },
+  { data_type => "text", is_nullable => 1 },
   "url",
   { data_type => "text", is_nullable => 0 },
   "created_at",
@@ -168,8 +168,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-10-16 07:30:29
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:qbT58clKMjTa/oKhVwYSKw
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-10-18 13:36:21
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:dQde02bSJRJH8zYq53qbFg
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

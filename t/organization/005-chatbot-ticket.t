@@ -61,12 +61,10 @@ db_transaction {
                 chatbot_id     => $chatbot_id,
                 fb_id          => 'bar',
                 message        => 'Olá, você pode me ajudar?',
-                data        => to_json( { cpf => '1111111111111', email => 'foobar@email.com' } )
+                data        => to_json( { cpf => '1111111111111', email => 'foobar@email.com' } ),
+                ticket_attachment_0 => "www.google.com",
+                ticket_attachment_1 => "www.google_2.com",
             ],
-            files => {
-                ticket_attachment_0 => "$Bin/picture.jpg",
-                ticket_attachment_1 => "$Bin/picture_2.jpg",
-            }
         ;
 
         # is $email_rs->count, 1; # email created
@@ -107,6 +105,7 @@ db_transaction {
             params => [
                 security_token => $security_token,
                 status         => 'canceled',
+                ticket_attachment_0 => 'www.google.com'
             ],
             files => {
                 ticket_attachment_0 => "$Bin/picture_3.jpg",

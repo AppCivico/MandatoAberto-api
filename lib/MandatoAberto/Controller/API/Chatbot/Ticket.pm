@@ -45,18 +45,18 @@ sub list_POST {
         $c->req->params->{message} = [$c->req->params->{message}];
     }
 
-    my $uploads = $c->req->uploads;
+    my $uploads = $c->req->params;
     my @attachments;
     for my $upload_key (keys %$uploads) {
         next unless $upload_key =~ /^ticket_attachment/;
 
         my $upload = $uploads->{$upload_key};
-        $upload    = $self->_upload_file($upload);
+        # $upload    = $self->_upload_file($upload);
 
         push @attachments, {
             attached_to_message => 0,
-            type                => $upload->{type},
-            url                 => $upload->{url}
+            type                => undef,
+            url                 => $upload
         };
     }
     $c->req->params->{ticket_attachments} = \@attachments;
@@ -99,18 +99,18 @@ sub result_PUT {
         die \['status', 'invalid'] unless $c->req->params->{status} eq 'canceled';
     }
 
-    my $uploads = $c->req->uploads;
+    my $uploads = $c->req->params;
     my @attachments;
     for my $upload_key (keys %$uploads) {
         next unless $upload_key =~ /^ticket_attachment/;
 
         my $upload = $uploads->{$upload_key};
-        $upload    = $self->_upload_file($upload);
+        # $upload    = $self->_upload_file($upload);
 
         push @attachments, {
             attached_to_message => 0,
-            type                => $upload->{type},
-            url                 => $upload->{url}
+            type                => undef,
+            url                 => $upload
         };
     }
 
