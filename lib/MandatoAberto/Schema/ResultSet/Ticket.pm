@@ -44,6 +44,14 @@ sub verifiers_specs {
                 data => {
                     required => 0,
                     type     => 'Str'
+                },
+                anonymous => {
+                    required => 0,
+                    type     => 'Bool'
+                },
+                ticket_attachments => {
+                    required => 0,
+                    type     => 'ArrayRef'
                 }
             }
         ),
@@ -75,7 +83,11 @@ sub action_specs {
                 die \['chatbot_id', 'missing'];
             }
 
-            $self->result_source->schema->resultset('TicketType')->find($values{type_id}) or die \['type_id', 'invalid'];
+            my $type = $self->result_source->schema->resultset('TicketType')->find($values{type_id}) or die \['type_id', 'invalid'];
+
+            if ($values{anonymous}) {
+                $values{anonymous} = 0 if !$type->can_be_anonymous;
+            }
 
             my $fb_id     = delete $values{fb_id};
             my $recipient = $self->result_source->schema->resultset('Recipient')->search(
@@ -103,6 +115,15 @@ sub action_specs {
                     )
                 }
             ];
+
+            # Preparando messages
+            # if (my $messages = $values{message}) {
+            #     use DDP; p $messages;
+            # }
+
+            if (my $attachments = delete $values{attachments}) {
+                $values{ticket_attachments} = $attachments;
+            }
 
             my $ticket;
             $self->result_source->schema->txn_do(sub{
@@ -166,20 +187,30 @@ sub build_list {
         tickets => [
             map {
                 +{
-                    id         => $_->id,
-                    message    => $_->message,
-                    response   => $_->response,
-                    status     => $_->status,
-                    created_at => $_->created_at,
-                    closed_at  => $_->closed_at,
+                    id          => $_->id,
+                    message     => $_->message,
+                    response    => $_->response,
+                    status      => $_->status,
+                    created_at  => $_->created_at,
+                    closed_at   => $_->closed_at,
                     assigned_at => $_->assigned_at,
+                    anonymous   => $_->anonymous,
 
-                    (
-                        recipient => {
-                            id      => $_->recipient->id,
-                            name    => $_->recipient->name,
-                            picture => $_->recipient->picture
-                        }
+                    ( $_->anonymous ?
+                        (
+                            recipient => {
+                                id      => undef,
+                                name    => undef,
+                                picture => undef
+                            }
+                        ) :
+                        (
+                            recipient => {
+                                id      => $_->recipient->id,
+                                name    => $_->recipient->name,
+                                picture => $_->recipient->picture
+                            }
+                        )
                     ),
 
                     (

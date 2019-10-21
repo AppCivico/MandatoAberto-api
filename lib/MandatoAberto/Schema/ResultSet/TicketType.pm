@@ -13,7 +13,8 @@ sub build_list {
             map {
                 +{
                     id   => $_->id,
-                    name => $_->name
+                    name => $_->name,
+                    can_be_anonymous => $_->can_be_anonymous
                 }
             } $self->all()
         ]

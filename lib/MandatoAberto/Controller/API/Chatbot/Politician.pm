@@ -54,7 +54,7 @@ sub list_GET {
                     my $a = $_;
 
                     +{
-                        code    => $a->question->name,
+                        code    => $a->organization_question->name,
                         content => $a->content
                     }
                 } $organization_chatbot->answers->all()

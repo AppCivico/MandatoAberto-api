@@ -129,6 +129,12 @@ __PACKAGE__->table("ticket");
   default_value: '{}'
   is_nullable: 0
 
+=head2 anonymous
+
+  data_type: 'boolean'
+  default_value: false
+  is_nullable: 0
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -180,6 +186,8 @@ __PACKAGE__->add_columns(
   },
   "data",
   { data_type => "json", default_value => "{}", is_nullable => 0 },
+  "anonymous",
+  { data_type => "boolean", default_value => \"false", is_nullable => 0 },
 );
 
 =head1 PRIMARY KEY
@@ -266,6 +274,21 @@ __PACKAGE__->belongs_to(
   { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
 );
 
+=head2 ticket_attachments
+
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::TicketAttachment>
+
+=cut
+
+__PACKAGE__->has_many(
+  "ticket_attachments",
+  "MandatoAberto::Schema::Result::TicketAttachment",
+  { "foreign.ticket_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 ticket_logs
 
 Type: has_many
@@ -277,6 +300,21 @@ Related object: L<MandatoAberto::Schema::Result::TicketLog>
 __PACKAGE__->has_many(
   "ticket_logs",
   "MandatoAberto::Schema::Result::TicketLog",
+  { "foreign.ticket_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+=head2 ticket_messages
+
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::TicketMessage>
+
+=cut
+
+__PACKAGE__->has_many(
+  "ticket_messages",
+  "MandatoAberto::Schema::Result::TicketMessage",
   { "foreign.ticket_id" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
@@ -297,8 +335,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-09-04 09:54:05
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:DXN81R5giuMUsu/P+4NE7w
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-10-16 13:48:56
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:08BKCV853DcEb4oKLjxonQ
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
@@ -365,7 +403,12 @@ sub verifiers_specs {
                 updated_by_chatbot => {
                     required => 1,
                     type     => 'Bool'
-                }
+                },
+
+                ticket_attachments => {
+                    required => 0,
+                    type     => 'ArrayRef'
+                },
             }
         )
     };
@@ -661,6 +704,10 @@ sub action_specs {
                     $self->update( { message => [] } );
                 }
 
+                if ( my $attachments = delete $values{ticket_attachments} ) {
+                    $self->ticket_attachments->populate($attachments);
+                }
+
                 $self->ticket_logs->populate(\@logs);
                 $email_rs->populate(\@emails);
                 $ticket = $self->update(\%values);
@@ -675,7 +722,7 @@ sub build_list {
     my $self = shift;
 
     return {
-        (map { $_ => $self->$_ } qw(id status message response created_at closed_at assigned_at data)),
+        (map { $_ => $self->$_ } qw(id status message response created_at closed_at assigned_at data anonymous)),
         (
             logs => [
                 map {
@@ -688,12 +735,21 @@ sub build_list {
             ]
         ),
 
-        (
-            recipient => {
-                id      => $self->recipient->id,
-                name    => $self->recipient->name,
-                picture => $self->recipient->picture
-            }
+        ( $self->anonymous ?
+            (
+                recipient => {
+                    id      => undef,
+                    name    => undef,
+                    picture => undef
+                }
+            ) :
+            (
+                recipient => {
+                    id      => $self->recipient->id,
+                    name    => $self->recipient->name,
+                    picture => $self->recipient->picture
+                }
+            )
         ),
 
         (
@@ -717,6 +773,19 @@ sub build_list {
                 id => $self->type_id,
                 name => $self->type->name
             }
+        ),
+
+        (
+            attachments => [
+                map {
+                    +{
+                        id         => $_->id,
+                        type       => $_->type,
+                        url        => $_->url,
+                        created_at => $_->created_at
+                    }
+                } $self->ticket_attachments->search( { 'me.attached_to_message' => 0 }, { order_by => { -desc => 'me.created_at' } } )->all()
+            ]
         )
     }
 }

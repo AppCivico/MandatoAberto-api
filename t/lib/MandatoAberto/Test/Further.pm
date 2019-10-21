@@ -223,30 +223,55 @@ sub create_issue {
     my $security_token = $ENV{CHATBOT_SECURITY_TOKEN};
 
     my $fake_entity = encode_json(
-        {
-            id        => 'a8736300-e5b3-4ab8-a29e-c379ef7f61de',
-            timestamp => '2018-09-19T21 => 39 => 43.452Z',
-            lang      => 'pt-br',
-            result    => {
-                source           => 'agent',
-                resolvedQuery    => 'O que você já fez pelos direitos animais??',
-                action           => '',
-                actionIncomplete => 0,
-                parameters       => {},
-                contexts         => [],
-                metadata         => {
-                    intentId                  => '4c3f7241-6990-4c92-8332-cfb8d437e3d1',
-                    webhookUsed               => 0,
-                    webhookForSlotFillingUsed => 0,
-                    isFallbackIntent          => 0,
-                    intentName                => 'direitos_animais'
-                },
-                fulfillment => { speech =>  '', messages =>  [] },
-                score       => 1
-            },
-            status    => { code =>  200, errorType =>  'success' },
-            sessionId => '1938538852857638'
-        }
+		{
+			"responseId" => "f51c7faf-7569-425c-898e-f1130f17960b-7e4f1f27",
+			"queryResult" => {
+				"fulfillmentMessages" => [
+					{
+						"platform" => "PLATFORM_UNSPECIFIED",
+						"text" => {
+							"text" => ["Lamento, mas não compreendi."]
+						},
+						"message" => "text"
+					}
+				],
+				"outputContexts" => [],
+				"queryText" => "O que você acha do aborto?",
+				"speechRecognitionConfidence" => 0,
+				"action" => "input.unknown",
+				"parameters" => {
+					"fields" => {}
+				},
+				"allRequiredParamsPresent" => 1,
+				"fulfillmentText" => "Lamento, mas não compreendi.",
+				"webhookSource" => "",
+				"webhookPayload" => undef,
+				"intent" => {
+					"inputContextNames" => [],
+					"events" => [],
+					"trainingPhrases" => [],
+					"outputContexts" => [],
+					"parameters" => [],
+					"messages" => [],
+					"defaultResponsePlatforms" => [],
+					"followupIntentInfo" => [],
+					"name" => "projects/dipiou-eivcjk/agent/intents/1f450a68-c73f-4419-8366-3c8b6fb4299a",
+					"displayName" => "direitos_animais",
+					"priority" => 0,
+					"isFallback" => 1,
+					"webhookState" => "WEBHOOK_STATE_UNSPECIFIED",
+					"action" => "",
+					"resetContexts" => 0,
+					"rootFollowupIntentName" => "",
+					"parentFollowupIntentName" => "",
+					"mlDisabled" => 0
+				},
+				"intentDetectionConfidence" => 1,
+				"diagnosticInfo" => undef,
+				"languageCode" => "pt-br"
+			},
+			"webhookStatus" => undef
+		}
     );
 
     return $obj->rest_post(

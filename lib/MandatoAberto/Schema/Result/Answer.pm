@@ -49,12 +49,6 @@ __PACKAGE__->table("answer");
   is_nullable: 0
   sequence: 'answers_id_seq'
 
-=head2 question_id
-
-  data_type: 'integer'
-  is_foreign_key: 1
-  is_nullable: 0
-
 =head2 content
 
   data_type: 'text'
@@ -72,6 +66,12 @@ __PACKAGE__->table("answer");
   is_foreign_key: 1
   is_nullable: 0
 
+=head2 organization_question_id
+
+  data_type: 'integer'
+  is_foreign_key: 1
+  is_nullable: 1
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -82,14 +82,14 @@ __PACKAGE__->add_columns(
     is_nullable       => 0,
     sequence          => "answers_id_seq",
   },
-  "question_id",
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "content",
   { data_type => "text", is_nullable => 0 },
   "active",
   { data_type => "boolean", default_value => \"true", is_nullable => 0 },
   "organization_chatbot_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
+  "organization_question_id",
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -121,24 +121,29 @@ __PACKAGE__->belongs_to(
   { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
 );
 
-=head2 question
+=head2 organization_question
 
 Type: belongs_to
 
-Related object: L<MandatoAberto::Schema::Result::Question>
+Related object: L<MandatoAberto::Schema::Result::OrganizationQuestion>
 
 =cut
 
 __PACKAGE__->belongs_to(
-  "question",
-  "MandatoAberto::Schema::Result::Question",
-  { id => "question_id" },
-  { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
+  "organization_question",
+  "MandatoAberto::Schema::Result::OrganizationQuestion",
+  { id => "organization_question_id" },
+  {
+    is_deferrable => 0,
+    join_type     => "LEFT",
+    on_delete     => "NO ACTION",
+    on_update     => "NO ACTION",
+  },
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-12-02 16:07:54
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Q+v1cnny3vhNE0LzvIF5Ew
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-10-17 15:55:06
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:kduqNKf+601O7ImnBccT5A
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

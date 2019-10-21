@@ -48,20 +48,23 @@ db_transaction {
         is ref $ticket_types->{ticket_types}, 'ARRAY';
         ok defined $ticket_types->{ticket_types}->[0]->{id};
         ok defined $ticket_types->{ticket_types}->[0]->{name};
+        ok defined $ticket_types->{ticket_types}->[0]->{can_be_anonymous};
 
         # Criando ticket
         is $email_rs->count, 0;
 
         my $res = rest_post "/api/chatbot/ticket",
             automatic_load_item => 0,
-            [
+            params => [
                 security_token => $security_token,
                 type_id        => 1,
                 chatbot_id     => $chatbot_id,
                 fb_id          => 'bar',
                 message        => 'Olá, você pode me ajudar?',
-                data        => to_json( { cpf => '1111111111111', email => 'foobar@email.com' } )
-            ]
+                data        => to_json( { cpf => '1111111111111', email => 'foobar@email.com' } ),
+                ticket_attachment_0 => "www.google.com",
+                ticket_attachment_1 => "www.google_2.com",
+            ],
         ;
 
         # is $email_rs->count, 1; # email created
@@ -99,10 +102,14 @@ db_transaction {
 
         $res = rest_put "/api/chatbot/ticket/$ticket_id",
             code => 200,
-            [
+            params => [
                 security_token => $security_token,
                 status         => 'canceled',
-            ]
+                ticket_attachment_0 => 'www.google.com'
+            ],
+            files => {
+                ticket_attachment_0 => "$Bin/picture_3.jpg",
+            }
         ;
 		# is $email_rs->count, 3;
     };
@@ -133,7 +140,6 @@ db_transaction {
         ok $ticket->discard_changes;
 
         $res = rest_get "/api/organization/$organization_id/chatbot/$chatbot_id/ticket/$ticket_id";
-
         $res = rest_get "/api/organization/$organization_id/chatbot/$chatbot_id/ticket", [ filter => 'closed' ];
         is scalar @{ $res->{tickets} }, 0;
     };
