@@ -65,15 +65,15 @@ sub list_GET {
         }
     }
     else {
-        my @required_json_fields = qw (metadata resolvedQuery);
-        die \['entities', "missing 'result' param"] unless $entities->{result};
+        my @required_json_fields = qw (queryText intent);
+        die \['entities', "missing 'queryResult' param"] unless $entities->{queryResult};
 
         for (@required_json_fields) {
-            die \['entities', "missing '$_' param"] unless $entities->{result}->{$_}
+            die \['entities', "missing '$_' param"] unless $entities->{queryResult}->{$_}
         }
 
         # TODO melhorar esse bloco
-        my $entity_name = $entities->{result}->{metadata}->{intentName};
+        my $entity_name = $entities->{queryResult}->{intent}->{displayName};
         $entity_name    = lc $entity_name;
 
         push @entities_names, $entity_name;

@@ -144,11 +144,10 @@ sub action_specs {
                 if ( $values{entities} ) {
                     my $entity_val = $values{entities};
 
-                    my $intent = $entity_val->{result}->{metadata}->{intentName};
+                    my $intent = $entity_val->{queryResult}->{intent}->{displayName};
                     die \['intentName', 'missing'] unless $intent;
 
                     $intent = lc $intent;
-
 
                     if ( $politician_entity->skip_intent($intent) == 0 ) {
                         my $human_name = $intent;
