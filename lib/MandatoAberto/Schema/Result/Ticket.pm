@@ -595,7 +595,7 @@ sub action_specs {
                     push @{$responses}, $response;
 
                     my $access_token = $self->organization_chatbot->fb_config->access_token;
-                    my $text = 'Você possui uma nova atualização para o seu ticket! #' . $self->id . "\n";
+                    my $text = 'Você possui uma nova atualização para o seu ticket: #' . $self->id . "\n";
                     $text   .= "Mensagem: $response_param";
 
                     $self->_httpcb->add(
