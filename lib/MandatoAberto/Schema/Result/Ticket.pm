@@ -614,6 +614,11 @@ sub action_specs {
                                         content_type => 'text',
                                         title        => 'Voltar ao início',
                                         payload      => 'mainMenu'
+                                    },
+                                    {
+                                        content_type => 'text',
+                                        title        => 'Responder',
+                                        payload      => 'leaveTMsg' . $self->id
                                     }
                                 ]
                             }
