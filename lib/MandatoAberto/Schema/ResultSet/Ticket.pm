@@ -125,6 +125,12 @@ sub action_specs {
                 $values{ticket_attachments} = $attachments;
             }
 
+            eval {
+                decode_json($values{data})
+            };
+
+            $values{data} = {} if $@;
+
             my $ticket;
             $self->result_source->schema->txn_do(sub{
 

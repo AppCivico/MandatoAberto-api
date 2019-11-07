@@ -50,6 +50,7 @@ db_transaction {
         ok defined $ticket_types->{ticket_types}->[0]->{name};
         ok defined $ticket_types->{ticket_types}->[0]->{can_be_anonymous};
 
+        ok my $ticket_type = $schema->resultset('TicketType')->search( { id => $ticket_types->{ticket_types}->[0]->{id} } )->next->update( { can_be_anonymous => 1 } );
         # Criando ticket
         is $email_rs->count, 0;
 
@@ -58,6 +59,7 @@ db_transaction {
             params => [
                 security_token => $security_token,
                 type_id        => 1,
+                anonymous      => 1,
                 chatbot_id     => $chatbot_id,
                 fb_id          => 'bar',
                 message        => 'Olá, você pode me ajudar?',
@@ -111,7 +113,7 @@ db_transaction {
                 ticket_attachment_0 => "$Bin/picture_3.jpg",
             }
         ;
-		# is $email_rs->count, 3;
+        # is $email_rs->count, 3;
     };
 
     subtest 'User | CRUD ticket' => sub {
