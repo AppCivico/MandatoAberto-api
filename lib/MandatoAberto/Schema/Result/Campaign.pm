@@ -388,10 +388,10 @@ sub send_email {
             template    => get_data_section('email.tt'),
             attachments => $attachments,
             vars        => {
-                organization_name => $organization_name,
-                # organization_header => $
-                recipient_name    => $recipient->name,
-                text              => $dm_content,
+                organization_name   => $organization_name,
+                organization_header => $organization->email_header
+                recipient_name      => $recipient->name,
+                text                => $dm_content,
             },
         )->build_email();
 
@@ -437,7 +437,7 @@ __DATA__
 <tbody>
 <tr>
 <td align="justify" style="color:#666666; font-family:'Montserrat',Arial,sans-serif; font-size:16px; font-weight:300; line-height:23px; margin:0">
-<p style="text-align: center;"><a href="[% home_url %]"><img src="[% header_picture %]" class="x_deviceWidth" style="border-radius:7px 7px 0 0; align: center"></a></p>
+<p style="text-align: center;"><img src="[% organization_header %]" class="x_deviceWidth" style="border-radius:7px 7px 0 0; align: center"></p>
 <p><b>Olá, [% recipient_name %]. </b></p>
 <p> [% text %] </p>
   </td>
