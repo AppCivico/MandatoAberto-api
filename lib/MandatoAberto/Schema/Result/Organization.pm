@@ -116,6 +116,11 @@ __PACKAGE__->table("organization");
   data_type: 'text'
   is_nullable: 1
 
+=head2 email_header
+
+  data_type: 'text'
+  is_nullable: 1
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -159,6 +164,8 @@ __PACKAGE__->add_columns(
   "menu_config",
   { data_type => "json", is_nullable => 1 },
   "custom_url",
+  { data_type => "text", is_nullable => 1 },
+  "email_header",
   { data_type => "text", is_nullable => 1 },
 );
 
@@ -237,8 +244,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-10-17 15:55:06
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:kQkRfSY7Vdhj4ejPudIp8Q
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-11-06 09:02:37
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:thbU1HrpRME3Q2C1U8nsUw
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

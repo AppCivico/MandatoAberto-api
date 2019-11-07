@@ -232,6 +232,9 @@ __PACKAGE__->belongs_to(
 use WebService::HttpCallback::Async;
 
 use JSON;
+use MandatoAberto::Utils;
+
+use IO::Handle;
 
 has _httpcb => (
     is         => "ro",
@@ -262,6 +265,9 @@ sub process_and_send {
     }
     elsif ( $type_id == 2 ) {
         $self->send_poll_facebook($recipient_rs, $logger)
+    }
+    elsif ( $type_id == 3 ) {
+        $self->send_email($recipient_rs, $logger);
     }
     else {
         die 'fail while sending campaign';
@@ -352,10 +358,130 @@ sub send_poll_facebook {
 }
 
 sub send_email {
-    # TODO
+    my ($self, $recipient_rs, $logger) = @_;
+
+    my $dm         = $self->direct_message;
+    my $dm_content = $dm->content;
+    $dm_content    =~ s/\n/<br>/gm;
+
+    my $organization_chatbot = $self->organization_chatbot;
+    my $organization         = $organization_chatbot->organization;
+
+    my $organization_name = $organization_chatbot->organization->name;
+    $organization_name    =~ s/\s//g;
+
+    my $attachments = [];
+    my $fh;
+    if (my $attachment_file_name = $dm->email_attachment_file_name) {
+        my ($path) = $attachment_file_name =~ /^\/.+\//g;
+        my $name   = substr $attachment_file_name, length $path, length $attachment_file_name;
+
+        push @{$attachments}, { name => $name, path => $path, file_name => $attachment_file_name };
+    }
+
+    my $count = 0;
+    while (my $recipient = $recipient_rs->next()) {
+        my $email = MandatoAberto::Mailer::Template->new(
+            to          => $recipient->email,
+            from        => $organization_name . '@assistente.appcivico.com',
+            subject     => $dm->email_subject,
+            template    => get_data_section('email.tt'),
+            attachments => $attachments,
+            vars        => {
+                organization_name => $organization_name,
+                # organization_header => $
+                recipient_name    => $recipient->name,
+                text              => $dm_content,
+            },
+        )->build_email();
+
+        $self->result_source->schema->resultset('EmailQueue')->create({ body => $email->as_string });
+
+        $count++;
+    }
+
+    close($fh) if $fh;
+
+    $self->update( { count => $count } );
+
 }
 
 sub _build__httpcb { WebService::HttpCallback::Async->instance }
 
 __PACKAGE__->meta->make_immutable;
 1;
+
+__DATA__
+
+@@ email.tt
+
+<!doctype html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html charset=UTF-8">
+</head>
+<body>
+<div leftmargin="0" marginheight="0" marginwidth="0" topmargin="0" style="background-color:#f5f5f5; font-family:'Montserrat',Arial,sans-serif; margin:0; padding:0; width:100%">
+<table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse:collapse">
+<tbody>
+<tr>
+<td>
+<table align="center" border="0" cellpadding="0" cellspacing="0" class="x_deviceWidth" width="600" style="border-collapse:collapse">
+<tbody>
+<tr>
+<td height="50"></td>
+</tr>
+<tr>
+<td bgcolor="#ffffff" colspan="2" style="background-color:rgb(255,255,255); border-radius:0 0 7px 7px; font-family:'Montserrat',Arial,sans-serif; font-size:13px; font-weight:normal; line-height:24px; padding:30px 0; text-align:center; vertical-align:top">
+<table align="center" border="0" cellpadding="0" cellspacing="0" width="84%" style="border-collapse:collapse">
+<tbody>
+<tr>
+<td align="justify" style="color:#666666; font-family:'Montserrat',Arial,sans-serif; font-size:16px; font-weight:300; line-height:23px; margin:0">
+<p style="text-align: center;"><a href="[% home_url %]"><img src="[% header_picture %]" class="x_deviceWidth" style="border-radius:7px 7px 0 0; align: center"></a></p>
+<p><b>Olá, [% recipient_name %]. </b></p>
+<p> [% text %] </p>
+  </td>
+</tr>
+<tr>
+<td height="30"></td>
+</tr>
+<tr>
+<td align="center" bgcolor="#ffffff" valign="top" style="padding-top:20px">
+<table align="center" border="0" cellpadding="0" cellspacing="0" style="border-collapse:separate; border-radius:7px; margin:0">
+<tbody>
+<tr>
+<td align="center" valign="middle"><a href="[% ticket_url %]" target="_blank" class="x_btn" style="background:#502489; border-radius:8px; color:#ffffff; font-family:'Montserrat',Arial,sans-serif; font-size:15px; padding:16px 24px 15px 24px; text-decoration:none; text-transform:uppercase"><strong>VER TICKET</strong></a></td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<td height="40"></td>
+</tr>
+
+<tr>
+<td height="30"></td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+<table align="center" border="0" cellpadding="0" cellspacing="0" class="x_deviceWidth" width="540" style="border-collapse:collapse">
+  <tbody>
+<tr>
+<td align="center" style="color:#666666; font-family:'Montserrat',Arial,sans-serif; font-size:11px; font-weight:300; line-height:16px; margin:0; padding:30px 0px">
+
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+</div>
+</div></div>

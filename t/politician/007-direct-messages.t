@@ -283,6 +283,38 @@ db_transaction {
 
         ok( $worker->run_once(), 'run once' );
     };
+
+    subtest 'direct message as email' => sub {
+        ok my $recipient = $schema->resultset('Recipient')->next->update( { email => 'fake_email@email.com' } );
+
+        use_ok 'MandatoAberto::Worker::Email';
+        use_ok 'MandatoAberto::Mailer::Template';
+
+        my $email_worker = new_ok( 'MandatoAberto::Worker::Email', [ schema => $schema ] );
+        is ($schema->resultset('EmailQueue')->count, 2);
+        ok $schema->resultset('EmailQueue')->delete;
+        is ($schema->resultset('EmailQueue')->count, 0);
+
+        rest_post "/api/politician/$politician_id/direct-message",
+            name                => 'POST with content and attachment',
+            automatic_load_item => 0,
+            params              => [
+                name            => 'foobar',
+                content         => 'this is a test
+                foobar',
+                attachment_type => 'image',
+                email_subject   => 'teste',
+                send_email      => 1,
+            ],
+            files => { file => "$Bin/picture.jpg", },
+        ;
+
+        ok( $worker->run_once(), 'run once' );
+
+        is( $schema->resultset('EmailQueue')->count, 1 );
+
+        ok( $email_worker->run_once(), 'run once' );
+    };
 };
 
 done_testing();
