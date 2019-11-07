@@ -383,7 +383,7 @@ sub send_email {
     while (my $recipient = $recipient_rs->next()) {
         my $email = MandatoAberto::Mailer::Template->new(
             to          => $recipient->email,
-            from        => $organization_name . '@assistente.appcivico.com',
+            from        => $organization_name . '@appcivico.com',
             subject     => $dm->email_subject,
             template    => get_data_section('email.tt'),
             attachments => $attachments,
