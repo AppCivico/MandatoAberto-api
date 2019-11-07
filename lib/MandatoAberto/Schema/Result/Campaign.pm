@@ -389,7 +389,7 @@ sub send_email {
             attachments => $attachments,
             vars        => {
                 organization_name   => $organization_name,
-                organization_header => $organization->email_header
+                organization_header => $organization->email_header,
                 recipient_name      => $recipient->name,
                 text                => $dm_content,
             },
