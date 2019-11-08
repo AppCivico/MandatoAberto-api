@@ -469,6 +469,17 @@ sub upsert_labels {
                 },
                 { prefetch => 'label' }
             )->delete;
+
+            if ( my $group = $self->result_source->schema->resultset('Group')->search( { name => $label->{name} } )->next ) {
+                $recipient->update( { groups => \[ "DELETE(groups, ?)", $group->id ] } );
+                $group->update(
+                    {
+                        recipients_count        => $group->recipients_count - 1,
+                        last_recipients_calc_at => \'NOW()',
+                        status                  => 'ready',
+                    }
+                );
+            }
             next;
         }
 
