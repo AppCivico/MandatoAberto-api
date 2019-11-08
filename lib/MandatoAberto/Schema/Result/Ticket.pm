@@ -617,7 +617,7 @@ sub action_specs {
                                     },
                                     {
                                         content_type => 'text',
-                                        title        => 'Deixar Mensagem',
+                                        title        => 'Responder',
                                         payload      => 'leaveTMsg' . $self->id
                                     }
                                 ]
