@@ -60,7 +60,7 @@ sub list_POST {
     my ($self, $c) = @_;
 
     my $groups;
-    if ($c->req->params->{groups}) {
+    if ($c->req->params->{groups} && length $c->req->params->{groups} > 1 ) {
         $c->req->params->{groups} =~ s/(\[|\]|(\s))//g;
 
         my @groups = split(',', $c->req->params->{groups});
