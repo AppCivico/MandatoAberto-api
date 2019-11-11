@@ -379,26 +379,46 @@ sub send_email {
         push @{$attachments}, { name => $name, path => $path, file_name => $attachment_file_name };
     }
 
+    my $message = $self->direct_message->build_message_object();
+
     my $count = 0;
     while (my $recipient = $recipient_rs->next()) {
-        my $email = MandatoAberto::Mailer::Template->new(
-            to          => $recipient->email,
-            from        => $organization_name . '@appcivico.com',
-            subject     => $dm->email_subject,
-            template    => get_data_section('email.tt'),
-            attachments => $attachments,
-            vars        => {
-                organization_name   => $organization_name,
-                organization_header => $organization->email_header,
-                recipient_name      => $recipient->name,
-                text                => $dm_content,
-            },
-        )->build_email();
+        if ($recipient->email) {
+            my $email = MandatoAberto::Mailer::Template->new(
+                to          => $recipient->email,
+                from        => $organization_name . '@appcivico.com',
+                subject     => $dm->email_subject,
+                template    => get_data_section('email.tt'),
+                attachments => $attachments,
+                vars        => {
+                    organization_name   => $organization_name,
+                    organization_header => $organization->email_header,
+                    recipient_name      => $recipient->name,
+                    text                => $dm_content,
+                },
+            )->build_email();
+            $self->result_source->schema->resultset('EmailQueue')->create({ body => $email->as_string });
+        }
 
-        $self->result_source->schema->resultset('EmailQueue')->create({ body => $email->as_string });
+
+        my $headers = $dm->build_headers( $recipient );
+
+        $self->_httpcb->add(
+            url     => $ENV{FB_API_URL} . '/me/messages?access_token=' . $organization_chatbot->fb_config->access_token,
+            method  => "post",
+            headers => $headers,
+            body    => to_json {
+                messaging_type => "UPDATE",
+                recipient => {
+                    id => $recipient->fb_id
+                },
+                message => $message
+            }
+        );
 
         $count++;
     }
+    $self->_httpcb->wait_for_all_responses();
 
     close($fh) if $fh;
 
