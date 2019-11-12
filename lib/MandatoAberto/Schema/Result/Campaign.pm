@@ -401,7 +401,7 @@ sub send_email {
                     text                => $dm_content,
                 },
             )->build_email();
-            $self->result_source->schema->resultset('EmailQueue')->create({ body => $email->as_string });
+            $self->result_source->schema->resultset('EmailQueue')->create({ body => $email->as_string }) if is_test;
         }
 
 
