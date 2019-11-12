@@ -172,6 +172,7 @@ db_transaction {
         [
             name    => 'foobar',
             content => 'foobar',
+            groups  => ''
         ]
     ;
 

@@ -127,6 +127,11 @@ __PACKAGE__->table("recipient");
   is_foreign_key: 1
   is_nullable: 0
 
+=head2 cpf
+
+  data_type: 'text'
+  is_nullable: 1
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -179,6 +184,8 @@ __PACKAGE__->add_columns(
   },
   "organization_chatbot_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
+  "cpf",
+  { data_type => "text", is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -376,8 +383,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-10-18 08:34:23
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:fnY8I6VZDbS62ezWjZTyJA
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-11-12 11:14:43
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:YMGTo6FjlR8DNGTUUdl4Yw
 
 __PACKAGE__->load_components("InflateColumn::Serializer", "Core");
 __PACKAGE__->remove_column('groups');

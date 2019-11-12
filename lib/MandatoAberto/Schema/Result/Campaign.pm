@@ -280,6 +280,8 @@ sub send_dm_facebook {
     my $message = $self->direct_message->build_message_object();
     $logger->info("Message object:" . to_json $message) if $logger;
 
+    $recipient_rs = $recipient_rs->search_rs( { 'me.fb_id' => \'IS NOT NULL' } );
+
     my $count = 0;
     while (my $recipient = $recipient_rs->next()) {
         my $headers = $self->direct_message->build_headers( $recipient );
@@ -319,6 +321,8 @@ sub send_poll_facebook {
     my $question      = $poll_question_options[0]->poll_question->content;
     my $first_option  = $poll_question_options[0];
     my $second_option = $poll_question_options[1];
+
+    $recipient_rs = $recipient_rs->search_rs( { 'me.fb_id' => \'IS NOT NULL' } );
 
     my $count = 0;
     while (my $recipient = $recipient_rs->next()) {

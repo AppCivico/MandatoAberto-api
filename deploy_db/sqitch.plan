@@ -183,3 +183,4 @@
 0179-add-organization_dialog [0178-add-ticket-attachment] 2019-10-17T18:53:11Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding organization data
 0180-update-type [0179-add-organization_dialog] 2019-10-18T16:46:09Z Lucas Ansei,,, <lucas@lucas-G750JX> # Updating type on ticket_attachment
 0181-add-attachment [0180-update-type] 2019-11-07T12:28:37Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding attachment on dm
+0182-add-recipient-cpf [0181-add-attachment] 2019-11-12T17:34:21Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding 'cpf' on the 'recipient' table

@@ -45,8 +45,12 @@ sub verifiers_specs {
                     type     => "Str"
                 },
                 fb_id => {
-                    required => 1,
+                    required => 0,
                     type     => "Str"
+                },
+                cpf => {
+                    required => 0,
+                    type     => 'Str'
                 },
                 gender => {
                     required => 0,
@@ -125,6 +129,14 @@ sub action_specs {
                 }
 
                 my $existing_citizen = $self->search( { 'me.fb_id' => $values{fb_id} } )->next;
+                if ( $values{fb_id} ) {
+                    $existing_citizen = $self->search( { 'me.fb_id' => $values{fb_id} } )->next;
+                }
+                else {
+                    defined $values{cpf} or die \['cpf', "required if fb_id isn't defined"];
+
+                    $existing_citizen = $self->search( { 'me.cpf' => $values{cpf} } )->next;
+                }
 
                 # Criando ou atualizando recipient
                 if (!defined $existing_citizen) {
