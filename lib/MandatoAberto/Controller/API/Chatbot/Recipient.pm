@@ -55,7 +55,20 @@ sub list_GET {
     my ($self, $c) = @_;
 
     my $fb_id = $c->req->params->{fb_id};
-    die \['fb_id', 'missing'] unless $fb_id;
+    my $cpf   = $c->req->params->{cpf};
+
+    if (!$fb_id && !$cpf)  {
+        die \['fb_id', 'missing']
+    }
+    elsif ($fb_id) {
+        $c->stash->{collection} = $c->stash->{collection}->search_rs( { fb_id => $fb_id } );
+    }
+    elsif (!$fb_id && $cpf) {
+        $c->stash->{collection} = $c->stash->{collection}->search_rs( { cpf => $cpf } );
+    }
+    else {
+        die \['fb_id', 'missing']
+    }
 
     return $self->status_ok(
         $c,
@@ -64,11 +77,12 @@ sub list_GET {
                 my $c = $_;
 
                 id                     => $c->get_column('id'),
+                cpf                    => $c->get_column('cpf'),
                 gender                 => $c->get_column('gender'),
                 email                  => $c->get_column('email'),
                 cellphone              => $c->get_column('cellphone'),
                 extra_fields           => $c->extra_fields
-            } $c->stash->{collection}->search( { fb_id => $fb_id } )->next
+            } $c->stash->{collection}->next
         }
     )
 }
@@ -92,6 +106,7 @@ sub list_all_GET {
                         id                 => $r->get_column('id'),
                         fb_id              => $r->get_column('fb_id'),
                         gender             => $r->get_column('gender'),
+                        cpf                => $r->get_column('cpf'),
                         email              => $r->get_column('email'),
                         cellphone          => $r->get_column('cellphone'),
                         session            => $r->session,

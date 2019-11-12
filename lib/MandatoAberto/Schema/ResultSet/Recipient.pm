@@ -8,7 +8,7 @@ extends "DBIx::Class::ResultSet";
 with "MandatoAberto::Role::Verification";
 with 'MandatoAberto::Role::Verification::TransactionalActions::DBIC';
 
-use MandatoAberto::Types qw(EmailAddress PhoneNumber URI);
+use MandatoAberto::Types qw(EmailAddress PhoneNumber URI CPF);
 
 use Data::Verifier;
 use Data::Printer;
@@ -50,7 +50,7 @@ sub verifiers_specs {
                 },
                 cpf => {
                     required => 0,
-                    type     => 'Str'
+                    type     => CPF
                 },
                 gender => {
                     required => 0,

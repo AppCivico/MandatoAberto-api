@@ -119,6 +119,7 @@ sub list_GET {
                         email         => $_->get_column('email'),
                         gender        => $_->get_column('gender'),
                         created_at    => $_->get_column('created_at'),
+                        cpf           => $_->get_column('cpf'),
                         groups        => [
                             map {
                                 {
