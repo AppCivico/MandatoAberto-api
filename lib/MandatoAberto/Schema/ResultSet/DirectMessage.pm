@@ -154,9 +154,9 @@ sub action_specs {
                 die \['politician_id', 'politician does not have active Facebook page access_token'] unless $access_token;
 
                 my $campaign;
-                if ($values{send_email}) {
-                    delete $values{send_email};
 
+                my $send_email = delete $values{send_email};
+                if ($send_email) {
                     die \['email_subject', 'missing'] unless $values{email_subject};
 
                     $campaign = $politician->user->chatbot->campaigns->create(
