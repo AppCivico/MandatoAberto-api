@@ -145,6 +145,14 @@ sub verifiers_specs {
                 custom_url => {
                     required => 0,
                     type     => 'Str'
+                },
+                has_ticket => {
+                    required => 0,
+                    type     => 'Bool'
+                },
+                has_email_broadcast => {
+                    required => 0,
+                    type     => 'Bool'
                 }
             }
         ),
@@ -181,8 +189,9 @@ sub action_specs {
                                 organization_chatbot_general_config => {
                                     is_active      => 0,
                                     issue_active   => 1,
-                                    use_dialogflow => 1,
+
                                     # Criando com a config do MA
+                                    use_dialogflow => 1,
                                     dialogflow_config_id => 1
                                 },
                             }
@@ -235,6 +244,9 @@ sub action_specs {
             my $user;
             $self->result_source->schema->txn_do(sub {
 
+                my $has_ticket          = delete $values{has_ticket};
+                my $has_email_broadcast = delete $values{has_email_broadcast};
+
                 # Pegando organização do token de invite ou criando uma nova
                 my $organization;
                 if ( $values{invite_token} ) {
@@ -248,6 +260,10 @@ sub action_specs {
                             approved         => 1,
                             premium          => 1,
                             custom_url       => $values{custom_url},
+
+                            has_ticket          => $has_ticket || 0,
+                            has_email_broadcast => $has_email_broadcast || 0,
+
                             # Ao criar a organização já crio com um chatbot.
                             organization_chatbots => [
                                 {
@@ -259,6 +275,20 @@ sub action_specs {
                             ]
                         }
                     );
+
+                    if ($has_ticket && $has_ticket == 1) {
+                        my $ticket_type_rs = $self->result_source->schema->resultset('TicketType');
+
+                        my @organization_ticket_types;
+                        while (my $ticket_type = $ticket_type_rs->next) {
+                            push @organization_ticket_types, {
+                                organization_id => $organization->id,
+                                ticket_type_id  => $ticket_type->id
+                            }
+                        }
+
+                        $organization->organization_ticket_types->populate(\@organization_ticket_types);
+                    }
                 }
 
                 # Criando o usuário e vinculando com a organização

@@ -83,7 +83,9 @@ sub action_specs {
                 die \['chatbot_id', 'missing'];
             }
 
-            my $type = $self->result_source->schema->resultset('TicketType')->find($values{type_id}) or die \['type_id', 'invalid'];
+            my $type = $self->result_source->schema->resultset('OrganizationTicketType')->find($values{type_id}) or die \['type_id', 'invalid'];
+            delete $values{type_id};
+            $values{organization_ticket_type_id} = $type->id;
 
             if ($values{anonymous}) {
                 $values{anonymous} = 0 if !$type->can_be_anonymous;
@@ -237,8 +239,8 @@ sub build_list {
 
                     (
                         type => {
-                            id   => $_->type_id,
-                            name => $_->type->name
+                            id   => $_->organization_ticket_type_id,
+                            name => $_->organization_ticket_type->ticket_type->name
                         }
                     )
                 }

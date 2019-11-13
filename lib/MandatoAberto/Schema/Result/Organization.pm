@@ -121,6 +121,18 @@ __PACKAGE__->table("organization");
   data_type: 'text'
   is_nullable: 1
 
+=head2 has_ticket
+
+  data_type: 'boolean'
+  default_value: false
+  is_nullable: 0
+
+=head2 has_email_broadcast
+
+  data_type: 'boolean'
+  default_value: false
+  is_nullable: 0
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -167,6 +179,10 @@ __PACKAGE__->add_columns(
   { data_type => "text", is_nullable => 1 },
   "email_header",
   { data_type => "text", is_nullable => 1 },
+  "has_ticket",
+  { data_type => "boolean", default_value => \"false", is_nullable => 0 },
+  "has_email_broadcast",
+  { data_type => "boolean", default_value => \"false", is_nullable => 0 },
 );
 
 =head1 PRIMARY KEY
@@ -228,6 +244,21 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 organization_ticket_types
+
+Type: has_many
+
+Related object: L<MandatoAberto::Schema::Result::OrganizationTicketType>
+
+=cut
+
+__PACKAGE__->has_many(
+  "organization_ticket_types",
+  "MandatoAberto::Schema::Result::OrganizationTicketType",
+  { "foreign.organization_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 user_organizations
 
 Type: has_many
@@ -244,8 +275,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-11-06 09:02:37
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:thbU1HrpRME3Q2C1U8nsUw
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-11-13 11:13:14
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:uMMIXHpQIcF/GLNIr8mL2g
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

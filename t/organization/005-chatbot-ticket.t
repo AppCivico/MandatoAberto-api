@@ -14,7 +14,7 @@ db_transaction {
 
     my ($user_id, $organization_id, $chatbot_id, $recipient_id, $recipient);
     subtest 'Create chatbot and recipient' => sub {
-        $user_id         = create_user(custom_url => 'foobar.com');
+        $user_id         = create_user(custom_url => 'foobar.com', has_ticket => 1);
         $user_id         = $user_id->{id};
         $organization_id = $schema->resultset('Organization')->search(undef)->next->id;
         $chatbot_id      = $schema->resultset('OrganizationChatbot')->search(undef)->next->id;
@@ -41,16 +41,20 @@ db_transaction {
         # Listando tipos de ticket
         rest_get "/api/chatbot/ticket/type",
             stash => 'tt1',
-            [ security_token => $security_token ];
+            [
+                security_token => $security_token,
+                chatbot_id     => $chatbot_id,
+            ];
 
         my $ticket_types = stash 'tt1';
+        # use DDP; p $ticket_types;
 
         is ref $ticket_types->{ticket_types}, 'ARRAY';
         ok defined $ticket_types->{ticket_types}->[0]->{id};
         ok defined $ticket_types->{ticket_types}->[0]->{name};
         ok defined $ticket_types->{ticket_types}->[0]->{can_be_anonymous};
 
-        ok my $ticket_type = $schema->resultset('TicketType')->search( { id => $ticket_types->{ticket_types}->[0]->{id} } )->next->update( { can_be_anonymous => 1 } );
+        ok my $ticket_type = $schema->resultset('OrganizationTicketType')->search( { id => $ticket_types->{ticket_types}->[0]->{id} } )->next->update( { can_be_anonymous => 1 } );
         # Criando ticket
         is $email_rs->count, 0;
 
@@ -58,7 +62,7 @@ db_transaction {
             automatic_load_item => 0,
             params => [
                 security_token => $security_token,
-                type_id        => 1,
+                type_id        => $ticket_type->id,
                 anonymous      => 1,
                 chatbot_id     => $chatbot_id,
                 fb_id          => 'bar',
