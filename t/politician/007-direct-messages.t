@@ -15,7 +15,8 @@ db_transaction {
     ok( $worker->does('MandatoAberto::Worker'), 'worker does MandatoAberto::Worker' );
 
     create_politician(
-        fb_page_id => 'foo'
+        fb_page_id => 'foo',
+        has_email_broadcast => 1
     );
     my $politician_id = stash "politician.id";
 

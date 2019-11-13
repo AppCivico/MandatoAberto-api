@@ -103,6 +103,14 @@ sub verifiers_specs {
                     required => 0,
                     type     => 'Str'
                 },
+                has_ticket => {
+                    required => 0,
+                    type     => 'Bool'
+                },
+                has_email_broadcast => {
+                    required => 0,
+                    type     => 'Bool'
+                }
             }
         ),
         # Utilizando um método diferente para não precisar corrigir os testes por agora
@@ -180,9 +188,12 @@ sub action_specs {
                     die \["gender", "must be F or M"];
                 }
 
+                my $has_email_broadcast = $values{has_email_broadcast} || 0;
+
                 my $organization = $self->result_source->schema->resultset('Organization')->create(
                     {
                         name                  => $values{name},
+                        has_email_broadcast => $has_email_broadcast,
                         # Ao criar a organização já crio com um chatbot.
                         organization_chatbots => [
                             {

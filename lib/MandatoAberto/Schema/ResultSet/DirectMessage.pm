@@ -157,6 +157,7 @@ sub action_specs {
 
                 my $send_email = delete $values{send_email};
                 if ($send_email) {
+                    die \['send_email', 'organization not allowed'] unless $politician->user->organization->has_email_broadcast;
                     die \['email_subject', 'missing'] unless $values{email_subject};
 
                     $campaign = $politician->user->chatbot->campaigns->create(
