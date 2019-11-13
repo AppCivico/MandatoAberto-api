@@ -380,14 +380,14 @@ sub send_email {
         my ($path) = $attachment_file_name =~ /^\/.+\//g;
         my $name   = substr $attachment_file_name, length $path, length $attachment_file_name;
 
-        push @{$attachments}, { name => $name, path => $path, file_name => $attachment_file_name };
+        push @{$attachments}, { name => $name, path => $attachment_file_name, file_name => $attachment_file_name };
     }
-
     my $message = $self->direct_message->build_message_object();
 
     my $count = 0;
     while (my $recipient = $recipient_rs->next()) {
         if ($recipient->email) {
+
             my $email = MandatoAberto::Mailer::Template->new(
                 to          => $recipient->email,
                 from        => $organization_name . '@appcivico.com',

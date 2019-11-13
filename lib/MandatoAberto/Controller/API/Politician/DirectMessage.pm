@@ -83,9 +83,7 @@ sub list_POST {
             # Para ser utilizado no envio.
             my $attachment_folder = $ENV{CAMPAIGN_ATTACHMENT_FOLDER};
 
-            if (!is_test) {
-                $upload->copy_to($attachment_folder) or die \['file', 'failed to copy attachment'];
-            }
+            $upload->copy_to($attachment_folder) or die \['file', 'failed to copy attachment'];
 
             my $tempname = $upload->tempname;
             $tempname    =~ s/^\/\w+\///g;
