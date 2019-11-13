@@ -486,7 +486,7 @@ sub upsert_labels {
                 $recipient->update( { groups => \[ "DELETE(groups, ?)", $group->id ] } );
                 $group->update(
                     {
-                        recipients_count        => $group->recipients_count - 1,
+                        recipients_count        => \'recipients_count + 1',,
                         last_recipients_calc_at => \'NOW()',
                         status                  => 'ready',
                     }
