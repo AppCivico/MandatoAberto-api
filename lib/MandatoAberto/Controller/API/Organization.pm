@@ -56,7 +56,7 @@ sub result_GET {
         $c,
         entity => {
             # Dados da organização
-            ( map { $_ => $organization->$_ } qw( id name premium premium_updated_at approved approved_at picture invite_token created_at updated_at ) ),
+            ( map { $_ => $organization->$_ } qw( id name premium premium_updated_at approved approved_at picture invite_token created_at updated_at has_email_broadcast ) ),
 
             # Chatbots
             ( chatbots => $organization->chatbots_for_get )
