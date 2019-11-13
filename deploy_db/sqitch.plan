@@ -186,3 +186,4 @@
 0182-add-recipient-cpf [0181-add-attachment] 2019-11-12T17:34:21Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding 'cpf' on the 'recipient' table
 0183-add-organization_ticket_type [0182-add-recipient-cpf] 2019-11-13T14:02:55Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding 'organization_ticket_type' table
 0184-add-organization-config [0183-add-organization_ticket_type] 2019-11-13T14:26:37Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding two config booleans to the organization table
+0185-fix-anonymous-tickets [0184-add-organization-config] 2019-11-13T14:40:18Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Fixing anonymous tickets
