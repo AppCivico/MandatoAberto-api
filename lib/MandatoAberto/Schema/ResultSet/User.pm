@@ -161,6 +161,14 @@ sub verifiers_specs {
                 has_email_broadcast => {
                     required => 0,
                     type     => 'Bool'
+                },
+                has_base_dialogs => {
+                    required => 0,
+                    type     => 'Bool'
+                },
+                fb_app_id => {
+                    required => 0,
+                    type     => 'Int'
                 }
             }
         ),
@@ -257,6 +265,7 @@ sub action_specs {
 
                 my $has_ticket          = delete $values{has_ticket};
                 my $has_email_broadcast = delete $values{has_email_broadcast};
+                my $fb_app_id           = delete $values{fb_app_id};
 
                 # Pegando organização do token de invite ou criando uma nova
                 my $organization;
@@ -274,6 +283,7 @@ sub action_specs {
 
                             has_ticket          => $has_ticket || 0,
                             has_email_broadcast => $has_email_broadcast || 0,
+                            fb_app_id           => $fb_app_id,
 
                             # Ao criar a organização já crio com um chatbot.
                             organization_chatbots => [
@@ -282,10 +292,44 @@ sub action_specs {
                                         issue_active     => 1,
                                         use_dialogflow   => 0,
                                     },
+
                                 }
                             ]
                         }
                     );
+
+                    # Verificando a flag has_base_dialogs, caso seja 1, adiciono os diálogos de "Boas-vindas" e "Não entendi".
+                    if ( $values{has_base_dialogs} ) {
+                        my @dialogs = (
+                            {
+                                name                   => 'Boas-vindas',
+                                description            => 'Aqui você modifica a mensagem de boas-vindas do seu bot.',
+                                organization_questions => [
+                                    {
+                                        name          => 'greetings',
+                                        content       => 'Digite abaixo suas boas-vindas',
+                                        citizen_input => 'greetings'
+                                    }
+                                ]
+                            },
+                            {
+                                name                   => 'Não entendi',
+                                description            => 'Aqui você modifica a mensagem que seu bot enviará quando não entender uma mensagem.',
+                                organization_questions => [
+                                    {
+                                        name          => 'fallback',
+                                        content       => 'Digite abaixo sua mensagem',
+                                        citizen_input => 'fallback'
+                                    }
+                                ]
+                            },
+                        );
+
+                        for my $dialog (@dialogs) {
+                            $organization->organization_dialogs->create($dialog);
+                        }
+                    }
+                    delete $values{has_base_dialogs};
 
                     if ($has_ticket && $has_ticket == 1) {
                         my $ticket_type_rs = $self->result_source->schema->resultset('TicketType');

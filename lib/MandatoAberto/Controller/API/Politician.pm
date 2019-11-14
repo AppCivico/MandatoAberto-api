@@ -188,6 +188,7 @@ sub result_GET {
                     is_mandatoaberto => $organization->is_mandatoaberto,
 
                     has_email_broadcast => $organization->has_email_broadcast,
+                    fb_app_id           => $organization->fb_app_id,
 
                     (
                         $chatbot ?

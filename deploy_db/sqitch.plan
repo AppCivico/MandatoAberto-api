@@ -187,3 +187,4 @@
 0183-add-organization_ticket_type [0182-add-recipient-cpf] 2019-11-13T14:02:55Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding 'organization_ticket_type' table
 0184-add-organization-config [0183-add-organization_ticket_type] 2019-11-13T14:26:37Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding two config booleans to the organization table
 0185-fix-anonymous-tickets [0184-add-organization-config] 2019-11-13T14:40:18Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Fixing anonymous tickets
+0186-add-fb_app_id [0185-fix-anonymous-tickets] 2019-11-14T14:37:10Z Lucas Ansei,,, <lucas@lucas-G750JX> # Adding 'fb_app_id' on the 'organization' table

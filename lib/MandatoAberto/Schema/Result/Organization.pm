@@ -133,6 +133,11 @@ __PACKAGE__->table("organization");
   default_value: false
   is_nullable: 0
 
+=head2 fb_app_id
+
+  data_type: 'text'
+  is_nullable: 1
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -183,6 +188,8 @@ __PACKAGE__->add_columns(
   { data_type => "boolean", default_value => \"false", is_nullable => 0 },
   "has_email_broadcast",
   { data_type => "boolean", default_value => \"false", is_nullable => 0 },
+  "fb_app_id",
+  { data_type => "text", is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -275,8 +282,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-11-13 11:13:14
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:uMMIXHpQIcF/GLNIr8mL2g
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-11-14 10:18:34
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:LqKJIIPDuobIr9Ip9O//qw
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
