@@ -147,6 +147,46 @@ db_transaction {
         $res = rest_get "/api/organization/$organization_id/chatbot/$chatbot_id/ticket/$ticket_id";
         $res = rest_get "/api/organization/$organization_id/chatbot/$chatbot_id/ticket", [ filter => 'closed' ];
         is scalar @{ $res->{tickets} }, 0;
+
+        $res =  rest_get "/api/politician/$user_id/ticket/types";
+
+        is $res->{itens_count}, 2;
+
+        is ref $res->{ticket_types}, 'ARRAY';
+		ok defined $res->{ticket_types}->[0]->{id};
+		ok defined $res->{ticket_types}->[0]->{name};
+		ok exists $res->{ticket_types}->[0]->{can_be_anonymous};
+		ok exists $res->{ticket_types}->[0]->{description};
+		ok exists $res->{ticket_types}->[0]->{usual_response_interval};
+		ok exists $res->{ticket_types}->[0]->{usual_response_time};
+
+        ok my $ticket_type_id = $res->{ticket_types}->[0]->{id};
+
+		$res =  rest_get "/api/politician/$user_id/ticket/types/$ticket_type_id";
+
+		ok defined $res->{id};
+		ok defined $res->{name};
+		ok exists  $res->{can_be_anonymous};
+		ok exists  $res->{description};
+		ok exists  $res->{usual_response_interval};
+		ok exists  $res->{usual_response_time};
+
+        $res = rest_put "/api/politician/$user_id/ticket/types/$ticket_type_id",
+            code   => 200,
+            params => [
+                send_email_to           => 'foobar@email.com',
+                usual_response_interval => '10:00:00'
+            ];
+
+		$res =  rest_get "/api/politician/$user_id/ticket/types/$ticket_type_id";
+
+		ok defined $res->{id};
+		ok defined $res->{name};
+		ok exists  $res->{can_be_anonymous};
+		ok exists  $res->{description};
+		ok exists  $res->{usual_response_interval};
+		ok exists  $res->{usual_response_time};
+
     };
 
 };

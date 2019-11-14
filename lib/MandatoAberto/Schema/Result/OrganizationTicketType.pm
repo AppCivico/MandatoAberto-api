@@ -171,5 +171,123 @@ __PACKAGE__->has_many(
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
+with 'MandatoAberto::Role::Verification';
+with 'MandatoAberto::Role::Verification::TransactionalActions::DBIC';
+
+use MandatoAberto::Types qw(EmailAddress);
+use DateTime::Format::Pg;
+
+sub verifiers_specs {
+    my $self = shift;
+
+    return {
+        update => Data::Verifier->new(
+            filters => [ qw/ trim / ],
+            profile => {
+                can_be_anonymous => {
+                    required => 0,
+                    type     => 'Bool',
+                },
+
+                description => {
+                    required => 0,
+                    type     => 'Str'
+                },
+
+                send_email_to => {
+                    required => 0,
+                    type     => EmailAddress
+                },
+
+                usual_response_interval => {
+                    required => 0,
+                    type     => 'Str'
+                }
+            }
+        )
+    };
+}
+
+sub action_specs {
+    my ($self) = @_;
+
+    return {
+        update => sub {
+            my $r = shift;
+
+            my %values = $r->valid_values;
+            not defined $values{$_} and delete $values{$_} for keys %values;
+
+            if (my $usual_response_interval = delete $values{usual_response_interval}) {
+                my $dt_parser = DateTime::Format::Pg->new();
+
+                my $parsed_interval;
+                eval { $parsed_interval = $dt_parser->parse_interval($usual_response_interval) };
+
+                die \['usual_response_interval', 'invalid'] if $@;
+
+                $values{usual_response_interval} = $usual_response_interval;
+            }
+
+            return $self->update(\%values);
+        },
+    };
+}
+
+sub build_list {
+    my ($self) = @_;
+
+    my $dt_parser = DateTime::Format::Pg->new();
+
+    my $usual_response_interval = $self->usual_response_interval;
+    $usual_response_interval = $dt_parser->parse_interval($usual_response_interval);
+
+    my $usual_response_time; # String
+
+    if ( $usual_response_interval->months > 0 ) {
+        my $months = $usual_response_interval->months;
+
+        $usual_response_time .= "$months ";
+        $usual_response_time .= $months == 1 ? ' mês' : ' meses';
+    }
+
+    if ($usual_response_interval->days > 0) {
+        my $days = $usual_response_interval->days;
+
+        $usual_response_time .= ' e ' if length $usual_response_time > 0;
+
+        $usual_response_time .= "$days ";
+        $usual_response_time .= $days == 1 ? ' dia' : 'dias'
+    }
+
+    if ($usual_response_interval->hours > 0) {
+        my $hours = $usual_response_interval->hours;
+
+        $usual_response_time .= ' e ' if length $usual_response_time > 0;
+
+        $usual_response_time .= "$hours ";
+        $usual_response_time .= $hours == 1 ? ' hora' : 'horas'
+    }
+
+    if ($usual_response_interval->minutes > 0) {
+        my $minutes = $usual_response_interval->minutes;
+
+        $usual_response_time .= ' e ' if length $usual_response_time > 0;
+
+        $usual_response_time .= "$minutes ";
+        $usual_response_time .= $minutes == 1 ? ' minuto' : 'minutos'
+    }
+
+    return {
+        id                      => $self->id,
+        name                    => $self->ticket_type->name,
+        description             => $self->description,
+        send_email_to           => $self->send_email_to,
+        can_be_anonymous        => $self->can_be_anonymous,
+        usual_response_interval => $self->usual_response_interval,
+        usual_response_time     => $usual_response_time,
+    }
+}
+
 __PACKAGE__->meta->make_immutable;
 1;

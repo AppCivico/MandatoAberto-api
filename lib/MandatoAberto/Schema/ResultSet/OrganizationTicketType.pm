@@ -8,11 +8,21 @@ use DateTime::Format::Pg;
 extends "DBIx::Class::ResultSet";
 
 sub build_list {
-    my $self = shift;
+    my ($self, %opts) = @_;
+
+    if ($opts{build_for_front_end}) {
+        my $page = 1  if !defined $opts{page};
+        my $rows = 20 if !defined $opts{rows};
+
+
+        $self = $self->search_rs(undef, { page => $page, rows => $rows });
+    }
+
 
     my $dt_parser = DateTime::Format::Pg->new();
 
     return {
+        itens_count  => $self->count,
         ticket_types => [
             map {
                 my $usual_response_interval = $_->usual_response_interval;
@@ -55,11 +65,13 @@ sub build_list {
                 }
 
                 +{
-                    id                  => $_->id,
-                    description         => $_->description,
-                    name                => $_->ticket_type->name,
-                    can_be_anonymous    => $_->ticket_type->can_be_anonymous,
-                    usual_response_time => $usual_response_time
+                    id                      => $_->id,
+                    description             => $_->description,
+                    name                    => $_->ticket_type->name,
+                    can_be_anonymous        => $_->ticket_type->can_be_anonymous,
+                    usual_response_time     => $usual_response_time,
+                    usual_response_interval => $_->usual_response_interval,
+                    ticket_type_id          => $_->ticket_type_id
                 }
             } $self->all()
         ]
