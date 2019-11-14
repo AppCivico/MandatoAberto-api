@@ -47,7 +47,6 @@ db_transaction {
             ];
 
         my $ticket_types = stash 'tt1';
-        # use DDP; p $ticket_types;
 
         is ref $ticket_types->{ticket_types}, 'ARRAY';
         ok defined $ticket_types->{ticket_types}->[0]->{id};

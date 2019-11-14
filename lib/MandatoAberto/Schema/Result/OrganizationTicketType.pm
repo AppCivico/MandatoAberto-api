@@ -77,6 +77,11 @@ __PACKAGE__->table("organization_ticket_type");
   data_type: 'text'
   is_nullable: 1
 
+=head2 usual_response_interval
+
+  data_type: 'interval'
+  is_nullable: 1
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -97,6 +102,8 @@ __PACKAGE__->add_columns(
   { data_type => "text", is_nullable => 1 },
   "send_email_to",
   { data_type => "text", is_nullable => 1 },
+  "usual_response_interval",
+  { data_type => "interval", is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -159,8 +166,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-11-13 11:31:39
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:lDeV57Wwf+h2r0Yj4iKuNQ
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-11-14 12:07:27
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:WWAhzznw0WqcSkvaq1Xm7g
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
