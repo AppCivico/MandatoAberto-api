@@ -442,15 +442,9 @@ sub extract_metrics {
             },
         ],
         sub_metrics => [
-            # Métrica: seguidores com email cadastrado
+            # Métrica: Contagem total de seguidores.
             {
-                text              => $self->search( { email => \'IS NOT NULL' } )->count . ' seguidores com e-mail',
-                suggested_actions => []
-            },
-
-            # Métrica: seguidores com telefone cadastrado
-            {
-                text              => $self->search( { cellphone => \'IS NOT NULL' } )->count . ' seguidores com telefone',
+                text              => $self->count . ' já interagiram com seu assistente digital',
                 suggested_actions => []
             },
         ]
