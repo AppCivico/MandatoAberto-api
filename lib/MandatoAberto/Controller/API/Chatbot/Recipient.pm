@@ -96,7 +96,7 @@ sub list_all_GET {
                         cellphone          => $r->get_column('cellphone'),
                         session            => $r->session,
                         session_updated_at => $r->session_updated_at,
-                        created_at         => $r->created_at
+                        created_at         => $r->created_at->set_time_zone( 'America/Sao_Paulo' )->subtract( hours => 3 )
                     }
                 } $c->stash->{collection}->search( { organization_chatbot_id => $organization_chatbot_id } )->all()
             ]
