@@ -432,7 +432,7 @@ sub extract_metrics {
         sub_metrics => [
             # Métrica: Contagem total de seguidores.
             {
-                text              => $self->count . ' já interagiram com seu assistente digital',
+                text              => $self->count > 1 ? $self->count . ' já interagiram com seu assistente digital' : $self->count . ' já interagiu com seu assistente digital',
                 suggested_actions => []
             },
         ]
