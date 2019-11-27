@@ -174,8 +174,8 @@ db_transaction {
         $res = rest_put "/api/politician/$user_id/ticket/types/$ticket_type_id",
             code   => 200,
             params => [
-                send_email_to           => '',
-                usual_response_interval => ''
+                send_email_to           => 'foobar@email.com',
+                usual_response_interval => '10:00:00'
             ];
 
 		$res =  rest_get "/api/politician/$user_id/ticket/types/$ticket_type_id";
