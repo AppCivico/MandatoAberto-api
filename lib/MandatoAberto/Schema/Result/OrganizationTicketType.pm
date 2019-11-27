@@ -228,7 +228,7 @@ sub action_specs {
             }
 
             if ( $values{delete_send_email_to} ) {
-                $values{delete_send_email_to} = undef;
+                $values{send_email_to} = undef;
                 delete $values{delete_send_email_to};
             }
 
