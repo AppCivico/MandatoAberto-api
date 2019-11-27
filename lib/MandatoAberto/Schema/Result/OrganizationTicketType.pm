@@ -202,6 +202,11 @@ sub verifiers_specs {
                 usual_response_interval => {
                     required => 0,
                     type     => 'Str'
+                },
+
+                delete_send_email_to => {
+                    required => 0,
+                    type     => 'Bool'
                 }
             }
         )
@@ -218,11 +223,11 @@ sub action_specs {
             my %values = $r->valid_values;
             not defined $values{$_} and delete $values{$_} for keys %values;
 
-            if ( $values{send_email_to} && $values{send_email_to} eq '__DELETE__' ) {
-                $values{send_email_to} = undef;
+            if ( $values{usual_response_interval} && $values{usual_response_interval} eq '__DELETE__' ) {
+                $values{usual_response_interval} = undef;
             }
 
-            if ( $values{usual_response_interval} && $values{usual_response_interval} eq '__DELETE__' ) {
+            if ( $values{delete_send_email_to} ) {
                 $values{usual_response_interval} = undef;
             }
 
