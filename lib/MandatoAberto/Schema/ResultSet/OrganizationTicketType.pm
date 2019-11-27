@@ -74,7 +74,7 @@ sub build_list {
                     usual_response_interval => $_->usual_response_interval,
                     ticket_type_id          => $_->ticket_type_id
                 }
-            } $self->all()
+            } $self->search( undef, { order_by => { -asc => 'ticket_type.name' }, join => 'ticket_type' } )->all()
         ]
     }
 }
