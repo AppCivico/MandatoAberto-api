@@ -51,6 +51,10 @@ sub result_GET {
 sub result_PUT {
     my ($self, $c) = @_;
 
+    # Tratando caso de limpeza de params 'send_email_to' e de horario.
+    $c->req->params->{send_email_to} = '__DELETE__' if defined $c->req->params->{send_email_to} && $c->req->params->{send_email_to} eq '';
+    $c->req->params->{usual_response_interval} = '__DELETE__' if defined $c->req->params->{usual_response_interval} && $c->req->params->{usual_response_interval} eq '';
+
     my $ticket_type = $c->stash->{ticket_type}->execute(
         $c,
         for  => 'update',

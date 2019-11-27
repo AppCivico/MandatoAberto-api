@@ -218,6 +218,14 @@ sub action_specs {
             my %values = $r->valid_values;
             not defined $values{$_} and delete $values{$_} for keys %values;
 
+            if ( $values{send_email_to} && $values{send_email_to} eq '__DELETE__' ) {
+                $values{send_email_to} = undef;
+            }
+
+            if ( $values{usual_response_interval} && $values{usual_response_interval} eq '__DELETE__' ) {
+                $values{usual_response_interval} = undef;
+            }
+
             if (my $usual_response_interval = delete $values{usual_response_interval}) {
                 my $dt_parser = DateTime::Format::Pg->new();
 
