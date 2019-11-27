@@ -69,6 +69,7 @@ sub build_list {
                     description             => $_->description,
                     name                    => $_->ticket_type->name,
                     can_be_anonymous        => $_->ticket_type->can_be_anonymous,
+                    send_email_to           => $_->send_email_to,
                     usual_response_time     => $usual_response_time,
                     usual_response_interval => $_->usual_response_interval,
                     ticket_type_id          => $_->ticket_type_id
