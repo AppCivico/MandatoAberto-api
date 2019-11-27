@@ -52,7 +52,7 @@ sub result_PUT {
     my ($self, $c) = @_;
 
     # Tratando caso de limpeza de params 'send_email_to' e de horario.
-    if ( $c->req->params->{send_email_to} && $c->req->params->{send_email_to} eq 'null' ) {
+    if ( $c->req->params->{send_email_to} && $c->req->params->{send_email_to} eq '__DELETE__' ) {
         $c->req->params->{delete_send_email_to} = 1;
         delete $c->req->params->{send_email_to};
     }
