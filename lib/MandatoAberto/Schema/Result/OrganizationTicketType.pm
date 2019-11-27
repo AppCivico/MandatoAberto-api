@@ -229,6 +229,7 @@ sub action_specs {
 
             if ( $values{delete_send_email_to} ) {
                 $values{usual_response_interval} = undef;
+                delete $values{delete_send_email_to};
             }
 
             if (my $usual_response_interval = delete $values{usual_response_interval}) {
