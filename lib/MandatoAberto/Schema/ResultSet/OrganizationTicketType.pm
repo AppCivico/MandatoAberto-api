@@ -40,7 +40,7 @@ sub build_list {
                 if ($usual_response_interval->days > 0) {
                     my $days = $usual_response_interval->days;
 
-                    $usual_response_time .= ' e ' if length $usual_response_time > 0;
+                    $usual_response_time .= ' e ' if $usual_response_time && length $usual_response_time > 0;
 
                     $usual_response_time .= "$days ";
                     $usual_response_time .= $days == 1 ? ' dia' : 'dias'
@@ -49,7 +49,7 @@ sub build_list {
                 if ($usual_response_interval->hours > 0) {
                     my $hours = $usual_response_interval->hours;
 
-                    $usual_response_time .= ' e ' if length $usual_response_time > 0;
+                    $usual_response_time .= ' e ' if $usual_response_time && length $usual_response_time > 0;
 
                     $usual_response_time .= "$hours ";
                     $usual_response_time .= $hours == 1 ? ' hora' : 'horas'
@@ -58,7 +58,7 @@ sub build_list {
                 if ($usual_response_interval->minutes > 0) {
                     my $minutes = $usual_response_interval->minutes;
 
-                    $usual_response_time .= ' e ' if length $usual_response_time > 0;
+                    $usual_response_time .= ' e ' if $usual_response_time && length $usual_response_time > 0;
 
                     $usual_response_time .= "$minutes ";
                     $usual_response_time .= $minutes == 1 ? ' minuto' : 'minutos'
