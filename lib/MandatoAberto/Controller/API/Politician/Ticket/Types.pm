@@ -57,8 +57,6 @@ sub result_PUT {
         delete $c->req->params->{send_email_to};
     }
 
-    $c->req->params->{usual_response_interval} = '__DELETE__' if defined $c->req->params->{usual_response_interval} && $c->req->params->{usual_response_interval} eq '';
-
     my $ticket_type = $c->stash->{ticket_type}->execute(
         $c,
         for  => 'update',
