@@ -232,7 +232,9 @@ sub action_specs {
                 delete $values{delete_send_email_to};
             }
 
-            if (my $usual_response_interval = delete $values{usual_response_interval}) {
+            if ( $values{usual_response_interval} && $values{usual_response_interval} ne '__DELETE__' ) {
+                my $usual_response_interval = delete $values{usual_response_interval};
+
                 my $dt_parser = DateTime::Format::Pg->new();
 
                 my $parsed_interval;
