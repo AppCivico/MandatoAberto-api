@@ -140,8 +140,7 @@ sub action_specs {
                 $ticket = $self->create(\%values);
 
                 if (my $send_email_to = $type->send_email_to) {
-
-                    my $user = $user_rs->search( { 'me.email' => $send_email_to } )->next;
+                    my $user = $user_rs->search( { 'user.email' => $send_email_to }, { join => 'user' } )->next;
 
                     my $email = MandatoAberto::Mailer::Template->new(
                         to       => $send_email_to,
