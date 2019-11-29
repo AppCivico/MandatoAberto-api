@@ -86,7 +86,7 @@ sub action_specs {
             my $type = $self->result_source->schema->resultset('TicketType')->find($values{type_id}) or die \['type_id', 'invalid'];
             delete $values{type_id};
 
-            my $organization_ticket_type = $self->result_source->schema->resultset('OrganizationTicketType')->search( { ticket_type_id => $type->id } )->next
+            my $organization_ticket_type = $self->result_source->schema->resultset('OrganizationTicketType')->search( { ticket_type_id => $type->id, organization_id => $chatbot->organization->id } )->next
                 or die \['type_id', 'invalid'];
             $values{organization_ticket_type_id} = $organization_ticket_type->id;
 
