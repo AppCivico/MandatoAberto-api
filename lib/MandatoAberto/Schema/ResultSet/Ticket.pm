@@ -83,9 +83,12 @@ sub action_specs {
                 die \['chatbot_id', 'missing'];
             }
 
-            my $type = $self->result_source->schema->resultset('OrganizationTicketType')->find($values{type_id}) or die \['type_id', 'invalid'];
+            my $type = $self->result_source->schema->resultset('TicketType')->find($values{type_id}) or die \['type_id', 'invalid'];
             delete $values{type_id};
-            $values{organization_ticket_type_id} = $type->id;
+
+            my $organization_ticket_type = $self->result_source->schema->resultset('OrganizationTicketType')->search( { ticket_type_id => $type->id } )->next
+                or die \['type_id', 'invalid'];
+            $values{organization_ticket_type_id} = $organization_ticket_type->id;
 
             if ($values{anonymous}) {
                 $values{anonymous} = 0 if !$type->can_be_anonymous;
@@ -139,7 +142,7 @@ sub action_specs {
 
                 $ticket = $self->create(\%values);
 
-                if (my $send_email_to = $type->send_email_to) {
+                if (my $send_email_to = $organization_ticket_type->send_email_to) {
                     my $user = $user_rs->search( { 'user.email' => $send_email_to }, { join => 'user' } )->next;
 
                     my $email = MandatoAberto::Mailer::Template->new(
