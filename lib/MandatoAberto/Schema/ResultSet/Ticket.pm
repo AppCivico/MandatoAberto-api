@@ -164,22 +164,25 @@ sub action_specs {
                         );
                     }
                 }
+                else {
+                    while (my $user_rel = $user_rs->next) {
+                        my $user = $user_rel->user;
+                        next unless $user->email eq 'edgard.lobo@appcivico.com';
 
-                while (my $user_rel = $user_rs->next) {
-                    my $user = $user_rel->user;
-                    next unless $user->email eq 'edgard.lobo@appcivico.com';
+                        my $email = MandatoAberto::Mailer::Template->new(
+                            to       => $user->email,
+                            from     => 'no-reply@appcivico.com',
+                            subject  => "Novo ticket criado",
+                            template => get_data_section('ticket_created.tt'),
+                            vars     => {
+                                name       => $user->name,
+                                ticket_url => $ENV{ASSISTENTE_URL} . 'chamados/' . $ticket->id,
+                            },
+                        )->build_email();
 
-                    my $email = MandatoAberto::Mailer::Template->new(
-                        to       => $user->email,
-                        from     => 'no-reply@appcivico.com',
-                        subject  => "Novo ticket criado",
-                        template => get_data_section('ticket_created.tt'),
-                        vars     => {
-                            name       => $user->name,
-                            ticket_url => $ENV{ASSISTENTE_URL} . 'chamados/' . $ticket->id,
-                        },
-                    )->build_email();
+                        $self->result_source->schema->resultset('EmailQueue')->create({ body => $email->as_string });
 
+                    }
                 }
             });
 
