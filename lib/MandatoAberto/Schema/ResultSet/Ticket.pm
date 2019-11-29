@@ -151,7 +151,7 @@ sub action_specs {
                         subject  => "Novo ticket criado",
                         template => get_data_section('ticket_created.tt'),
                         vars     => {
-                            name       => $user ? $user->name : $send_email_to,
+                            name       => $user ? $user->user->name : $send_email_to,
                             ticket_url => $ENV{ASSISTENTE_URL} . 'chamados/' . $ticket->id,
                         },
                     )->build_email();
@@ -160,7 +160,7 @@ sub action_specs {
                     if ($user) {
                         $ticket->update(
                             {
-                                assignee_id => $user->id,
+                                assignee_id => $user->user->id,
                                 assigned_at => \'NOW()'
                             }
                         );
