@@ -135,17 +135,43 @@ sub action_specs {
 
             my $ticket;
             $self->result_source->schema->txn_do(sub{
+                my $user_rs = $chatbot->organization->users;
 
                 $ticket = $self->create(\%values);
 
-                my $user_rs = $chatbot->organization->users;
+                if (my $send_email_to = $type->send_email_to) {
+
+                    my $user = $user_rs->search( { 'me.email' => $send_email_to } )->next;
+
+                    my $email = MandatoAberto::Mailer::Template->new(
+                        to       => $send_email_to,
+                        from     => 'no-reply@appcivico.com',
+                        subject  => "Novo ticket criado",
+                        template => get_data_section('ticket_created.tt'),
+                        vars     => {
+                            name       => $user ? $user->name : $send_email_to,
+                            ticket_url => $ENV{ASSISTENTE_URL} . 'chamados/' . $ticket->id,
+                        },
+                    )->build_email();
+                    $self->result_source->schema->resultset('EmailQueue')->create({ body => $email->as_string });
+
+                    if ($user) {
+                        $ticket->update(
+                            {
+                                assignee_id => $user->id,
+                                assigned_at => \'NOW()'
+                            }
+                        );
+                    }
+                }
+
                 while (my $user_rel = $user_rs->next) {
                     my $user = $user_rel->user;
                     next unless $user->email eq 'edgard.lobo@appcivico.com';
 
                     my $email = MandatoAberto::Mailer::Template->new(
                         to       => $user->email,
-                        from     => 'no-reply@dipiou.com.br',
+                        from     => 'no-reply@appcivico.com',
                         subject  => "Novo ticket criado",
                         template => get_data_section('ticket_created.tt'),
                         vars     => {
@@ -154,7 +180,6 @@ sub action_specs {
                         },
                     )->build_email();
 
-                    $self->result_source->schema->resultset('EmailQueue')->create({ body => $email->as_string });
                 }
             });
 
