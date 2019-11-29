@@ -268,7 +268,7 @@ sub build_list {
     }
 
     if ($usual_response_interval->days > 0) {
-        my $days = $usual_response_interval->days;
+        my $days = $usual_response_interval->in_units( 'days' );
 
         $usual_response_time .= ' e ' if $usual_response_time && length $usual_response_time > 0;
 
@@ -277,7 +277,7 @@ sub build_list {
     }
 
     if ($usual_response_interval->hours > 0) {
-        my $hours = $usual_response_interval->hours;
+        my $hours = $usual_response_interval->in_units( 'hours' );
 
         $usual_response_time .= ' e ' if $usual_response_time && length $usual_response_time > 0;
 
