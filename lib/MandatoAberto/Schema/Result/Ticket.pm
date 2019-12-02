@@ -515,8 +515,9 @@ sub action_specs {
 
                     # Adicionando email na fila
                     my $email_vars = {
-                        ticket_url => $url . 'chamados/' . $self->id,
-                        status     => $status
+                        ticket_url     => $url . 'chamados/' . $self->id,
+                        status         => $status,
+                        header_picture => $self->organization_chatbot->organization->email_header
                     };
 
                     if ($has_asignee) {

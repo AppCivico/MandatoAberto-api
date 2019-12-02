@@ -154,8 +154,9 @@ sub action_specs {
                         subject  => "Novo ticket criado",
                         template => get_data_section('ticket_created.tt'),
                         vars     => {
-                            name       => $user ? $user->user->name : $send_email_to,
-                            ticket_url => $ENV{ASSISTENTE_URL} . 'chamados/' . $ticket->id,
+                            name         => $user ? $user->user->name : $send_email_to,
+                            ticket_url   => $ENV{ASSISTENTE_URL} . 'chamados/' . $ticket->id,
+                            email_header => $ticket->organization_chatbot->organization->email_header
                         },
                     )->build_email();
                     $self->result_source->schema->resultset('EmailQueue')->create({ body => $email->as_string });
@@ -182,6 +183,7 @@ sub action_specs {
                             vars     => {
                                 name       => $user->name,
                                 ticket_url => $ENV{ASSISTENTE_URL} . 'chamados/' . $ticket->id,
+                                email_header => $ticket->organization_chatbot->organization->email_header
                             },
                         )->build_email();
 
@@ -358,7 +360,7 @@ __DATA__
 <tbody>
 <tr>
 <td align="center" style="color:#666666; font-family:'Montserrat',Arial,sans-serif; font-size:16px; font-weight:300; line-height:23px; margin:0">
-<p style="text-align: center;"><a href="[% home_url %]"><img src="https://i.imgur.com/scZuhOQ.png" class="x_deviceWidth" style="border-radius:7px 7px 0 0; align: center"></a></p>
+<p style="text-align: center;"><a href="[% home_url %]"><img src="[% email_header %]" class="x_deviceWidth" style="border-radius:7px 7px 0 0; align: center"></a></p>
 <br>
 <p><b>Olá, [% name %]. </b></p>
 <p> <strong> </strong>Seu assistente recebeu um novo ticket!</p>
