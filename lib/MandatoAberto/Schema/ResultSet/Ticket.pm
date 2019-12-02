@@ -83,7 +83,15 @@ sub action_specs {
                 die \['chatbot_id', 'missing'];
             }
 
-            my $type = $self->result_source->schema->resultset('TicketType')->find($values{type_id}) or die \['type_id', 'invalid'];
+            # my $type = $self->result_source->schema->resultset('TicketType')->find($values{type_id}) or die \['type_id', 'invalid'];
+            # delete $values{type_id};
+
+            my $organization_ticket_type = $self->result_source->schema->resultset('OrganizationTicketType')->search( { id => $values{type_id}, organization_id => $chatbot->organization->id } )->next
+                or die \['type_id', 'invalid'];
+            $values{organization_ticket_type_id} = $organization_ticket_type->id;
+
+            my $type = $organization_ticket_type->ticket_type;
+            delete $values{type_id};
 
             if ($values{anonymous}) {
                 $values{anonymous} = 0 if !$type->can_be_anonymous;
@@ -125,28 +133,61 @@ sub action_specs {
                 $values{ticket_attachments} = $attachments;
             }
 
+            eval {
+                decode_json($values{data})
+            };
+
+            $values{data} = {} if $@;
+
             my $ticket;
             $self->result_source->schema->txn_do(sub{
+                my $user_rs = $chatbot->organization->users;
 
                 $ticket = $self->create(\%values);
 
-                my $user_rs = $chatbot->organization->users;
-                while (my $user_rel = $user_rs->next) {
-                    my $user = $user_rel->user;
-                    next unless $user->email eq 'edgard.lobo@appcivico.com';
+                if (my $send_email_to = $organization_ticket_type->send_email_to) {
+                    my $user = $user_rs->search( { 'user.email' => $send_email_to }, { join => 'user' } )->next;
 
                     my $email = MandatoAberto::Mailer::Template->new(
-                        to       => $user->email,
-                        from     => 'no-reply@dipiou.com.br',
+                        to       => $send_email_to,
+                        from     => 'no-reply@appcivico.com',
                         subject  => "Novo ticket criado",
                         template => get_data_section('ticket_created.tt'),
                         vars     => {
-                            name       => $user->name,
+                            name       => $user ? $user->user->name : $send_email_to,
                             ticket_url => $ENV{ASSISTENTE_URL} . 'chamados/' . $ticket->id,
                         },
                     )->build_email();
-
                     $self->result_source->schema->resultset('EmailQueue')->create({ body => $email->as_string });
+
+                    if ($user) {
+                        $ticket->update(
+                            {
+                                assignee_id => $user->user->id,
+                                assigned_at => \'NOW()'
+                            }
+                        );
+                    }
+                }
+                else {
+                    while (my $user_rel = $user_rs->next) {
+                        my $user = $user_rel->user;
+                        next unless $user->email eq 'edgard.lobo@appcivico.com';
+
+                        my $email = MandatoAberto::Mailer::Template->new(
+                            to       => $user->email,
+                            from     => 'no-reply@appcivico.com',
+                            subject  => "Novo ticket criado",
+                            template => get_data_section('ticket_created.tt'),
+                            vars     => {
+                                name       => $user->name,
+                                ticket_url => $ENV{ASSISTENTE_URL} . 'chamados/' . $ticket->id,
+                            },
+                        )->build_email();
+
+                        $self->result_source->schema->resultset('EmailQueue')->create({ body => $email->as_string });
+
+                    }
                 }
             });
 
@@ -231,8 +272,8 @@ sub build_list {
 
                     (
                         type => {
-                            id   => $_->type_id,
-                            name => $_->type->name
+                            id   => $_->organization_ticket_type_id,
+                            name => $_->organization_ticket_type->ticket_type->name
                         }
                     )
                 }

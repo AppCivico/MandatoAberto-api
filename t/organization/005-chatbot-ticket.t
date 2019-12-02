@@ -14,7 +14,7 @@ db_transaction {
 
     my ($user_id, $organization_id, $chatbot_id, $recipient_id, $recipient);
     subtest 'Create chatbot and recipient' => sub {
-        $user_id         = create_user(custom_url => 'foobar.com');
+        $user_id         = create_user(custom_url => 'foobar.com', has_ticket => 1);
         $user_id         = $user_id->{id};
         $organization_id = $schema->resultset('Organization')->search(undef)->next->id;
         $chatbot_id      = $schema->resultset('OrganizationChatbot')->search(undef)->next->id;
@@ -41,7 +41,10 @@ db_transaction {
         # Listando tipos de ticket
         rest_get "/api/chatbot/ticket/type",
             stash => 'tt1',
-            [ security_token => $security_token ];
+            [
+                security_token => $security_token,
+                chatbot_id     => $chatbot_id,
+            ];
 
         my $ticket_types = stash 'tt1';
 
@@ -50,6 +53,7 @@ db_transaction {
         ok defined $ticket_types->{ticket_types}->[0]->{name};
         ok defined $ticket_types->{ticket_types}->[0]->{can_be_anonymous};
 
+        ok my $ticket_type = $schema->resultset('OrganizationTicketType')->search( { id => $ticket_types->{ticket_types}->[0]->{id} } )->next->update( { can_be_anonymous => 1 } );
         # Criando ticket
         is $email_rs->count, 0;
 
@@ -57,7 +61,8 @@ db_transaction {
             automatic_load_item => 0,
             params => [
                 security_token => $security_token,
-                type_id        => 1,
+                type_id        => $ticket_type->id,
+                anonymous      => 1,
                 chatbot_id     => $chatbot_id,
                 fb_id          => 'bar',
                 message        => 'Olá, você pode me ajudar?',
@@ -111,7 +116,7 @@ db_transaction {
                 ticket_attachment_0 => "$Bin/picture_3.jpg",
             }
         ;
-		# is $email_rs->count, 3;
+        # is $email_rs->count, 3;
     };
 
     subtest 'User | CRUD ticket' => sub {
@@ -142,6 +147,46 @@ db_transaction {
         $res = rest_get "/api/organization/$organization_id/chatbot/$chatbot_id/ticket/$ticket_id";
         $res = rest_get "/api/organization/$organization_id/chatbot/$chatbot_id/ticket", [ filter => 'closed' ];
         is scalar @{ $res->{tickets} }, 0;
+
+        $res =  rest_get "/api/politician/$user_id/ticket/types";
+
+        is $res->{itens_count}, 2;
+
+        is ref $res->{ticket_types}, 'ARRAY';
+		ok defined $res->{ticket_types}->[0]->{id};
+		ok defined $res->{ticket_types}->[0]->{name};
+		ok exists $res->{ticket_types}->[0]->{can_be_anonymous};
+		ok exists $res->{ticket_types}->[0]->{description};
+		ok exists $res->{ticket_types}->[0]->{usual_response_interval};
+		ok exists $res->{ticket_types}->[0]->{usual_response_time};
+
+        ok my $ticket_type_id = $res->{ticket_types}->[0]->{id};
+
+		$res =  rest_get "/api/politician/$user_id/ticket/types/$ticket_type_id";
+
+		ok defined $res->{id};
+		ok defined $res->{name};
+		ok exists  $res->{can_be_anonymous};
+		ok exists  $res->{description};
+		ok exists  $res->{usual_response_interval};
+		ok exists  $res->{usual_response_time};
+
+        $res = rest_put "/api/politician/$user_id/ticket/types/$ticket_type_id",
+            code   => 200,
+            params => [
+                send_email_to           => 'foobar@email.com',
+                usual_response_interval => '10:00:00'
+            ];
+
+		$res =  rest_get "/api/politician/$user_id/ticket/types/$ticket_type_id";
+
+		ok defined $res->{id};
+		ok defined $res->{name};
+		ok exists  $res->{can_be_anonymous};
+		ok exists  $res->{description};
+		ok exists  $res->{usual_response_interval};
+		ok exists  $res->{usual_response_time};
+
     };
 
 };

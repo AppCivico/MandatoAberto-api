@@ -83,6 +83,17 @@ __PACKAGE__->table("direct_message");
   data_type: 'text'
   is_nullable: 1
 
+=head2 email_subject
+
+  data_type: 'varchar'
+  is_nullable: 1
+  size: 78
+
+=head2 email_attachment_file_name
+
+  data_type: 'text'
+  is_nullable: 1
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -101,6 +112,10 @@ __PACKAGE__->add_columns(
   "attachment_url",
   { data_type => "text", is_nullable => 1 },
   "saved_attachment_id",
+  { data_type => "text", is_nullable => 1 },
+  "email_subject",
+  { data_type => "varchar", is_nullable => 1, size => 78 },
+  "email_attachment_file_name",
   { data_type => "text", is_nullable => 1 },
 );
 
@@ -134,8 +149,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2018-10-24 10:54:23
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:SsbopSvFw+r9hZ/WKZMWkg
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-11-06 10:34:05
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:8vR6HRiQOWpUf9fIv/qcJA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

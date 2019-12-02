@@ -46,7 +46,7 @@ db_transaction {
 
             is_deeply(
                 [ sort keys %{ $res->{recipients}->[0] } ],
-                [ sort qw/ id name cellphone email created_at gender groups intents/ ],
+                [ sort qw/ id name cellphone email cpf created_at gender groups intents/ ],
             );
         };
     };

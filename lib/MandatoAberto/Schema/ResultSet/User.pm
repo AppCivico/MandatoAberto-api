@@ -103,6 +103,14 @@ sub verifiers_specs {
                     required => 0,
                     type     => 'Str'
                 },
+                has_ticket => {
+                    required => 0,
+                    type     => 'Bool'
+                },
+                has_email_broadcast => {
+                    required => 0,
+                    type     => 'Bool'
+                }
             }
         ),
         # Utilizando um método diferente para não precisar corrigir os testes por agora
@@ -145,6 +153,22 @@ sub verifiers_specs {
                 custom_url => {
                     required => 0,
                     type     => 'Str'
+                },
+                has_ticket => {
+                    required => 0,
+                    type     => 'Bool'
+                },
+                has_email_broadcast => {
+                    required => 0,
+                    type     => 'Bool'
+                },
+                has_base_dialogs => {
+                    required => 0,
+                    type     => 'Bool'
+                },
+                fb_app_id => {
+                    required => 0,
+                    type     => 'Int'
                 }
             }
         ),
@@ -172,17 +196,21 @@ sub action_specs {
                     die \["gender", "must be F or M"];
                 }
 
+                my $has_email_broadcast = $values{has_email_broadcast} || 0;
+
                 my $organization = $self->result_source->schema->resultset('Organization')->create(
                     {
                         name                  => $values{name},
+                        has_email_broadcast => $has_email_broadcast,
                         # Ao criar a organização já crio com um chatbot.
                         organization_chatbots => [
                             {
                                 organization_chatbot_general_config => {
                                     is_active      => 0,
                                     issue_active   => 1,
-                                    use_dialogflow => 1,
+
                                     # Criando com a config do MA
+                                    use_dialogflow => 1,
                                     dialogflow_config_id => 1
                                 },
                             }
@@ -235,6 +263,10 @@ sub action_specs {
             my $user;
             $self->result_source->schema->txn_do(sub {
 
+                my $has_ticket          = delete $values{has_ticket};
+                my $has_email_broadcast = delete $values{has_email_broadcast};
+                my $fb_app_id           = delete $values{fb_app_id};
+
                 # Pegando organização do token de invite ou criando uma nova
                 my $organization;
                 if ( $values{invite_token} ) {
@@ -248,6 +280,11 @@ sub action_specs {
                             approved         => 1,
                             premium          => 1,
                             custom_url       => $values{custom_url},
+
+                            has_ticket          => $has_ticket || 0,
+                            has_email_broadcast => $has_email_broadcast || 0,
+                            fb_app_id           => $fb_app_id,
+
                             # Ao criar a organização já crio com um chatbot.
                             organization_chatbots => [
                                 {
@@ -255,10 +292,58 @@ sub action_specs {
                                         issue_active     => 1,
                                         use_dialogflow   => 0,
                                     },
+
                                 }
                             ]
                         }
                     );
+
+                    # Verificando a flag has_base_dialogs, caso seja 1, adiciono os diálogos de "Boas-vindas" e "Não entendi".
+                    if ( $values{has_base_dialogs} ) {
+                        my @dialogs = (
+                            {
+                                name                   => 'Boas-vindas',
+                                description            => 'Aqui você modifica a mensagem de boas-vindas do seu bot.',
+                                organization_questions => [
+                                    {
+                                        name          => 'greetings',
+                                        content       => 'Digite abaixo suas boas-vindas',
+                                        citizen_input => 'greetings'
+                                    }
+                                ]
+                            },
+                            {
+                                name                   => 'Não entendi',
+                                description            => 'Aqui você modifica a mensagem que seu bot enviará quando não entender uma mensagem.',
+                                organization_questions => [
+                                    {
+                                        name          => 'fallback',
+                                        content       => 'Digite abaixo sua mensagem',
+                                        citizen_input => 'fallback'
+                                    }
+                                ]
+                            },
+                        );
+
+                        for my $dialog (@dialogs) {
+                            $organization->organization_dialogs->create($dialog);
+                        }
+                    }
+                    delete $values{has_base_dialogs};
+
+                    if ($has_ticket && $has_ticket == 1) {
+                        my $ticket_type_rs = $self->result_source->schema->resultset('TicketType');
+
+                        my @organization_ticket_types;
+                        while (my $ticket_type = $ticket_type_rs->next) {
+                            push @organization_ticket_types, {
+                                organization_id => $organization->id,
+                                ticket_type_id  => $ticket_type->id
+                            }
+                        }
+
+                        $organization->organization_ticket_types->populate(\@organization_ticket_types);
+                    }
                 }
 
                 # Criando o usuário e vinculando com a organização

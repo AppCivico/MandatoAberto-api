@@ -60,7 +60,7 @@ sub list_POST {
     my ($self, $c) = @_;
 
     my $groups;
-    if ($c->req->params->{groups}) {
+    if ($c->req->params->{groups} && $c->req->params->{groups} ne '' ) {
         $c->req->params->{groups} =~ s/(\[|\]|(\s))//g;
 
         my @groups = split(',', $c->req->params->{groups});
@@ -69,6 +69,7 @@ sub list_POST {
     } else {
         $groups = [];
     }
+    delete $c->req->params->{groups};
 
     # Por agora, por padrão o type será text
     my $type = $c->req->params->{type} || 'text';
@@ -77,28 +78,37 @@ sub list_POST {
     if ( my $upload = $c->req->upload("file") ) {
         die \['attachment_type', 'missing'] unless $c->req->params->{attachment_type};
 
-        my $page_access_token = $c->stash->{politician}->user->chatbot->fb_config->access_token;
+        if ($c->req->params->{send_email}) {
+            # Caso seja uma campanha de email ao invés de fazer o upload do arquivo, salvo-o em uma pasta
+            # Para ser utilizado no envio.
+            my $attachment_folder = $ENV{CAMPAIGN_ATTACHMENT_FOLDER};
 
-        $file = $self->_upload_picture($upload, $page_access_token);
-        $c->req->params->{saved_attachment_id} = $file->{attachment_id};
-        $c->req->params->{attachment_type}     = $file->{attachment_type};
+            $upload->copy_to($attachment_folder) or die \['file', 'failed to copy attachment'];
 
-        $c->req->params->{attachment_type} ne 'template' ? () :
-          die \['attachment_template', 'missing'] unless $c->req->params->{attachment_template};
+            my $tempname = $upload->tempname;
+            $tempname    =~ s/^\/\w+\///g;
+
+            $c->req->params->{email_attachment_file_name} = "$attachment_folder/$tempname";
+        }
+        else {
+            my $page_access_token = $c->stash->{politician}->user->chatbot->fb_config->access_token;
+
+            $file = $self->_upload_picture($upload, $page_access_token);
+            $c->req->params->{saved_attachment_id} = $file->{attachment_id};
+            $c->req->params->{attachment_type}     = $file->{attachment_type};
+
+            $c->req->params->{attachment_type} ne 'template' ? () :
+            die \['attachment_template', 'missing'] unless $c->req->params->{attachment_template};
+        }
     }
 
     my $direct_message = $c->stash->{collection}->execute(
         $c,
         for  => "create",
         with => {
-            politician_id       => $c->stash->{politician}->id,
-            groups              => $groups,
-            content             => $c->req->params->{content},
-            name                => $c->req->params->{name},
-            attachment_type     => $c->req->params->{attachment_type},
-            attachment_template => $c->req->params->{attachment_template},
-            attachment_url      => $c->req->params->{attachment_url},
-            saved_attachment_id => $c->req->params->{saved_attachment_id},
+            politician_id => $c->stash->{politician}->id,
+            groups        => $groups,
+            %{$c->req->params}
         },
     );
 

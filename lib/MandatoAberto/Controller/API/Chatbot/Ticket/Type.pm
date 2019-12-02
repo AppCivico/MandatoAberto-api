@@ -14,7 +14,13 @@ sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }
 sub list_GET {
     my ($self, $c) = @_;
 
-    my $rs = $c->model('DB::TicketType');
+    my $chatbot_id = $c->req->params->{chatbot_id}
+      or die \['chatbot_id', 'missing'];
+
+    my $chatbot = $c->model('DB::OrganizationChatbot')->find($chatbot_id)
+      or die \['chatbot_id', 'invalid'];
+
+    my $rs = $c->model('DB::OrganizationTicketType')->search_rs( { 'me.organization_id' => $chatbot->organization_id } );
 
     return $self->status_ok(
         $c,

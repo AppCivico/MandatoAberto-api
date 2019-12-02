@@ -186,6 +186,11 @@ sub result_GET {
                     picture          => $organization->picture,
                     premium          => $organization->premium,
                     is_mandatoaberto => $organization->is_mandatoaberto,
+                    has_ticket       => $organization->has_ticket,
+
+                    has_email_broadcast => $organization->has_email_broadcast,
+                    fb_app_id           => $organization->fb_app_id,
+
                     (
                         $chatbot ?
                         (

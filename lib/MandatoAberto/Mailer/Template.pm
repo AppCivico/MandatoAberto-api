@@ -69,14 +69,13 @@ sub build_email {
     );
     $email->attr('content-type.charset' => 'UTF-8');
 
+    my @required_data = qw(path file_name name);
     for my $attachment (@{ $self->attachments }) {
-        if (!ref($attachment->{fh}) || !$attachment->{fh}->isa("IO::Handle")) {
-            die "invalid attachment.";
-        }
+        defined $attachment->{$_} or die "missing $_" for @required_data;
 
         $email->attach(
-            Path        => $attachment->{fh}->filename,
-            Type        => mimetype($attachment->{fh}->filename),
+            Path        => $attachment->{path},
+            Type        => mimetype($attachment->{file_name}),
             Filename    => $attachment->{name},
             Disposition => "attachment",
             Encoding    => "base64",

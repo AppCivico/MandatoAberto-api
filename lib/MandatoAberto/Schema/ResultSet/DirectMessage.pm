@@ -107,6 +107,19 @@ sub verifiers_specs {
                 saved_attachment_id => {
                     required => 0,
                     type     => 'Str'
+                },
+                send_email => {
+                    required => 0,
+                    type     => 'Bool'
+                },
+                email_subject => {
+                    required   => 0,
+                    type       => 'Str',
+                    max_length => 78
+                },
+                email_attachment_file_name => {
+                    required => 0,
+                    type     => 'Str'
                 }
             }
         ),
@@ -140,13 +153,31 @@ sub action_specs {
                 my $access_token = $politician->user->organization_chatbot->fb_config->access_token;
                 die \['politician_id', 'politician does not have active Facebook page access_token'] unless $access_token;
 
-                my $campaign = $politician->user->chatbot->campaigns->create(
-                    {
-                        type_id => 1,
-                        count   => 0,
-                        groups  => delete $values{groups}
-                    }
-                );
+                my $campaign;
+
+                my $send_email = delete $values{send_email};
+                if ($send_email) {
+                    die \['send_email', 'organization not allowed'] unless $politician->user->organization->has_email_broadcast;
+                    die \['email_subject', 'missing'] unless $values{email_subject};
+
+                    $campaign = $politician->user->chatbot->campaigns->create(
+                        {
+                            type_id => 3,
+                            count   => 0,
+                            groups  => delete $values{groups}
+                        }
+                    );
+                }
+                else {
+                    $campaign = $politician->user->chatbot->campaigns->create(
+                        {
+                            type_id => 1,
+                            count   => 0,
+                            groups  => delete $values{groups}
+                        }
+                    );
+                }
+
                 $values{campaign_id} = $campaign->id;
 
                 $direct_message = $self->create(\%values);

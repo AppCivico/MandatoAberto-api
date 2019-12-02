@@ -8,7 +8,7 @@ extends "DBIx::Class::ResultSet";
 with "MandatoAberto::Role::Verification";
 with 'MandatoAberto::Role::Verification::TransactionalActions::DBIC';
 
-use MandatoAberto::Types qw(EmailAddress PhoneNumber URI);
+use MandatoAberto::Types qw(EmailAddress PhoneNumber URI CPF);
 
 use Data::Verifier;
 use Data::Printer;
@@ -45,8 +45,12 @@ sub verifiers_specs {
                     type     => "Str"
                 },
                 fb_id => {
-                    required => 1,
+                    required => 0,
                     type     => "Str"
+                },
+                cpf => {
+                    required => 0,
+                    type     => CPF
                 },
                 gender => {
                     required => 0,
@@ -125,6 +129,14 @@ sub action_specs {
                 }
 
                 my $existing_citizen = $self->search( { 'me.fb_id' => $values{fb_id} } )->next;
+                if ( $values{fb_id} ) {
+                    $existing_citizen = $self->search( { 'me.fb_id' => $values{fb_id} } )->next;
+                }
+                else {
+                    defined $values{cpf} or die \['cpf', "required if fb_id isn't defined"];
+
+                    $existing_citizen = $self->search( { 'me.cpf' => $values{cpf} } )->next;
+                }
 
                 # Criando ou atualizando recipient
                 if (!defined $existing_citizen) {
@@ -463,6 +475,17 @@ sub upsert_labels {
                 },
                 { prefetch => 'label' }
             )->delete;
+
+            if ( my $group = $self->result_source->schema->resultset('Group')->search( { name => $label->{name} } )->next ) {
+                $recipient->update( { groups => \[ "DELETE(groups, ?)", $group->id ] } );
+                $group->update(
+                    {
+                        recipients_count        => \'recipients_count - 1',
+                        last_recipients_calc_at => \'NOW()',
+                        status                  => 'ready',
+                    }
+                );
+            }
             next;
         }
 

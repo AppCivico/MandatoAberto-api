@@ -182,3 +182,10 @@
 0178-add-ticket-attachment [0177-add-anonymous-tickets] 2019-10-16T17:34:07Z Lucas Ansei,,, <lucas@lucas-G750JX> # Adding the ticket attachment table
 0179-add-organization_dialog [0178-add-ticket-attachment] 2019-10-17T18:53:11Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding organization data
 0180-update-type [0179-add-organization_dialog] 2019-10-18T16:46:09Z Lucas Ansei,,, <lucas@lucas-G750JX> # Updating type on ticket_attachment
+0181-add-attachment [0180-update-type] 2019-11-07T12:28:37Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding attachment on dm
+0182-add-recipient-cpf [0181-add-attachment] 2019-11-12T17:34:21Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding 'cpf' on the 'recipient' table
+0183-add-organization_ticket_type [0182-add-recipient-cpf] 2019-11-13T14:02:55Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding 'organization_ticket_type' table
+0184-add-organization-config [0183-add-organization_ticket_type] 2019-11-13T14:26:37Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Adding two config booleans to the organization table
+0185-fix-anonymous-tickets [0184-add-organization-config] 2019-11-13T14:40:18Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Fixing anonymous tickets
+0186-add-fb_app_id [0185-fix-anonymous-tickets] 2019-11-14T14:37:10Z Lucas Ansei,,, <lucas@lucas-G750JX> # Adding 'fb_app_id' on the 'organization' table
+0187-add-ticket-response-interval [0186-add-fb_app_id] 2019-11-14T15:08:03Z Lucas Ansei,,, <lucas@lucas-G750JX> # Adding interval col on the 'ticket_type' table

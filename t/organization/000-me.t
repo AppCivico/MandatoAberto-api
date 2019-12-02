@@ -56,6 +56,47 @@ db_transaction {
             # TODO testar campos do retorno
         };
     };
+
+    subtest 'User | Register with base dialogs' => sub {
+        my $res = rest_post '/api/register',
+            name                => 'Create user with base dialogs',
+            code                => 201,
+            is_fail             => 0,
+            automatic_load_item => 0,
+            params              => [
+                name     => fake_name()->(),
+                email    => fake_email()->(),
+                password => 'foobar123',
+                has_base_dialogs => 1
+            ];
+
+        ok my $user         = $schema->resultset('User')->find($res->{id});
+        ok my $organization = $user->organization;
+
+        is $organization->organization_dialogs->count, 2;
+
+        is $organization->organization_dialogs->search( { 'me.name' => 'Boas-vindas' } )->count, 1;
+        is $organization->organization_dialogs->search( { 'me.name' => 'Não entendi' } )->count, 1;
+    };
+
+    subtest 'User | Register with fb_app_id' => sub {
+        my $res = rest_post '/api/register',
+            name                => 'Create user with base dialogs',
+            code                => 201,
+            is_fail             => 0,
+            automatic_load_item => 0,
+            params              => [
+                name     => fake_name()->(),
+                email    => fake_email()->(),
+                password => 'foobar123',
+                fb_app_id => '111122223333'
+            ];
+
+        ok my $user         = $schema->resultset('User')->find($res->{id});
+        ok my $organization = $user->organization;
+
+        ok defined $organization->fb_app_id;
+    };
 };
 
 done_testing();

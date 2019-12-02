@@ -83,24 +83,24 @@ __PACKAGE__->set_primary_key("id");
 
 =head1 RELATIONS
 
-=head2 tickets
+=head2 organization_ticket_types
 
 Type: has_many
 
-Related object: L<MandatoAberto::Schema::Result::Ticket>
+Related object: L<MandatoAberto::Schema::Result::OrganizationTicketType>
 
 =cut
 
 __PACKAGE__->has_many(
-  "tickets",
-  "MandatoAberto::Schema::Result::Ticket",
-  { "foreign.type_id" => "self.id" },
+  "organization_ticket_types",
+  "MandatoAberto::Schema::Result::OrganizationTicketType",
+  { "foreign.ticket_type_id" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-10-16 10:38:27
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:ccALaOQKyMqCJZcahhANgg
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-11-13 11:28:35
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:YEUdKQ9udXdKB4+mJOLybA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

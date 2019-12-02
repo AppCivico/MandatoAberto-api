@@ -61,12 +61,6 @@ __PACKAGE__->table("ticket");
   is_foreign_key: 1
   is_nullable: 0
 
-=head2 type_id
-
-  data_type: 'integer'
-  is_foreign_key: 1
-  is_nullable: 0
-
 =head2 assignee_id
 
   data_type: 'integer'
@@ -135,6 +129,12 @@ __PACKAGE__->table("ticket");
   default_value: false
   is_nullable: 0
 
+=head2 organization_ticket_type_id
+
+  data_type: 'integer'
+  is_foreign_key: 1
+  is_nullable: 0
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -148,8 +148,6 @@ __PACKAGE__->add_columns(
   "organization_chatbot_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "recipient_id",
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
-  "type_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "assignee_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
@@ -188,6 +186,8 @@ __PACKAGE__->add_columns(
   { data_type => "json", default_value => "{}", is_nullable => 0 },
   "anonymous",
   { data_type => "boolean", default_value => \"false", is_nullable => 0 },
+  "organization_ticket_type_id",
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
 );
 
 =head1 PRIMARY KEY
@@ -259,6 +259,21 @@ __PACKAGE__->belongs_to(
   { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
 );
 
+=head2 organization_ticket_type
+
+Type: belongs_to
+
+Related object: L<MandatoAberto::Schema::Result::OrganizationTicketType>
+
+=cut
+
+__PACKAGE__->belongs_to(
+  "organization_ticket_type",
+  "MandatoAberto::Schema::Result::OrganizationTicketType",
+  { id => "organization_ticket_type_id" },
+  { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
+);
+
 =head2 recipient
 
 Type: belongs_to
@@ -319,24 +334,9 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 type
 
-Type: belongs_to
-
-Related object: L<MandatoAberto::Schema::Result::TicketType>
-
-=cut
-
-__PACKAGE__->belongs_to(
-  "type",
-  "MandatoAberto::Schema::Result::TicketType",
-  { id => "type_id" },
-  { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
-);
-
-
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-10-16 13:48:56
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:08BKCV853DcEb4oKLjxonQ
+# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-11-13 11:28:35
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:ltrRfnVs2DFIQnhWQA5N6A
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
@@ -614,6 +614,11 @@ sub action_specs {
                                         content_type => 'text',
                                         title        => 'Voltar ao início',
                                         payload      => 'mainMenu'
+                                    },
+                                    {
+                                        content_type => 'text',
+                                        title        => 'Responder',
+                                        payload      => 'leaveTMsg' . $self->id
                                     }
                                 ]
                             }
@@ -722,7 +727,7 @@ sub build_list {
     my $self = shift;
 
     return {
-        (map { $_ => $self->$_ } qw(id status message response created_at closed_at assigned_at data anonymous)),
+        (map { $_ => $self->$_ } qw(id status message response created_at closed_at assigned_at anonymous)),
         (
             logs => [
                 map {
@@ -741,14 +746,16 @@ sub build_list {
                     id      => undef,
                     name    => undef,
                     picture => undef
-                }
+                },
+                data => {}
             ) :
             (
                 recipient => {
                     id      => $self->recipient->id,
                     name    => $self->recipient->name,
                     picture => $self->recipient->picture
-                }
+                },
+                data => $self->data && $self->data ne "" ? $self->data : {}
             )
         ),
 
@@ -770,8 +777,8 @@ sub build_list {
 
         (
             type => {
-                id => $self->type_id,
-                name => $self->type->name
+                id   => $self->organization_ticket_type_id,
+                name => $self->organization_ticket_type->ticket_type->name
             }
         ),
 
