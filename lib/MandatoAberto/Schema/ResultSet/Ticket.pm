@@ -155,7 +155,7 @@ sub action_specs {
                         template => get_data_section('ticket_created.tt'),
                         vars     => {
                             name         => $user ? $user->user->name : $send_email_to,
-                            ticket_url   => $ENV{ASSISTENTE_URL} . 'chamados/' . $ticket->id,
+                            ticket_url   => $ENV{SQITCH_DEPLOY} eq 'prod' ? ('https://dipiou.appcivico.com/chamados/' . $ticket->id) : ('https://dev.dipiou.appcivico.com/chamados/' . $ticket->id),
                             email_header => $ticket->organization_chatbot->organization->email_header
                         },
                     )->build_email();
