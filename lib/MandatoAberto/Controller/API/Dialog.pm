@@ -72,7 +72,7 @@ sub list_GET {
 
                                 +{
                                     id            => $q->get_column('id'),
-                                    name          => $q->get_column('name'),
+                                    # name          => $q->get_column('name'),
                                     content       => $q->get_column('content'),
                                     citizen_input => $q->get_column('citizen_input'),
 
