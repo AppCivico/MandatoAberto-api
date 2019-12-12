@@ -517,7 +517,7 @@ sub action_specs {
             $self->result_source->schema->txn_do(sub {
                 # Caso mande page_id e access_token devo atualizar ou criar a configuração do facebook
                 if ( $values{page_id} && $values{access_token} ) {
-                    $self->result_source->schema->resultset('OrganizationChatbotFacebookConfig')->find_or_create(
+                    $self->result_source->schema->resultset('OrganizationChatbotFacebookConfig')->update_or_create(
                         {
                             organization_chatbot_id => $self->id,
                             page_id                 => $values{page_id},
