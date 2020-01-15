@@ -71,8 +71,8 @@ sub build_email {
 
     $email->attach(
         Type => 'TEXT',
-        Data => $content
-    );
+        Data => $self->vars->{text}
+    ) if $self->vars->{text};
 
     my @required_data = qw(path file_name name);
     for my $attachment (@{ $self->attachments }) {
