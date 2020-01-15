@@ -71,8 +71,8 @@ sub build_email {
 
     $email->attach(
         Type => 'TEXT',
-        Data => $self->vars->{text}
-    ) if $self->vars->{text};
+        Data => 'Enviado em nome de: ' . $self->vars->{organization_name}
+    ) if $self->vars->{organization_name};
 
     my @required_data = qw(path file_name name);
     for my $attachment (@{ $self->attachments }) {
