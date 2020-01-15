@@ -69,6 +69,11 @@ sub build_email {
     );
     $email->attr('content-type.charset' => 'UTF-8');
 
+    $email->attach(
+        Type => 'TEXT',
+        Data => $content
+    );
+
     my @required_data = qw(path file_name name);
     for my $attachment (@{ $self->attachments }) {
         defined $attachment->{$_} or die "missing $_" for @required_data;
