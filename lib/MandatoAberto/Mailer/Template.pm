@@ -69,10 +69,16 @@ sub build_email {
     );
     $email->attr('content-type.charset' => 'UTF-8');
 
-    $email->attach(
-        Type => 'TEXT',
-        Data => 'Enviado em nome de: ' . $self->vars->{organization_name}
-    ) if $self->vars->{organization_name};
+    my $organization_name = $self->{vars}->{organization_name};
+
+    if ($organization_name) {
+        $organization_name =~ s/[^\x00-\x7f]//g;
+
+        $email->attach(
+            Type => 'TEXT',
+            Data => "Enviado em nome de: $organization_name"
+        );
+    }
 
     my @required_data = qw(path file_name name);
     for my $attachment (@{ $self->attachments }) {
