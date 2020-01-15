@@ -50,7 +50,7 @@ sub verifiers_specs {
                 },
                 cpf => {
                     required => 0,
-                    type     => CPF
+                    type     => 'Str'
                 },
                 gender => {
                     required => 0,
