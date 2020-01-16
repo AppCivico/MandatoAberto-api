@@ -98,6 +98,7 @@ sub result_GET {
     my $facebook_active_page;
     if ($c->stash->{politician}->user->organization_chatbot->fb_config) {
         $facebook_active_page = $c->stash->{politician}->get_current_facebook_page();
+        $facebook_active_page->{id} = $c->stash->{politician}->user->organization_chatbot->fb_config->page_id;
     }
 
     my $votolegal_integration = $c->stash->{politician}->has_votolegal_integration ? $c->stash->{politician}->get_votolegal_integration : undef ;
