@@ -399,7 +399,7 @@ sub send_email {
                     header            => $organization->email_header,
                     title             => $dm->email_subject,
                     text              => $dm_content,
-                    footer            => "<p>Enviado em nome de: $organization_name</p>"
+                    footer            => "<p>Enviado em nome de: $organization_name</p>",
                 },
             )->build_email();
             $self->result_source->schema->resultset('EmailQueue')->create({ body => $email->as_string });
