@@ -98,14 +98,6 @@ sub result_GET {
     my $facebook_active_page;
     if ($c->stash->{politician}->user->organization_chatbot->fb_config) {
         $facebook_active_page = $c->stash->{politician}->get_current_facebook_page();
-
-        if (!$facebook_active_page || ref $facebook_active_page ne 'HASH') {
-            $facebook_active_page = {
-                name    => $c->stash->{politician}->user->organization_chatbot->name,
-                id      => $c->stash->{politician}->user->organization_chatbot->fb_config->page_id,
-                picture => $c->stash->{politician}->user->organization_chatbot->picture
-            }
-        }
     }
 
     my $votolegal_integration = $c->stash->{politician}->has_votolegal_integration ? $c->stash->{politician}->get_votolegal_integration : undef ;
@@ -131,7 +123,7 @@ sub result_GET {
             share_url     => $c->stash->{politician}->share_url,
             share_text    => $c->stash->{politician}->share_text,
 
-            fb_page_id           => $c->stash->{politician}->user->organization_chatbot->fb_config ? $c->stash->{politician}->user->organization_chatbot->fb_config->page_id : undef,
+            fb_page_id           => $facebook_active_page ? $c->stash->{politician}->user->organization_chatbot->fb_config->page_id      : undef,
             fb_page_access_token => $facebook_active_page ? $c->stash->{politician}->user->organization_chatbot->fb_config->access_token : undef,
 
             ( $has_movement ? ( movement => { map { $_ => $c->stash->{politician}->movement->$_ } qw/name id/  } ) : () ),
