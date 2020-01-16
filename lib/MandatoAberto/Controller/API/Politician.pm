@@ -101,7 +101,9 @@ sub result_GET {
 
         if (!$facebook_active_page || ref $facebook_active_page ne 'HASH') {
             $facebook_active_page = {
-                id => $c->stash->{politician}->user->organization_chatbot->fb_config->page_id
+                name    => $c->stash->{politician}->user->organization_chatbot->name,
+                id      => $c->stash->{politician}->user->organization_chatbot->fb_config->page_id,
+                picture => $c->stash->{politician}->user->organization_chatbot->picture
             }
         }
     }
