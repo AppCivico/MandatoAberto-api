@@ -141,7 +141,8 @@ sub action_specs {
 
             my $ticket;
             $self->result_source->schema->txn_do(sub{
-                my $user_rs = $chatbot->organization->users;
+                my $organization = $chatbot->organization;
+                my $user_rs      = $chatbot->organization->users;
 
                 $ticket = $self->create(\%values);
 
@@ -182,7 +183,7 @@ sub action_specs {
                             template => get_data_section('ticket_created.tt'),
                             vars     => {
                                 name       => $user->name,
-                                ticket_url => $ENV{ASSISTENTE_URL} . 'chamados/' . $ticket->id,
+                                ticket_url => $organization->custom_url . 'chamados/' . $ticket->id,
                                 email_header => $ticket->organization_chatbot->organization->email_header
                             },
                         )->build_email();
