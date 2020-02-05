@@ -190,7 +190,10 @@ sub pending_GET {
                     }
                     else {  }
                 } $c->stash->{collection}->search(
-                    { organization_chatbot_id => $organization_chatbot_id },
+                    {
+                        'me.name' => { -not_in => ['Default Fallback Intent', 'default fallback intent'] },
+                        organization_chatbot_id => $organization_chatbot_id
+                    },
                     { order_by => 'name' }
                   )->all
             ]
