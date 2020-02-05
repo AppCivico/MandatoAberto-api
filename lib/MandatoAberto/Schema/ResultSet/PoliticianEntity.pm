@@ -166,7 +166,7 @@ sub skip_intent {
         'default fallback intent', 'teste', 'test', 'Teste', 'pedido de produtos',
         'pedido de assistência - jurídica', 'pedido de emprego',
         'pedido de assistência - previdência', 'pedido de assistência - saúde',
-        'Default Welcome Intent', 'Default Fallback Intent', 'Greetings', 'greetings',
+        'Default Welcome Intent', 'Greetings', 'greetings',
         'Quiz', 'quiz', 'Sobre Amanda', 'sobre amanda', 'Inserir Token', 'inserir token'
     );
 

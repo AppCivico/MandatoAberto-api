@@ -48,7 +48,7 @@ db_transaction {
             [ sync => 1 ]
         ;
 
-        is( $politician_entity_rs->count, 3, '3 entities created' );
+        is( $politician_entity_rs->count, 4, '4 entities created' );
 
         rest_post "/api/politician/$politician_id/intent/sync",
             name  => 'sync',
@@ -58,7 +58,7 @@ db_transaction {
     };
 
     ok ( $politician_entity_rs->sync_dialogflow, 'sync ok' );
-    is ( $politician_entity_rs->count, 3, '3 entities created' );
+    is ( $politician_entity_rs->count, 4, '4 entities created' );
 
     # Criando mais um chatbot e sincronizando
     # Para garantir que não há duplicação nas intents
@@ -79,14 +79,14 @@ db_transaction {
     $chatbot->general_config->dialogflow_config->update( { project_id => 'foobar' } );
 
     ok ( $politician_entity_rs->sync_dialogflow, 'sync ok' );
-    is ( $politician_entity_rs->count,           6, '6 entities created' );
-    is ( $chatbot->politician_entities->count,   3, '3 entities created' );
+    is ( $politician_entity_rs->count,           8, '8 entities created' );
+    is ( $chatbot->politician_entities->count,   4, '4 entities created' );
 
     # Sincronizando com uma intent deletada, ela deve ser deletada no banco também
     setup_dialogflow_intents_with_one_deleted_response();
     ok ( $politician_entity_rs->sync_dialogflow, 'sync ok' );
-    is ( $politician_entity_rs->count,           4, '4 rows' );
-    is ( $chatbot->politician_entities->count,   2, '2 rows' );
+    is ( $politician_entity_rs->count,           6, '6 rows' );
+    is ( $chatbot->politician_entities->count,   3, '3 rows' );
 
     # Criando yet another chatbot
     # Porém dessa vez com um projeto do dialogflow diferente
@@ -119,8 +119,8 @@ db_transaction {
 
     setup_dialogflow_intents_other_project_response();
     ok( $politician_entity_rs->sync_dialogflow,  'sync ok' );
-    is( $politician_entity_rs->count, 6,         '6 rows' );
-    is( $chatbot->politician_entities->count, 2, '2 rows' );
+    is( $politician_entity_rs->count, 9,         '9 rows' );
+    is( $chatbot->politician_entities->count, 3, '3 rows' );
 
     $politician    = create_politician;
     $politician_id = $politician->{id};
@@ -141,8 +141,8 @@ db_transaction {
 
     setup_dialogflow_intents_other_project_response();
     ok( $politician_entity_rs->sync_dialogflow,  'sync ok' );
-    is( $politician_entity_rs->count, 8,         '2 new rows' );
-    is( $chatbot->politician_entities->count, 2, '2 rows for new politician' );
+    is( $politician_entity_rs->count, 12,         '2 new rows' );
+    is( $chatbot->politician_entities->count, 3,  '2 rows for new politician' );
 };
 
 done_testing();
