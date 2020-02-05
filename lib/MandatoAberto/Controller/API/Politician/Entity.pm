@@ -135,7 +135,7 @@ sub list_GET {
 
                 } $c->stash->{collection}->search(
                     {
-                        'me.name' => { '!=' => 'Default Fallback Intent' },
+                        'me.name' => { -not_in => ['Default Fallback Intent', 'default fallback intent'] },
                         organization_chatbot_id => $organization_chatbot_id
                     },
                     { order_by => 'name' }
