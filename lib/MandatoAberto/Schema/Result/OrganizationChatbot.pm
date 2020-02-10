@@ -752,11 +752,32 @@ sub build_notification_bar {
 }
 
 sub build_external_metrics {
-    my $self = shift;
+    my ($self, %opts) = @_;
+
+    my $since = $opts{since};
+    my $until = $opts{until};
 
     my $intent_rs    = $self->politician_entities;
     my $label_rs     = $self->labels;
-    my $recipient_rs = $self->recipients;
+    my $recipient_rs = $self->recipients->search(
+        {
+            '-and' => [
+                (
+                    $since ?
+                    (
+                        \["me.created_at >= to_timestamp(?)", $since]
+                    ) : ()
+                ),
+
+                (
+                    $until ?
+                    (
+                        \["me.created_at <= to_timestamp(?)", $until]
+                    ) : ()
+                )
+            ]
+        }
+    );
 
     my $fallback_intent    = $intent_rs->search( { name => { -ilike => '%fallback%' } } )->next;
     my $fallback_intent_id = $fallback_intent ? $fallback_intent->id : undef;
@@ -765,26 +786,66 @@ sub build_external_metrics {
         {
             '-and' => [
                 \["array_length(entities, 1) > 0"],
-                ( $fallback_intent_id ? ( \["NOT (array_length(entities, 1) = 1 AND ? = ANY(entities))", $fallback_intent_id] ) : () )
+                ( $fallback_intent_id ? ( \["NOT (array_length(entities, 1) = 1 AND ? = ANY(entities))", $fallback_intent_id] ) : () ),
             ]
         }
     )->count;
 
     my $recipients_with_fallback_intent = $fallback_intent_id ? $recipient_rs->search(
-        {
-            '-and' => [ \["? = ANY(entities)", $fallback_intent_id] ]
-        }
+        { '-and' => [ \["? = ANY(entities)", $fallback_intent_id] ] }
     )->count : undef;
 
-    my $most_used_intents = $intent_rs->search( undef, {order_by => {-desc => 'recipient_count'}, rows => 10} );
+    my $most_used_intents = $intent_rs->search(
+        {
+            '-and' => [
+
+                (
+                    $since ?
+                    ( \["politician_entity_stats.created_at >= to_timestamp(?)", $since] ) :
+                    (  )
+                ),
+
+                (
+                    $until ?
+                    ( \["politician_entity_stats.created_at >= to_timestamp(?)", $until] ) :
+                    (  )
+                ),
+            ]
+        },
+        {
+            join     => 'politician_entity_stats',
+            order_by => {-desc => 'recipient_count'},
+            rows     => 10
+        }
+    );
     $most_used_intents    = [ map { $_->name } $most_used_intents->all() ];
 
     my $target_audience_label    = $label_rs->search( { name => 'is_target_audience' } )->next;
     my $target_audience_label_id = $target_audience_label ? $target_audience_label->id : undef;
 
     my @recipients_with_target_audience_label = $recipient_rs->search(
-        { 'label.name' => 'is_target_audience' },
-        { join => {'recipient_labels' => 'label'} }
+        {
+            'label.name' => 'is_target_audience',
+            '-and'       => [
+                (
+                    $since ?
+                    ( \["politician_entity_stats.created_at >= to_timestamp(?)", $since] ) :
+                    (  )
+                ),
+
+                (
+                    $until ?
+                    ( \["politician_entity_stats.created_at >= to_timestamp(?)", $until] ) :
+                    (  )
+                ),
+            ]
+        },
+        {
+            join => [
+                {'recipient_labels' => 'label'},
+                'politician_entity_stats'
+            ]
+        }
     )->all();
 
     my $intents;

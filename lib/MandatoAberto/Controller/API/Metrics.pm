@@ -25,6 +25,14 @@ sub list_GET {
         security_token => {
             type     => 'Str',
             required => 1
+        },
+        since => {
+            type     => 'Int',
+            required => 0
+        },
+        until => {
+            type     => 'Int',
+            required => 0
         }
     );
 
@@ -36,7 +44,10 @@ sub list_GET {
 
     return $self->status_ok(
         $c,
-        entity => $chatbot->build_external_metrics
+        entity => $chatbot->build_external_metrics(
+            since => $c->req->params->{since},
+            until => $c->req->params->{until}
+        )
     );
 }
 
