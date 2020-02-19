@@ -799,17 +799,17 @@ sub build_external_metrics {
         {
             '-and' => [
 
-                (
-                    $since ?
-                    ( \["politician_entity_stats.created_at >= to_timestamp(?)", $since] ) :
-                    (  )
-                ),
+                # (
+                #     $since ?
+                #     ( \["politician_entity_stats.created_at >= to_timestamp(?)", $since] ) :
+                #     (  )
+                # ),
 
-                (
-                    $until ?
-                    ( \["politician_entity_stats.created_at >= to_timestamp(?)", $until] ) :
-                    (  )
-                ),
+                # (
+                #     $until ?
+                #     ( \["politician_entity_stats.created_at >= to_timestamp(?)", $until] ) :
+                #     (  )
+                # ),
             ]
         },
         {
@@ -827,17 +827,17 @@ sub build_external_metrics {
         {
             'label.name' => 'is_target_audience',
             '-and'       => [
-                (
-                    $since ?
-                    ( \["politician_entity_stats.created_at >= to_timestamp(?)", $since] ) :
-                    (  )
-                ),
+                # (
+                #     $since ?
+                #     ( \["politician_entity_stats.created_at >= to_timestamp(?)", $since] ) :
+                #     (  )
+                # ),
 
-                (
-                    $until ?
-                    ( \["politician_entity_stats.created_at >= to_timestamp(?)", $until] ) :
-                    (  )
-                ),
+                # (
+                #     $until ?
+                #     ( \["politician_entity_stats.created_at >= to_timestamp(?)", $until] ) :
+                #     (  )
+                # ),
             ]
         },
         {
