@@ -798,6 +798,7 @@ sub build_external_metrics {
     my $most_used_intents = $intent_rs->search(
         {
             '-and' => [
+                'me.recipient_count' => { '>' => 0 },
 
                 # (
                 #     $since ?
@@ -813,7 +814,7 @@ sub build_external_metrics {
             ]
         },
         {
-            join     => 'politician_entity_stats',
+            # join     => 'politician_entity_stats',
             order_by => {-desc => 'recipient_count'},
             rows     => 10
         }
