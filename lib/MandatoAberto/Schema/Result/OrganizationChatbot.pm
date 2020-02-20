@@ -754,8 +754,8 @@ sub build_notification_bar {
 sub build_external_metrics {
     my ($self, %opts) = @_;
 
-    my $since = $opts{since};
-    my $until = $opts{until};
+    my $since = undef;
+    my $until = undef;
 
     my $intent_rs    = $self->politician_entities;
     my $label_rs     = $self->labels;
