@@ -858,7 +858,8 @@ sub build_external_metrics {
 
     use DDP;
     for my $intent_key ( keys %{$intents} ) {
-        my $intent = $intent_rs->find($intent_key);
+        # p $intent_key;
+        my $intent = $intent_rs->find($intent_key) or next;
         $intents->{$intent->name} = $intents->{$intent_key};
         delete $intents->{$intent_key};
     }
