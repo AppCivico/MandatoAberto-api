@@ -844,7 +844,7 @@ sub build_external_metrics {
         {
             join => [
                 {'recipient_labels' => 'label'},
-                'politician_entity_stats'
+                # 'politician_entity_stats'
             ]
         }
     )->all();
