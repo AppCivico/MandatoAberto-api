@@ -818,7 +818,7 @@ sub build_external_metrics {
             rows     => 10
         }
     );
-    $most_used_intents    = [ map { $_->name } $most_used_intents->all() ];
+    $most_used_intents    = [ map { $_->name . ' (' . $_->recipient_count . ')' } $most_used_intents->all() ];
 
     my $target_audience_label    = $label_rs->search( { name => 'is_target_audience' } )->next;
     my $target_audience_label_id = $target_audience_label ? $target_audience_label->id : undef;
@@ -861,7 +861,8 @@ sub build_external_metrics {
         my $intent = $intent_rs->find($intent_key);
 
         if ($intent) {
-            $intents->{$intent->name} = $intents->{$intent_key};
+            my $recipient_count = $intent->recipient_count;
+            $intents->{$intent->name . " ($recipient_count)"} = $intents->{$intent_key};
         }
 
         delete $intents->{$intent_key};
