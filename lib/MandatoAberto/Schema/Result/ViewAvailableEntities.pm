@@ -17,14 +17,9 @@ __PACKAGE__->result_source_instance->view_definition(<<'SQL_QUERY');
 SELECT
     e.id, e.name, e.human_name
 FROM
-    politician_entity e,
-    politician_knowledge_base kb
+    politician_entity e
 WHERE
-    e.organization_chatbot_id = ? AND
-    kb.organization_chatbot_id = ? AND
-    e.id = ANY ( kb.entities::int[] ) AND
-    kb.active = true
-GROUP BY e.id, e.name, e.human_name
+    e.organization_chatbot_id = ?
 SQL_QUERY
 
 1;
