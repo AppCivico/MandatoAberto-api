@@ -866,8 +866,12 @@ sub build_external_metrics {
 
             my $recipient_count = $intent->get_recipients->search(
                 { 'label.name' => 'is_target_audience' },
-                { join => {'recipient_labels' => 'label'} }
-            )->count;
+                {
+                    group_by => 'recipient_labels.recipient_id',
+                    join     => {'recipient_labels' => 'label'}
+                }
+            );
+            $recipient_count->count;
             $intents->{$intent->name . " ($recipient_count)"} = $intents->{$intent_key};
         }
 
