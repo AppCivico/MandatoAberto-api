@@ -540,5 +540,14 @@ sub upsert_labels {
     }
 }
 
+sub with_label {
+    my ($self, $label) = @_;
+
+    return $self->search(
+        { 'label.name' => $label },
+        { join => {'recipient_labels' => 'label'} }
+    )
+}
+
 1;
 
