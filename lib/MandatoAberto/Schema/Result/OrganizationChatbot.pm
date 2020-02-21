@@ -858,13 +858,12 @@ sub build_external_metrics {
     }
 
     use DDP;
-    p $intents;
+
     for my $intent_key ( keys %{$intents} ) {
         my $intent = $intent_rs->find($intent_key);
 
         if ($intent) {
-            p 'intent_name: ' . $intent->name;
-            p 'intent_count: ' . $intent->get_recipients->count;
+
             my $recipient_count = $intent->get_recipients->search(
                 { 'label.name' => 'is_target_audience' },
                 { join => {'recipient_labels' => 'label'} }
