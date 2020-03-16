@@ -3,6 +3,8 @@ use common::sense;
 use Moose;
 use namespace::autoclean;
 
+use JSON;
+
 BEGIN { extends 'CatalystX::Eta::Controller::REST' }
 
 with "CatalystX::Eta::Controller::AutoBase";
@@ -81,7 +83,8 @@ sub list_GET {
                 gender                 => $c->get_column('gender'),
                 email                  => $c->get_column('email'),
                 cellphone              => $c->get_column('cellphone'),
-                extra_fields           => $c->extra_fields
+                extra_fields           => $c->extra_fields,
+                session                => $c->session ? from_json($c->session) : undef
             } $c->stash->{collection}->next
         }
     )
