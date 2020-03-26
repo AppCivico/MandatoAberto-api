@@ -182,6 +182,7 @@ sub result_GET {
             # Novos dados
             (
                 organization => {
+                    id               => $organization->id,
                     name             => $organization->name,
                     picture          => $organization->picture,
                     premium          => $organization->premium,
@@ -195,6 +196,7 @@ sub result_GET {
                         $chatbot ?
                         (
                             chatbot => {
+                                id      => $chatbot->id,
                                 name    => $chatbot->name,
                                 picture => $chatbot->picture
                             }
