@@ -57,7 +57,7 @@ sub list_GET {
                         code    => $a->organization_question->name,
                         content => $a->content
                     }
-                } $organization_chatbot->answers->all()
+                } $organization_chatbot->answers->search( { 'me.active' => 1 } )->all()
             ]
         }
     );
