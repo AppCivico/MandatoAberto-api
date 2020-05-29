@@ -30,8 +30,12 @@ sub verifiers_specs {
                     type     => 'Int'
                 },
                 fb_id => {
-                    required => 1,
+                    required => 0,
                     type     => "Str"
+                },
+                recipient_id => {
+                    required => 0,
+                    type     => 'Int'
                 },
                 type_id => {
                     required => 1,
@@ -97,11 +101,21 @@ sub action_specs {
                 $values{anonymous} = 0 if !$type->can_be_anonymous;
             }
 
-            my $fb_id     = delete $values{fb_id};
+            my $fb_id        = delete $values{fb_id};
+            my $recipient_id = delete $values{recipient_id};
+
+            if (!$fb_id && !$recipient_id) {
+                die \['recipient_id', 'missing'];
+            }
+
             my $recipient = $self->result_source->schema->resultset('Recipient')->search(
                 {
                     organization_chatbot_id => $chatbot->id,
-                    fb_id                   => $fb_id
+
+                    # recipient_id tomará precedência.
+                    (
+                        $recipient_id ? ( id => $recipient_id ) : ( fb_id => $fb_id )
+                    )
                 }
             )->next or die \['fb_id', 'invalid'];
 
