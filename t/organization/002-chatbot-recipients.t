@@ -68,6 +68,18 @@ db_transaction {
             stash => 'cl1',
             list  => 1
         ;
+
+        # Criando recipient via UUID.
+        $res = rest_post "/api/chatbot/recipient",
+            code    => 201,
+            is_fail => 0,
+            params  => [
+                security_token => $security_token,
+                chatbot_id     => $chatbot_id,
+                name           => fake_name()->(),
+                uuid           => '8902877f-c204-4cbe-bc5f-4e17e24a6a31'
+            ];
+
     };
 };
 

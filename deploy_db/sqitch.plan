@@ -189,3 +189,4 @@
 0185-fix-anonymous-tickets [0184-add-organization-config] 2019-11-13T14:40:18Z lucas-eokoe,,, <lucas-eokoe@lucaseokoe-Lenovo-G400s> # Fixing anonymous tickets
 0186-add-fb_app_id [0185-fix-anonymous-tickets] 2019-11-14T14:37:10Z Lucas Ansei,,, <lucas@lucas-G750JX> # Adding 'fb_app_id' on the 'organization' table
 0187-add-ticket-response-interval [0186-add-fb_app_id] 2019-11-14T15:08:03Z Lucas Ansei,,, <lucas@lucas-G750JX> # Adding interval col on the 'ticket_type' table
+0188-add-uuid-recipient [0187-add-ticket-response-interval] 2020-06-04T16:11:31Z Lucas Ansei,,, <lucas@lucas-G750JX> # Adding uuid col for the recipient table

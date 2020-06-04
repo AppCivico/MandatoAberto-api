@@ -132,6 +132,12 @@ __PACKAGE__->table("recipient");
   data_type: 'text'
   is_nullable: 1
 
+=head2 uuid
+
+  data_type: 'uuid'
+  is_nullable: 1
+  size: 16
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -186,6 +192,8 @@ __PACKAGE__->add_columns(
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "cpf",
   { data_type => "text", is_nullable => 1 },
+  "uuid",
+  { data_type => "uuid", is_nullable => 1, size => 16 },
 );
 
 =head1 PRIMARY KEY
@@ -383,8 +391,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07047 @ 2019-11-12 11:14:43
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:YMGTo6FjlR8DNGTUUdl4Yw
+# Created by DBIx::Class::Schema::Loader v0.07049 @ 2020-06-04 13:06:39
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:oBxWBh1mecTSSwSAsnYeLw
 
 __PACKAGE__->load_components("InflateColumn::Serializer", "Core");
 __PACKAGE__->remove_column('groups');
