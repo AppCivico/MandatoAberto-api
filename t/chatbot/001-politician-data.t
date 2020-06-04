@@ -51,6 +51,8 @@ db_transaction {
     my $politician_id = stash "politician.id";
     my $politician    = $schema->resultset("Politician")->find($politician_id);
 
+    my $organization_chatbot_id = $politician->user->organization->chatbot->id;
+
     api_auth_as user_id => $politician_id;
     activate_chatbot($politician_id);
 
@@ -122,6 +124,15 @@ db_transaction {
         ]
     ;
 
+    $res = rest_get "/api/chatbot/politician",
+        name  => "get politician data",
+        list  => 1,
+        stash => "get_politician_data",
+        [
+            security_token => $security_token,
+            chatbot_id => $organization_chatbot_id
+        ]
+    ;
 };
 
 done_testing();

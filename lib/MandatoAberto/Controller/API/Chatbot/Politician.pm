@@ -29,15 +29,24 @@ sub list : Chained('base') : PathPart('') : Args(0) : ActionClass('REST') { }
 sub list_GET {
     my ($self, $c) = @_;
 
-    my $page_id = $c->req->params->{fb_page_id};
-    die \["fb_page_id", "missing"] unless $page_id;
+    my $organization_chatbot;
+    if (my $page_id = $c->req->params->{fb_page_id}) {
+        my $chatbot_config = $c->model('DB::OrganizationChatbotFacebookConfig')->search( { page_id => $page_id } )->next
+          or die \['fb_page_id', 'could not find politician with that fb_page_id'];
 
-    my $chatbot_config = $c->model('DB::OrganizationChatbotFacebookConfig')->search( { page_id => $page_id } )->next
-    or die \['fb_page_id', 'could not find politician with that fb_page_id'];
+        $organization_chatbot = $chatbot_config->organization_chatbot;
+    }
+    elsif (my $organization_chatbot_id = $c->req->params->{chatbot_id}) {
 
-    my $organization_chatbot = $chatbot_config->organization_chatbot;
-    my $user                 = $organization_chatbot->organization->users->next;
-    my $politician           = $user->user->politician;
+        $organization_chatbot = $c->model('DB::OrganizationChatbot')->find($organization_chatbot_id)
+          or die \['chatbot_id', 'invalid'];
+    }
+    else {
+        die \['fb_page_id', 'missing'];
+    }
+
+    my $user       = $organization_chatbot->organization->users->next;
+    my $politician = $user->user->politician;
 
     return $self->status_ok(
         $c,
@@ -48,7 +57,6 @@ sub list_GET {
             use_dialogflow          => $organization_chatbot->general_config->use_dialogflow,
             issue_active            => $organization_chatbot->general_config->issue_active,
             organization_chatbot_id => $organization_chatbot->id,
-            fb_access_token         => $organization_chatbot->fb_config->access_token,
             answers                 => [
                 map {
                     my $a = $_;
@@ -58,7 +66,9 @@ sub list_GET {
                         content => $a->content
                     }
                 } $organization_chatbot->answers->search( { 'me.active' => 1 } )->all()
-            ]
+            ],
+
+            ( $organization_chatbot->fb_config ? ( fb_access_token => $organization_chatbot->fb_config->access_token ) : ( ) )
         }
     );
 }
