@@ -265,8 +265,11 @@ sub build_list {
                         (
                             recipient => {
                                 id      => $_->recipient->id,
-                                name    => $_->recipient->name,
-                                picture => $_->recipient->picture
+                                picture => $_->recipient->picture,
+
+                                # Caso o recipient seja criado através de um chatbot da Web, seu nome é seu uuid
+                                # Para não ficar estranho na visualização, será enviado um nome mas informativo.
+                                name => $_->recipient->name =~ /browser/ ? 'Sem nome (ticket criado através de um chatbot WEB)' : $_->recipient->name
                             }
                         )
                     ),
