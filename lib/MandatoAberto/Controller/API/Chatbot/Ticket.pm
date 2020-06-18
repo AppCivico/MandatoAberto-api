@@ -77,10 +77,13 @@ sub list_POST {
 sub list_GET {
     my ($self, $c) = @_;
 
-    my $fb_id = $c->req->params->{fb_id} or die \['fb_id', 'missing'];
+    my $fb_id        = $c->req->params->{fb_id};
+    my $recipient_id = $c->req->params->{recipient_id};
+
+    die \["fb_id", "missing"] unless $fb_id || $recipient_id;
 
     my $rs = $c->model('DB::Ticket')->search_rs(
-        { 'recipient.fb_id' => $fb_id },
+        { ( $fb_id ? (fb_id => $fb_id) : (id => $recipient_id) ) },
         { join => 'recipient' }
     );
 
