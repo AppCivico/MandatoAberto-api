@@ -83,7 +83,7 @@ sub list_GET {
     die \["fb_id", "missing"] unless $fb_id || $recipient_id;
 
     my $rs = $c->model('DB::Ticket')->search_rs(
-        { ( $fb_id ? (fb_id => $fb_id) : (id => $recipient_id) ) },
+        { ( $fb_id ? ('recipient.fb_id' => $fb_id) : ('recipient.id' => $recipient_id) ) },
         { join => 'recipient' }
     );
 
