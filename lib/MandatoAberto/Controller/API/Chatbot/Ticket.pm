@@ -98,6 +98,15 @@ sub result : Chained('object') : PathPart('') : Args(0) : ActionClass('REST') { 
 sub result_PUT {
     my ($self, $c) = @_;
 
+    # Caso o ticket seja de um recipient sem fb_id, só aceito modificações se passar o cpf
+    if (!$c->stash->{ticket}->recipient->fb_id) {
+        my $cpf = $c->req->params->{cpf}
+        or die \['cpf', 'missing'];
+
+        my $data = $c->stash->{ticket}->data;
+        die \['cpf', 'invalid'] unless $cpf eq $data->{cpf};
+    }
+
     if ( $c->req->params->{status} ) {
         die \['status', 'invalid'] unless $c->req->params->{status} eq 'canceled';
     }
@@ -133,6 +142,29 @@ sub result_PUT {
         entity => { id => $ticket->id }
     )
 }
+
+sub result_GET {
+    my ($self, $c) = @_;
+
+    my $ticket = $c->stash->{ticket};
+
+    my $cpf = $c->req->params->{cpf}
+      or die \['cpf', 'missing'];
+
+    my $data = $ticket->data;
+    die \['cpf', 'invalid'] unless $cpf eq $data->{cpf};
+
+    return $self->status_ok(
+        $c,
+        entity => {
+            id         => $ticket->id,
+            status     => $ticket->status,
+            anonymous  => $ticket->anonymous,
+            data       => $ticket->data,
+            created_at => $ticket->created_at
+        }
+    )
+};
 
 sub _upload_file {
     my ( $self, $upload ) = @_;
