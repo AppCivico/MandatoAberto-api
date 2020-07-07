@@ -117,6 +117,33 @@ db_transaction {
             }
         ;
         # is $email_rs->count, 3;
+
+        # Creating ticket using recipient_id
+        $res = rest_post "/api/chatbot/ticket",
+            automatic_load_item => 0,
+            params => [
+                security_token => $security_token,
+                type_id        => $ticket_type->id,
+                anonymous      => 1,
+                chatbot_id     => $chatbot_id,
+                recipient_id   => $recipient_id,
+                message        => 'Olá, você pode me ajudar?',
+                data        => to_json( { cpf => '1111111111111', email => 'foobar@email.com' } ),
+            ],
+        ;
+
+        $res = rest_post "/api/chatbot/ticket",
+            is_fail => 1,
+            code    => 400,
+            params => [
+                security_token => $security_token,
+                type_id        => $ticket_type->id,
+                anonymous      => 1,
+                recipient_id   => $recipient_id,
+                message        => 'Olá, você pode me ajudar?',
+                data        => to_json( { cpf => '1111111111111', email => 'foobar@email.com' } ),
+            ],
+        ;
     };
 
     subtest 'User | CRUD ticket' => sub {

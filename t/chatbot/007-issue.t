@@ -19,7 +19,7 @@ db_transaction {
     activate_chatbot($politician_id);
 
     my $recipient_fb_id = 'foobar';
-    rest_post "/api/chatbot/recipient",
+    my $res = rest_post "/api/chatbot/recipient",
         name                => "create recipient",
         automatic_load_item => 0,
         stash               => 'c1',
@@ -34,6 +34,8 @@ db_transaction {
             security_token => $security_token
         ]
     ;
+
+    my $recipient_id = $res->{id};
 
     rest_post "/api/chatbot/issue",
         name    => 'issue without message',
@@ -186,6 +188,20 @@ db_transaction {
             entities       => '{}',
             politician_id  => $politician_id,
             fb_id          => $recipient_fb_id,
+            message        => fake_words(1)->(),
+            security_token => $security_token,
+        ],
+    ;
+
+    # Creating issue with recipient_id
+    rest_post "/api/chatbot/issue",
+        name                => "issue creation with recipient_id",
+        automatic_load_item => 0,
+        stash               => "i4",
+        [
+            entities       => '{}',
+            politician_id  => $politician_id,
+            recipient_id   => $recipient_id,
             message        => fake_words(1)->(),
             security_token => $security_token,
         ],

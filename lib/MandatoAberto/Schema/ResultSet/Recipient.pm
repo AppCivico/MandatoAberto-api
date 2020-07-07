@@ -84,6 +84,10 @@ sub verifiers_specs {
                 extra_fields => {
                     required => 0,
                     type     => 'Str'
+                },
+                uuid => {
+                    required => 0,
+                    type     => 'Str'
                 }
             }
         ),
@@ -128,9 +132,12 @@ sub action_specs {
                     die \['chatbot_id', 'missing'];
                 }
 
-                my $existing_citizen = $self->search( { 'me.fb_id' => $values{fb_id} } )->next;
+                my $existing_citizen;
                 if ( $values{fb_id} ) {
                     $existing_citizen = $self->search( { 'me.fb_id' => $values{fb_id} } )->next;
+                }
+                elsif ( $values{uuid} ) {
+                    $existing_citizen = $self->search( { 'me.uuid' => $values{uuid} } )->next;
                 }
                 else {
                     defined $values{cpf} or die \['cpf', "required if fb_id isn't defined"];
@@ -538,6 +545,15 @@ sub upsert_labels {
             }
         }
     }
+}
+
+sub with_label {
+    my ($self, $label) = @_;
+
+    return $self->search(
+        { 'label.name' => $label },
+        { join => {'recipient_labels' => 'label'} }
+    )
 }
 
 1;

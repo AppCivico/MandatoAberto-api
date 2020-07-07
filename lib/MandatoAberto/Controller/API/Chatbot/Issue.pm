@@ -20,9 +20,10 @@ __PACKAGE__->config(
         my ($self, $c, $params) = @_;
 
         my $recipient_fb_id = $c->req->params->{fb_id};
-        die \["fb_id", "missing"] unless $recipient_fb_id;
+        my $recipient_id    = $c->req->params->{recipient_id};
+        die \["fb_id", "missing"] unless $recipient_fb_id || $recipient_id;
 
-        my $recipient = $c->model("DB::Recipient")->search( { fb_id => $recipient_fb_id } )->next;
+        my $recipient = $c->model("DB::Recipient")->search( { ($recipient_fb_id ? (fb_id => $recipient_fb_id) : (id => $recipient_id) ) } )->next;
         die \["fb_id", "could not find recipient with that fb_id"] unless $recipient;
 
         $params->{recipient_id} = $recipient->id;

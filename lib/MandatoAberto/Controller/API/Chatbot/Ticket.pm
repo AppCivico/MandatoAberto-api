@@ -77,10 +77,13 @@ sub list_POST {
 sub list_GET {
     my ($self, $c) = @_;
 
-    my $fb_id = $c->req->params->{fb_id} or die \['fb_id', 'missing'];
+    my $fb_id        = $c->req->params->{fb_id};
+    my $recipient_id = $c->req->params->{recipient_id};
+
+    die \["fb_id", "missing"] unless $fb_id || $recipient_id;
 
     my $rs = $c->model('DB::Ticket')->search_rs(
-        { 'recipient.fb_id' => $fb_id },
+        { ( $fb_id ? ('recipient.fb_id' => $fb_id) : ('recipient.id' => $recipient_id) ) },
         { join => 'recipient' }
     );
 
@@ -94,6 +97,15 @@ sub result : Chained('object') : PathPart('') : Args(0) : ActionClass('REST') { 
 
 sub result_PUT {
     my ($self, $c) = @_;
+
+    # Caso o ticket seja de um recipient sem fb_id, só aceito modificações se passar o cpf
+    if (!$c->stash->{ticket}->recipient->fb_id) {
+        my $cpf = $c->req->params->{cpf}
+        or die \['cpf', 'missing'];
+
+        my $data = $c->stash->{ticket}->data;
+        die \['cpf', 'invalid'] unless $cpf eq $data->{cpf};
+    }
 
     if ( $c->req->params->{status} ) {
         die \['status', 'invalid'] unless $c->req->params->{status} eq 'canceled';
@@ -130,6 +142,29 @@ sub result_PUT {
         entity => { id => $ticket->id }
     )
 }
+
+sub result_GET {
+    my ($self, $c) = @_;
+
+    my $ticket = $c->stash->{ticket};
+
+    my $cpf = $c->req->params->{cpf}
+      or die \['cpf', 'missing'];
+
+    my $data = $ticket->data;
+    die \['cpf', 'invalid'] unless $cpf eq $data->{cpf};
+
+    return $self->status_ok(
+        $c,
+        entity => {
+            id         => $ticket->id,
+            status     => $ticket->status,
+            anonymous  => $ticket->anonymous,
+            data       => $ticket->data,
+            created_at => $ticket->created_at
+        }
+    )
+};
 
 sub _upload_file {
     my ( $self, $upload ) = @_;

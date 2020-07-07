@@ -751,5 +751,145 @@ sub build_notification_bar {
     return \@bar_items;
 }
 
+sub build_external_metrics {
+    my ($self, %opts) = @_;
+
+    my $since = undef;
+    my $until = undef;
+
+    my $intent_rs    = $self->politician_entities;
+    my $label_rs     = $self->labels;
+    my $recipient_rs = $self->recipients->search(
+        {
+            '-and' => [
+                (
+                    $since ?
+                    (
+                        \["me.created_at >= to_timestamp(?)", $since]
+                    ) : ()
+                ),
+
+                (
+                    $until ?
+                    (
+                        \["me.created_at <= to_timestamp(?)", $until]
+                    ) : ()
+                )
+            ]
+        }
+    );
+
+    my $fallback_intent    = $intent_rs->search( { name => { -ilike => '%fallback%' } } )->next;
+    my $fallback_intent_id = $fallback_intent ? $fallback_intent->id : undef;
+
+    my $recipients_with_intents = $recipient_rs->search(
+        {
+            '-and' => [
+                \["array_length(entities, 1) > 0"],
+                ( $fallback_intent_id ? ( \["NOT (array_length(entities, 1) = 1 AND ? = ANY(entities))", $fallback_intent_id] ) : () ),
+            ]
+        }
+    )->count;
+
+    my $recipients_with_fallback_intent = $fallback_intent_id ? $recipient_rs->search(
+        { '-and' => [ \["? = ANY(entities)", $fallback_intent_id] ] }
+    )->count : undef;
+
+    my $most_used_intents = $intent_rs->search(
+        {
+            '-and' => [
+                'me.recipient_count' => { '>' => 0 },
+
+                # (
+                #     $since ?
+                #     ( \["politician_entity_stats.created_at >= to_timestamp(?)", $since] ) :
+                #     (  )
+                # ),
+
+                # (
+                #     $until ?
+                #     ( \["politician_entity_stats.created_at >= to_timestamp(?)", $until] ) :
+                #     (  )
+                # ),
+            ]
+        },
+        {
+            # join     => 'politician_entity_stats',
+            order_by => {-desc => 'recipient_count'},
+            rows     => 10
+        }
+    );
+    $most_used_intents = [ map { $_->name . ' (' . $_->recipient_count . ')' } $most_used_intents->all() ];
+
+    my $target_audience_label    = $label_rs->search( { name => 'is_target_audience' } )->next;
+    my $target_audience_label_id = $target_audience_label ? $target_audience_label->id : undef;
+
+    my @recipients_with_target_audience_label = $recipient_rs->search(
+        {
+            'label.name' => 'is_target_audience',
+            '-and'       => [
+                # (
+                #     $since ?
+                #     ( \["politician_entity_stats.created_at >= to_timestamp(?)", $since] ) :
+                #     (  )
+                # ),
+
+                # (
+                #     $until ?
+                #     ( \["politician_entity_stats.created_at >= to_timestamp(?)", $until] ) :
+                #     (  )
+                # ),
+            ]
+        },
+        {
+            join => [
+                {'recipient_labels' => 'label'},
+                # 'politician_entity_stats'
+            ]
+        }
+    )->all();
+
+    my $intents;
+    for my $recipient (@recipients_with_target_audience_label) {
+
+        for my $intent_id (@{$recipient->entities}) {
+            $intents->{$intent_id} = defined $intents->{$intent_id} ? $intents->{$intent_id} + 1 : 0;
+        }
+    }
+
+    use DDP;
+
+    for my $intent_key ( keys %{$intents} ) {
+        my $intent = $intent_rs->find($intent_key);
+
+        if ($intent) {
+
+            my $recipient_count = $intent->get_recipients->search(
+                { 'label.name' => 'is_target_audience' },
+                {
+                    group_by => 'recipient_labels.recipient_id',
+                    join     => {'recipient_labels' => 'label'}
+                }
+            );
+            $recipient_count->count;
+            $intents->{$intent->name . " ($recipient_count)"} = $intents->{$intent_key};
+        }
+
+        delete $intents->{$intent_key};
+    }
+
+    my @most_used_intents_target_audience;
+    foreach my $intent (sort { %{$intents}{$b} <=> %{$intents}{$a} } keys %{$intents}) {
+        push @most_used_intents_target_audience, $intent;
+    }
+
+    return {
+        recipients_with_intent            => $recipients_with_intents,
+        recipients_with_fallback_intent   => $recipients_with_fallback_intent,
+        most_used_intents                 => $most_used_intents,
+        most_used_intents_target_audience => \@most_used_intents_target_audience
+    }
+}
+
 __PACKAGE__->meta->make_immutable;
 1;

@@ -24,8 +24,10 @@ sub list_GET {
     my $politician_id = $c->req->params->{politician_id};
     die \["politician_id", "missing"] unless $politician_id;
 
-    my $fb_id = $c->req->params->{fb_id};
-    die \["fb_id", "missing"] unless $fb_id;
+    my $fb_id        = $c->req->params->{fb_id};
+    my $recipient_id = $c->req->params->{recipient_id};
+
+    die \["fb_id", "missing"] unless $fb_id || $recipient_id;
 
     my $politician = $c->model('DB::Politician')->find($politician_id);
 
@@ -36,7 +38,11 @@ sub list_GET {
         }
     );
 
-    my $recipient = $politician->user->chatbot->recipients->search( { fb_id => $fb_id } )->next
+    my $recipient = $politician->user->chatbot->recipients->search(
+        {
+            ( $fb_id ? (fb_id => $fb_id) : (id => $recipient_id) )
+        }
+    )->next
       or die \['fb_id', 'invalid'];
 
     my $entities = $c->req->params->{entities};

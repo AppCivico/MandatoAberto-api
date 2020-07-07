@@ -28,7 +28,7 @@ sub list_available_GET {
     die \['fb_page_id', 'could not find politician with that fb_page_id'] unless $politician;
 
     my $page    = $c->req->params->{page} || 1;
-    my $results = 10;
+    my $results = $c->req->params->{rows} || 10;
 
     return $self->status_ok(
         $c,
@@ -45,7 +45,7 @@ sub list_available_GET {
                 } $c->stash->{collection}->search(
                     undef,
                     {
-                        bind => [ $politician->user->organization_chatbot_id, $politician->user->organization_chatbot_id ],
+                        bind => [ $politician->user->organization_chatbot_id ],
                         page => $page,
                         rows => $results
                     }

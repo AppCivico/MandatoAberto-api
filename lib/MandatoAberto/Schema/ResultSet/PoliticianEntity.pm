@@ -163,10 +163,10 @@ sub skip_intent {
     my @non_theme_intents = (
         'Fallback', 'Agradecimento', 'Contatos', 'FaleConosco', 'Pergunta', 'Saudação',
         'Trajetoria', 'Voluntário', 'Participar', 'default welcome intent',
-        'default fallback intent', 'teste', 'test', 'Teste', 'pedido de produtos',
+        'teste', 'test', 'Teste', 'pedido de produtos',
         'pedido de assistência - jurídica', 'pedido de emprego',
         'pedido de assistência - previdência', 'pedido de assistência - saúde',
-        'Default Welcome Intent', 'Default Fallback Intent', 'Greetings', 'greetings',
+        'Default Welcome Intent', 'Greetings', 'greetings',
         'Quiz', 'quiz', 'Sobre Amanda', 'sobre amanda', 'Inserir Token', 'inserir token'
     );
 
