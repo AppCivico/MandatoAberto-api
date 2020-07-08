@@ -209,10 +209,10 @@ sub action_specs {
 
                 # Caso o recipient seja WEB, ou seja, sem fb_id e com uuid.
                 # Envio e-mail para o endereço cadastrado no ticket.
-                if (!$ticket->recipient->fb_id && $ticket->data->{email}) {
+                if (!$ticket->recipient->fb_id && $ticket->data->{mail}) {
 
                     my $email = MandatoAberto::Mailer::Template->new(
-                        to       => $ticket->data->{email},
+                        to       => $ticket->data->{mail},
                         from     => 'no-reply@appcivico.com',
                         subject  => "Novo ticket criado",
                         template => get_data_section('ticket_created_web.tt'),
