@@ -37,6 +37,7 @@ db_transaction {
         )
     };
 
+    my $ticket_type;
     subtest 'Chatbot | Create ticket' => sub {
         # Listando tipos de ticket
         rest_get "/api/chatbot/ticket/type",
@@ -53,7 +54,7 @@ db_transaction {
         ok defined $ticket_types->{ticket_types}->[0]->{name};
         ok defined $ticket_types->{ticket_types}->[0]->{can_be_anonymous};
 
-        ok my $ticket_type = $schema->resultset('OrganizationTicketType')->search( { id => $ticket_types->{ticket_types}->[0]->{id} } )->next->update( { can_be_anonymous => 1 } );
+        ok $ticket_type = $schema->resultset('OrganizationTicketType')->search( { id => $ticket_types->{ticket_types}->[0]->{id} } )->next->update( { can_be_anonymous => 1 } );
         # Criando ticket
         is $email_rs->count, 0;
 
@@ -214,6 +215,31 @@ db_transaction {
 		ok exists  $res->{usual_response_interval};
 		ok exists  $res->{usual_response_time};
 
+    };
+
+    subtest 'Web user | CRUD ticket' => sub {
+        ok my $web_recipient = $schema->resultset('Recipient')->create(
+            {
+                name                    => 'foo',
+                uuid                    => \'uuid_generate_v4()',
+                page_id                 => 'foobar',
+                organization_chatbot_id => $chatbot_id
+            }
+        );
+        ok my $web_recipient_id = $web_recipient->id;
+
+        my $res = rest_post "/api/chatbot/ticket",
+            automatic_load_item => 0,
+            params => [
+                security_token => $security_token,
+                type_id        => $ticket_type->id,
+                anonymous      => 0,
+                chatbot_id     => $chatbot_id,
+                recipient_id   => $web_recipient_id,
+                message        => 'Olá, você pode me ajudar?',
+                data        => to_json( { cpf => '1111111111111', email => 'foobar@email.com' } ),
+            ],
+        ;
     };
 
 };
