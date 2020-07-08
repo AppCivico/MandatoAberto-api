@@ -308,101 +308,122 @@ sub action_specs {
                 delete $values{groups};
             }
 
-            if ($values{reply}) {
-                my $message;
-                # Tratando se a mensagem tem mais de 100 chars
-                if (length $self->message > 100) {
-                    $message = substr $self->message, 0, 97;
-                    $message = $message . "...";
-                }
-                else {
-                    $message = $self->message;
-                }
-
-                $self->_httpcb->add(
-                    url     => $ENV{FB_API_URL} . '/me/messages?access_token=' . $access_token,
-                    method  => "post",
-                    headers => 'Content-Type: application/json',
-                    body    => to_json {
-                        messaging_type => "UPDATE",
-                        recipient => {
-                            id => $recipient->fb_id
-                        },
-                        message => {
-                            text          => "Voc\ê enviou: " . $message . "\n\nResposta: " . $values{reply},
-                            quick_replies => [
-                                {
-                                    content_type => 'text',
-                                    title        => 'Voltar ao início',
-                                    payload      => 'mainMenu'
-                                }
-                            ]
-                        }
+            if ($self->recipient->fb_id) {
+                if ($values{reply}) {
+                    my $message;
+                    # Tratando se a mensagem tem mais de 100 chars
+                    if (length $self->message > 100) {
+                        $message = substr $self->message, 0, 97;
+                        $message = $message . "...";
                     }
-                );
-            }
-            elsif ( $values{saved_attachment_id} ) {
-                my $message;
-                # Tratando se a mensagem tem mais de 100 chars
-                if (length $self->message > 100) {
-                    $message = substr $self->message, 0, 97;
-                    $message = $message . "...";
-                }
-                else {
-                    $message = $self->message;
-                }
-
-                $self->_httpcb->add(
-                    url     => $ENV{FB_API_URL} . '/me/messages?access_token=' . $access_token,
-                    method  => "post",
-                    headers => 'Content-Type: application/json',
-                    body    => to_json {
-                        messaging_type => "UPDATE",
-                        recipient => {
-                            id => $recipient->fb_id
-                        },
-                        message => {
-                            text          => "Voc\ê enviou: " . $message,
-                            quick_replies => [
-                                {
-                                    content_type => 'text',
-                                    title        => 'Voltar ao início',
-                                    payload      => 'mainMenu'
-                                }
-                            ]
-                        }
+                    else {
+                        $message = $self->message;
                     }
-                );
 
-                $self->_httpcb->add(
-                    url     => $ENV{FB_API_URL} . '/me/messages?access_token=' . $access_token,
-                    method  => "post",
-                    headers => 'Content-Type: application/json',
-                    body    => to_json {
-                        messaging_type => "UPDATE",
-                        recipient => {
-                            id => $recipient->fb_id
-                        },
-                        message => {
-                            attachment => {
-                                type    => $values{saved_attachment_type},
-                                payload => {
-                                    attachment_id => $values{saved_attachment_id}
-                                }
+                    $self->_httpcb->add(
+                        url     => $ENV{FB_API_URL} . '/me/messages?access_token=' . $access_token,
+                        method  => "post",
+                        headers => 'Content-Type: application/json',
+                        body    => to_json {
+                            messaging_type => "UPDATE",
+                            recipient => {
+                                id => $recipient->fb_id
                             },
-                            quick_replies => [
-                                {
-                                    content_type => 'text',
-                                    title        => 'Voltar ao início',
-                                    payload      => 'mainMenu'
-                                }
-                            ]
+                            message => {
+                                text          => "Voc\ê enviou: " . $message . "\n\nResposta: " . $values{reply},
+                                quick_replies => [
+                                    {
+                                        content_type => 'text',
+                                        title        => 'Voltar ao início',
+                                        payload      => 'mainMenu'
+                                    }
+                                ]
+                            }
                         }
+                    );
+                }
+                elsif ( $values{saved_attachment_id} ) {
+                    my $message;
+                    # Tratando se a mensagem tem mais de 100 chars
+                    if (length $self->message > 100) {
+                        $message = substr $self->message, 0, 97;
+                        $message = $message . "...";
                     }
-                );
-            }
+                    else {
+                        $message = $self->message;
+                    }
 
-            $self->_httpcb->wait_for_all_responses();
+                    $self->_httpcb->add(
+                        url     => $ENV{FB_API_URL} . '/me/messages?access_token=' . $access_token,
+                        method  => "post",
+                        headers => 'Content-Type: application/json',
+                        body    => to_json {
+                            messaging_type => "UPDATE",
+                            recipient => {
+                                id => $recipient->fb_id
+                            },
+                            message => {
+                                text          => "Voc\ê enviou: " . $message,
+                                quick_replies => [
+                                    {
+                                        content_type => 'text',
+                                        title        => 'Voltar ao início',
+                                        payload      => 'mainMenu'
+                                    }
+                                ]
+                            }
+                        }
+                    );
+
+                    $self->_httpcb->add(
+                        url     => $ENV{FB_API_URL} . '/me/messages?access_token=' . $access_token,
+                        method  => "post",
+                        headers => 'Content-Type: application/json',
+                        body    => to_json {
+                            messaging_type => "UPDATE",
+                            recipient => {
+                                id => $recipient->fb_id
+                            },
+                            message => {
+                                attachment => {
+                                    type    => $values{saved_attachment_type},
+                                    payload => {
+                                        attachment_id => $values{saved_attachment_id}
+                                    }
+                                },
+                                quick_replies => [
+                                    {
+                                        content_type => 'text',
+                                        title        => 'Voltar ao início',
+                                        payload      => 'mainMenu'
+                                    }
+                                ]
+                            }
+                        }
+                    );
+                }
+
+                $self->_httpcb->wait_for_all_responses();
+            }
+            else {
+                die \['attachment', 'not-allowed'] if $values{saved_attachment_id};
+
+                if ($self->recipient->uuid && $self->recipient->email && $values{reply}) {
+                    my $email = MandatoAberto::Mailer::Template->new(
+                        to       => $self->recipient->email,
+                        from     => 'no-reply@appcivico.com',
+                        subject  => "Resposta para o seu chamado",
+                        template => get_data_section('issue_reply_web.tt'),
+                        vars     => {
+                            message => $self->message,
+                            reply   => $values{reply},
+                            email_header => $self->organization_chatbot->organization->email_header
+                        },
+                    )->build_email();
+
+                    $self->result_source->schema->resultset('EmailQueue')->create({ body => $email->as_string });
+                }
+            }
 
             $self->update({
                 %values,
@@ -426,3 +447,78 @@ sub _build__httpcb { WebService::HttpCallback::Async->instance }
 
 __PACKAGE__->meta->make_immutable;
 1;
+
+__DATA__
+
+@@ issue_reply_web.tt
+
+<!doctype html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html charset=UTF-8">
+</head>
+<body>
+<div leftmargin="0" marginheight="0" marginwidth="0" topmargin="0" style="background-color:#f5f5f5; font-family:'Montserrat',Arial,sans-serif; margin:0; padding:0; width:100%">
+<table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse:collapse">
+<tbody>
+<tr>
+<td>
+<table align="center" border="0" cellpadding="0" cellspacing="0" class="x_deviceWidth" width="600" style="border-collapse:collapse">
+<tbody>
+<tr>
+<td height="50"></td>
+</tr>
+<tr>
+<td bgcolor="#ffffff" colspan="2" style="background-color:rgb(255,255,255); border-radius:0 0 7px 7px; font-family:'Montserrat',Arial,sans-serif; font-size:13px; font-weight:normal; line-height:24px; padding:30px 0; text-align:center; vertical-align:top">
+<table align="center" border="0" cellpadding="0" cellspacing="0" width="84%" style="border-collapse:collapse">
+<tbody>
+<tr>
+<td align="center" style="color:#666666; font-family:'Montserrat',Arial,sans-serif; font-size:16px; font-weight:300; line-height:23px; margin:0">
+<p style="text-align: center;"><a href="[% home_url %]"><img src="[% email_header %]" class="x_deviceWidth" style="border-radius:7px 7px 0 0; align: center"></a></p>
+<br>
+<p><b>Olá!</b></p>
+<p>Seu chamado recebeu uma resposta!</p>
+<p>Você enviou: [% message %]</p>
+<p>Resposta: [% reply %]</p>
+  </td>
+</tr>
+<tr>
+<td height="30"></td>
+</tr>
+<tr>
+<td align="center" bgcolor="#ffffff" valign="top" style="padding-top:20px">
+<table align="center" border="0" cellpadding="0" cellspacing="0" style="border-collapse:separate; border-radius:7px; margin:0">
+<tbody>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<td height="40"></td>
+</tr>
+
+<tr>
+<td height="30"></td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+<table align="center" border="0" cellpadding="0" cellspacing="0" class="x_deviceWidth" width="540" style="border-collapse:collapse">
+  <tbody>
+<tr>
+<td align="center" style="color:#666666; font-family:'Montserrat',Arial,sans-serif; font-size:11px; font-weight:300; line-height:16px; margin:0; padding:30px 0px">
+
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+</div>
+</div></div>
