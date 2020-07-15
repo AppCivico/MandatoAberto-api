@@ -225,7 +225,7 @@ sub action_specs {
                         },
                     )->build_email();
 
-                    $email = Encode::encode('utf-8',$email->as_string)
+                    $email = Encode::encode('utf-8',$email->as_string);
 
                     $self->result_source->schema->resultset('EmailQueue')->create({ body => $email->as_string });
                 }
