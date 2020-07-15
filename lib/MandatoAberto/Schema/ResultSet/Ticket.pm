@@ -2,6 +2,7 @@ package MandatoAberto::Schema::ResultSet::Ticket;
 use common::sense;
 use Moose;
 use namespace::autoclean;
+use utf8;
 
 extends "DBIx::Class::ResultSet";
 
@@ -470,7 +471,7 @@ __DATA__
 <tbody>
 <tr>
 <td align="center" style="color:#666666; font-family:'Montserrat',Arial,sans-serif; font-size:16px; font-weight:300; line-height:23px; margin:0">
-<p style="text-align: center;"><a href="[% home_url %]"><img src="[% email_header %]" class="x_deviceWidth" style="border-radius:7px 7px 0 0; align: center"></a></p>
+<p style="text-align: center;"><img src="https://i.imgur.com/curitaU.png" class="x_deviceWidth" style="border-radius:7px 7px 0 0; align: center"></p>
 <br>
 <p><b>Olá!</b></p>
 <p><b>Seu ticket foi criado!</b></p>

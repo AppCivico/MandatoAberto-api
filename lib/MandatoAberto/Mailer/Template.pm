@@ -1,6 +1,7 @@
 package MandatoAberto::Mailer::Template;
 use Moose;
 use namespace::autoclean;
+use utf8;
 
 use Template;
 use File::MimeInfo;
