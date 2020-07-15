@@ -1,7 +1,7 @@
 package MandatoAberto::Mailer;
 use common::sense;
 use Moose;
-
+use utf8;
 use Email::Sender::Simple qw(sendmail);
 use Email::Sender::Transport::SMTP::TLS;
 
