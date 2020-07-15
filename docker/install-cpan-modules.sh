@@ -93,4 +93,5 @@ cpanm -n App::Sqitch \
  Test::More \
  LWP::Protocol::https \
  Time::HiRes \
- Try::Tiny::Retry
+ Try::Tiny::Retry \
+ Encode

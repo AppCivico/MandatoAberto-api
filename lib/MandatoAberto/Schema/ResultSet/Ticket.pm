@@ -4,6 +4,8 @@ use Moose;
 use namespace::autoclean;
 use utf8;
 
+use Encode qw(encode);
+
 extends "DBIx::Class::ResultSet";
 
 with "MandatoAberto::Role::Verification";
@@ -222,6 +224,8 @@ sub action_specs {
                             email_header => $ticket->organization_chatbot->organization->email_header
                         },
                     )->build_email();
+
+                    $email = Encode::encode('utf-8',$email->as_string)
 
                     $self->result_source->schema->resultset('EmailQueue')->create({ body => $email->as_string });
                 }
