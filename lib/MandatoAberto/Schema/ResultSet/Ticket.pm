@@ -479,7 +479,7 @@ __DATA__
 <br>
 <p><b>Ol&#xE1;[% IF name %], [% name %][% END %]!</b></p>
 <p><b>Seu chamado foi criado.</b></p>
-<p>Seu chamado referente a [% ticket_type %] foi aberto com sucesso, o n&#xFA;mero de protocolo dele &#xE9;: [% ticket_id %].</p>
+<p>Seu chamado referente a "[% ticket_type %]" foi aberto com sucesso, o n&#xFA;mero de protocolo dele &#xE9;: [% ticket_id %].</p>
 <p>Utilize este n&#xFA;mero de protocolo para cancelar, ou consultar, seu ticket atrav&#xE9;s do Assistente Digital.</p>
   </td>
 </tr>
