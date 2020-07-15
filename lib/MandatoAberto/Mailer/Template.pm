@@ -72,14 +72,14 @@ sub build_email {
 
     my $organization_name = $self->{vars}->{organization_name};
 
-    if ($organization_name) {
-        $organization_name =~ s/[^\x00-\x7f]//g;
+    # if ($organization_name) {
+    #     $organization_name =~ s/[^\x00-\x7f]//g;
 
-        $email->attach(
-            Type => 'TEXT',
-            Data => "Enviado em nome de: $organization_name"
-        );
-    }
+    #     $email->attach(
+    #         Type => 'TEXT',
+    #         Data => "Enviado em nome de: $organization_name"
+    #     );
+    # }
 
     my @required_data = qw(path file_name name);
     for my $attachment (@{ $self->attachments }) {
