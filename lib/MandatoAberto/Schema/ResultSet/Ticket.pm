@@ -473,7 +473,7 @@ __DATA__
 <td align="center" style="color:#666666; font-family:'Montserrat',Arial,sans-serif; font-size:16px; font-weight:300; line-height:23px; margin:0">
 <p style="text-align: center;"><img src="https://i.imgur.com/curitaU.png" class="x_deviceWidth" style="border-radius:7px 7px 0 0; align: center"></p>
 <br>
-<p><b>Olá!</b></p>
+<p><b>Ol&#xE1;!</b></p>
 <p><b>Seu ticket foi criado!</b></p>
 <p>Seu ticket foi criado com sucesso, o número dele é: #[% ticket_id %].</p>
 <p>Utilize este número para alterar, ou consultar, seu ticket no chatbot.</p>
