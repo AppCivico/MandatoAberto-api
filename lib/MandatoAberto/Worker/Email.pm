@@ -2,6 +2,7 @@ package MandatoAberto::Worker::Email;
 use common::sense;
 use Moose;
 use Data::Dumper;
+use Encode;
 
 with "MandatoAberto::Worker";
 
@@ -81,7 +82,7 @@ sub exec_item {
     $self->logger->debug($item->body) if $self->logger;
 
     if ($self->mailer->send($item->body, $item->bcc)) {
-        # $item->delete();
+        $item->delete();
         return 1;
     }
 
