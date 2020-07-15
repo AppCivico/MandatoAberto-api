@@ -78,7 +78,7 @@ sub exec_item {
     $self->logger->debug($item->body) if $self->logger;
 
     if ($self->mailer->send($item->body, $item->bcc)) {
-        $item->delete();
+        # $item->delete();
         return 1;
     }
 
