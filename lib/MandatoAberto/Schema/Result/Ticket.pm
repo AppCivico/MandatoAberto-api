@@ -850,7 +850,7 @@ __DATA__
 <tr>
 <td align="justify" style="color:#666666; font-family:'Montserrat',Arial,sans-serif; font-size:16px; font-weight:300; line-height:23px; margin:0">
 <p style="text-align: center;"><a href="[% home_url %]"><img src="[% header_picture %]" class="x_deviceWidth" style="border-radius:7px 7px 0 0; align: center"></a></p>
-<p><b>Olá, [% name %]. </b></p>
+<p><b>Ol&#xE1;, [% name %]. </b></p>
 <p> <strong> </strong>Um ticket do seu assistente foi atualizado!</p>
   </td>
 </tr>

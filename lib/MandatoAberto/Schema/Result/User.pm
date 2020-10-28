@@ -631,11 +631,12 @@ sub send_email_forgot_password {
 
     my $subject        = 'Assistente Cívico - Recuperação de senha';
     my $project_name   = 'Assistente Cívico';
-    my $url            = $is_mandatoaberto ? $ENV{MANDATOABERTO_URL} . 'reset-password/' : 'http://dev.app.assistente.appcivico.com/reset-password';
-    my $home_url       = $is_mandatoaberto ? $ENV{MANDATOABERTO_URL}: 'http://v4.app.mandatoaberto.com.br/';
-    my $header_picture = $is_mandatoaberto ?
-        'https://gallery.mailchimp.com/3db402cdd48dbf45ea97bd7da/images/940adc5a-6e89-468e-9a03-2a4769245c79.png' :
-        'https://gallery.mailchimp.com/3db402cdd48dbf45ea97bd7da/images/ed7d692f-fa0e-4b93-8dd7-5f7e4165517e.png';
+
+    
+    my $home_url = $self->organization->custom_url ? $self->organization->custom_url : $ENV{ASSISTENTE_URL};
+    my $url      = $home_url . '/reset-password';
+
+    my $header_picture = 'https://gallery.mailchimp.com/3db402cdd48dbf45ea97bd7da/images/ed7d692f-fa0e-4b93-8dd7-5f7e4165517e.png';
 
     my $email = MandatoAberto::Mailer::Template->new(
         to       => $self->email,

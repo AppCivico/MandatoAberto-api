@@ -2,6 +2,9 @@ package MandatoAberto::Schema::ResultSet::Ticket;
 use common::sense;
 use Moose;
 use namespace::autoclean;
+use utf8;
+
+use Encode qw(encode);
 
 extends "DBIx::Class::ResultSet";
 
@@ -217,6 +220,8 @@ sub action_specs {
                         subject  => "Novo ticket criado",
                         template => get_data_section('ticket_created_web.tt'),
                         vars     => {
+                            name         => $ticket->recipient->name,
+                            ticket_type  => $ticket->organization_ticket_type->ticket_type->name,
                             ticket_id    => $ticket->id,
                             email_header => $ticket->organization_chatbot->organization->email_header
                         },
@@ -398,7 +403,7 @@ __DATA__
 <td align="center" style="color:#666666; font-family:'Montserrat',Arial,sans-serif; font-size:16px; font-weight:300; line-height:23px; margin:0">
 <p style="text-align: center;"><a href="[% home_url %]"><img src="[% email_header %]" class="x_deviceWidth" style="border-radius:7px 7px 0 0; align: center"></a></p>
 <br>
-<p><b>Olá, [% name %]. </b></p>
+<p><b>Ol&#xE1;, [% name %]. </b></p>
 <p> <strong> </strong>Seu assistente recebeu um novo ticket!</p>
   </td>
 </tr>
@@ -470,12 +475,12 @@ __DATA__
 <tbody>
 <tr>
 <td align="center" style="color:#666666; font-family:'Montserrat',Arial,sans-serif; font-size:16px; font-weight:300; line-height:23px; margin:0">
-<p style="text-align: center;"><a href="[% home_url %]"><img src="[% email_header %]" class="x_deviceWidth" style="border-radius:7px 7px 0 0; align: center"></a></p>
+<p style="text-align: center;"><img src="https://i.imgur.com/uUJ7kXr.png" class="x_deviceWidth" style="border-radius:7px 7px 0 0; align: center"></p>
 <br>
-<p><b>Olá!</b></p>
-<p><b>Seu ticket foi criado!</b></p>
-<p>Seu ticket foi criado com sucesso, o número dele é: #[% ticket_id %].</p>
-<p>Utilize este número para alterar, ou consultar, seu ticket no chatbot.</p>
+<p><b>Ol&#xE1;[% IF name %], [% name %][% END %]!</b></p>
+<p><b>Seu chamado foi criado.</b></p>
+<p>Seu chamado referente a "[% ticket_type %]" foi aberto com sucesso, o n&#xFA;mero de protocolo dele &#xE9;: [% ticket_id %].</p>
+<p>Utilize este n&#xFA;mero de protocolo para cancelar, ou consultar, seu ticket atrav&#xE9;s do Assistente Digital.</p>
   </td>
 </tr>
 <tr>

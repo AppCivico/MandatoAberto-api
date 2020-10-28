@@ -1,6 +1,8 @@
 package MandatoAberto::Worker::Email;
 use common::sense;
 use Moose;
+use Data::Dumper;
+use Encode;
 
 with "MandatoAberto::Worker";
 
@@ -39,6 +41,8 @@ sub listen_queue {
         $self->logger->info(sprintf("'%d' itens serão processados.", scalar @items)) if $self->logger;
 
         for my $item (@items) {
+            $self->logger->debug(Dumper($item));
+
             $self->exec_item($item);
         }
 
