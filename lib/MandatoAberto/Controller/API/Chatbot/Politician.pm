@@ -57,6 +57,7 @@ sub list_GET {
             use_dialogflow          => $organization_chatbot->general_config->use_dialogflow,
             issue_active            => $organization_chatbot->general_config->issue_active,
             organization_chatbot_id => $organization_chatbot->id,
+            chatbot_picture         => $organization_chatbot->picture,
             answers                 => [
                 map {
                     my $a = $_;
