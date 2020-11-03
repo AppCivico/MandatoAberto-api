@@ -174,7 +174,8 @@ sub action_specs {
                         vars     => {
                             name         => $user ? $user->user->name : $send_email_to,
                             ticket_url   => $ENV{SQITCH_DEPLOY} eq 'prod' ? ('https://dipiou.appcivico.com/chamados/' . $ticket->id) : ('https://dev.dipiou.appcivico.com/chamados/' . $ticket->id),
-                            email_header => $ticket->organization_chatbot->organization->email_header
+                            email_header => $ticket->organization_chatbot->organization->email_header,
+                            ticket_type  => $ticket->organization_ticket_type->ticket_type->name,
                         },
                     )->build_email();
                     $self->result_source->schema->resultset('EmailQueue')->create({ body => $email->as_string });
@@ -404,7 +405,7 @@ __DATA__
 <p style="text-align: center;"><a href="[% home_url %]"><img src="[% email_header %]" class="x_deviceWidth" style="border-radius:7px 7px 0 0; align: center"></a></p>
 <br>
 <p><b>Ol&#xE1;, [% name %]. </b></p>
-<p> <strong> </strong>Seu assistente recebeu um novo ticket!</p>
+<p> <strong> </strong>Seu assistente recebeu um novo ticket, do tipo "[% ticket_type %]".</p>
   </td>
 </tr>
 <tr>
