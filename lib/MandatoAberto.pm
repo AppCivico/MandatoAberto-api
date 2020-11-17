@@ -23,6 +23,13 @@ __PACKAGE__->config(
 
     disable_component_resolution_regex_fallback => 1,
     enable_catalyst_header => 0,
+
+    static => {
+        include_path => [
+            __PACKAGE__->path_to('/'),
+            '/public',
+        ],
+    }
 );
 
 use WebService::Slack::IncomingWebHook;
