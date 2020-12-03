@@ -237,7 +237,7 @@ db_transaction {
                 chatbot_id     => $chatbot_id,
                 recipient_id   => $web_recipient_id,
                 message        => 'Olá, você pode me ajudar?',
-                data        => to_json( { cpf => '1111111111111', email => 'foobar@email.com' } ),
+                data        => to_json( { cpf => '1111111111111', mail => 'foobar@email.com' } ),
             ],
         ;
 
@@ -249,12 +249,12 @@ db_transaction {
             automatic_load_item => 0,
             code                => 200,
             [
-                assignee_id => $user_id,
-                status      => 'progress',
+                # assignee_id => $user_id,
+                # status      => 'progress',
                 response    => 'foobar',
             ];
 
-        is $email_rs->count, 6;
+        is $email_rs->count, 5;
 
     };
 

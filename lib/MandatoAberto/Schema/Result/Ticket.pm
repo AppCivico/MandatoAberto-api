@@ -590,9 +590,9 @@ sub action_specs {
                     my $responses_size = scalar @{ $responses };
 
                     # Recipient sem fb_id é web.
-                    if ( !$self->recipient->fb_id && ($self->data && $self->data->{email}) ) {
+                    if ( !$self->recipient->fb_id && ($self->data && $self->data->{mail}) ) {
                         my $email = MandatoAberto::Mailer::Template->new(
-                            to       => $self->data->{email},
+                            to       => $self->data->{mail},
                             from     => 'no-reply@assistentecivico.com.br',
                             subject  => 'Ticket atualizado',
                             template => get_data_section('ticket_updated_web.tt'),
