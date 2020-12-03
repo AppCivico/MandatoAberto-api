@@ -942,7 +942,7 @@ __DATA__
 <tr>
 <td align="justify" style="color:#666666; font-family:'Montserrat',Arial,sans-serif; font-size:16px; font-weight:300; line-height:23px; margin:0">
 <p style="text-align: center;"><img src="[% header_picture %]" class="x_deviceWidth" style="border-radius:7px 7px 0 0; align: center"></p>
-<p>O seu ticket <b>#[% ticket_id %]</b>, do tipo [% ticket_type %], recebeu uma atualização!</p>
+<p>O seu ticket <b>#[% ticket_id %]</b>, do tipo "[% ticket_type %]", recebeu uma atualiza&#xE7;&#xE3;o!</p>
 <p>Mensagem: [% response %]</p>
   </td>
 </tr>
