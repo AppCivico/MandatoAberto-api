@@ -240,6 +240,22 @@ db_transaction {
                 data        => to_json( { cpf => '1111111111111', email => 'foobar@email.com' } ),
             ],
         ;
+
+        my $ticket_id = $res->{id};
+
+        is $email_rs->count, 4;
+
+        $res = rest_put "/api/organization/$organization_id/chatbot/$chatbot_id/ticket/$ticket_id",
+            automatic_load_item => 0,
+            code                => 200,
+            [
+                assignee_id => $user_id,
+                status      => 'progress',
+                response    => 'foobar',
+            ];
+
+        is $email_rs->count, 6;
+
     };
 
 };

@@ -589,55 +589,74 @@ sub action_specs {
                     my $messages_size  = scalar @{ $messages };
                     my $responses_size = scalar @{ $responses };
 
-                    if ( $responses_size > $messages_size ) {
-                        my $last_response = pop @{$responses};
-                        $response         = $last_response . "\n" . $response;
-                    }
-                    push @{$responses}, $response;
-
-                    my $access_token = $self->organization_chatbot->fb_config->access_token;
-                    my $text = 'Você possui uma nova atualização para o seu ticket: #' . $self->id . "\n";
-                    $text   .= "Mensagem: $response_param";
-
-                    $self->_httpcb->add(
-                        url     => $ENV{FB_API_URL} . '/me/messages?access_token=' . $access_token,
-                        method  => "post",
-                        headers => 'Content-Type: application/json',
-                        body    => to_json {
-                            messaging_type => "UPDATE",
-                            recipient => {
-                                id => $self->recipient->fb_id
+                    # Recipient sem fb_id é web.
+                    if ( !$self->recipient->fb_id && ($self->data && $self->data->{email}) ) {
+                        my $email = MandatoAberto::Mailer::Template->new(
+                            to       => $self->data->{email},
+                            from     => 'no-reply@assistentecivico.com.br',
+                            subject  => 'Ticket atualizado',
+                            template => get_data_section('ticket_updated_web.tt'),
+                            vars     => {
+                                response    => $response,
+                                ticket_id   => $self->id,
+                                ticket_type => $self->organization_ticket_type->ticket_type->name,
+                                header_picture => $self->organization_chatbot->organization->email_header,
                             },
-                            message => {
-                                text          => $text,
-                                quick_replies => [
-                                    {
-                                        content_type => 'text',
-                                        title        => 'Voltar ao início',
-                                        payload      => 'mainMenu'
-                                    },
-                                    {
-                                        content_type => 'text',
-                                        title        => 'Responder',
-                                        payload      => 'leaveTMsg' . $self->id
-                                    }
-                                ]
-                            }
+                        )->build_email();
+                        push @emails, { body => $email->as_string }
+                    }
+                    else {
+
+                        if ( $responses_size > $messages_size ) {
+                            my $last_response = pop @{$responses};
+                            $response         = $last_response . "\n" . $response;
                         }
-                    );
+                        push @{$responses}, $response;
+
+                        my $access_token = $self->organization_chatbot->fb_config->access_token;
+                        my $text = 'Você possui uma nova atualização para o seu ticket: #' . $self->id . "\n";
+                        $text   .= "Mensagem: $response_param";
+
+                        $self->_httpcb->add(
+                            url     => $ENV{FB_API_URL} . '/me/messages?access_token=' . $access_token,
+                            method  => "post",
+                            headers => 'Content-Type: application/json',
+                            body    => to_json {
+                                messaging_type => "UPDATE",
+                                recipient => {
+                                    id => $self->recipient->fb_id
+                                },
+                                message => {
+                                    text          => $text,
+                                    quick_replies => [
+                                        {
+                                            content_type => 'text',
+                                            title        => 'Voltar ao início',
+                                            payload      => 'mainMenu'
+                                        },
+                                        {
+                                            content_type => 'text',
+                                            title        => 'Responder',
+                                            payload      => 'leaveTMsg' . $self->id
+                                        }
+                                    ]
+                                }
+                            }
+                        );
+                    }
 
                     push @logs, {
-                            text      => "Ticket atualizado, nova resposta adicionada '$response', por: $user_name",
-                            action_id => $actions->{'ticket nova resposta'},
-                            data => to_json(
-                                {
-                                    action    => 'ticket recebeu uma nova resposta',
-                                    impact    => 'positive',
-                                    user_name => $user_name,
-                                    status    => $self->status_human_name
-                                }
-                            )
-                        };
+                        text      => "Ticket atualizado, nova resposta adicionada '$response', por: $user_name",
+                        action_id => $actions->{'ticket nova resposta'},
+                        data => to_json(
+                            {
+                                action    => 'ticket recebeu uma nova resposta',
+                                impact    => 'positive',
+                                user_name => $user_name,
+                                status    => $self->status_human_name
+                            }
+                        )
+                    };
 
                     $values{response} = $responses;
                     $self->update( { response => [] } );
@@ -870,6 +889,65 @@ __DATA__
 </tr>
 <tr>
 <td height="40"></td>
+</tr>
+
+<tr>
+<td height="30"></td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+<table align="center" border="0" cellpadding="0" cellspacing="0" class="x_deviceWidth" width="540" style="border-collapse:collapse">
+  <tbody>
+<tr>
+<td align="center" style="color:#666666; font-family:'Montserrat',Arial,sans-serif; font-size:11px; font-weight:300; line-height:16px; margin:0; padding:30px 0px">
+
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+</div>
+</div></div>
+
+@@ ticket_updated_web.tt
+
+<!doctype html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html charset=UTF-8">
+</head>
+<body>
+<div leftmargin="0" marginheight="0" marginwidth="0" topmargin="0" style="background-color:#f5f5f5; font-family:'Montserrat',Arial,sans-serif; margin:0; padding:0; width:100%">
+<table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse:collapse">
+<tbody>
+<tr>
+<td>
+<table align="center" border="0" cellpadding="0" cellspacing="0" class="x_deviceWidth" width="600" style="border-collapse:collapse">
+<tbody>
+<tr>
+<td height="50"></td>
+</tr>
+<tr>
+<td bgcolor="#ffffff" colspan="2" style="background-color:rgb(255,255,255); border-radius:0 0 7px 7px; font-family:'Montserrat',Arial,sans-serif; font-size:13px; font-weight:normal; line-height:24px; padding:30px 0; text-align:center; vertical-align:top">
+<table align="center" border="0" cellpadding="0" cellspacing="0" width="84%" style="border-collapse:collapse">
+<tbody>
+<tr>
+<td align="justify" style="color:#666666; font-family:'Montserrat',Arial,sans-serif; font-size:16px; font-weight:300; line-height:23px; margin:0">
+<p style="text-align: center;"><img src="[% header_picture %]" class="x_deviceWidth" style="border-radius:7px 7px 0 0; align: center"></p>
+<p>O seu ticket <b>#[% ticket_id %]</b>, do tipo [% ticket_type %], recebeu uma atualização!</p>
+<p>Mensagem: [% response %]</p>
+  </td>
+</tr>
+<tr>
+<td height="30"></td>
 </tr>
 
 <tr>
