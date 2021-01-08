@@ -81,7 +81,8 @@ sub list_POST {
         if ($c->req->params->{send_email}) {
             # Caso seja uma campanha de email ao invés de fazer o upload do arquivo, salvo-o em uma pasta
             # Para ser utilizado no envio.
-            my $attachment_folder = $ENV{CAMPAIGN_ATTACHMENT_FOLDER};
+            my $attachment_folder = $ENV{CAMPAIGN_ATTACHMENT_FOLDER}
+              or die 'missing env CAMPAIGN_ATTACHMENT_FOLDER';
 
             $upload->copy_to($attachment_folder) or die \['file', 'failed to copy attachment'];
 

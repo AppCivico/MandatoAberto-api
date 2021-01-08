@@ -19,7 +19,8 @@ SELECT
 FROM
     politician_entity e
 WHERE
-    e.organization_chatbot_id = ?
+    e.organization_chatbot_id = ? AND
+    EXISTS ( SELECT 1 FROM politician_knowledge_base WHERE e.id = ANY (entities) )
 SQL_QUERY
 
 1;

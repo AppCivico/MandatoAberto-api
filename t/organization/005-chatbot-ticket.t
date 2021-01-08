@@ -243,7 +243,7 @@ db_transaction {
 
         my $ticket_id = $res->{id};
 
-        is $email_rs->count, 4;
+        is $email_rs->count, 5;
 
         $res = rest_put "/api/organization/$organization_id/chatbot/$chatbot_id/ticket/$ticket_id",
             automatic_load_item => 0,
@@ -254,7 +254,7 @@ db_transaction {
                 response    => 'foobar',
             ];
 
-        is $email_rs->count, 5;
+        is $email_rs->count, 6;
 
     };
 
