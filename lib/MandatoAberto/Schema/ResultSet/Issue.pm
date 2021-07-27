@@ -23,7 +23,8 @@ sub verifiers_specs {
                     post_check => sub {
                         my $politician_id = $_[0]->get_value('politician_id');
 
-                        $self->result_source->schema->resultset("Politician")->search({ user_id => $politician_id })->count;
+                        $self->result_source->schema->resultset("Politician")->search({user_id => $politician_id})
+                          ->count;
                     }
                 },
                 recipient_id => {
@@ -31,12 +32,12 @@ sub verifiers_specs {
                     type     => "Int"
                 },
                 message => {
-                    required   => 1,
-                    type       => "Str",
+                    required => 1,
+                    type     => "Str",
                 },
                 entities => {
-                    required   => 0,
-                    type       => 'HashRef'
+                    required => 0,
+                    type     => 'HashRef'
                 }
             }
         ),
@@ -44,12 +45,13 @@ sub verifiers_specs {
             filters => [qw(trim)],
             profile => {
                 politician_id => {
-                    required => 1,
+                    required   => 1,
                     type       => "Int",
                     post_check => sub {
                         my $politician_id = $_[0]->get_value('politician_id');
 
-                        $self->result_source->schema->resultset("Politician")->search({ user_id => $politician_id })->count;
+                        $self->result_source->schema->resultset("Politician")->search({user_id => $politician_id})
+                          ->count;
                     }
                 },
                 ids => {
@@ -61,7 +63,7 @@ sub verifiers_specs {
                         my $politician_id = $_[0]->get_value('politician_id');
                         my $politician    = $self->result_source->schema->resultset('Politician')->find($politician_id);
 
-                        for my $id ( @{ $ids } ) {
+                        for my $id (@{$ids}) {
                             my $issue = $self->search(
                                 {
                                     id                      => $id,
@@ -81,12 +83,13 @@ sub verifiers_specs {
             filters => [qw(trim)],
             profile => {
                 politician_id => {
-                    required => 1,
+                    required   => 1,
                     type       => "Int",
                     post_check => sub {
                         my $politician_id = $_[0]->get_value('politician_id');
 
-                        $self->result_source->schema->resultset("Politician")->search({ user_id => $politician_id })->count;
+                        $self->result_source->schema->resultset("Politician")->search({user_id => $politician_id})
+                          ->count;
                     }
                 },
                 ids => {
@@ -98,7 +101,7 @@ sub verifiers_specs {
                         my $politician_id = $_[0]->get_value('politician_id');
                         my $politician    = $self->result_source->schema->resultset('Politician')->find($politician_id);
 
-                        for my $id ( @{$ids} ) {
+                        for my $id (@{$ids}) {
                             my $issue = $self->search(
                                 {
                                     id                      => $id,
@@ -113,7 +116,7 @@ sub verifiers_specs {
                     }
                 }
             }
-          ),
+        ),
     };
 }
 
@@ -128,53 +131,69 @@ sub action_specs {
             not defined $values{$_} and delete $values{$_} for keys %values;
 
             my $issue;
-            $self->result_source->schema->txn_do(sub {
+            $self->result_source->schema->txn_do(
+                sub {
 
-                my $politician = $self->result_source->schema->resultset('Politician')->find( $values{politician_id} );
-                my $recipient  = $politician->user->organization_chatbot->recipients->find($values{recipient_id});
-                my $entity_rs  = $self->result_source->schema->resultset('Entity');
-                my $politician_entity = $self->result_source->schema->resultset('PoliticianEntity');
+                    my $politician
+                      = $self->result_source->schema->resultset('Politician')->find($values{politician_id});
+                    my $recipient = $politician->user->organization_chatbot->recipients->find($values{recipient_id});
+                    my $entity_rs = $self->result_source->schema->resultset('Entity');
+                    my $politician_entity = $self->result_source->schema->resultset('PoliticianEntity');
 
-                # Tratando issue como do organization_chatbot e não do politician
-                my $organization_chatbot_id = $politician->user->organization_chatbot->id;
+                    # Tratando issue como do organization_chatbot e não do politician
+                    my $organization_chatbot_id = $politician->user->organization_chatbot->id;
 
-                delete $values{politician_id} and $values{organization_chatbot_id} = $organization_chatbot_id;
+                    delete $values{politician_id} and $values{organization_chatbot_id} = $organization_chatbot_id;
 
-                my @entities_id;
-                if ( $values{entities} ) {
-                    my $entity_val = $values{entities};
+                    my @entities_id;
+                    if ($values{entities}) {
+                        my $entity_val = $values{entities};
 
-                    my $intent = $entity_val->{queryResult}->{intent}->{displayName};
-                    die \['intentName', 'missing'] unless $intent;
+                        my $intent = $entity_val->{queryResult}->{intent}->{displayName};
+                        die \['intentName', 'missing'] unless $intent;
 
-                    $intent = lc $intent;
+                        $intent = lc $intent;
 
-                    if ( $politician_entity->skip_intent($intent) == 0 ) {
-                        my $human_name = $intent;
-                        die \['entities', "could not find human_name for $intent"] unless $human_name;
+                        if ($politician_entity->skip_intent($intent) == 0) {
+                            my $human_name = $intent;
+                            die \['entities', "could not find human_name for $intent"] unless $human_name;
 
-                        my $upsert_entity = $politician->user->organization_chatbot->politician_entities->find_or_create(
-                            {
-                                name       => $intent,
-                                human_name => $human_name
-                            }
-                        );
+                            my $upsert_entity
+                              = $politician->user->organization_chatbot->politician_entities->find_or_create(
+                                {
+                                    name       => $intent,
+                                    human_name => $human_name
+                                }
+                              );
 
-                        $recipient->add_to_politician_entity( $upsert_entity->id );
-                        push @entities_id, $upsert_entity->id;
+                            $recipient->add_to_politician_entity($upsert_entity->id);
+                            push @entities_id, $upsert_entity->id;
+
+                        }
 
                     }
 
-                }
+                    $issue = $self->create(
+                        {
+                            %values,
+                            peding_entity_recognition => $values{entities} ? 0 : 1,
+                            ($values{entities} ? (entities => \@entities_id) : ())
+                        }
+                    );
 
-                $issue = $self->create(
+                    # Caso o chatbot tenha uma intent de fallback
+                    # Já vinculo o usuário à intent.
+                    if (
+                        my $fallback_intent = $politician->user->organization_chatbot->politician_entities->search(
+                            {'me.name' => 'default fallback intent'}
+                        )->next
+                      )
                     {
-                        %values,
-                        peding_entity_recognition => $values{entities} ? 0 : 1,
-                        ( $values{entities} ? (entities => \@entities_id) : () )
+                        $recipient->add_to_politician_entity($fallback_intent->id);
+                        $recipient->discard_changes;
                     }
-                );
-            });
+                }
+            );
 
             return $issue;
         },
@@ -184,13 +203,15 @@ sub action_specs {
             my %values = $r->valid_values;
             not defined $values{$_} and delete $values{$_} for keys %values;
 
-            $self->result_source->schema->txn_do(sub {
-                for my $id ( @{ $values{ids} } ) {
-                    my $issue = $self->find($id);
+            $self->result_source->schema->txn_do(
+                sub {
+                    for my $id (@{$values{ids}}) {
+                        my $issue = $self->find($id);
 
-                    $issue->update( { deleted => 1 } );
+                        $issue->update({deleted => 1});
+                    }
                 }
-            });
+            );
         },
     };
 }
@@ -198,7 +219,7 @@ sub action_specs {
 sub get_politician_open_issues {
     my ($self) = @_;
 
-    return $self->search( { open => 1 } );
+    return $self->search({open => 1});
 }
 
 sub get_open_issues_created_today {
@@ -207,7 +228,7 @@ sub get_open_issues_created_today {
     return $self->search(
         {
             open       => 1,
-            created_at => { '>=' => "yesterday()" }
+            created_at => {'>=' => "yesterday()"}
         }
     );
 }
@@ -215,30 +236,32 @@ sub get_open_issues_created_today {
 sub extract_metrics {
     my ($self, %opts) = @_;
 
-    $self = $self->search_rs( { 'me.created_at' => { '>=' => \"NOW() - interval '$opts{range} days'" } } ) if $opts{range};
+    $self = $self->search_rs({'me.created_at' => {'>=' => \"NOW() - interval '$opts{range} days'"}}) if $opts{range};
 
     my $politician          = $self->result_source->schema->resultset('Politician')->find($opts{politician_id});
-    my $issue_response_view = $self->result_source->schema->resultset('ViewAvgIssueResponseTime')->search( undef, { bind => [ $politician->user->organization_chatbot->id ] } )->next;
+    my $issue_response_view = $self->result_source->schema->resultset('ViewAvgIssueResponseTime')
+      ->search(undef, {bind => [$politician->user->organization_chatbot->id]})->next;
 
-    my $count_open        = $self->search( { reply => \'IS NULL', deleted => 0 } )->count;
-    my $count_replied     = $self->search( { reply => \'IS NOT NULL' } )->count;
+    my $count_open        = $self->search({reply => \'IS NULL', deleted => 0})->count;
+    my $count_replied     = $self->search({reply => \'IS NOT NULL'})->count;
     my $avg_response_time = $issue_response_view ? $issue_response_view->avg_response_time : undef;
 
     # Caso nunca tenha respondido devo mostrar um texto específico
     my $text;
-    if ( !$avg_response_time ) {
+    if (!$avg_response_time) {
         $text = 'Você nunca respondeu suas mensagens!';
     }
     else {
         $text = 'Tempo médio de respostas: ' . $avg_response_time . ' minutos.';
     }
 
-    my $alert_is_positive = $avg_response_time && $avg_response_time <= 90 ? 1 : 0;
-    my $label             = $alert_is_positive ? 'positive' : 'negative';
+    my $alert_is_positive = $avg_response_time && $avg_response_time <= 90 ? 1          : 0;
+    my $label             = $alert_is_positive                             ? 'positive' : 'negative';
 
     return {
-        count             => $self->count,
-        description     => 'Aqui você poderá métricas sobre as mensagens que o assistente digital não conseguiu responder.',
+        count       => $self->count,
+        description =>
+          'Aqui você poderá métricas sobre as mensagens que o assistente digital não conseguiu responder.',
         suggested_actions => [
             {
                 alert             => $text,
@@ -258,7 +281,7 @@ sub extract_metrics {
                 suggested_actions => []
             }
         ]
-    }
+    };
 }
 
 1;
