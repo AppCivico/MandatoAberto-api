@@ -25,8 +25,8 @@ sub verifiers_specs {
             filters => [qw(trim)],
             profile => {
                 politician_id => {
-                    required   => 0,
-                    type       => "Int"
+                    required => 0,
+                    type     => "Int"
                 },
                 chatbot_id => {
                     required => 0,
@@ -77,7 +77,8 @@ sub action_specs {
 
             my $chatbot;
             if (my $organization_chatbot_id = delete $values{chatbot_id}) {
-                $chatbot = $self->result_source->schema->resultset('OrganizationChatbot')->find($organization_chatbot_id)
+                $chatbot
+                  = $self->result_source->schema->resultset('OrganizationChatbot')->find($organization_chatbot_id)
                   or die \['organization_chatbot_id', 'invalid'];
             }
             elsif (my $politician_id = delete $values{politician_id}) {
@@ -90,11 +91,13 @@ sub action_specs {
                 die \['chatbot_id', 'missing'];
             }
 
-            # my $type = $self->result_source->schema->resultset('TicketType')->find($values{type_id}) or die \['type_id', 'invalid'];
-            # delete $values{type_id};
+# my $type = $self->result_source->schema->resultset('TicketType')->find($values{type_id}) or die \['type_id', 'invalid'];
+# delete $values{type_id};
 
-            my $organization_ticket_type = $self->result_source->schema->resultset('OrganizationTicketType')->search( { id => $values{type_id}, organization_id => $chatbot->organization->id } )->next
-                or die \['type_id', 'invalid'];
+            my $organization_ticket_type
+              = $self->result_source->schema->resultset('OrganizationTicketType')
+              ->search({id => $values{type_id}, organization_id => $chatbot->organization->id})->next
+              or die \['type_id', 'invalid'];
             $values{organization_ticket_type_id} = $organization_ticket_type->id;
 
             my $type = $organization_ticket_type->ticket_type;
@@ -116,13 +119,13 @@ sub action_specs {
                     organization_chatbot_id => $chatbot->id,
 
                     # recipient_id tomará precedência.
-                    (
-                        $recipient_id ? ( id => $recipient_id ) : ( fb_id => $fb_id )
-                    )
+                    ($recipient_id ? (id => $recipient_id) : (fb_id => $fb_id))
                 }
             )->next or die \['fb_id', 'invalid'];
 
-            my $log_action = $self->result_source->schema->resultset('TicketLogAction')->search( { 'me.code' => 'ticket criado' } )->next;
+            my $log_action
+              = $self->result_source->schema->resultset('TicketLogAction')->search({'me.code' => 'ticket criado'})
+              ->next;
 
             $values{organization_chatbot_id} = $chatbot->id;
             $values{recipient_id}            = $recipient->id;
@@ -133,9 +136,9 @@ sub action_specs {
                     action_id => $log_action->id,
                     data      => to_json(
                         {
-                            status    => 'Aberto',
-                            action    => 'Ticket criado',
-                            impact    => 'neutral',
+                            status => 'Aberto',
+                            action => 'Ticket criado',
+                            impact => 'neutral',
                         }
                     )
                 }
@@ -150,87 +153,97 @@ sub action_specs {
                 $values{ticket_attachments} = $attachments;
             }
 
-            eval {
-                decode_json($values{data})
-            };
+            eval { decode_json($values{data}) };
 
             $values{data} = {} if $@;
 
             my $ticket;
-            $self->result_source->schema->txn_do(sub{
-                my $organization = $chatbot->organization;
-                my $user_rs      = $chatbot->organization->users;
+            $self->result_source->schema->txn_do(
+                sub {
+                    my $organization = $chatbot->organization;
+                    my $user_rs      = $chatbot->organization->users;
 
-                $ticket = $self->create(\%values);
+                    $ticket = $self->create(\%values);
 
-                if (my $send_email_to = $organization_ticket_type->send_email_to) {
-                    my $user = $user_rs->search( { 'user.email' => $send_email_to }, { join => 'user' } )->next;
-
-                    my $email = MandatoAberto::Mailer::Template->new(
-                        to       => $send_email_to,
-                        from     => 'no-reply@appcivico.com',
-                        subject  => "Novo ticket criado",
-                        template => get_data_section('ticket_created.tt'),
-                        vars     => {
-                            name         => $user ? $user->user->name : $send_email_to,
-                            ticket_url   => $ENV{SQITCH_DEPLOY} eq 'prod' ? ('https://dipiou.appcivico.com/chamados/' . $ticket->id) : ('https://dev.dipiou.appcivico.com/chamados/' . $ticket->id),
-                            email_header => $ticket->organization_chatbot->organization->email_header,
-                            ticket_type  => $ticket->organization_ticket_type->ticket_type->name,
-                        },
-                    )->build_email();
-                    $self->result_source->schema->resultset('EmailQueue')->create({ body => $email->as_string });
-
-                    if ($user) {
-                        $ticket->update(
-                            {
-                                assignee_id => $user->user->id,
-                                assigned_at => \'NOW()'
-                            }
-                        );
-                    }
-                }
-                else {
-                    while (my $user_rel = $user_rs->next) {
-                        my $user = $user_rel->user;
-                        next unless $user->email eq 'edgard.lobo@appcivico.com';
+                    if (my $send_email_to = $organization_ticket_type->send_email_to) {
+                        my $user = $user_rs->search({'user.email' => $send_email_to}, {join => 'user'})->next;
 
                         my $email = MandatoAberto::Mailer::Template->new(
-                            to       => $user->email,
+                            to       => $send_email_to,
                             from     => 'no-reply@appcivico.com',
                             subject  => "Novo ticket criado",
                             template => get_data_section('ticket_created.tt'),
                             vars     => {
-                                name       => $user->name,
-                                ticket_url => $organization->custom_url . 'chamados/' . $ticket->id,
+                                name       => $user ? $user->user->name : $send_email_to,
+                                ticket_url => $ENV{SQITCH_DEPLOY} eq 'prod'
+                                ? ('https://dipiou.appcivico.com/chamados/' . $ticket->id)
+                                : ('https://dev.dipiou.appcivico.com/chamados/' . $ticket->id),
+                                email_header => $ticket->organization_chatbot->organization->email_header,
+                                ticket_type  => $ticket->organization_ticket_type->ticket_type->name,
+                            },
+                        )->build_email();
+                        $self->result_source->schema->resultset('EmailQueue')->create({body => $email->as_string});
+
+                        if ($user) {
+                            $ticket->update(
+                                {
+                                    assignee_id => $user->user->id,
+                                    assigned_at => \'NOW()'
+                                }
+                            );
+                        }
+                    }
+                    else {
+                        while (my $user_rel = $user_rs->next) {
+                            my $user = $user_rel->user;
+                            next unless $user->email eq 'edgard.lobo@appcivico.com';
+
+                            my $email = MandatoAberto::Mailer::Template->new(
+                                to       => $user->email,
+                                from     => 'no-reply@appcivico.com',
+                                subject  => "Novo ticket criado",
+                                template => get_data_section('ticket_created.tt'),
+                                vars     => {
+                                    name         => $user->name,
+                                    ticket_url   => $organization->custom_url . 'chamados/' . $ticket->id,
+                                    email_header => $ticket->organization_chatbot->organization->email_header
+                                },
+                            )->build_email();
+
+                            $self->result_source->schema->resultset('EmailQueue')->create({body => $email->as_string});
+
+                        }
+                    }
+
+                    # Caso o recipient seja WEB, ou seja, sem fb_id e com uuid.
+                    # Envio e-mail para o endereço cadastrado no ticket.
+                    if (!$ticket->recipient->fb_id && $ticket->data->{mail}) {
+
+                        my $email = MandatoAberto::Mailer::Template->new(
+                            to       => $ticket->data->{mail},
+                            from     => 'no-reply@appcivico.com',
+                            subject  => "Novo ticket criado",
+                            template => get_data_section('ticket_created_web.tt'),
+                            vars     => {
+                                name         => $ticket->recipient->name,
+                                ticket_type  => $ticket->organization_ticket_type->ticket_type->name,
+                                ticket_id    => $ticket->id,
                                 email_header => $ticket->organization_chatbot->organization->email_header
                             },
                         )->build_email();
 
-                        $self->result_source->schema->resultset('EmailQueue')->create({ body => $email->as_string });
+                        $self->result_source->schema->resultset('EmailQueue')->create({body => $email->as_string});
+                    }
 
+                    # Caso o chatbot tenha uma intent de fallback
+                    # Já vinculo o usuário à intent.
+                    if (my $fallback_intent
+                        = $chatbot->politician_entities->search({'me.name' => 'default fallback intent'})->next)
+                    {
+                        $recipient->add_to_politician_entity($fallback_intent->id);
                     }
                 }
-
-                # Caso o recipient seja WEB, ou seja, sem fb_id e com uuid.
-                # Envio e-mail para o endereço cadastrado no ticket.
-                if (!$ticket->recipient->fb_id && $ticket->data->{mail}) {
-
-                    my $email = MandatoAberto::Mailer::Template->new(
-                        to       => $ticket->data->{mail},
-                        from     => 'no-reply@appcivico.com',
-                        subject  => "Novo ticket criado",
-                        template => get_data_section('ticket_created_web.tt'),
-                        vars     => {
-                            name         => $ticket->recipient->name,
-                            ticket_type  => $ticket->organization_ticket_type->ticket_type->name,
-                            ticket_id    => $ticket->id,
-                            email_header => $ticket->organization_chatbot->organization->email_header
-                        },
-                    )->build_email();
-
-                    $self->result_source->schema->resultset('EmailQueue')->create({ body => $email->as_string });
-                }
-            });
+            );
 
             return $ticket;
         }
@@ -243,23 +256,23 @@ sub build_list {
     $page = 1  if !defined $page;
     $rows = 20 if !defined $rows;
 
-    if ( $filter ) {
+    if ($filter) {
         die \['filter', 'invalid'] unless $filter =~ m/pending|closed|progress|canceled|all/;
 
         if ($filter eq 'pending') {
-            $filter = { 'me.status' => 'pending' }
+            $filter = {'me.status' => 'pending'};
         }
         elsif ($filter eq 'closed') {
-            $filter = { 'me.status' => 'closed' }
+            $filter = {'me.status' => 'closed'};
         }
         elsif ($filter eq 'progress') {
-            $filter = { 'me.status' => 'progress' }
+            $filter = {'me.status' => 'progress'};
         }
         elsif ($filter eq 'all') {
             $filter = undef;
         }
         else {
-            $filter = { 'me.status' => 'canceled' }
+            $filter = {'me.status' => 'canceled'};
         }
 
         $self = $self->search_rs($filter);
@@ -278,38 +291,41 @@ sub build_list {
                     assigned_at => $_->assigned_at,
                     anonymous   => $_->anonymous,
 
-                    ( $_->anonymous ?
-                        (
+                    (
+                        $_->anonymous
+                        ? (
                             recipient => {
                                 id      => undef,
                                 name    => undef,
                                 picture => undef
                             }
-                        ) :
-                        (
+                          )
+                        : (
                             recipient => {
                                 id      => $_->recipient->id,
                                 picture => $_->recipient->picture,
 
                                 # Caso o recipient seja criado através de um chatbot da Web, seu nome é seu uuid
                                 # Para não ficar estranho na visualização, será enviado um nome mas informativo.
-                                name => $_->recipient->name =~ /browser/ ? 'Sem nome (ticket criado através de um chatbot WEB)' : $_->recipient->name
+                                name => $_->recipient->name =~ /browser/
+                                ? 'Sem nome (ticket criado através de um chatbot WEB)'
+                                : $_->recipient->name
                             }
                         )
                     ),
 
                     (
                         assignee => {
-                            id      => $_->assignee_id ? $_->assignee->id : undef,
-                            name    => $_->assignee_id ? $_->assignee->name : undef,
+                            id      => $_->assignee_id ? $_->assignee->id      : undef,
+                            name    => $_->assignee_id ? $_->assignee->name    : undef,
                             picture => $_->assignee_id ? $_->assignee->picture : undef
                         }
                     ),
 
                     (
                         assignor => {
-                            id      => $_->assigned_by ? $_->assigned_by->id : undef,
-                            name    => $_->assigned_by ? $_->assigned_by->name : undef,
+                            id      => $_->assigned_by ? $_->assigned_by->id      : undef,
+                            name    => $_->assigned_by ? $_->assigned_by->name    : undef,
                             picture => $_->assigned_by ? $_->assigned_by->picture : undef
                         }
                     ),
@@ -321,10 +337,10 @@ sub build_list {
                         }
                     )
                 }
-            } $self->search($filter, {page => $page, rows => $rows, order_by => { -desc => 'me.created_at' } })->all()
+            } $self->search($filter, {page => $page, rows => $rows, order_by => {-desc => 'me.created_at'}})->all()
         ],
         itens_count => $self->count
-    }
+    };
 }
 
 sub human_status {
@@ -352,16 +368,17 @@ sub extract_metrics {
 
     my $politician     = $self->result_source->schema->resultset('Politician')->find($opts{politician_id});
     my $chatbot_id     = $politician->user->organization_chatbot->id;
-    my $ticket_metrics = $self->result_source->schema->resultset('ViewTicketMetrics')->search( undef, { bind => [ $chatbot_id, $chatbot_id ] } )->next;
+    my $ticket_metrics = $self->result_source->schema->resultset('ViewTicketMetrics')
+      ->search(undef, {bind => [$chatbot_id, $chatbot_id]})->next;
 
     my $avg_close = $ticket_metrics->avg_close ? $ticket_metrics->avg_close : '0';
-    my $avg_open  = $ticket_metrics->avg_open ? $ticket_metrics->avg_open : '0';
+    my $avg_open  = $ticket_metrics->avg_open  ? $ticket_metrics->avg_open  : '0';
 
     return {
-        count           => $self->count,
-        description     => 'Aqui você poderá métricas sobre os seus tickets.',
+        count             => $self->count,
+        description       => 'Aqui você poderá métricas sobre os seus tickets.',
         suggested_actions => [],
-        sub_metrics => [
+        sub_metrics       => [
             {
                 text              => 'Tempo de atendimento: ' . $avg_open . ' minutos',
                 suggested_actions => []
@@ -371,7 +388,7 @@ sub extract_metrics {
                 suggested_actions => []
             }
         ]
-    }
+    };
 }
 
 1;
