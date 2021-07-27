@@ -241,6 +241,7 @@ sub action_specs {
                         = $chatbot->politician_entities->search({'me.name' => 'default fallback intent'})->next)
                     {
                         $recipient->add_to_politician_entity($fallback_intent->id);
+                        $recipient->discard_changes;
                     }
                 }
             );
